@@ -1,0 +1,958 @@
+schema_version: 3
+id: gable-2026-01
+datasets:
+- archive: dandi
+  id: '000010'
+  version: 0.220126.1905
+  doi: 10.48324/dandi.000010/0.220126.1905
+  relation: reuses
+paper: doi:10.1523/jneurosci.0974-26.2026
+date: '2026-11-22'
+entry: gable-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/45034337289
+inputs:
+- what: The paper's analysis code (FigureS4.ipynb and Figures/sled_glutamate_functions.py), read for the coupling,
+    pair and bootstrap procedure. The notebook reads the printed outputs of FigureS4.ipynb at this commit (neurons
+    per session, same-range and different-range pair counts and mean differences per bin) and prints them beside
+    its own; they are compared with each reading and support the assumed reading, and no expected value or data
+    are taken from them.
+  source: https://github.com/kerlin-lab/Gable_2026 at commit 688e662767ed32b6ea60a2827c3483408edf6deb
+outcomes:
+- claim: figs4-session-selection
+  outcome: not_reproduced
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-session-selection
+  measured:
+  - 9
+  - 16
+  - 501
+  - 5060
+  notes: No reading of O1 to O3 matches, with units stored twice counted once or with every stored row. With units
+    counted once every reading gives 9 mice (7 Sim1, 2 Tlx) and 15 or 16 sessions; with every stored row, 10 mice
+    (7 Sim1, 3 Tlx) and 17 or 18 sessions, against 8 Sim1 and 3 Tlx mice and 20 sessions. The third Tlx mouse (sub-218453)
+    enters only with every stored row, its session of 18 stored rows holding 16 distinct units. Nine of the ten
+    KJ18 mice have a session of at least 18 stored units, but only seven have one with 18 units above 0.5 Hz under
+    either rate, so no reading reaches eight Sim1 mice. Measured values are under the reading adopted for the other
+    claims (baa), 9 mice, 16 sessions of 18 to 25 neurons (318 neurons), 501 same-range and 5,060 different-range
+    pairs (paper 753 and 6,586). The output printed by FigureS4.ipynb (commit 688e662) shows 20 sessions of 18 to
+    25 neurons, 411 neurons in all, and 771 same-range and 6,586 different-range pairs; 12 of the 16 baa sessions
+    have a neuron count that appears in the code's list. Over all sixteen readings the pair counts run from 452
+    to 893 and from 4,650 to 8,860. Without the Ai32 crosses the count is 7 mice under every reading. The outcome
+    is the same under every reading, so it does not rest on an assumption. Before the second verification the measured
+    values were under baa-r (10, 17, 575 and 5,686).
+  deviations:
+  - The selection is run under the eight combinations of O1 to O3, as the criterion directs, each with units stored
+    twice counted once and with every stored row.
+  - Mice are counted by the strain in the subject record; the KJ18 and PL56 mice crossed with Ai32 are counted with
+    their Cre line, and the count without them is shown. The selected sessions of these mice, and three selected
+    sessions of KJ18 mice without Ai32 (sub-210862 ses-20130626, sub-210863 ses-20130626 and ses-20130628), hold
+    no laser trace or photostimulation onsets, so any photostimulation in them could not be excluded.
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay
+    epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window
+    runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length
+    was set.
+- claim: figs4-lowest-couplers-correlated
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-lowest-couplers-correlated
+  measured: 0.0479
+  notes: The analysis ran, but the outcome turns on O2, for which the paper gives no defensible choice. Under baa the lowest bin's mean difference is 0.048 (same 0.028, different -0.020; 60 same-range and 768
+    different-range pairs), Holm-corrected one-tailed p = 0.0007, positive and significant but below the tolerance
+    of 0.054 to 0.066; over the five seeds it is 0.0478 to 0.0479 with p = 0.0007. It is significant under all sixteen
+    readings (0.032 to 0.055) and partially reproduced under 15 of them. Only bba, with units counted once, is within
+    tolerance (0.0548, 0.0546 to 0.0548 over the seeds, just inside the lower edge of 0.054) and gives reproduced;
+    baa, bab and bbb, and all eight readings with every stored row, give partially reproduced. baa and bba differ
+    only in O2, so the outcome is not the one every reading gives, and by the claims file's rule the claim is blocked. The readings split under every framing, with units counted once and O1 (b), with units counted once, and over all sixteen. The paper's code printed 0.0575.
+    The difference is positive in each of the 8 mice with same-range pairs in the bin. The session selection did
+    not match the paper's (figs4-session-selection), so the population differs from the paper's 20 sessions. Before
+    the second verification the outcome rested on reading baa-r (0.041). It was partially reproduced until the third verification round, which agreed with blocked.
+  deviations:
+  - 'Assumed reading baa. Units stored twice in a file (a repeated id with an identical spike train), a detail the
+    claims file does not name, are counted once: the two rows are one recorded unit, and the protocol (Author, step
+    1.2) counts a recording deposited twice once. Every reading is also run with every stored row. The round-2 verifier
+    found the earlier reading baa-r (every stored row) unreasonable, as the duplicated rows are not distinct neurons,
+    so it was replaced. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by
+    the paper''s FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which the O1 (b) readings give
+    and the O1 (a) readings do not (up to 34). O2 and O3 are not assumed. The Methods'' ''session-wide firing rate''
+    can be the rate over the recording, but the same paragraph says the coupling was ''estimated session-wide from
+    activity recorded between the tactile stimulus onset and 2 s after the GO signal''; the code''s output does
+    not tell the O3 readings apart. A claim whose outcome turns on O2 or O3 is blocked. Results under all sixteen
+    readings are in the notebook.'
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay
+    epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window
+    runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length
+    was set.
+  - Bootstrap seed from the claim, as the protocol requires; the paper gives none.
+- claim: figs4-high-couplers-correlated
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-high-couplers-correlated
+  measured:
+  - 0.0082
+  - 0.0211
+  - 0.0675
+  notes: The analysis ran, but the outcome turns on O3, for which the paper gives no defensible choice. Under baa the 57.14 to 71.43% bin is not significant (0.008, Holm p 0.074; 0.066 to 0.090 over the five
+    seeds), while the 71.43 to 85.71% and top bins are (0.021 and 0.067, Holm p 0.0007), which the criterion gives
+    as not reproduced. With units counted once seven of eight readings give not reproduced; bab gives partially
+    reproduced (all three bins significant, 0.012, 0.019 and 0.069, only the last within tolerance). baa and bab
+    differ only in O3, so the outcome is not the one every reading gives, and by the claims file's rule the claim is blocked. With every stored row seven
+    of eight readings give partially reproduced (baa-r 0.026, 0.035 and 0.130, each Holm p 0.0007) and abb-r not
+    reproduced. Keeping the rows adds the session of sub-218453, moves the bin edges and changes the units in each
+    bin; the duplicate pairs (r = 1) are 1 of the 69 same-range pairs of bin 5 and 12 of the 124 of bin 7 under
+    baa-r. Under baa-r the bin 5 and bin 7 differences (0.026 and 0.130) lie nearer the values the paper's code
+    printed (0.0188 and 0.122) than under baa (0.008 and 0.067), which is consistent with the paper's pipeline having
+    kept the duplicated rows; the code does not show it. The 71.43 to 85.71% difference is below the paper's 0.06
+    under every reading (0.014 to 0.035). Per mouse, under baa, the difference is positive in 7 of 9, 6 of 7 and
+    5 of 5 mice in the three bins. The outcome was partially reproduced, verified in round 1 under reading baa-r;
+    the round-2 verifier did not agree with it, and the third round agreed with blocked.
+  deviations:
+  - 'Assumed reading baa. Units stored twice in a file (a repeated id with an identical spike train), a detail the
+    claims file does not name, are counted once: the two rows are one recorded unit, and the protocol (Author, step
+    1.2) counts a recording deposited twice once. Every reading is also run with every stored row. The round-2 verifier
+    found the earlier reading baa-r (every stored row) unreasonable, as the duplicated rows are not distinct neurons,
+    so it was replaced. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by
+    the paper''s FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which the O1 (b) readings give
+    and the O1 (a) readings do not (up to 34). O2 and O3 are not assumed. The Methods'' ''session-wide firing rate''
+    can be the rate over the recording, but the same paragraph says the coupling was ''estimated session-wide from
+    activity recorded between the tactile stimulus onset and 2 s after the GO signal''; the code''s output does
+    not tell the O3 readings apart. A claim whose outcome turns on O2 or O3 is blocked. Results under all sixteen
+    readings are in the notebook.'
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay
+    epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window
+    runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length
+    was set.
+  - Bootstrap seed from the claim, as the protocol requires; the paper gives none.
+- claim: figs4-middle-couplers-not-correlated
+  outcome: blocked
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-middle-couplers-not-correlated
+  notes: The analysis ran, but the outcome turns on O2 or O3, for which the paper gives no defensible choice. With
+    units counted once and O1 (b), baa and bba give reproduced (smallest Holm p 0.54 under baa), while bab and bbb
+    give not reproduced (14.29 to 28.57% bin 0.008, Holm p 0.041, and 0.008, Holm p 0.020), so it turns on O3. With
+    every stored row and O1 (b), baa-r and bab-r give reproduced and bba-r and bbb-r not (Holm p 0.0054 and 0.0008),
+    so it turns on O2. Over all sixteen readings eight give reproduced and eight not reproduced. Where a middle
+    bin is significant, the mean difference is at most 0.0084, against the paper's 0.004, 0.001 and -0.002 (the
+    code printed 0.0042, 0.0013 and -0.0018). Under baa the three differences are -0.0010, -0.0030 and 0.0049. The
+    open details are asked of the authors (methods_unavailable finding). The round-1 verifier found that on synthetic
+    null data with independent pairs the paper's test rejects at about 11% at a nominal 0.05, and about 5% with
+    session offsets, so small significant p-values in these bins carry little weight. Before the first verification
+    the outcome was reproduced under the assumed reading baa.
+  deviations:
+  - Run under all sixteen combinations of O1 to O3 and of the treatment of units stored twice (counted once or every
+    stored row); no reading is assumed for O2, and the claim is blocked as the outcome turns on it.
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay
+    epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window
+    runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length
+    was set.
+  - Bootstrap seed from the claim, as the protocol requires; the paper gives none.
+  blocked_by: methods_underspecified
+- claim: fig2f-sd-input-elevated
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Rests on the paper's own two-photon imaging of L5 ET tuft synapses and dendrites, which is not in DANDI:000010
+    (it holds the Li et al. 2015 silicon-probe and calcium imaging data). The paper's Code and data availability
+    names github.com/kerlin-lab/Gable_2026, which at commit 688e662 holds code only, its notebooks loading pickled
+    data from the lab's servers; no deposit of the imaging was found on DANDI. The reader's answer (questions/gable-2026.yaml)
+    changed this; the claims file now marks the claim data dataset, as data the paper names that are not public
+    anywhere, so it is blocked as data_missing. Before the answer it was marked data elsewhere and blocked as other.
+    The claim was not testable either way.
+- claim: fig2j-tsa-dendrite-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig2i-tsa-extended-kinetics
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs1-controls-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig2n-abrupt-input-dendrite-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig2m-abrupt-input-fast-kinetics
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: table1-both-sexes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs1l-multibranch-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs2ab-correlation-declines-with-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig2c-dendrite-correlation-bimodal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs1c-tuft-spikes-rare
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig3c-coupling-distribution
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs3-coupling-rank-robust
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs3f-coupling-not-from-early-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig3d-high-couplers-correlated
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig3d-lowest-couplers-correlated
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs3e-spontaneous-lowest-couplers
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig3f-sc-most-active-at-spike
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig3f-dendrite-specific-every-group
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs3g-dff-groups-less-distinct
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: figs2c-no-coupling-clustering
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig4df-group-timing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig4h-go-mode-sc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig4h-outcome-nc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig4h-response-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig5b-spike-go-mode-sc-wc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig5d-spike-outcome-nc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig5b-go-mode-dendrite-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig5d-outcome-not-dendrite-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+- claim: fig1efg-task-selective-synapses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing
+    after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.
+findings:
+- kind: format_error
+  severity: critical
+  statement: In 50 of the 99 ecephys files the units table repeats a unit id (72 extra rows, for example ids 3,
+    4, 4, 5, 5), and in every case the repeated rows hold the identical spike train. A unit is stored twice, so
+    an analysis that takes each row as a unit counts it twice. In this attempt the duplicates change which sessions
+    reach the paper's 18-unit filter (9 or 10 mice and 15 to 18 sessions depending on whether they are counted once).
+    In the population-coupling analysis each duplicated unit forms a pair at r = 1 with its copy and its coupling
+    rises, as the copy is part of the summed activity of the other neurons; 12 of the 14 duplicated units in the
+    sessions selected with every row kept fall in the top coupling bin. With every row kept the high-coupler outcome
+    is partially reproduced under seven of eight readings, and with units counted once not reproduced under seven
+    of eight. Whether another unit was lost in place of the copy cannot be told from the files.
+- kind: other
+  about: data
+  severity: major
+  statement: The paper's selection (KJ18 and PL56 mice, sessions with at least 18 good units above 0.5 Hz, photostimulation
+    trials excluded) gives 9 or 10 mice (7 Sim1, 2 or 3 Tlx) and 15 to 18 sessions under every reading tried, against
+    the paper's 11 mice (8 Sim1, 3 Tlx) and 20 sessions, and the paper's code prints 411 neurons against 295 to
+    442 here. The dataset holds 10 KJ18 and 6 PL56 mice; nine KJ18 mice have a session of at least 18 stored units
+    but only seven one with 18 above 0.5 Hz, so the difference lies in the units or rates, not in missing mice.
+- kind: metadata_error
+  severity: minor
+  statement: Every trial's task is labelled 'audio delay', while the files' experiment description ('object location
+    discrimination task') and the paper describe a tactile sample cue.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The units' quality column holds the single value 'good' for all 1,441 units, so it does not separate
+    high-quality units from others as the paper's selection expects.
+- kind: format_error
+  severity: minor
+  statement: 140 photostimulation onsets in BehavioralEvents have a NaN timestamp, and 126 sample, 121 delay, 130
+    GO and 41 photostimulation events have a timestamp outside every trial, so these events cannot be placed in
+    a trial. Among the sessions selected under the adopted reading, one file (sub-219036 ses-20131120) holds one
+    NaN photostimulation onset; it also holds one trial with laser power and no onset.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The units' observation intervals start at a trial start and last 5.5 s, while the trials' stop times
+    differ from their ends by up to 13 s, and 574 trials with a sample time (in 65 files) have no observation interval,
+    so no spikes are stored for them. Neither is described in the files.
+- kind: format_error
+  severity: minor
+  statement: Ten units in four files store spike times out of order, and two files hold spikes outside their units'
+    observation intervals (10,895 in sub-214429 ses-20130806, 4,665 in sub-219031 ses-20131024).
+- kind: other
+  about: data
+  severity: none
+  statement: Spikes and trial events share a clock as far as decoding shows; the instructed side of correct trials
+    is decoded at a median balanced accuracy of 0.52 before sample onset and 0.88 after GO, and near 0.5 with labels
+    shifted by one trial. In 8 of the 10 selected sessions with a laser power trace the trials with a photostimulation
+    onset are exactly the trials with laser power; in sub-219248 ses-20130919 121 of 122 onset trials have power,
+    and in sub-219036 ses-20131120 one trial has power and no onset. No included trial has laser power. The published
+    version and the draft hold the same 158 assets.
+- kind: methods_unavailable
+  statement: For the authors. The step that builds the Figure S4 input arrays (ephys_secondaryAna.PKL) from DANDI:000010
+    is not in the code at commit 688e662. Which units enter a selected session (all high-quality units, or only
+    those above 0.5 Hz), how the session-wide rate is measured (over the recording, or within the analysis windows),
+    which trials enter (only CL, CR, IL, IR, or also early-lick and no-response trials), how trial windows of different
+    length were made common, and whether units stored twice in the files (a repeated id with an identical spike
+    train) were counted once or kept as two rows all change which sessions pass. Keeping the duplicated rows decides
+    the high-coupler outcome under most readings, the rate measure and the trial set decide whether the middle bins
+    are significant, and the rate measure decides whether the lowest bin's difference is within the paper's value.
+    This attempt assumed only units above 0.5 Hz (the code's printed 18 to 25 neurons per session support it) and
+    counted units stored twice once, and blocked the claims whose outcome turns on the rate measure or the trial
+    set. Could you confirm or correct these choices?
+- kind: other
+  about: paper
+  statement: The paper's Code and data availability says that code and data are available at github.com/kerlin-lab/Gable_2026,
+    but the repository at commit 688e662 holds code only, its notebooks loading pickled data from the lab's servers.
+    The two-photon imaging behind 30 of the 34 claims is not public in any archive found, so those claims cannot
+    be tested.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The files of the KJ18 and PL56 mice crossed with Ai32 (ChR2), sub-218453, sub-218457 and sub-218693,
+    hold no laser trace, no photostimulation onsets and no optogenetics metadata. Three selected sessions of KJ18
+    mice without Ai32 (sub-210862 ses-20130626, sub-210863 ses-20130626 and ses-20130628) have optogenetics metadata
+    but no laser trace and no onsets, while the other selected sessions of these strains hold all three. Whether
+    any trials of these seven sessions were photostimulated cannot be told from the files, so the paper's exclusion
+    of photostimulation trials cannot be checked in them.
+verifications:
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text (PMC13612898). The verifier read the archive's file list through
+    the DANDI API, searched it for the paper's imaging, and tested the helpers on synthetic inputs (holm, coupling_bins,
+    the smoothing kernel, pair_correlations, population_coupling, tsa, group_bootstrap and same_vs_diff_test). It
+    could not see the paper's code at 688e662. It had no attempt record and took the claims from the claims file.
+    Its other points and the replies. Problem 1 (the reading baa adopted where readings disagree) is answered by
+    running sixteen readings, adopting only details with a basis and blocking the middle claim. Problem 2 (duplicate
+    rows never run through the tests; the verifier raised the reading because it had not been tested, not as the
+    analysis to adopt) is answered by running them; the revision adopted them, which round 2 found unreasonable.
+    Problem 3 (per-mouse breakdown) is answered by the per-mouse table. Problem 4 (Ai32 sessions without laser data
+    unchecked) is answered by checking every selected session, which shows that the four Ai32 sessions hold no laser
+    trace, onsets or optogenetics metadata, recorded as a new finding. Problem 5 (the paper's test rejects about
+    11% under a null with independent pairs and about 5% with session offsets, and its acceptance rule biases the
+    bootstrap mean toward sessions with more pairs, 0.046 against 0.039) is a property of the paper's method, noted
+    in the middle claim. Problem 6 (single-trial types set to zero under O3 b) is allowed by the claims file and
+    left as it is; the trial types per session are now printed. Problem 7 (helpers correct on synthetic inputs)
+    and point 8 (no misreading of the paper in the claims file, so no question was added) need no change.
+  results:
+  - claim: figs4-session-selection
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 14, no reading gives the paper's mice, sessions or pair counts. With units counted once, every
+      reading gives 9 mice (7 Sim1, 2 Tlx) and 15 to 16 sessions. Keeping every stored row gives 10 mice (7, 3)
+      and 17 to 18 sessions. The criterion requires exactly 11 mice even for a partial result, and no reading gets
+      there. Sim1 can reach 8 mice only on paper, as 9 KJ18 mice have a session with at least 18 units; a third
+      Tlx mouse appears only when duplicate rows are kept (sub-218453 has 18 stored rows, 16 unique). The notebook
+      does not print this breakdown (problem 3).
+    response: Added the per-mouse table of sessions passing each filter (stored rows, units once, 18 above 0.5 Hz
+      under each rate, counted once and with every row) and the comparison with the neurons per session that the
+      paper's FigureS4.ipynb printed, read from the notebook at the pinned commit. The measured values are now under
+      the adopted reading baa-r (10 mice, 17 sessions, 575 and 5,686 pairs). Outcome unchanged.
+  - claim: figs4-lowest-couplers-correlated
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 20, in bin 1 Holm p = 0.0007 under all 8 readings and all 5 seeds, so the difference is significant
+      and positive everywhere. The mean difference is 0.040 to 0.055 against 0.06 +- 0.006, so it falls within tolerance
+      only under reading bba (0.0548).
+    response: All sixteen readings are now run through the test (problem 2). With every stored row the difference
+      is 0.032 to 0.051, partially reproduced under all eight; under the adopted baa-r it is 0.041. The outcome
+      stays partially reproduced, resting on the assumed treatment of duplicated units, as only bba, with units
+      counted once, gives reproduced.
+  - claim: figs4-high-couplers-correlated
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 23, bin 6 is 0.014 to 0.023 under every reading against 0.054 to 0.066. Bin 5 is 0.0015 to 0.012
+      against 0.015 to 0.025 and is not significant under 7 of 8 readings (baa p_holm 0.066 to 0.090 across seeds).
+      Only bab reaches partial, because all three bins are significant there, but two of them are far outside tolerance.
+      The high-coupler claim was never tested with duplicate rows kept (problem 2), and these r = 1 pairs would
+      go mostly into the top bins, enough to move the bin 5 to 7 differences toward the paper's 0.02, 0.06 and 0.1.
+    response: 'Changed to partially reproduced. The test claims are now run with every stored row as well (problem
+      2), and that reading is adopted, as it alone selects the paper''s third Tlx mouse and comes closer to the
+      code''s sessions and neurons. With every stored row all three bins are significant under seven of eight readings,
+      including all four O1 (b) readings, which gives partially reproduced (baa-r 0.026, 0.035, 0.130); with units
+      counted once the outcome is as the verifier found. The duplicated units'' bins and twin correlations are now
+      printed: 12 of 14 fall in the top bin at r = 1 with their copy. Bin 6 stays below tolerance under every reading.'
+  - claim: figs4-middle-couplers-not-correlated
+    agrees: false
+    outcome: blocked
+    reason: Cell 26, the readings split 4 to 4. aaa, aab, baa and bba give reproduced; aba, abb, bab and bbb give
+      not reproduced, with Holm p from 0.007 to 0.04 for small positive differences of 0.003 to 0.008. The claims
+      file says the outcome is the one every reading gives, and here there isn't one. bab is one of the two readings
+      that match the code's 18 to 25 neurons per session, and it gives not reproduced, so adopting baa does not
+      settle the outcome (problem 1). Blocked, methods_underspecified.
+    response: Changed to blocked, methods_underspecified. With every stored row and O1 (b), the outcome no longer
+      turns on O3 (baa-r and bab-r both give reproduced) but turns on O2 (bba-r and bbb-r give not reproduced),
+      and the paper's own paragraph uses 'session-wide' for activity within the analysis windows, so neither O2
+      reading has a defensible basis. All sixteen readings are shown; eight give reproduced and eight not.
+  - claim: fig2f-sd-input-elevated
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig2j-tsa-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig2i-tsa-extended-kinetics
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs1-controls-unchanged
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig2n-abrupt-input-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig2m-abrupt-input-fast-kinetics
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: table1-both-sexes
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs1l-multibranch-specific
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs2ab-correlation-declines-with-distance
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig2c-dendrite-correlation-bimodal
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs1c-tuft-spikes-rare
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig3c-coupling-distribution
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs3-coupling-rank-robust
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs3f-coupling-not-from-early-response
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig3d-high-couplers-correlated
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig3d-lowest-couplers-correlated
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs3e-spontaneous-lowest-couplers
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig3f-sc-most-active-at-spike
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig3f-dendrite-specific-every-group
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs3g-dff-groups-less-distinct
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: figs2c-no-coupling-clustering
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig4df-group-timing
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig4h-go-mode-sc
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig4h-outcome-nc
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig4h-response-similar
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig5b-spike-go-mode-sc-wc
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig5d-spike-outcome-nc
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig5b-go-mode-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig5d-outcome-not-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+  - claim: fig1efg-task-selective-synapses
+    agrees: true
+    outcome: blocked
+    reason: I checked the archive. DANDI:000010 0.220126.1905 has 158 assets, 99 ecephys files and 59 behavior+ophys
+      files; the ophys files are Li et al.'s somatic imaging from 4 subjects, not the paper's iGluSnFR3/jRGECO1a
+      tuft imaging. Searching the DANDI API for iGluSnFR3, Kerlin and tuft dendrite returns no dandisets, so no
+      part of the 30 claims is testable.
+    response: No change.
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The second executed notebook in full, with its conclusions and summary, the helper module, the claims
+    file and the attempt record. Its other points and the replies. Unsupported sentences: cell 6 (units counted
+    once) now matches the adopted reading; cells 13 and 36 and finding 8 now give the two sessions where onsets
+    and laser power differ by one trial, and the count of 10 sessions with a trace among 17 listed; the summary
+    now says the top-bin placement covers the 14 duplicated units in the selected sessions; finding 11 names the
+    three KJ18 sessions with optogenetics metadata and no laser trace; finding 1 no longer says the duplicate pairs
+    change bin 5; finding 5 now counts NaN timestamps by event type, which the notebook prints (the earlier 558
+    counted events outside every trial as NaN; 140 photostimulation onsets are NaN), and names the one selected
+    session with a NaN onset. Round-1 problem 5 is now recorded in full, and problem 2 as raised, not as a proposal
+    to adopt the rows.'
+  results:
+  - claim: figs4-session-selection
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading reaches 11 mice (cell 15). No assumption.
+    response: No change of outcome. The measured values are now under the adopted reading baa (9 mice, 16 sessions,
+      501 and 5,060 pairs), as the reading for the duplicated units was revised (see figs4-high-couplers-correlated).
+  - claim: figs4-lowest-couplers-correlated
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The stated basis (keep duplicated rows) is not reasonable. The outcome holds without it: it
+      is partial under 15 of 16 readings, and the one exception (bba, 0.0548) sits at the tolerance edge of 0.054.
+      Bin 1 holds no duplicate pairs (cell 22). The outcome should rest on that.'
+    response: 'The assumption was revised: units stored twice are now counted once (reading baa, 0.048), and the
+      notes rest the outcome on the 15 of 16 readings. Applying the claims file''s rule with units counted once,
+      baa and bba differ only in O2 and give partially reproduced and reproduced, so the outcome is kept as verified
+      and blocked (methods_underspecified) is proposed for a third round.'
+  - claim: figs4-high-couplers-correlated
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The adopted reading baa-r keeps every stored row, so each duplicated unit is analysed as two units,
+      which the record''s critical finding 1 and the notebook (cell 18, the duplicated rows are not distinct neurons)
+      say is wrong. With units counted once 7 of 8 readings give not reproduced, the bin 5 Holm p 0.074 to 0.53
+      (cell 29); the one exception, bab, has bins 5 and 6 at 0.012 and 0.019, both far outside tolerance. Keeping
+      the rows moves the duplicated units from bins 1 and 2 to bins 5 to 7 (cell 22). The basis is circular: the
+      third Tlx mouse enters only because two copied rows pad 16 units to 18. It would rate the claim not_reproduced,
+      or blocked if the handling of duplicates is open; in neither case partial. Under baa-r bins 5 and 7 (0.026,
+      0.130) sit nearer the code''s printed 0.0188 and 0.122 than under baa (0.008, 0.067), so the paper may have
+      kept the duplicates too, which is worth stating but does not justify adopting the reading.'
+    response: 'The reading was revised to count units stored twice once (baa), in the notebook and the record. The
+      verified outcome, partially reproduced, is kept as round 2 requires, and blocked (methods_underspecified)
+      is proposed: with units counted once baa gives not reproduced and bab partially reproduced, and they differ
+      only in O3, the rule under which the middle claim is blocked. The notes now state that under baa-r bins 5
+      and 7 lie nearer the code''s printed values, and that the duplicate pairs are 1 of 69 same-range pairs in
+      bin 5, so the change in bin 5 does not come from them alone.'
+  - claim: figs4-middle-couplers-not-correlated
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, no assumption. With every row kept it turns on O2 (cell 33). With units counted once it turns
+      on O3: baa gives reproduced, bab does not. It is blocked either way.'
+    response: No change of outcome. The notes now give both splits, with units counted once (O3) and with every
+      row (O2).
+  - claim: fig2f-sd-input-elevated
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig2j-tsa-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig2i-tsa-extended-kinetics
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs1-controls-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig2n-abrupt-input-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig2m-abrupt-input-fast-kinetics
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: table1-both-sexes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs1l-multibranch-specific
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs2ab-correlation-declines-with-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig2c-dendrite-correlation-bimodal
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs1c-tuft-spikes-rare
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig3c-coupling-distribution
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs3-coupling-rank-robust
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs3f-coupling-not-from-early-response
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig3d-high-couplers-correlated
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig3d-lowest-couplers-correlated
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs3e-spontaneous-lowest-couplers
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig3f-sc-most-active-at-spike
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig3f-dendrite-specific-every-group
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs3g-dff-groups-less-distinct
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: figs2c-no-coupling-clustering
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig4df-group-timing
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig4h-go-mode-sc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig4h-outcome-nc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig4h-response-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig5b-spike-go-mode-sc-wc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig5d-spike-outcome-nc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig5b-go-mode-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig5d-outcome-not-dendrite-specific
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  - claim: fig1efg-task-selective-synapses
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing; no assumption.
+    response: No change.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: 'The outputs show the core statement: cell 5 prints 50 of 99 files, 72 extra rows, all with identical
+      spike trains, and the example ids 3, 4, 4, 5, 5; cell 15 shows the selection effect (9 against 10 mice, 15
+      to 16 against 17 to 18 sessions); cell 22 shows 12 of 14 duplicated units in the top bin at r = 1. The causal
+      clause about bin 5 is not shown. Critical is right: one unit deposited as two rows is one of the rubric''s
+      examples, the repeated id is the only trace, and an analysis that reads the table as stored comes out wrong,
+      as this attempt''s adopted reading did.'
+    response: Kept critical. The causal clause about bin 5 was removed from the statement.
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the two changes of outcome proposed after round 2 (figs4-lowest-couplers-correlated and
+    figs4-high-couplers-correlated), with the analysis behind them in the executed notebook (cells 25, 27, 29 and
+    33), the claims file and the attempt record. Report in transcripts/gable-2026/verifier-3-report.md.
+  results:
+  - claim: figs4-lowest-couplers-correlated
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 25: bin 1 is positive with Holm p = 0.0007 under all 16 readings and all 5 seeds. The only open
+      question is whether the difference is within 0.054 to 0.066. Under bba it is 0.0548, and it stays inside tolerance
+      under every seed (0.0546 to 0.0548), so bba gives reproduced. baa, bab and bbb give partially reproduced (0.048,
+      0.044, 0.047). baa and bba differ only in O2. The claims file says a claim''s outcome is the one all readings
+      give, and it lists both O2 readings as allowed, so the split means blocked. Blocked holds with units counted
+      once and O1 (b), over all 8 readings with units counted once, and over all 16. In round 2 it agreed with partially
+      reproduced and would have rested it on 15 of 16 readings; that did not apply the claims file''s rule as written,
+      and it withdraws it. Blocked is less favourable than either outcome in the split. As written, the every-reading
+      rule lets a value 0.0006 inside the tolerance edge block a claim whose effect is significant under every reading;
+      that is how the claims file was written, not an error in applying it.'
+    response: Changed to blocked (methods_underspecified) and the proposal removed. The notes, the notebook's conclusion
+      and summary and the entry README now give blocked, with the split under each reading. The assumed flag was removed,
+      as the outcome is the same with or without the assumed reading.
+  - claim: figs4-high-couplers-correlated
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 29: with units counted once and O1 (b), baa, bba and bbb give not reproduced, because bin 5 is not
+      significant (Holm p 0.066 to 0.090, 0.53 to 0.55, 0.20 to 0.22 across seeds). bab has all three bins significant
+      under every seed (bin 5 p 0.0007 to 0.0008) with only bin 7 within tolerance, which the criterion''s first partial
+      clause gives as partially reproduced. baa and bab differ only in O3. O3 (a) has some support, since TSA is defined
+      on the four trial types, but the claims file lists (b) as allowed, so the rule blocks the claim, as for figs4-middle-couplers-not-correlated
+      (cell 33). Blocked does not depend on the handling of duplicated rows; with every row kept seven readings give
+      partially reproduced and abb-r not reproduced. Under bab the result is weak (bin 5 0.012 against 0.015 to 0.025,
+      bin 6 0.019 against 0.054 to 0.066; bin 6 is below tolerance under all 16 readings, 0.014 to 0.035), but the
+      criterion as written gives partial there. The basis no longer adopts the duplicated rows, so the circularity
+      raised in round 2 is gone.'
+    response: Changed to blocked (methods_underspecified) and the proposal removed. The notes, the notebook's conclusion
+      and summary and the entry README now give blocked, with the split under each reading. The assumed flag was removed,
+      as blocked holds under every handling of the duplicated rows.

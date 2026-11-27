@@ -1,0 +1,992 @@
+schema_version: 3
+id: yang-2026-flexible-01
+datasets:
+- archive: dandi
+  id: '000020'
+  version: 0.210913.1639
+  doi: 10.48324/dandi.000020/0.210913.1639
+  relation: reuses
+paper: doi:10.1523/eneuro.0275-26.2026
+date: '2026-11-22'
+entry: yang-2026-flexible
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/45006249672
+inputs:
+- what: The paper's join of the NWB files to the Allen Patch-seq metadata (t-type, subclass, Cre line, regime
+    membership), results/m0/m0_molecular_join.csv, which the claims file names as the paper's join of the
+    NeMO metadata.
+  source: https://github.com/zy-neuro/protocol-response-geometry at commit 61a5a413daea3b3562fad6e40207320da5665fed
+- what: The retained feature lists of the three regimes, results/phenotype/phenotype_summary.json, which the
+    claims file names; the paper's rule applied to this attempt's features gives the same lists.
+  source: https://github.com/zy-neuro/protocol-response-geometry at commit 61a5a413daea3b3562fad6e40207320da5665fed
+outcomes:
+- claim: join-link
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:join-link
+  notes: All 4,430 join rows match a file by stem (100%), and all 4,430 matched files agree with their row
+    on session id, subject id and full genotype. Five files have no row, the four of subject 636828314 that
+    IPFX cannot open and sub-650125704_ses-653191386. The regime membership computed here equals the join's
+    in_long_pulse, in_ramp and in_brief_pulse for every cell (4,344, 4,139 and 4,422 in both, 0 on one side
+    only). The join also gives two files with identical recordings different Cre lines and t-types (finding
+    1).
+- claim: cohort-label-join
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:cohort-label-join
+  measured:
+  - 4430
+  - 4266
+  - 4183
+  - 3988
+  - 4266
+  notes: 4,430 files with a join row, 4,266 with a non-empty t-type; per regime 4,183, 3,988 and 4,266 cells
+    with a t-type. All equal to the paper's.
+- claim: table1-phenotype-spaces
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:table1-phenotype-spaces
+  assumed: true
+  measured:
+  - 4344
+  - 42
+  - 11
+  - 4139
+  - 20
+  - 3
+  - 4422
+  - 21
+  - 5
+  - 4054
+  - 4336
+  - 4134
+  - 4049
+  notes: The paper's rule (at most 30% missing, nonzero variance) on the features extracted here keeps exactly
+    the paper's lists of 42, 20 and 21 features under both readings of the denominator (2a and 2b). Cells
+    4,344, 4,139 and 4,422; k80 11, 3 and 5 (cumulative variance 0.822, 0.883, 0.824); overlaps 4,054, 4,336,
+    4,134 and 4,049. Every value equals the paper's, and the cells are the ones the paper's join lists for
+    each regime. Of 4,431 files opened, IPFX's long-square extraction failed in 87, the short-square in 9
+    and the ramp in 2.
+  deviations:
+  - Features from IPFX 2.1.2 (the current release) through its per-regime functions extract_cell_long_square_features,
+    extract_cell_short_square_features and extract_cell_ramp_features, with the code's epoch repair and sweep
+    filter; the paper's IPFX driver script and IPFX version are not in its code (claims file, table1-phenotype-spaces,
+    reading 1a).
+  - extract_ok is not defined in the paper or its code. Assumed here to be 1 when the file opened as an IPFX
+    data set and the three regime extractions ran, each regime allowed to fail on its own, as IPFX's own cell
+    state counts a cell failed only when every part failed. The cell sets this gives equal the paper's own
+    regime membership (join-link), so the claims built on these spaces do not depend on the choice.
+  - Sweeps are read from the HDF5 file with h5py in place of pynwb, for speed (patchseq._fast_reader); the
+    notebook shows that the features, split halves and clock values equal those of IPFX's own reader on eight
+    files across the dandiset.
+- claim: pc1-long-pulse-loadings
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:pc1-long-pulse-loadings
+  notes: The four current features (rheobase_i, threshold_i, rheobase_sweep.stim_amp, hero_sweep.stim_amp)
+    have the largest absolute loadings (0.303), then input_resistance and ri (0.263); PC1 explains 0.198 of
+    the variance. Both readings hold.
+- claim: fig1b-distance-correlation
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig1b-distance-correlation
+  measured:
+  - 0.441
+  - 0.3848
+  - 0.3363
+  notes: Unique pairs; rho 0.4410 (long-ramp, n 4,054), 0.3848 (ramp-brief, n 4,134), 0.3363 (long-brief,
+    n 4,336), each p = 0.0099 (null maxima 0.020, 0.025, 0.023). Over five seeds 0.4353 to 0.4410, 0.3790
+    to 0.3848 and 0.3331 to 0.3428, all within tolerance and in the paper's order. The code's pair draw (variant,
+    about 79,600 unique of 80,000 pairs) gives 0.4378, 0.3809 and 0.3342.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: fig1-fixed-five-pcs-ordering
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig1-fixed-five-pcs-ordering
+  notes: With five components rho is 0.4335 (long-ramp), 0.3826 (ramp-brief), 0.3392 (long-brief); over five
+    seeds 0.4297 to 0.4378, 0.3797 to 0.3839 and 0.3392 to 0.3464, so the order holds under every seed.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: fig1c-knn-jaccard
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig1c-knn-jaccard
+  measured:
+  - 0.0229
+  - 0.0224
+  - 0.0185
+  - 0.00199
+  notes: Mean 15-NN Jaccard 0.0229, 0.0224 and 0.0185 (long-ramp, long-brief, ramp-brief); index-shuffle chance
+    0.00199, 0.00187 and 0.00193 (measured gives long-ramp's), 0.00186 to 0.00199 over five seeds and all
+    pairs, so within 0.0002 of 0.002.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: knn-scale-sweep
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:knn-scale-sweep
+  measured:
+  - 0.1344
+  - 0.1004
+  - 0.1077
+  notes: Chance-adjusted Jaccard at k = 600 is 0.1344, 0.1004 and 0.1077 (0.1344 to 0.1346, 0.1003 to 0.1004,
+    0.1075 to 0.1077 over five seeds); it rises at every step of the grid 15, 30, 60, 120, 240, 480, 600 for
+    each pair (readings a and b both hold).
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: split-half-reliability
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:split-half-reliability
+  measured:
+  - 3598
+  - 0.109
+  - 0.1064
+  - 0.002581
+  - 0.02537
+  - 0.02411
+  - 0.02011
+  - 3276
+  - 3509
+  - 3351
+  - 3112
+  - 358
+  notes: Under seed 0 for the random split, which the criterion gives ("random (seed 0)") and the code uses
+    (a fresh default_rng(0) for each cell), 3,598 cells have both halves, the same cells as the paper's own
+    list (results/q1_reliability/split_half_jaccard_cells.csv; 0 here only, 0 there only), split odd/even
+    3,112, sweep-number interleaved 128 and random 358, the paper's counts. Within long-pulse mean 15-NN Jaccard
+    0.1090, chance 0.002581 (0.002540 to 0.002582 over five shuffle seeds), adjusted 0.1064; same-pool cross-regime
+    values 0.02537, 0.02411 and 0.02011 on pools of 3,276, 3,509 and 3,351 cells. Every value is within tolerance
+    and the within-regime mean exceeds the three cross-regime values. The seed decides the pool. Under the
+    seeds 1000, 2000, 3000 and 4000 the pool has 3,741, 4,100, 3,582 and 3,853 cells (random splits 501, 860,
+    342, 613; within 0.1095, 0.1076, 0.1082, 0.1107), and 4,100 cells and random counts of 501, 860 and 613
+    are out of tolerance; under the claim's seed (protocol) 3,256 cells, random 16, within 0.1071, the ramp
+    and brief-pulse value 0.02219 just outside its tolerance and the long-pulse and ramp pool 2,946, the partial
+    result of the first version. The within-regime mean exceeds every same-pool value under all six seeds.
+    806 cells failed for too few spiking sweeps to fit an f-I slope in a half under seed 0.
+  deviations:
+  - Features from IPFX 2.1.2 (the current release) through its per-regime functions extract_cell_long_square_features,
+    extract_cell_short_square_features and extract_cell_ramp_features, with the code's epoch repair and sweep
+    filter; the paper's IPFX driver script and IPFX version are not in its code (claims file, table1-phenotype-spaces,
+    reading 1a).
+  - The random split uses seed 0, as the criterion and the code give it, because the seed decides which cells
+    form the pool, a selection the criterion fixes; the claim's seed (protocol) and the seeds 1000 to 4000
+    are shown as variants, and the chance shuffles use the claim's seed.
+  seed_sensitive: true
+- claim: fig2c-eta2-ttype-over-cre
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2c-eta2-ttype-over-cre
+  measured:
+  - 0.3269
+  - 0.2092
+  - 0.3926
+  - 0.2672
+  - 0.1492
+  - 0.1095
+  notes: Reading (a), the code's cell set; t-type 0.3269, 0.3926, 0.1492 against Cre 0.2092, 0.2672, 0.1095
+    (long-pulse, ramp, brief-pulse), the paper's values to three decimals. Reading (b), all cells with a Cre
+    line; Cre 0.2114, 0.2687, 0.1300, still below t-type. With the Cre line taken from the files' own genotype
+    (44 lines), 0.1903, 0.2472 and 0.1210.
+- claim: table2-alignment-ttype
+  outcome: partially_reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:table2-alignment-ttype
+  measured:
+  - 0.0337
+  - 0.0278
+  - 0.0137
+  notes: A_t 0.0337 (long-pulse, 4,183 cells), 0.0278 (ramp, 3,988), 0.0137 (brief-pulse, 4,266), each p =
+    0.0099 against 100 label shuffles (null means 0.0053, 0.0012, -0.0026). None is within tolerance (ramp
+    0.0278 against at most 0.0275). Over the five seeds A_t is 0.0214 to 0.0337, 0.0239 to 0.0337 and 0.0137
+    to 0.0245, p = 0.0099 under every seed, and under no seed are all three within tolerance, so the outcome
+    is the same under all five. A_t minus its null mean is stable over the seeds, 0.0280 to 0.0284, 0.0265
+    to 0.0287 and 0.0162 to 0.0182. The code's own draws under its seed 0 (variant) give 0.0292, 0.0294 and
+    0.0177; on the paper's own published PCA scores the same draws give 0.0370, 0.0316 and 0.0106, not the
+    printed 0.0214, 0.0250 and 0.0213, while A_t minus null mean there (0.0264, 0.0261, 0.0161) is within
+    0.0005 of the paper's printed A_t minus its printed null mean (0.0264, 0.0266, 0.0166). So the printed
+    values differ from the code's draws on the paper's scores by an offset that the null mean shares. The
+    order the sort gives the tied 0s and 1s of the mismatch is one thing that moves A_t and its null together.
+    With a stable sort (variant) the code's draws give 0.0350, 0.0301 and 0.0109 on the paper's scores and
+    0.0313, 0.0308 and 0.0180 on this attempt's, changes of at most 0.0021, with A_t minus null mean changing
+    by at most 0.0003. These shifts are much smaller than the gap to the printed values (0.016 for long-pulse),
+    and what produces that gap is not shown. Not run in this notebook, the executed copy of the previous run
+    (on a CPU without AVX-512; this run's has it, cell 1) printed 0.0336, 0.0276 and 0.0135 here and 0.0368,
+    0.0318 and 0.0105 on the paper's scores, which is consistent with the default sort ordering ties differently
+    on the two CPUs. The cells here are not in the order of the code's score files, so the code's draws are
+    not the same pairs. The tie-corrected Spearman (variant) is 0.0955, 0.0848 and 0.0689. The alignment exceeds
+    shuffled labels in every regime, as the statement says; its printed size cannot be matched to the tolerance.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: ttype-beyond-cre
+  outcome: partially_reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:ttype-beyond-cre
+  measured:
+  - 0.0081
+  - 0.0064
+  - 0.0103
+  notes: On the code's cell set, after removing each Cre line's mean, A_t 0.0081, 0.0064 and 0.0103 (paper
+    0.011, 0.010, 0.004), each p = 0.0099; over five seeds -0.0019 to 0.0103 with p = 0.0099 under every seed,
+    and the long-pulse value never within tolerance, so the outcome holds under all five; A_t minus null mean
+    0.0042 to 0.0087, 0.0039 to 0.0067 and 0.0037 to 0.0049. With the code's draws under seed 0 (variant)
+    0.0112, 0.0052 and 0.0038, p = 0.0099 each, long-pulse and brief-pulse within tolerance and ramp not;
+    on the paper's own scores the same draws give 0.0145, 0.0048 and 0.0070 against the printed 0.0114, 0.0102
+    and 0.0041, so, as for A_t (table2-alignment-ttype), the code's draws on the paper's scores do not give
+    the printed values. Residual t-type eta
+    squared 0.1102, 0.1197 and 0.0396 against label-shuffle null means 0.0146, 0.0154 and 0.0139 (maxima 0.0182,
+    0.0209, 0.0312), so residual structure is detectable under both readings. The variant on all t-typed cells
+    is the same set here, as every join row has a Cre line.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: fig2d-knn-type-enrichment
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2d-knn-type-enrichment
+  measured:
+  - 6.608
+  - 3.445
+  - 2.643
+  notes: Ratio of means 6.608, 3.445 and 2.643 (same-type fractions 0.195, 0.104, 0.078 against chance 0.030),
+    in the paper's order; the mean of per-cell ratios (variant) gives 6.751, 3.565 and 2.867.
+- claim: fig2ab-ttype-structure-within-cre
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2ab-ttype-structure-within-cre
+  notes: Two Cre lines of the paper's join (its cre_line includes the reporter) with at least 80 cells have
+    the Sst-IRES-Cre driver, one with Ai14 and one with Ai167; the files' genotypes count them as one driver.
+    With Ai14 (993 cells, 32 t-types) within-Cre A_t is 0.0313 (p 0.0099) and eta squared 0.2251 against a
+    shuffle mean of 0.0311; with Ai167 (81 cells, 22 t-types) 0.0441 (p 0.0198) and 0.4877 against 0.2616.
+    Both hold. Descriptive; the six most frequent t-types of the Ai14 line have long-pulse PC1 medians 0.233
+    to 1.844, Kruskal-Wallis p = 5.9e-19. Of the 15 lines tested, 11 have within-Cre A_t with p < 0.05 in
+    this run (one of them at p = 0.0495).
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: fig3a-type-map-concordance
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig3a-type-map-concordance
+  measured:
+  - 57
+  - 0.6588
+  - 0.6085
+  - 0.4552
+  notes: 57 t-types, 1,596 pairs. Concordance 0.6588 (long-ramp), 0.6085 (ramp-brief), 0.4552 (long-brief),
+    each p = 0.000999 against 1,000 shuffles under all five seeds (null maxima 0.167, 0.147, 0.186), in the
+    paper's order.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: shared-map-model-call
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:shared-map-model-call
+  notes: Minimum 0.4552, maximum 0.6588, range 0.2036; the rule (minimum at least 0.40, range below 0.25)
+    holds.
+- claim: subclass-map-concordance
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:subclass-map-concordance
+  measured:
+  - 0.9357
+  - 0.5786
+  - 0.6214
+  - 6
+  notes: Six subclasses (Lamp5, Pvalb, Serpinf1, Sncg, Sst, Vip) with at least 10 cells in every regime; concordance
+    0.9357 (long-ramp), 0.5786 (long-brief), 0.6214 (ramp-brief), matching under reading (a), the code's pair
+    order.
+- claim: equal-n-centroid-robustness
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:equal-n-centroid-robustness
+  measured:
+  - 0.5529
+  - 0.4573
+  - 0.3226
+  notes: Means over 200 resamples 0.5529 (long-ramp, 95% interval 0.4694 to 0.6280), 0.4573 (ramp-brief, 0.3592
+    to 0.5571), 0.3226 (long-brief, 0.2034 to 0.4183), each below its full-sample value; over five seeds 0.5527
+    to 0.5560, 0.4563 to 0.4629 and 0.3223 to 0.3302. Each 2.5th percentile exceeds the largest of the 1,000
+    shuffles (0.1671, 0.1466, 0.1855), and each mean the null's 97.5th percentile, so both readings hold.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: within-regime-type-map-reliability
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:within-regime-type-map-reliability
+  measured:
+  - 0.8621
+  - 0.8522
+  - 0.799
+  - 0.5742
+  notes: Split-half concordance 0.8621, 0.8522 and 0.7990 (five seeds 0.8621 to 0.8671, 0.8489 to 0.8527,
+    0.7990 to 0.8030) against the mean full-sample concordance 0.5742.
+  deviations:
+  - Random draws use the claim's seed (protocol) in place of the code's seed 0, with four more seeds for the
+    range given in the notes.
+- claim: fig3b-pair-tags
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig3b-pair-tags
+  measured:
+  - 644
+  - 796
+  - 156
+  notes: 644 stable (40.4%), 796 intermediate (49.9%), 156 selective (9.8%) of 1,596.
+- claim: pair-tag-threshold-sensitivity
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:pair-tag-threshold-sensitivity
+  notes: At every cutoff of both grids the selective fraction (0.038 to 0.235) is below the stable (0.231
+    to 0.569) and the intermediate (0.335 to 0.671) fractions. From the default, the selective fraction moves
+    by up to 0.137 over the range cutoffs and the stable fraction by up to 0.172 over the CV cutoffs.
+- claim: type-level-exceeds-cell-level
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:type-level-exceeds-cell-level
+  notes: Type-map concordance 0.6588, 0.4552 and 0.6085 against cell-cell distance correlations 0.4410, 0.3363
+    and 0.3848 (long-ramp, long-brief, ramp-brief); 15-NN Jaccard 0.0229, 0.0224, 0.0185.
+- claim: mobility-distribution
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:mobility-distribution
+  measured:
+  - 0.589
+  - 0.11
+  - 4049
+  notes: 4,049 triple-shared cells; mobility mean 0.5890, SD 0.1100 (population), range 0.2447 to 1.1808.
+- claim: fig4ab-rna-tracks-shared-map
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags).
+- claim: fig4-alternative-panels
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags). It also depends on fig4ab-rna-tracks-shared-map, blocked for the same reason.
+- claim: fig4c-joint-excitability-modules
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags). It also depends on fig4ab-rna-tracks-shared-map, blocked for the same reason.
+- claim: fig4c-kv3-strongest
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags). It also depends on fig4ab-rna-tracks-shared-map, blocked for the same reason.
+- claim: fig4c-no-module-tracks-rank-range
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags). It also depends on fig4ab-rna-tracks-shared-map, blocked for the same reason.
+- claim: pvalb-marker-control
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags). It also depends on fig4ab-rna-tracks-shared-map, blocked for the same reason.
+- claim: wgcna-mobility-within-type
+  outcome: blocked
+  notebook: reproduce_yang_2026.ipynb
+  blocked_by: other
+  notes: 'The NeMO data server (data.nemoarchive.org), the only source the paper names for the count matrix
+    20200513_Mouse_PatchSeq_Release_count.v2.csv of release 20200611, answered 502 or timed out on every request
+    from 09:20 to 11:46 UTC on 2026-11-22, including the three requests the notebook makes (its last cell).
+    In the two runs of the second revision (19:39 and 20:35 UTC) its three requests got three 502 answers,
+    then one 502 and two time-outs (the executed copy shows the second).
+    The matrix is public, so the claim is not data_missing; it could not be fetched in this run. The phenotype
+    side of the claim (mean S and rank range over the 1,596 type pairs) is computed in the notebook (fig3a-type-map-concordance,
+    fig3b-pair-tags). The mobility it uses is computed (mobility-distribution). The claim also needs R with
+    WGCNA 1.74 (the code''s q3_wgcna_modules.R), which the entry''s locked Python environment does not hold;
+    a later attempt would need an R environment as well as the matrix. The two cell counts that need no count
+    matrix are computed from the paper''s join (notebook, cell before the blocked result): 3,906 triple-shared
+    cells with an RNA sample id and a t-type and 3,902 in t-types of at least three such cells, the paper''s
+    3,906 and 3,902; whether each sample is in the count matrix, as the code requires, could not be checked.'
+findings:
+- kind: metadata_error
+  severity: critical
+  statement: Two files hold the same recording. sub-673135474_ses-680563483 and sub-673135516_ses-680897463
+    are from different mice, and the paper's join (Allen metadata) gives them different Cre lines (Vip-IRES-Cre
+    and Ndnf-IRES2-dgCre), t-types (Vip Lmo1 Myl1 and Lamp5 Lsp1), layers and transcriptomic samples, yet
+    the voltage traces of all their usable long squares are identical (SHA-1) and so are all 94 of their IPFX
+    features. At most one of the two cells' recordings is in the dandiset, and one file carries another cell's
+    data. No other two files share a trace or a feature vector.
+- kind: format_error
+  severity: minor
+  statement: The four files of subject 636828314 (sessions 637823738, 637824890, 637833126, 637838825) list
+    two response series for sweep number 1 in their sweep table, so IPFX cannot open them. The paper's join
+    has no row for them either.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The files hold no transcriptomic label or sample identifier; the t-types, subclasses and RNA
+    sample ids of these Patch-seq cells come only from the Allen metadata, joined by session or file name.
+    The Cre line can be read from the subject genotype, which agrees with the Allen metadata for every cell.
+- kind: other
+  about: data
+  severity: none
+  statement: Every count the paper reports for the dataset is in the files; 4,435 files, 4,430 joined to the
+    paper's metadata, and IPFX features that give the paper's 4,344, 4,139 and 4,422 cells per regime, its
+    42, 20 and 21 retained features and its k80. Sessions and subjects in the files equal the paths, and the
+    voltage response of every cell's most hyperpolarizing long square begins at the stimulus onset (median
+    change 0.01 mV in the 10 ms before onset, -15.3 mV 15 to 25 ms after), so stimulus and response share
+    a clock.
+- kind: methods_unavailable
+  about: paper
+  statement: 'Question for the paper''s author. The code does not hold the script that ran IPFX on all cells:
+    which IPFX version and call made results/features/ipfx_cell_features.csv, and what sets extract_ok = 1?
+    This attempt used IPFX 2.1.2 through its per-regime functions and took extract_ok = 1 for a file that
+    opened and ran; the resulting cells and features equal the paper''s, so the choice made no difference
+    here, but the paper should state it. The script that wrote results/q3b/q3b_primary_null_1000.csv (Table
+    2 rows m and n) is also missing.'
+- kind: other
+  about: paper
+  statement: The A_t values of Table 2 (rows d to i) depend on an arbitrary order. The code ranks the binary
+    t-type mismatch with np.argsort(np.argsort(x)), so the tied 0s and 1s are ordered as the sort leaves them,
+    and the coefficient carries an offset, shared with its null, that moves with the pair sample and with
+    the order of the tied ranks (a stable sort moves A_t by up to 0.0021 and A_t minus the null mean by at
+    most 0.0003). Run with the code's own draws and seed 0 on the paper's published PCA scores, it gives A_t
+    0.0370, 0.0316 and 0.0106 against the printed 0.0214, 0.0250 and 0.0213, while A_t minus the null mean
+    (0.0264, 0.0261, 0.0161) is within 0.0005 of the printed difference (0.0264, 0.0266, 0.0166); what produces
+    the larger gap in A_t itself is not shown. The significance against shuffles holds; the printed values
+    have less precision than their three decimals suggest, and A_t minus the null mean, or the tie-corrected
+    Spearman, would be reproducible.
+- kind: other
+  about: paper
+  statement: In the split-half analysis the random fallback split draws its permutation from a generator made
+    afresh with seed 0 for each cell, so every cell with the same number of sweeps gets the same permutation,
+    and the seed decides which cells form the pool. With seed 0 this attempt gets the paper's 3,598 cells
+    exactly (358 random splits); with the seeds 1000 to 4000 the pool has 3,582 to 4,100 cells, and with another
+    seed 3,256. The paper reports the pool without saying that it depends on the seed.
+verifications:
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first version with the conclusion cells and the summary removed,
+    the helper modules patchseq.py and geometry.py, and the claims file, with the paper's full text. The verifier
+    checked the DANDI asset list, fetched the paper's code at commit 61a5a41 and tested the helpers on synthetic
+    inputs (pair index inversion, ordinal Spearman, kNN self exclusion, self-Jaccard, eta squared, the A_t
+    offset). It had no attempt record and took the claims from the claims file.
+  results:
+  - claim: join-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 11: all 4,430 join rows match a file. Session, subject and full genotype agree for 4,430/4,430.
+      Cell 15: regime membership agrees 100% in all three regimes (0 only-paper, 0 only-here). Problem 6:
+      two files (sub-673135474_ses-680563483 and sub-673135516_ses-680897463) have identical voltage traces
+      and features but different t-type and Cre labels in the join; both are kept in every analysis, and the
+      effect on any statistic is negligible.'
+    response: No change. The two files with identical traces and features but different labels (problem 6)
+      were already finding 1; they are kept in every analysis, as the paper's join keeps them.
+  - claim: cohort-label-join
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 13 and 15: 4430, 4266, 4183, 3988, 4266, all exact.'
+    response: No change.
+  - claim: table1-phenotype-spaces
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 15: 4344/42/11, 4139/20/3, 4422/21/5; overlaps 4054, 4336, 4134, 4049, all exact. The paper''s
+      rule gives the paper''s feature lists under both denominators. The IPFX version is never printed and
+      the Allen-pipeline variant of reading 1 was not run, moot as counts, feature lists and k80 all match
+      exactly.'
+    response: 'The notebook now prints the IPFX version (2.1.2) and the numpy version. The Allen-pipeline
+      variant was not added: every count, feature list and k80 already equals the paper''s. Outcome unchanged.'
+  - claim: pc1-long-pulse-loadings
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17: the top four loadings are current features (|0.303|), then ri and input_resistance (0.263).
+      Holds under readings (a) and (b).'
+    response: No change.
+  - claim: fig1b-distance-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rho 0.4410, 0.3848, 0.3363, all within tolerance, each p = 0.0099, order holds. The
+      code''s pair draw and five seeds agree. Problem 8: seeds throughout are crc32 claim seeds, not the criterion''s
+      seed 0; five-seed spreads were shown, and outside the A_t claims they are small against the tolerances.'
+    response: No change. Seeds outside the split stay the claim seeds (problem 8), with the five-seed ranges
+      in the notes.
+  - claim: fig1-fixed-five-pcs-ordering
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: 0.4335 > 0.3826 > 0.3392.'
+    response: No change.
+  - claim: fig1c-knn-jaccard
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: 0.0229, 0.0224, 0.0185, all within tolerance. Chance is 0.00199, 0.00187 and 0.00193,
+      all within 0.0002 of the paper''s chance level of about 0.002.'
+    response: No change.
+  - claim: knn-scale-sweep
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: at k = 600, 0.1344, 0.1004, 0.1077, all within tolerance. Values rise at every step
+      for every pair (reading a).'
+    response: No change.
+  - claim: split-half-reliability
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. The within-regime value 0.1071 and adjusted 0.1043 are in tolerance and
+      within exceeds all three same-pool values, but the ramp-brief same-pool value 0.02219 is just outside
+      [0.018, 0.022] and the long-ramp pool of 2,946 just below 2,948; 3,256 cells were split against 3,598,
+      random splits 16 against 358. The random split uses the crc32 claim seed where the criterion and the
+      code use seed 0; seed 0 very likely restores the missing cells and would move the two values just outside
+      tolerance, and a seed-0 variant was needed and is missing.
+    response: 'Added. The extraction now runs the random split under seed 0, the seeds 1000 to 4000 and the
+      claim''s seed, and seed 0, which the criterion gives, is the main result: 3,598 cells, the same cells
+      as the paper''s list, random 358, and every value within tolerance (within 0.1090, chance 0.002581,
+      adjusted 0.1064, same-pool 0.02537, 0.02411, 0.02011 on 3,276, 3,509 and 3,351 cells). Outcome changed
+      to reproduced, with seed_sensitive true, as the other seeds give pools of 3,256 to 4,100 cells. A deviation
+      says why seed 0 is used for the split.'
+  - claim: fig2c-eta2-ttype-over-cre
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 29, reading (a): 0.3269/0.2092, 0.3926/0.2672, 0.1492/0.1095, all six within tolerance.
+      T-type exceeds Cre in every regime.'
+    response: No change.
+  - claim: table2-alignment-ttype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. A_t is 0.0336, 0.0276 and 0.0135 against 0.021, 0.025 and 0.021, all out
+      of tolerance, all p = 0.0099. With ordinal ranks of a binary D_mol the arbitrary order of tied ranks
+      adds an offset, shared by the observed value and its null, that changes with the seed, so the A_t magnitude
+      scatters by about 0.005 between seeds, more than twice the 10% tolerance, and the tolerance cannot be
+      met reliably even with the paper's own method; a weakness of the tolerance, not a misreading of the
+      paper. Seed 0 was not run.
+    response: Added A_t minus null mean for every seed (0.0280 to 0.0284, 0.0265 to 0.0287, 0.0163 to 0.0182)
+      and the code's own draws under seed 0, on this attempt's scores (0.0290, 0.0295, 0.0175) and on the
+      paper's published scores (0.0368, 0.0318, 0.0105, against the printed 0.0214, 0.0250, 0.0213), where
+      A_t minus null mean equals the paper's printed difference. This confirms the offset; the finding on
+      it is revised. Outcome unchanged, as the criterion judges A_t itself. Not asked of a reader, as the
+      verifier found no misreading.
+  - claim: ttype-beyond-cre
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. Residual A_t is 0.0083, 0.0065 and 0.0103 against 0.011, 0.010 and 0.004,
+      all out of tolerance, all p = 0.0099. Residual eta squared 0.110, 0.120 and 0.040 is each above its
+      shuffle null mean of about 0.015, so structure is detectable under both readings. The same seed-dependent
+      offset applies.
+    response: Added A_t minus null mean per seed and the code's seed-0 draws (0.0113, 0.0054, 0.0040, two
+      of three within tolerance; on the paper's scores 0.0148, 0.0050, 0.0077). Outcome unchanged.
+  - claim: fig2d-knn-type-enrichment
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 35: 6.608, 3.445, 2.643, all within tolerance, order holds.'
+    response: No change.
+  - claim: fig2ab-ttype-structure-within-cre
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37: for Sst-IRES-Cre/Ai14 (n = 993), within-Cre A_t is 0.0314 with p = 0.0099, and eta squared
+      is 0.225 against a null mean of 0.031. The Sst/Ai167 row also passes. The join''s cre_line includes
+      the reporter, so Sst-IRES-Cre is split into Ai14 and Ai167 groups and only the first is judged; both
+      pass, and the same 57-line definition reproduces the paper''s Cre eta squared.'
+    response: No change to the outcome; the notes now give 0.0314, the value of the executed notebook.
+  - claim: fig3a-type-map-concordance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 39: 57 types; rho 0.6588, 0.6085, 0.4552; each p = 0.000999; order holds.'
+    response: No change.
+  - claim: shared-map-model-call
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: minimum 0.455, range 0.204.'
+    response: No change.
+  - claim: subclass-map-concordance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 43, reading (a): 6 subclasses; 0.9357, 0.5786 (long-brief), 0.6214 (ramp-brief).'
+    response: No change.
+  - claim: equal-n-centroid-robustness
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 45: means 0.5529, 0.4573, 0.3226, all within tolerance and all below the full-sample values.
+      Readings (a) and (b) both hold.'
+    response: No change.
+  - claim: within-regime-type-map-reliability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 47: 0.8621, 0.8522, 0.7990, against a reference of 0.5742. All within tolerance and all
+      above the reference.'
+    response: No change.
+  - claim: fig3b-pair-tags
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 49: 644/796/156 against 639/801/156.'
+    response: No change.
+  - claim: pair-tag-threshold-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51: selective is below both other categories at every cutoff. This holds only under the
+      criterion''s ordering test: the fractions move a lot across the grid (stable 0.231 to 0.569, selective
+      0.038 to 0.235), so reproduced rests on the claims file''s ordering reading, not on the paper''s word
+      "stable"; noted in the checks, so not a misreading, but a lenient one.'
+    response: 'No change: the criterion decides the outcome, and the notes already give how far the fractions
+      move over the grids.'
+  - claim: type-level-exceeds-cell-level
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 53: the type-map rho exceeds the cell-cell rho in all three pairs.'
+    response: No change.
+  - claim: mobility-distribution
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 55: mean 0.5890, SD 0.1100, n = 4,049.'
+    response: No change.
+  - claim: fig4ab-rna-tracks-shared-map
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs the NeMO count matrix; cell 57 got 502 three times, and the verifier's
+      own request timed out. The DANDI asset list holds only 4,435 _icephys.nwb files.
+    response: 'No change. The notebook''s requests in the revision run got three 502 answers again.
+      blocked_by is kept as other, not data_missing: the matrix is public, and only its server did not answer;
+      the verifier''s data_missing is recorded here as a disagreement on the reason only.'
+  - claim: fig4-alternative-panels
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs the NeMO count matrix; cell 57 got 502 three times, and the verifier's
+      own request timed out. The DANDI asset list holds only 4,435 _icephys.nwb files. Even the curated-gene
+      count (263) needs the matrix's gene list.
+    response: 'No change. The notebook''s requests in the revision run got three 502 answers again.
+      blocked_by is kept as other, not data_missing: the matrix is public, and only its server did not answer;
+      the verifier''s data_missing is recorded here as a disagreement on the reason only.'
+  - claim: fig4c-joint-excitability-modules
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs the NeMO count matrix; cell 57 got 502 three times, and the verifier's
+      own request timed out. The DANDI asset list holds only 4,435 _icephys.nwb files.
+    response: 'No change. The notebook''s requests in the revision run got three 502 answers again.
+      blocked_by is kept as other, not data_missing: the matrix is public, and only its server did not answer;
+      the verifier''s data_missing is recorded here as a disagreement on the reason only.'
+  - claim: fig4c-kv3-strongest
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs the NeMO count matrix; cell 57 got 502 three times, and the verifier's
+      own request timed out. The DANDI asset list holds only 4,435 _icephys.nwb files.
+    response: 'No change. The notebook''s requests in the revision run got three 502 answers again.
+      blocked_by is kept as other, not data_missing: the matrix is public, and only its server did not answer;
+      the verifier''s data_missing is recorded here as a disagreement on the reason only.'
+  - claim: fig4c-no-module-tracks-rank-range
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs the NeMO count matrix; cell 57 got 502 three times, and the verifier's
+      own request timed out. The DANDI asset list holds only 4,435 _icephys.nwb files.
+    response: 'No change. The notebook''s requests in the revision run got three 502 answers again.
+      blocked_by is kept as other, not data_missing: the matrix is public, and only its server did not answer;
+      the verifier''s data_missing is recorded here as a disagreement on the reason only.'
+  - claim: pvalb-marker-control
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs the NeMO count matrix; cell 57 got 502 three times, and the verifier's
+      own request timed out. The DANDI asset list holds only 4,435 _icephys.nwb files.
+    response: 'No change. The notebook''s requests in the revision run got three 502 answers again.
+      blocked_by is kept as other, not data_missing: the matrix is public, and only its server did not answer;
+      the verifier''s data_missing is recorded here as a disagreement on the reason only.'
+  - claim: wgcna-mobility-within-type
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). The judged quantities need the counts. The two cell counts (3,906 and
+      3,902) could have been tested from the join's transcriptomics_sample_id and t_type columns on the 4,049
+      triple-shared cells, but were not.
+    response: 'Added: the notebook computes 3,906 and 3,902, the paper''s counts, from the join. The claim
+      stays blocked, as its other values need the matrix; blocked_by kept as other, as for the Figure 4 claims.'
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the first revision, with its conclusions and summary, the helper
+    modules, the claims file, the README and the attempt record, with the paper''s full text. The verifier agreed
+    with all 30 outcomes; its sentence-level corrections were applied and the entry re-run.'
+  results:
+  - claim: join-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 10 quotes the claim with "Cre line" where the claims file's statement
+      says "genotype"; the test in cell 11 checks both, so this is wording only.
+    response: 'Cell 10 now quotes the claims file''s statement. Also corrected from the report''s points on the
+      summary and README: the summary no longer gives a run time of its own (it points at the printed times; this
+      run took 54.6 minutes, cell 80), says that two of the 4,435 files hold the same recording in place of "one
+      cell each", and the README and entry description no longer call all 4,435 cells interneurons and no longer
+      give the unprinted 45 to 78 minutes. Outcome unchanged.'
+  - claim: cohort-label-join
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: table1-phenotype-spaces
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The two assumptions, the meaning of extract_ok and IPFX 2.1.2 through the per-regime functions,
+      are stated in its deviations and both are reasonable: the cell sets this gives equal the join''s regime membership
+      exactly, and the feature lists and k80 equal the paper''s (cell 15). Round-1 problem 4 (IPFX version) is resolved,
+      printed in cell 1.'
+    response: No change.
+  - claim: pc1-long-pulse-loadings
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: fig1b-distance-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: fig1-fixed-five-pcs-ordering
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: fig1c-knn-jaccard
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: knn-scale-sweep
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: split-half-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Under seed 0, cell 35 shows 3,598 cells identical to the paper's list (0 only here, 0 only there),
+      splits odd/even 3,112, interleaved 128 and random 358, within-regime 0.1090, chance 0.002581, adjusted 0.1064,
+      same-pool 0.02537, 0.02411 and 0.02011 on 3,276, 3,509 and 3,351 cells, all within tolerance. The criterion
+      says "random (seed 0)", so seed 0 is not an assumption, and seed_sensitive true is correct, as other seeds
+      give pools of 3,256 to 4,100 cells. Cell 36's range "0.1076 to 0.1107" omits 0.10714 under the claim's seed;
+      the range is 0.1071 to 0.1107.
+    response: Cell 36 now gives 0.1071 to 0.1107. Outcome unchanged.
+  - claim: fig2c-eta2-ttype-over-cre
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: table2-alignment-ttype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees: all A_t have p = 0.0099 and none falls in its tolerance under any of the five seeds. Cell 42
+      says A_t minus the null mean on the paper''s scores "equals" the paper''s printed difference, but two of the
+      three differ by 0.0005, so "nearly equals" is the most the numbers support; and "that changes with the machine''s
+      sort of tied ranks" is an inference that nothing in the notebook shows. The record''s note that the first
+      version''s run on another runner gave 0.0337, 0.0278 and 0.0137 is contradicted: in round 1 the verifier read
+      0.0336, 0.0276 and 0.0135 in the first version, the same as the round-2 run, so the only evidence offered
+      for machine dependence fails, and the same unsupported claim carries into the findings. What remains: the
+      code''s own draws on the paper''s own scores give 0.0368, 0.0318 and 0.0105 against the printed 0.0214, 0.0250
+      and 0.0213, and why is not shown; under the code''s draws this attempt''s brief-pulse A_t minus null mean
+      is 0.0188 against the paper''s 0.0166, about 13% off. Neither outcome changes, but the record presents the
+      cause as established when it is an inference.'
+    response: 'Corrected. Cell 42 now says "within 0.0005 of" and no longer names the machine''s sort as the cause.
+      Added a variant to cell 41 (geometry.spearman and code_q2_sequence take a sort kind): with a stable sort the
+      code''s draws change A_t by at most 0.0021 and A_t minus the null mean by at most 0.0003, on the paper''s
+      scores and on this attempt''s, so the order of tied ranks moves A_t and its null together, but by much less
+      than the gap to the printed values (0.016 for long-pulse); the notebook, the notes and finding 6 now say the
+      cause of that gap is not shown. The unsupported note on the first version''s run is removed. This run''s CPU
+      has AVX-512 (cell 1) and the previous run''s did not; this run gives 0.0337, 0.0278 and 0.0137 (0.0370, 0.0316,
+      0.0106 on the paper''s scores) where the previous executed copy gave 0.0336, 0.0276 and 0.0135 (0.0368, 0.0318,
+      0.0105); the notes mention this as a comparison of two runs, not shown within the notebook, and measured is
+      updated to this run. The 13% gap in brief-pulse A_t minus null mean (0.0188 against 0.0166) is now stated
+      in cell 42 as "within 0.0022". Outcome unchanged; finding 7 has no text on machines, so only finding 6 was
+      changed.'
+  - claim: ttype-beyond-cre
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Under the code's own seed-0 draws long-pulse 0.0113 and brief-pulse 0.0040 are in tolerance
+      and ramp 0.0054 is not. The residual A_t values (0.0083, 0.0065, 0.0103; ramp seed 2000 -0.0018) are unchanged
+      between the first version and the round-2 run, which also contradicts the machine-dependence claim.
+    response: 'In this run, on another CPU, the values moved slightly: 0.0081, 0.0064 and 0.0103 (ramp seed 2000
+      -0.0019), and under the code''s draws 0.0112, 0.0052 and 0.0038, the same two of three within tolerance. Cell
+      45 no longer says the values depend on the tie order; it says, as for A_t, that the code''s draws on the paper''s
+      scores do not give the printed values. Measured and notes updated. Outcome unchanged.'
+  - claim: fig2d-knn-type-enrichment
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: fig2ab-ttype-structure-within-cre
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 51 says "The files hold two Sst-IRES-Cre lines", but the two lines
+      come from the join's cre_line, which includes the reporter; in the files' own genotypes cell 7 counts one
+      Sst-IRES-Cre driver. The record's "Of the 15 lines tested, 10 have within-Cre A_t with p < 0.05" disagrees
+      with cell 50, which shows 12, counting the two rows at p = 0.0495.
+    response: 'Cell 51 and the notes now say that two Cre lines of the join, with the Ai14 and Ai167 reporters,
+      have the Sst-IRES-Cre driver, which the files'' genotypes count as one. The count is corrected to the executed
+      copy of this run, in which the within-Cre p-values moved slightly (one line went from 0.0495 to 0.0594): 11
+      of 15 have p < 0.05, one at 0.0495. Outcome unchanged.'
+  - claim: fig3a-type-map-concordance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: shared-map-model-call
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: subclass-map-concordance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: equal-n-centroid-robustness
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: within-regime-type-map-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: fig3b-pair-tags
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: pair-tag-threshold-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: type-level-exceeds-cell-level
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: mobility-distribution
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every checked sentence of its Result cell matches the printed outputs.
+    response: No change.
+  - claim: fig4ab-rna-tracks-shared-map
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not absent;
+      the verifier accepts the response on its data_missing label. The record's "got a 502 and two time-outs" disagrees
+      with cell 80, which shows three 502 answers.
+    response: 'Corrected: the round-1 responses now say three 502 answers, as that executed copy shows, and the
+      notes give the answers of both runs of this revision (three 502 answers, then one 502 and two time-outs, the
+      second in the executed copy). Outcome unchanged.'
+  - claim: fig4-alternative-panels
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not absent;
+      the verifier accepts the response on its data_missing label. The record's "got a 502 and two time-outs" disagrees
+      with cell 80, which shows three 502 answers.
+    response: 'Corrected: the round-1 responses now say three 502 answers, as that executed copy shows, and the
+      notes give the answers of both runs of this revision (three 502 answers, then one 502 and two time-outs, the
+      second in the executed copy). Outcome unchanged.'
+  - claim: fig4c-joint-excitability-modules
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not absent;
+      the verifier accepts the response on its data_missing label. The record's "got a 502 and two time-outs" disagrees
+      with cell 80, which shows three 502 answers.
+    response: 'Corrected: the round-1 responses now say three 502 answers, as that executed copy shows, and the
+      notes give the answers of both runs of this revision (three 502 answers, then one 502 and two time-outs, the
+      second in the executed copy). Outcome unchanged.'
+  - claim: fig4c-kv3-strongest
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not absent;
+      the verifier accepts the response on its data_missing label. The record's "got a 502 and two time-outs" disagrees
+      with cell 80, which shows three 502 answers.
+    response: 'Corrected: the round-1 responses now say three 502 answers, as that executed copy shows, and the
+      notes give the answers of both runs of this revision (three 502 answers, then one 502 and two time-outs, the
+      second in the executed copy). Outcome unchanged.'
+  - claim: fig4c-no-module-tracks-rank-range
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not absent;
+      the verifier accepts the response on its data_missing label. The record's "got a 502 and two time-outs" disagrees
+      with cell 80, which shows three 502 answers.
+    response: 'Corrected: the round-1 responses now say three 502 answers, as that executed copy shows, and the
+      notes give the answers of both runs of this revision (three 502 answers, then one 502 and two time-outs, the
+      second in the executed copy). Outcome unchanged.'
+  - claim: pvalb-marker-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not absent;
+      the verifier accepts the response on its data_missing label. The record's "got a 502 and two time-outs" disagrees
+      with cell 80, which shows three 502 answers.
+    response: 'Corrected: the round-1 responses now say three 502 answers, as that executed copy shows, and the
+      notes give the answers of both runs of this revision (three 502 answers, then one 502 and two time-outs, the
+      second in the executed copy). Outcome unchanged.'
+  - claim: wgcna-mobility-within-type
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees it is blocked. blocked_by other is defensible, since the server failed and the data are not
+      absent; the verifier accepts the response on its data_missing label. The record''s "got a 502 and two time-outs"
+      disagrees with cell 80, which shows three 502 answers. Round-1 problem 3 is resolved: 3,906 and 3,902 are
+      now printed (cell 81).'
+    response: Corrected. The sentence of the notes on the revision run is replaced by the answers of both runs
+      of this revision (three 502 answers, then one 502 and two time-outs, the second in the executed copy). Outcome
+      unchanged.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: 'The outputs show it: in cell 9 the two files share an identical fingerprint, an identical long-square
+      hash and identical IPFX feature vectors, and no other pair of files matches; in cell 11 the join gives them
+      different Cre lines, t-types (Vip Lmo1 Myl1 / Lamp5 Lsp1), layers (VISp2/3 / VISp4) and transcriptomic samples
+      (S010 / S012); the subjects differ by path (cell 7). Not printed: the "all 93 of their IPFX features" count
+      for this pair. Critical is the right rating: one file carries another cell''s recording under different metadata,
+      and nothing in the files flags it; the effect on any statistic here is negligible, but the rating depends
+      on the kind of error, not its effect.'
+    response: 'Cell 9 now prints the count for the pair: 94 IPFX features in each file, all 94 equal. The finding
+      said 93 and now says 94. Severity kept as critical, as the verifier agreed.'

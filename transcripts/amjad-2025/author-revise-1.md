@@ -1,902 +1,616 @@
-# 002013 · author-revise-1 · run 38776061464
+# amjad-2025 · author-revise-1 · run 45511191660
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ----; cat transcripts/002013/verifier-1-report.md; echo ----; ls -R entries/002013-amjad-2025 | head -50
+date -u; ls; ls entries/amjad-2025 transcripts/amjad-2025 questions 2>/dev/null | head -50; wc -l docs/protocol.md transcripts/amjad-2025/verifier-1-report.md
 ```
 
 ```
-# Protocol for an attempt
-
-Version: `pilot-7`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 407 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls attempts | grep 002013; cat attempts/002013-amjad-2025-01.yaml; ls claims/002013; wc -l entries/002013-amjad-2025/*; ls paper executed/002013-amjad-2025 2>/dev/null
-```
-
-```
-Exit code 2
-002013-amjad-2025-01.yaml
-schema_version: 1
-id: 002013-amjad-2025-01
-dandiset: "002013"
-dandiset_version: 0.261012.0921
-paper: doi:10.1021/acschemneuro.5c00071
-date: 2026-10-15
-entry: 002013-amjad-2025
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-6
-inputs:
-- what: The paper's Zenodo data deposit, read only by the zenodo-link claim. The four lists of
-    successful trial numbers of session 09/26/2024 (files "09262024_trialids_value object start_big
-[... 167 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 95,175p attempts/002013-amjad-2025-01.yaml; git log --oneline -3 -- docs/protocol.md; grep -rn "pilot-" docs/protocol.md tools/*.py | head; ls attempts | head; grep -l "verifications" attempts/* | head -3
-```
-
-```
-holds processed FSCV of c8dg only. The conversion notes list raw FSCV files with ten channels,
-    including c8ds, which were not deposited.
-- claim: fig3a-redox-peaks
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: The raw FSCV current is in the dandiset, but its timing could not be linked to the trials.
-    Its scan times are an exact 0.1 s grid starting at the first trial start and running 24120 s,
-    past the last trial; at 0.6 V it does not match the stored oxidation current of any of six rows
-    tested at the stored times (|r| below 0.06) or anywhere in the record (best r 0.16 to 0.20 at
-    offsets that differ from row to row); and it shows no large-against-small contrast at the stored
-    value cue times (p = 0.46). A colour plot of a forced large-reward trial therefore cannot be
-    placed in the trial.
-- claim: fig3b-beta-bursts
-  outcome: reproduced
-  notebook: reproduce_amjad_2025.ipynb
-  output: claim:fig3b-beta-bursts
-  notes: With the threshold at the 75th percentile (356 µV²) and bursts of at least 50 ms, the burst
-    rate of 570 large-reward trials is 1.51 per s in the second before the value cue and 1.21 in
-    the second after it (Wilcoxon p = 9.5e-10). The rate changes around the cue at the 50th and
-    90th percentiles too (p below 1e-40), rising at the 50th and falling at the 90th, so its direction
-[... 80 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-git show 7225b0e:docs/protocol.md | sed -n 3p; sed -n 80,95p tools/agent_run.py; grep -n "pilot-7" -A30 docs/pilot-notes.md | head -60
-```
-
-```
-Version: `pilot-7`. Record this version in the attempt's provenance.
-        n = int(record["id"].rsplit("-", 1)[1]) + 1
-        earlier_protocol = record["provenance"]["agent"]["protocol"]
-        if version in (None, record.get("dandiset_version")) and earlier_protocol != protocol_version():
-            why = (f"The dandiset is unchanged; the protocol has changed since, and this attempt applies "
-                   f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
-                   f"for the protocol versions after {earlier_protocol} (read only those sections), and say in "
-                   f"the new record what the changes did.")
-        else:
-            why = "Since then the dandiset has changed, and this attempt tests what it holds now."
-        details.update(earlier=record["id"], earlier_version=record.get("dandiset_version"), entry=entry_dir.name,
-                       earlier_protocol=earlier_protocol, why=why,
-                       next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
-        return (ROOT / "docs" / "agents" / "author-again.md").read_text().format(**details)
-    if role != "author":
-        found = attempt_of(dandiset)
-        if found is None:
-973:## Protocol pilot-7 (2026-10-15): data in other archives
-974-
-975-001933 showed that a blocked claim can mean two different things. Eight of
-[... 14 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025; cat entry.yaml README.md requirements.in; python -c "
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print('=== cell',i,c['cell_type'],c.get('metadata',{}).get('tags',''))
-    print(''.join(c['source']))
-"
-```
-
-```
-<persisted-output>
-Output too large (47.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/7b943f80-a264-454d-8bc5-6e35bf4e0841/tool-results/bddsfuhqg.txt
-
-Preview (first 2KB):
-schema_version: 1
-name: 002013-amjad-2025
-type: reproduction
-title: Microinvasive probes for dopamine, LFP and spikes in monkeys (Amjad et al. 2025)
-description: Tests the findings of Amjad, Mahajan, Choi, Shrivastav, Murray, Somich, Coyne and
-  Schwerdt (2025) on dandiset 002013, which holds the three example sessions of the paper. It
-  checks the recording parameters and task structure, the dopamine response to large and small
-  reward cues at site c8dg, beta-band LFP suppression by reward and cue side at c3bs-c3a, beta
-  bursts around the cue, and the isolation of the sorted unit of monkey P, and compares the
-  dandiset with the paper's Zenodo deposit.
-license: Apache-2.0
-notebooks:
-- path: reproduce_amjad_2025.ipynb
-  title: Reproducing Amjad et al. (2025) from dandiset 002013
-  runtime_minutes: 3
-helpers:
-[... 25 more lines not kept]
+Tue Nov 24 23:37:57 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+[... 64 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/7b943f80-a264-454d-8bc5-6e35bf4e0841/tool-results/bddsfuhqg.txt"
+ "file_path": "transcripts/amjad-2025/verifier-1-report.md"
 }
 ```
 
 ```
-1	schema_version: 1
-2	name: 002013-amjad-2025
-3	type: reproduction
-4	title: Microinvasive probes for dopamine, LFP and spikes in monkeys (Amjad et al. 2025)
-5	description: Tests the findings of Amjad, Mahajan, Choi, Shrivastav, Murray, Somich, Coyne and
-6	  Schwerdt (2025) on dandiset 002013, which holds the three example sessions of the paper. It
-7	  checks the recording parameters and task structure, the dopamine response to large and small
-8	  reward cues at site c8dg, beta-band LFP suppression by reward and cue side at c3bs-c3a, beta
-9	  bursts around the cue, and the isolation of the sorted unit of monkey P, and compares the
-10	  dandiset with the paper's Zenodo deposit.
-11	license: Apache-2.0
-12	notebooks:
-13	- path: reproduce_amjad_2025.ipynb
-14	  title: Reproducing Amjad et al. (2025) from dandiset 002013
-15	  runtime_minutes: 3
-16	helpers:
-17	- microprobes.py
-18	related:
-19	- id: dandi:002013/0.261012.0921
-20	  relation: uses_data
-[... 681 more lines not kept]
+1	**A. Outcomes** (the claims file has 14 claims: 10 tested, 4 blocked)
+2	
+3	| claim | my outcome | reason |
+4	|---|---|---|
+5	| insertion-yield | blocked (data_missing) | No file and no dandiset metadata lists the implanted sensors (cell 5). I checked the archive API: the asset metadata has none either, and nothing mentions a yield. |
+6	| chronic-duration | blocked (data_missing) | Cell 26 finds no implant date. The release notes of 0.261120.1306 say so directly: "The implant dates are not given". The asset metadata gives only ages (P11Y, P8Y). |
+7	| fscv-waveform | partially_reproduced | Cell 29 meets 3 of 4 values: the high point is 1.3395 V, the sweep 400.46 V/s and the scan rate 9.9999 Hz, but the low point is -0.347 V against -0.4 ± 0.04. The low point is stable across the session (-0.3479 to -0.3474 V), and the dandiset description also gives -0.35 V. |
+8	| ephys-acquisition | reproduced | Cell 31 measures 29999.9997 Hz (P), 31999.96 Hz (T), and a low cut of 0.1 Hz. The stored high cut is 8000 Hz, not 7500 Hz. It passes only because it falls inside the ±750 Hz tolerance. |
+9	| shape-task-structure | reproduced | Forced trials are 24.39% (358 of 1468). The 8 complete blocks are 71 to 273 trials, all within 45 to 330 (cell 33). |
+10	| zenodo-link | reproduced | The lists agree at 99.82%, 100%, 100% and 99.83%; the only mismatch is trial 1501, whose window runs past the end of the LFP. The beta power of the example trial gives r = 0.942 at lag 0 and 0.943 at 6 ms (cell 35). The claims file admits this criterion was written after r = 0.94 was known. |
+11	| fig3a-dual-channel | blocked (data_missing) | c8ds is not in the files, and the release notes say so ("Known gaps"). The c8dg half can be tested and passes: 65.9% of 85 forced large-reward trials are above zero (cell 37). It cannot decide a two-site claim. |
+12	| fig3a-redox-peaks | not_reproduced | Cell 39: the reduction minimum is at 0.897 V, outside -0.35 to -0.05 V. The rising maximum at 0.512 V lands in ra
+[... 29 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "docs/protocol.md"
+}
+```
+
+```
+1	# Protocol for an attempt
+2	
+3	Version: `pilot-18`. Record this version in the attempt's provenance.
+4	
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 760 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat microprobes.py; cat ../../claims/002013/*.yaml | head -80
+ls attempts | grep amjad; cat attempts/amjad-2025-02.yaml; ls transcripts/amjad-2025; cat entries/amjad-2025/entry.yaml; cat questions/amjad-2025.yaml 2>/dev/null; ls executed/amjad-2025
 ```
 
 ```
-"""Loading and measures for dandiset 002013 (shaft-assisted microinvasive probes in monkeys).
-
-Amjad, Mahajan, Choi, Shrivastav, Murray, Somich, Coyne & Schwerdt (2025), ACS Chemical
-Neuroscience 16:2237-2247, doi:10.1021/acschemneuro.5c00071.
-
-The dandiset holds three NWB files, streamed here from the archive at the pinned version;
-nothing is written to disk:
-
-- Monkey T, 09/13/2024 (shape task): raw FSCV current and applied voltage from site c8dg, a
-  trials table, an events table, and trial-aligned FSCV series (dopamine `da`, `ph`, motion `m`,
-  oxidation current `iox`; 10 Hz, 60 s per trial, trial start at sample 300).
-- Monkey T, 09/26/2024 (direction task): raw broadband ephys from sites c3bs and c3a (32 kHz), a
-  bipolar LFP (c3bs referenced to c3a, 1 kHz), a trials table and an events table.
-- Monkey P, 08/13/2018: raw broadband ephys from one site (30 kHz), Plexon-sorted units and
-  threshold-detected spikes with waveforms. No trials or events.
-
-The trials tables hold only times. Conditions are decoded from the events table, in which each
-event is repeated once for every 60 s trial window that contains it; `load_events` keeps each
-distinct time once.
-
-[... 436 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd ../..; git show 45964f6:docs/protocol.md | sed -n 3p; git log --format='%h %ad %s' --date=iso -5; ls transcripts/002013; grep -n "data:" claims/002013/*.yaml; grep -n "verifications" -A40 attempts/001453-fouke-2025-01.yaml | head -60
-```
-
-```
-Version: `pilot-7`. Record this version in the attempt's provenance.
-37bb920 2026-10-15 17:16:27 +0000 Agent run on 002013: verifier-1 (success)
-7225b0e 2026-10-15 13:08:48 -0400 Agent run on 002013: author (success)
-45964f6 2026-10-15 12:22:34 -0400 Merge pull request #45 from catalystneuro/repeat-attempts
-1e3f9eb 2026-10-15 12:20:21 -0400 Support repeat attempts after a protocol change, and keep earlier transcripts
-0d4e61b 2026-10-15 12:18:35 -0400 Merge pull request #44 from catalystneuro/data-elsewhere
-author-report.md
-author.md
-verifier-1-report.md
-verifier-1.md
-153:  data: with_inputs
-303:verifications:
-304-- date: '2026-10-14'
-305-  kind: agent
-306-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-307-  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
-308-    module and the claims file, with the paper's accepted manuscript (PMC12218792). The verifier
-309-    listed the version's assets through the DANDI API and ran synthetic checks of angular_acceleration,
-310-    trial_measures and the steadiness measure.
-311-  results:
-[... 32 more lines not kept]
+amjad-2025-02.yaml
+schema_version: 3
+id: amjad-2025-02
+datasets:
+- archive: dandi
+  id: '002013'
+  version: 0.261120.1306
+  doi: 10.48324/dandi.002013/0.261120.1306
+  relation: primary
+paper: doi:10.1021/acschemneuro.5c00071
+date: '2026-11-24'
+entry: amjad-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+[... 256 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n "verifications\|proposed\|agrees\|def check" tools/*.py | head -40; ls -a; ls executed 2>/dev/null | head; which python; python -c "import h5py, remfile, dandi; print('ok')"
+cat claims/amjad-2025.yaml | head -400; wc -l claims/amjad-2025.yaml
+```
+
+```
+# Claims for Amjad, Mahajan, Choi, Shrivastav, Murray, Somich, Coyne and Schwerdt (2025),
+# "Microinvasive Probes for Monitoring Electrical and Chemical Neural Activity in Nonhuman
+# Primates", ACS Chem Neurosci 16:2237-2247, on dandiset 002013.
+# Source: the full text, open access under CC-BY 4.0 (PMC12183687), read from its Results,
+# figure legends and Methods.
+#
+# The paper is mostly about fabrication. Its numbers are the insertion yields, the days
+# post-implant of the example sites and the recording parameters; its neural results
+# (Figures 3 to 5) are example traces and trial averages shown without statistics. The claims
+# below turn each figure panel into a test that can be run on the dandiset.
+#
+# When these criteria were written the author had seen the data check only: the file
+# contents; the event codes, which repeat about five times each in the events tables and were
+# deduplicated; the trial conditions decoded from the event codes, and that the 09/26/2024
+# selections match the paper's trial lists on Zenodo (zenodo-link); the applied FSCV waveform;
+# the sampling rates and filter settings; that the raw 09/26/2024 ephys is offset from the
+# trial clock, that the raw FSCV current could not be matched to the trial-aligned FSCV traces
+# and shows no reward contrast at its stored times, and that Monkey P's spike times are offset
+# from its raw signal. For zenodo-link the author had also already seen that beta power computed
+# here correlates with the paper's example trace at r = 0.94, so that criterion was written after
+[... 253 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/amjad-2025; wc -l amjad.py README.md; python -c "
+import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
+for i,c in enumerate(nb['cells']):
+    print('=====',i,c['cell_type'],c.get('metadata',{}).get('tags'))
+    print(''.join(c['source']))
+" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
+```
+
+```
+249 amjad.py
+   17 README.md
+  266 total
+786 /tmp/claude-1001/nb.txt
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt"
+}
+```
+
+```
+1	===== 0 markdown None
+2	# Reproducing Amjad et al. (2025) from DANDI:002013
+3	
+4	**Paper.** Amjad U, Mahajan S, Choi J, Shrivastav R, Murray R, Somich A, Coyne O, Schwerdt HN (2025).
+5	Microinvasive Probes for Monitoring Electrical and Chemical Neural Activity in Nonhuman Primates.
+6	*ACS Chem Neurosci* 16(12) 2237-2247, [doi:10.1021/acschemneuro.5c00071](https://doi.org/10.1021/acschemneuro.5c00071).
+7	The claims file (`claims/amjad-2025.yaml`) was written from the open-access full text (PMC12183687):
+8	the Results, the figure legends and the Methods. The paper has no supplement.
+9	
+10	**Dataset.** [DANDI:002013](https://dandiarchive.org/dandiset/002013/0.261120.1306), version
+11	0.261120.1306, doi:10.48324/dandi.002013/0.261120.1306. This version was asked for: this attempt
+12	tests what the dataset holds now. The paper cites no DANDI version (it cites its Zenodo deposit,
+13	doi:10.5281/zenodo.14826579). The dataset has two published versions, 0.261012.0921 and
+14	0.261120.1306; their files differ in size (listed below), and only 0.261120.1306 is analysed here.
+15	
+16	Three NWB files: Monkey T, session 09/13/2024 (shape task; raw FSCV of site c8dg and trial-aligned
+17	PCA dopamine); Monkey T, session 09/26/2024 (direction task; raw EPhys of c3bs and c3a and the
+18	bipolar beta-band LFP); Monkey P, session 08/13/2018 (direction task; raw EPhys and sorted spikes).
+19	Files are streamed from the archive; nothing is downloaded to disk.
+20	
+[... 767 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/amjad-2025; cat amjad.py; grep -n -i -B2 -A4 "squared\|envelope\|hanning\|burst" ../../paper/*.txt | head -80; ls ../../paper
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  curl -s https://api.dandiarchive.org/api/dandisets/002013/versions/0.261120.1306/ | python -c "
+import json,sys;m=json.load(sys.stdin)
+print(m.keys())
+print(m['description'][:3000])
+for k in m:
+  s=json.dumps(m[k])
+  if 'implant' in s.lower() or 'gap' in s.lower(): print('KEY',k,s[:2000])
+"; curl -s https://api.dandiarchive.org/api/dandisets/002013/versions/ | head -c 1500
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+curl -s https://api.dandiarchive.org/api/dandisets/002013/versions/0.261120.1306/ | python -c "
+import json,sys;m=json.load(sys.stdin); print(m['releaseNotes'])"
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd entries/amjad-2025; ls ../../executed/amjad-2025; cat > $TMPDIR/s1.py <<'EOF'
+import numpy as np, pandas as pd, amjad as A, time
+t=time.time()
+F={k:A.open_file(A.PATHS[k]) for k in ["shape","direction"]}
+for k in F:
+    ev,nm=A.events(F[k]); n=F[k]["intervals/trials/id"].shape[0]; tr=A.decode_trials(ev,n)
+    if k=="shape":
+        s=tr[tr.has_119 & tr.has_21]
+        # first feedback after value cue
+        fb=np.sort(ev[21])
+        i=np.searchsorted(fb,s.value_cue.values); d=fb[np.minimum(i,len(fb)-1)]-s.value_cue.values
+        print("fb-vc",pd.Series(d).describe(), np.mean(d<3))
+        for c in [24,25,22,26,27,30,31]:
+            if c in ev: print(c,nm[c],len(ev[c]))
+        print({c:nm[c] for c in sorted(nm)})
+    else:
+        s=tr[tr.has_100|tr.has_101].copy()
+        big=s.has_101.values.astype(int); left=s.has_117.values.astype(int)
+        def runs(x):
+            ch=np.r_[0,np.where(np.diff(x)!=0)[0]+1,len(x)]; return np.diff(ch)
+        print("reward runs",runs(big)[:50], len(runs(big)))
+        print("side runs",runs(left)[:50], len(runs(left)))
+        print(pd.crosstab(big,left))
+        print({c:nm[c] for c in sorted(nm)})
+print(time.time()-t)
+EOF
+python $TMPDIR/s1.py
 ```
 
 ```
 Exit code 1
-tools/agent_run.py:6:    python tools/agent_run.py proposals ROLE DANDISET      # "true" if the attempt has proposed changes
-tools/agent_run.py:10:author-revise-3, the third round that settles changes proposed after the second. The prompts are
-tools/agent_run.py:139:    """The claims of the latest attempt on a dandiset that carry a proposed change of outcome."""
-tools/agent_run.py:141:    return [o["claim"] for o in (found[0]["outcomes"] if found else []) if o.get("proposed")]
-tools/build_site.py:24:The trust tier of an attempt is derived from its verifications: the latest
-tools/build_site.py:25:verification decides, and it counts only if it agrees with every outcome.
-tools/build_site.py:78:    "code_mismatch": "Published code disagrees",
-tools/build_site.py:93:    verifications = attempt.get("verifications") or []
-tools/build_site.py:94:    if not verifications:
-tools/build_site.py:96:    latest = verifications[-1]
-tools/build_site.py:98:    agreed = {r["claim"] for r in latest.get("results", []) if r.get("agrees")}
-tools/build_site.py:151:        verifications = a.get("verifications") or []
-tools/build_site.py:152:        disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
-tools/build_site.py:180:                "proposed": o.get("proposed"),
-tools/build_site.py:184:            "verifications": [{
-tools/build_site.py:187:                "agreed": sum(1 for r in v["results"] if r.get("agrees")),
-tools/build_site.py:191:                                  for r in v["results"] if not r.get("agrees")],
-tools/build_site.py:192:            } for v in verifications],
-tools/build_site.py:292:            "verifications": [] if tier == "runs" else [{
-[... 63 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,60p tools/entry.py; grep -n "def run\|venv\|def all" tools/entry.py | head
-```
-
-```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 46 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q --python 3.13 dev && uv pip install -q --python dev/bin/python -r entries/002013-amjad-2025/requirements.lock.txt && echo done
-```
-
-```
-done
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025 && cat > $TMPDIR/x1.py <<'EOF'
-import numpy as np, microprobes as mp, json, urllib.request
-r=json.load(urllib.request.urlopen("https://zenodo.org/api/records/14826579"))
-for f in r["files"]:
-    if "126" in f["key"] or "event" in f["key"].lower(): print(f["key"], f["size"])
-ev=mp.zenodo_mat("session126_events.mat")
-for k,v in ev.items():
-    if not k.startswith("__"): print(k, type(v), getattr(v,'shape',None), getattr(v,'dtype',None))
-EOF
-$TMPDIR/dev/bin/python $TMPDIR/x1.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/x1.py", line 1, in <module>
-    import numpy as np, microprobes as mp, json, urllib.request
-ModuleNotFoundError: No module named 'microprobes'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025 && PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/x1.py
-```
-
-```
-session126_events.mat 162527
-cl3_session126_csc12_100_spikes.mat 11654256
-dg_Nlx2Mat_Timestamps <class 'numpy.ndarray'> (1, 20812) float64
-dg_Nlx2Mat_TTL <class 'numpy.ndarray'> (1, 20812) uint8
-dg_Nlx2Mat_EventStrings <class 'numpy.ndarray'> (20812, 1) object
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/x2.py <<'EOF'
-import numpy as np, microprobes as mp, collections
-ev=mp.zenodo_mat("session126_events.mat")
-t=ev["dg_Nlx2Mat_Timestamps"].ravel(); ttl=ev["dg_Nlx2Mat_TTL"].ravel(); s=[x[0][0] if x[0].size else '' for x in ev["dg_Nlx2Mat_EventStrings"]]
-print(t[:5], t[-1], (t[-1]-t[0]))
-print(s[:5], ttl[:5])
-c=collections.Counter(ttl.tolist()); print(sorted(c.items()))
-print(collections.Counter(s).most_common(8))
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/x2.py
-```
-
-```
-[6.80066578e+09 6.84622983e+09 6.84629516e+09 6.84798266e+09
- 6.84838113e+09] 18786083134.0 11985417354.0
-[np.str_('Starting Recording'), np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0021).'), np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0022).'), np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0021).'), np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0022).')] [ 0 33 34 33 34]
-[(0, 826), (2, 1), (3, 824), (4, 932), (5, 824), (6, 211), (7, 614), (8, 824), (10, 613), (11, 593), (12, 113), (13, 480), (14, 344), (18, 53), (19, 24), (20, 825), (22, 33), (23, 20), (24, 390), (25, 435), (26, 824), (27, 825), (29, 434), (30, 390), (31, 414), (32, 410), (33, 1853), (34, 1854), (35, 825), (36, 824), (37, 109), (38, 109), (45, 270), (46, 210), (100, 1660), (110, 822)]
-[(np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0022).'), 1854), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0021).'), 1853), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0064).'), 1660), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0004).'), 932), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0023).'), 825), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0014).'), 825), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x001B).'), 825), (np.str_('TTL Input on AcqSystem1_0 board 0 port 0 value (0x0024).'), 824)]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/x3.py <<'EOF'
-import numpy as np, microprobes as mp, time
-f=mp.open_file("T-0926")
-t,x,_=mp.load_lfp(f)
-d=np.diff(t); j=np.where(np.abs(d-1e-3)>1e-6)[0]
-print(len(j), np.percentile(d[j],[0,5,50,95,100]))
-print("neg/zero", np.sum(d[j]<=0), "gap>1.5ms", np.sum(d[j]>1.5e-3))
-dx=np.abs(np.diff(x)); typ=np.median(dx)
-print("typical |dx|", typ, "at joins median", np.median(dx[j]), "95%", np.percentile(dx[j],95), "max", dx[j].max(), "ratio to 99.9pct of all", np.percentile(dx,99.9))
-d26=mp.direction_task_trials(f)
-vc=d26.value_cue.values[d26.success.values]; st=d26.start.values
-tj=t[j]
-# nearest value cue offset
-k=np.searchsorted(vc,tj); 
-rel=np.min(np.abs(np.stack([tj-vc[np.clip(k-1,0,len(vc)-1)], tj-vc[np.clip(k,0,len(vc)-1)]])),0)
-print("joins within 1 s of a value cue", np.sum(rel<1), "within 3 s", np.sum(rel<3))
-ks=np.searchsorted(st,tj); rels=tj-st[np.clip(ks-1,0,len(st)-1)]
-print("time of join after the preceding trial start: pct", np.percentile(rels,[0,5,50,95,100]))
-v=f["stimulus/presentation/fscv_excitation_series/data"]; print(dict(v.attrs))
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/x3.py
-```
-
-```
-Exit code 1
-1497 [1.81898940e-12 5.98000006e-05 5.00000002e-04 9.47999998e-04
- 9.99000000e-04]
-neg/zero 0 gap>1.5ms 0
-typical |dx| 5.170522791029332e-06 at joins median 2.727696007818087e-06 95% 1.0954660253348895e-05 max 2.0281930646040982e-05 ratio to 99.9pct of all 2.5994245874146437e-05
-joins within 1 s of a value cue 166 within 3 s 296
-time of join after the preceding trial start: pct [7.7550000e-03 9.0790480e-01 1.0004981e+01 1.1253886e+01 1.5719603e+01]
-Traceback (most recent call last):
-  File "/tmp/claude-1001/x3.py", line 18, in <module>
-    v=f["stimulus/presentation/fscv_excitation_series/data"]; print(dict(v.attrs))
-      ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-[... 2 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/x4.py <<'EOF'
-import numpy as np, microprobes as mp, time
-from scipy import signal, stats
-f=mp.open_file("T-0913")
-v=f["stimulus/presentation/fscv_excitation_series/data"]; print(dict(v.attrs))
-r=f["acquisition/fscv_response_series/data"]; print(dict(r.attrs))
-t0=time.time()
-raw=mp.raw_fscv(f); print("load",time.time()-t0, raw["current"].shape)
-volts=raw["volts"]; cur=raw["current"]
-s13=mp.shape_task_trials(f); fs=mp.fscv_table(f)
-ok=s13[s13.success]
-i=np.searchsorted(raw["scan_start"], ok.value_cue.values)
-good=(i>0)&(i+31<len(cur))
-big=ok.big.values[good]; i=i[good]
-resp=np.stack([cur[k+5:k+30].mean(0)-cur[k] for k in i])  # per scan sample
-vg=resp[big].mean(0); vs=resp[~big].mean(0)
-top=int(np.argmax(volts))
-for name,vv in (("large",vg),("small",vs)):
-    a=np.argmax(vv[:top+1]); b=np.argmin(vv[top:])+top
-    print(name, "max on rising at", volts[a], vv[a], "min on falling at", volts[b], vv[b], "sd", vv.std())
-# per-sample diff test
-p=np.array([stats.mannwhitneyu(resp[big][:,k],resp[~big][:,k]).pvalue for k in range(resp.shape[1])])
-print("min p across samples", p.min(), "n samples p<0.05", (p<0.05).sum(), "of", len(p))
-hp=signal.butter(2,0.5,btype="high",fs=10,output="sos")
-rise=slice(0,top+1)
-for vt in (0.5,0.6,0.7,-0.2):
-    if vt>0: k=int(np.argmin(np.abs(volts[rise]-vt)))
-    else: k=top+int(np.argmin(np.abs(volts[top:]-vt)))
-    c=signal.sosfiltfilt(hp,cur[:,k])
-    out=[]
-    for row in (0,200,400,733):
-        y=signal.sosfiltfilt(hp,fs["iox"][row])
-        kk,rr=mp.best_lag(y,c)
-        out.append((row,round(rr,3),round(fs["start"][row]-raw["scan_start"][kk],1)))
-    print(vt, volts[k], out)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/x4.py
-```
-
-```
-{'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-{'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-load 12.219255208969116 (241200, 214)
-large max on rising at -0.2397876570750453 0.044660060480444 min on falling at 1.3394819460648983 -0.1593054894856198 sd 0.05128912192103901
-small max on rising at 0.7357424028432414 0.033173059279252494 min on falling at 1.3390013891708186 -0.06305266092121357 sd 0.023127415483869034
-min p across samples 0.005416419599478076 n samples p<0.05 7 of 214
-0.5 0.4957043198659451 [(0, 0.194, np.float64(-15369.0)), (200, 0.223, np.float64(-10643.7)), (400, 0.184, np.float64(-4815.3)), (733, 0.181, np.float64(-1388.4))]
-0.6 0.6077541265082923 [(0, 0.172, np.float64(-14678.2)), (200, 0.186, np.float64(-1421.0)), (400, 0.177, np.float64(-14810.5)), (733, 0.172, np.float64(-1793.7))]
-0.7 0.7037052867817426 [(0, 0.178, np.float64(-13293.4)), (200, 0.2, np.float64(-9925.6)), (400, 0.195, np.float64(-4815.2)), (733, 0.185, np.float64(-7941.7))]
--0.2 -0.1923727347202681 [(0, 0.182, np.float64(-13680.8)), (200, 0.185, np.float64(-10643.7)), (400, 0.19, np.float64(-6771.2)), (733, 0.174, np.float64(5424.3))]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "id: fig3a-redox-peaks" -A30 ../../claims/002013/*.yaml; grep -n "id: fig3a-dual" -A25 ../../claims/002013/*.yaml
-```
-
-```
-169:- id: fig3a-redox-peaks
-170-  statement: The single-trial FSCV colour plot shows dopamine redox current, with changes near 0.6
-171-    V (oxidation) and -0.2 V (reduction) after the value cue.
-172-  source: Figure 3A
-173-  criterion: Needs the raw FSCV current on the trial clock. The background-subtracted
-174-    voltammogram (mean of 0.5 to 2 s after the value cue minus the scan at the value cue),
-175-    averaged over forced large-reward trials, should have its largest positive value on the
-176-    rising sweep within 0.45 to 0.75 V and its most negative value on the falling sweep within
-177-    -0.35 to -0.05 V. Reproduced when both hold.
-178-- id: fig3b-beta-bursts
-179-  statement: Single-trial bipolar LFP from site c3bs-c3a shows beta bursts (one to a few cycles of
-180-    high beta power) whose frequency changes around the cue and other task events.
-181-  source: Figure 3B; Results and Discussion
-182-  criterion: Successful large-reward trials of session 09/26/2024. A burst is a run of beta power
-183-    above the 75th percentile of the beta power over all trial windows of the session that lasts
-184-    at least 50 ms (one cycle at 20 Hz). For each trial the burst rate (burst onsets per second)
-185-    is counted in -1 to 0 s and 0 to 1 s from the value cue. Reproduced when the burst rates in
-186-    the two windows differ by a two-sided Wilcoxon signed-rank test at p < 0.05. Thresholds at
-187-    the 50th and 90th percentiles are shown as variants. The paper does not define a burst; the
-188-    threshold and minimum length here are common choices.
-[... 37 more lines not kept]
-```
-
-**Agent**
-
-Now editing the helper module.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p="microprobes.py"; s=open(p).read()
-s=s.replace('''            "excitation_attrs": {k: v.attrs[k] for k in v.attrs if k not in ("object_id",)},
-''','''            "excitation_attrs": {k: v.attrs[k] for k in v.attrs if k not in ("object_id",)},
-            "excitation_data_attrs": dict(v["data"].attrs), "current_data_attrs": dict(r["data"].attrs),
-''')
-s=s.replace('''    b, a = signal.butter(order, band, btype="band", fs=fs)
-    y = signal.filtfilt(b, a, x)
-    w = np.hanning(int(round(smooth_s * fs)))
-    return np.convolve(np.abs(signal.hilbert(y)) ** 2, w / w.sum(), mode="same")''','''    """Squared Hilbert envelope of the beta band, smoothed with a Hanning window of smooth_s
-    seconds (none when smooth_s is 0)."""
-    b, a = signal.butter(order, band, btype="band", fs=fs)
-    y = signal.filtfilt(b, a, x)
-    env = np.abs(signal.hilbert(y)) ** 2
-    if smooth_s == 0:
-        return env
-    w = np.hanning(int(round(smooth_s * fs)))
-    return np.convolve(env, w / w.sum(), mode="same")''')
-s=s.replace('''def zenodo_mat(name: str) -> dict:''','''def zenodo_events(name: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
-    """A Neuralynx events file of the Zenodo deposit: times (s), TTL values and event strings."""
-    m = zenodo_mat(name)
-    strings = [x[0][0] if x[0].size else "" for x in m["dg_Nlx2Mat_EventStrings"]]
-    return m["dg_Nlx2Mat_Timestamps"].ravel() / 1e6, m["dg_Nlx2Mat_TTL"].ravel().astype(int), strings
-
-
-def zenodo_mat(name: str) -> dict:''')
-s=s.replace('''- Burst threshold (75th percentile''','''- Monkey P's clock offset: the time of the first event ("Starting Recording") in the session's
-  Neuralynx events file on Zenodo (doi:10.5281/zenodo.14826579, session126_events.mat), read by
-  `zenodo_events`.
-- Burst threshold (75th percentile''')
-open(p,"w").write(s)
-EOF
-grep -n "zenodo_events\|smooth_s == 0\|excitation_data_attrs" microprobes.py
-```
-
-```
-37:  `zenodo_events`.
-244:            "excitation_data_attrs": dict(v["data"].attrs), "current_data_attrs": dict(r["data"].attrs),
-263:    if smooth_s == 0:
-380:def zenodo_events(name: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
-```
-
-**Agent**
-
-Now the notebook code cells.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit1.py <<'PYEOF'
-import json, nbformat
-p="reproduce_amjad_2025.ipynb"
-nb=nbformat.read(p, as_version=4)
-C=nb.cells
-def sub(i, old, new):
-    assert old in C[i].source, (i, old[:60])
-    C[i].source = C[i].source.replace(old, new)
-
-# cell 11: data attributes of the applied voltage and current
-sub(11, '''stored attributes {raw['excitation_attrs']}")''', '''stored attributes {raw['excitation_attrs']}")
-print("applied voltage data attributes:", raw["excitation_data_attrs"])
-print("current data attributes:", raw["current_data_attrs"])''')
-
-# cell 13: neighbouring potentials and the criterion's voltammogram at the stored times
-sub(13, '''for shift in [0, -60, -30, -10, -5, 5, 10, 30, 60]:
-    d, p, n = raw_contrast(shift)
-    print(f"  shift {shift:+4d} s: difference {d:+.3f}, Mann-Whitney p = {p:.3f}, n = {n}")''', '''for shift in [0, -60, -30, -10, -5, 5, 10, 30, 60]:
-    d, p, n = raw_contrast(shift)
-    print(f"  shift {shift:+4d} s: difference {d:+.3f}, Mann-Whitney p = {p:.3f}, n = {n}")
-
-top = int(np.argmax(v))
-print("\\nThe same search over the whole raw record at neighbouring potentials (rising sweep, and -0.2 V on the falling sweep):")
-for target in (0.5, 0.7, -0.2):
-    kv = int(np.argmin(np.abs(v[rise] - target))) if target > 0 else top + int(np.argmin(np.abs(v[top:] - target)))
-    cv = signal.sosfiltfilt(hp, raw["current"][:, kv])
-    found = []
-    for r in [0, 200, 400, 733]:
-        k, rr = mp.best_lag(signal.sosfiltfilt(hp, fs["iox"][r]), cv)
-        found.append(f"row {r}: best r {rr:.3f} at {fs['start'][r] - raw['scan_start'][k]:+.0f} s")
-    print(f"  {v[kv]:+.3f} V: " + "; ".join(found))
-
-print("\\nCriterion of fig3a-redox-peaks computed at the stored times (not deciding, the clock is not established):")
-for name, mask in (("large", s13.success & s13.big), ("small", s13.success & s13.small)):
-    i = np.searchsorted(raw["scan_start"], s13.value_cue[mask].values)
-    i = i[(i > 0) & (i + 20 < len(raw["current"]))]
-    vg = np.mean([raw["current"][k + 5:k + 20].mean(0) - raw["current"][k] for k in i], 0)
-    a_, b_ = int(np.argmax(vg[:top + 1])), top + int(np.argmin(vg[top:]))
-    print(f"  {name}-reward forced trials (n {len(i)}), mean of 0.5 to 2 s minus the scan at the cue: largest on the rising "
-          f"sweep {vg[a_]:+.3f} at {v[a_]:+.3f} V; most negative on the falling sweep {vg[b_]:+.3f} at {v[b_]:+.3f} V; "
-          f"at 0.6 V {vg[k06]:+.3f}; SD over the scan {vg.std():.3f}")''')
-
-# cell 15: joins of the LFP
-sub(15, '''st26 = d26.start.values''', '''jn = np.where(np.abs(d - 1e-3) > 1e-6)[0]
-dx = np.abs(np.diff(lfp_x))
-print(f"joins (intervals off 1 ms): {len(jn)}, intervals {d[jn].min() * 1e3:.2g} to {d[jn].max() * 1e3:.3f} ms, longer than 1 ms: "
-      f"{int(np.sum(d[jn] > 1e-3 + 1e-6))}")
-print(f"step between neighbouring samples: median {np.median(dx) * 1e6:.2f} µV over all samples, {np.median(dx[jn]) * 1e6:.2f} µV at the "
-      f"joins; largest at a join {dx[jn].max() * 1e6:.2f} µV, 99.9th percentile over all samples {np.percentile(dx, 99.9) * 1e6:.2f} µV")
-okj = d26[d26.success]
-rel = lfp_t[jn][None, :] - okj.value_cue.values[:, None]
-has_join = np.any((rel >= -0.5) & (rel < 1.0), axis=1)
-print("joins after the preceding trial start (s), percentiles 0, 5, 50, 95, 100:",
-      np.percentile(lfp_t[jn] - d26.start.values[np.searchsorted(d26.start.values, lfp_t[jn]) - 1], [0, 5, 50, 95, 100]).round(2))
-print("successful trials with a join within -0.5 to 1 s of the value cue:", int(has_join.sum()), "of", len(okj))
-print(pd.crosstab(has_join, [okj.big.values, okj.left.values], rownames=["join near cue"], colnames=["big", "left"]).to_string())
-st26 = d26.start.values''')
-
-# cell 17: unsmoothed envelope used in variants
-sub(17, '''beta = mp.beta_power(lfp_x)''', '''beta = mp.beta_power(lfp_x)
-beta_env = mp.beta_power(lfp_x, smooth_s=0)   # unsmoothed envelope, for variants''')
-
-# cell 19: offset from the Zenodo events file
-sub(19, '''wf, wf_ends = mp.thresholded_waveforms(fP)''', '''z_t, z_ttl, z_str = mp.zenodo_events("session126_events.mat")
-offset_P = z_t[0]
-print(f"\\nZenodo session126_events.mat: {len(z_t)} events from {z_t[0]:.5f} to {z_t[-1]:.3f} s; first event {z_str[0]!r}")
-print("its TTL values and counts (no names are given):", dict(zip(*np.unique(z_ttl, return_counts=True))))
-
-wf, wf_ends = mp.thresholded_waveforms(fP)''')
-sub(19, '''for off in (0.0, 6800.0, 6800.66578):''', '''for off in (0.0, 6800.0, offset_P):''')
-
-# cell 34: fig3b unsmoothed variant
-sub(34, '''thr75 = np.percentile(beta[in_trial], 75)''', '''thr_env = np.percentile(beta_env[in_trial], 75)
-on_env = lfp_t[mp.burst_onsets(beta_env, thr_env, min_len)]
-pre = np.array([np.sum((on_env >= c_ - 1) & (on_env < c_)) for c_ in vcb])
-post = np.array([np.sum((on_env >= c_) & (on_env < c_ + 1)) for c_ in vcb])
-print(f"variant, unsmoothed envelope, 75th percentile ({thr_env * 1e12:.1f} µV²), at least 50 ms: bursts per s, -1 to 0 s "
-      f"{pre.mean():.3f}, 0 to 1 s {post.mean():.3f}; Wilcoxon p = {stats.wilcoxon(post, pre).pvalue:.2g}")
-for lo in (50, 100, 200):
-    on_ = mp.burst_onsets(beta_env, thr_env, int(lo / 1000 * mp.LFP_RATE))
-    off_ = np.searchsorted(np.r_[np.diff(np.r_[False, beta_env > thr_env, False].astype(int)) == -1], True)
-    print(f"  unsmoothed, at least {lo} ms: {len(on_)} bursts in the session")
-n_all = np.diff(np.r_[False, beta[in_trial] > thr_, False].astype(int))
-thr75 = np.percentile(beta[in_trial], 75)
-runs_s = np.diff(np.where(np.diff(np.r_[False, beta > thr75, False].astype(int)) != 0)[0])[::2]
-print(f"smoothed power, runs above the 75th percentile: {len(runs_s)}, of which {np.mean(runs_s >= min_len) * 100:.1f}% last at least 50 ms; "
-      f"median length {np.median(runs_s):.0f} ms")''')
-PYEOF
-echo
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import os
-p=os.path.expandvars("$TMPDIR/edit1.py"); s=open(p).read()
-old=s[s.index("for lo in (50, 100, 200):"):s.index('''print(f"smoothed power, runs''')]
-new='''thr75 = np.percentile(beta[in_trial], 75)
-for name_, x_, th_ in (("smoothed power", beta, thr75), ("unsmoothed envelope", beta_env, thr_env)):
-    e_ = np.diff(np.r_[False, x_ > th_, False].astype(int))
-    runs_s = np.where(e_ == -1)[0] - np.where(e_ == 1)[0]
-    print(f"{name_}, runs above its 75th percentile: {len(runs_s)}, {np.mean(runs_s >= min_len) * 100:.1f}% last at least 50 ms; "
-          f"median length {np.median(runs_s):.0f} ms")
-'''
-s=s.replace(old,new)
-s=s.replace('''print(f"smoothed power, runs above the 75th percentile: {len(runs_s)}, of which {np.mean(runs_s >= min_len) * 100:.1f}% last at least 50 ms; "
-      f"median length {np.median(runs_s):.0f} ms")''','')
-open(p,"w").write(s)
-EOF
-sed -n '/cell 34/,$p' $TMPDIR/edit1.py
-```
-
-```
-# cell 34: fig3b unsmoothed variant
-sub(34, '''thr75 = np.percentile(beta[in_trial], 75)''', '''thr_env = np.percentile(beta_env[in_trial], 75)
-on_env = lfp_t[mp.burst_onsets(beta_env, thr_env, min_len)]
-pre = np.array([np.sum((on_env >= c_ - 1) & (on_env < c_)) for c_ in vcb])
-post = np.array([np.sum((on_env >= c_) & (on_env < c_ + 1)) for c_ in vcb])
-print(f"variant, unsmoothed envelope, 75th percentile ({thr_env * 1e12:.1f} µV²), at least 50 ms: bursts per s, -1 to 0 s "
-      f"{pre.mean():.3f}, 0 to 1 s {post.mean():.3f}; Wilcoxon p = {stats.wilcoxon(post, pre).pvalue:.2g}")
-thr75 = np.percentile(beta[in_trial], 75)
-for name_, x_, th_ in (("smoothed power", beta, thr75), ("unsmoothed envelope", beta_env, thr_env)):
-    e_ = np.diff(np.r_[False, x_ > th_, False].astype(int))
-    runs_s = np.where(e_ == -1)[0] - np.where(e_ == 1)[0]
-    print(f"{name_}, runs above its 75th percentile: {len(runs_s)}, {np.mean(runs_s >= min_len) * 100:.1f}% last at least 50 ms; "
-          f"median length {np.median(runs_s):.0f} ms")
-''')
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import os
-p=os.path.expandvars("$TMPDIR/edit1.py"); s=open(p).read()
-s=s.replace('''median length {np.median(runs_s):.0f} ms")
-\'\'\')''','''median length {np.median(runs_s):.0f} ms")\'\'\')''')
-s+='''
-# cell 37: fig4a baseline-mean variant and the c8dg half of fig3a-dual-channel
-sub(37, \'\'\'contrast(x_iox, 0, 3, "iox re-referenced at the cue")\'\'\', \'\'\'contrast(x_iox, 0, 3, "iox re-referenced at the cue")
-x_base = x_da - mp.fscv_window_mean(x_da, c, -1, 0)[:, None]
-contrast(x_base, 0, 3, "da minus its mean over -1 to 0 s")
-contrast(x_base, 1.5, 3, "da minus its mean over -1 to 0 s")
-for label, x_ in (("re-referenced at the cue", x_re), ("minus its mean over -1 to 0 s", x_base)):
-    m = mp.fscv_window_mean(x_, c, 0, 3)[big_f]
-    m = m[~np.isnan(m)]
-    print(f"c8dg half of fig3a-dual-channel, large-reward trials, mean 0 to 3 s of da {label}: above zero in {np.sum(m > 0)} of "
-          f"{len(m)} ({100 * np.mean(m > 0):.1f}%)")\'\'\')
-
-# cell 40: fig4b and fig4c variants on timing
-sub(40, \'\'\'    tt, PA = mp.aligned(lfp_t, beta, va, 3, 8)\'\'\', \'\'\'    for a, b in ((0, 0.5), (0.125, 0.5)):
-        A_ = mp.window_mean(lfp_t, beta_env, va, a, b); B_ = mp.window_mean(lfp_t, beta_env, vb, a, b)
-        print(f"unsmoothed envelope, {a} to {b} s (µV²): {nameA} median {np.median(A_) * 1e12:.3f}, {nameB} median "
-              f"{np.median(B_) * 1e12:.3f}, ratio {np.median(A_) / np.median(B_):.3f}, Mann-Whitney p = {stats.mannwhitneyu(A_, B_).pvalue:.2g}")
-    bins = []
-    for a in np.arange(-0.5, 1.0, 0.1).round(1):
-        A_ = mp.window_mean(lfp_t, beta_env, va, a, a + 0.1); B_ = mp.window_mean(lfp_t, beta_env, vb, a, a + 0.1)
-        bins.append(f"{a:+.1f} s {np.median(A_) / np.median(B_):.2f} (p {stats.mannwhitneyu(A_, B_).pvalue:.1g})")
-    print(f"unsmoothed envelope, {nameA} / {nameB} median ratio in 0.1 s bins from the value cue:\\n  " + "; ".join(bins))
-    tt, PA = mp.aligned(lfp_t, beta, va, 3, 8)\'\'\')
-
-nbformat.write(nb, p)
-'''
-open(p,"w").write(s)
-EOF
-git stash list >/dev/null; python $TMPDIR/edit1.py && git diff --stat
-```
-
-```
-entries/002013-amjad-2025/microprobes.py           | 18 +++++-
- .../002013-amjad-2025/reproduce_amjad_2025.ipynb   | 75 +++++++++++++++++++++-
- 2 files changed, 90 insertions(+), 3 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-cd ../.. && python tools/entry.py all entries/002013-amjad-2025 2>&1 | tail -30
-```
-
-```
-bins.append(f"{a:+.1f} s {np.median(A_) / np.median(B_):.2f} (p {stats.mannwhitneyu(A_, B_).pvalue:.1g})")
-    print(f"unsmoothed envelope, {nameA} / {nameB} median ratio in 0.1 s bins from the value cue:
-  " + "; ".join(bins))
-    tt, PA = mp.aligned(lfp_t, beta, va, 3, 8); _, PB = mp.aligned(lfp_t, beta, vb, 3, 8)
-    fig, ax = plt.subplots(figsize=(7, 3))
-    for P, col, lab in ((PA, LARGE, nameA), (PB, SMALL, nameB)):
-        mu = P.mean(0) * 1e12; se = P.std(0) / np.sqrt(len(P)) * 1e12
-        ax.plot(tt, mu, color=col, lw=2, label=f"{lab} (n {len(P)})"); ax.fill_between(tt, mu - se, mu + se, color=col, alpha=0.2, lw=0)
-    ax.axvline(0, color="0.6", lw=1); ax.set_xlabel("time from value cue (s)"); ax.set_ylabel("beta power (µV²)")
-    ax.legend(frameon=False); ax.set_title("c3bs-c3a, mean +- SE"); plt.show()
-    print(f"plotted means range {min(PA.mean(0).min(), PB.mean(0).min()) * 1e12:.2f} to {max(PA.mean(0).max(), PB.mean(0).max()) * 1e12:.2f} µV²")
-beta_contrast(d26.success & d26.big, d26.success & d26.small, "large", "small")
-for side in ("left", "right"):
-    m_ = d26.success & d26[side]
-    print(f"{side} trials only:", end=" ")
-    A_ = mp.window_mean(lfp_t, beta, d26.value_cue[m_ & d26.big].values, 0, 0.5)
-    B_ = mp.window_mean(lfp_t, beta, d26.value_cue[m_ & d26.small].values, 0, 0.5)
-    print(f"large {np.median(A_) * 1e12:.3f}, small {np.median(B_) * 1e12:.3f} µV², p = {stats.mannwhitneyu(A_, B_).pvalue:.2g}")
-------------------
-
-[... 11 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025 && python - <<'EOF'
-import nbformat
-p="reproduce_amjad_2025.ipynb"; nb=nbformat.read(p,as_version=4)
-c=nb.cells[40]
-c.source=c.source.replace('from the value cue:\n  " + "; ".join(bins))','from the value cue:\\n  " + "; ".join(bins))')
-assert 'cue:\\n  "' in c.source
-nbformat.write(nb,p)
-EOF
-grep -c '\\\\n' reproduce_amjad_2025.ipynb; ls ../../executed/002013-amjad-2025/
-```
-
-```
-11
+reproduce_amjad_2025.ipynb
 result.json
+Traceback (most recent call last):
+  File "/tmp/claude-1001/s1.py", line 1, in <module>
+    import numpy as np, pandas as pd, amjad as A, time
+ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd ../.. && python tools/entry.py all entries/002013-amjad-2025 2>&1 | tail -15
+cd  sed -n 1,80p tools/entry.py | grep -n -i "venv\|env" | head; ls -a ~/.cache 2>/dev/null | head; ls -d .venv* $TMPDIR/* 2>/dev/null | head
 ```
 
 ```
-Installed kernelspec registry-002013-amjad-2025 in executed/002013-amjad-2025/.venv/share/jupyter/kernels/registry-002013-amjad-2025
-0 error(s)
-pass  reproduce_amjad_2025.ipynb  (155 s)
+3:    python tools/entry.py lock  entries/<name>   # pin the environment
+6:    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+25:`run` builds a fresh virtual environment from the lock file and executes each
+26:notebook through a Jupyter kernel installed in that environment, in the entry
+/tmp/claude-1001/-home-runner-work--temp
+/tmp/claude-1001/-home-runner-work-encore-registry-encore-registry
+/tmp/claude-1001/bash-edit-diff
+/tmp/claude-1001/nb.txt
+/tmp/claude-1001/s1.py
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-nb=nbformat.read("executed/002013-amjad-2025/reproduce_amjad_2025.ipynb",as_version=4)
-for i in (11,13,15,17,19,34,37,40,43):
-    print("=== cell",i)
-    for o in nb.cells[i].outputs:
-        if o.output_type=="stream": print(o.text)
+cd  grep -n "venv\|mkdtemp\|TMP\|keep" tools/entry.py | head -30
+```
+
+```
+14:the entry, against the schemas, and applies the conventions that keep a result
+275:        # The entry streams the versions of its latest attempt; earlier attempts keep the versions they used.
+572:        if any(part in ("__pycache__", ".ipynb_checkpoints", ".venv") or part.endswith(".pyc") for part in rel.parts):
+608:    venv = (output_dir / ".venv").resolve()
+609:    python = venv / "bin" / "python"
+613:    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", python_of(entry_dir), str(venv)],
+616:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+630:            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls -a executed/amjad-2025; ls executed/amjad-2025/.venv/bin/python 2>&1 || (uv venv --quiet --python 3.13 $TMPDIR/venv && uv pip install --quiet --python $TMPDIR/venv/bin/python -r entries/amjad-2025/requirements.lock.txt && echo ok)
+```
+
+```
+.
+..
+.clean-run.json
+.venv
+reproduce_amjad_2025.ipynb
+result.json
+executed/amjad-2025/.venv/bin/python
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/amjad-2025; P=../../executed/amjad-2025/.venv/bin/python; $P $TMPDIR/s1.py
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/s1.py", line 1, in <module>
+    import numpy as np, pandas as pd, amjad as A, time
+ModuleNotFoundError: No module named 'amjad'
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/amjad-2025; P=../../executed/amjad-2025/.venv/bin/python; PYTHONPATH=. $P $TMPDIR/s1.py
+```
+
+```
+fb-vc count    303.000000
+mean       3.794353
+std        0.032277
+min        3.748466
+25%        3.781737
+50%        3.782420
+75%        3.815179
+max        4.031679
+dtype: float64 0.0
+24 central cue end 977
+30 left cue reward condition 1 639
+31 left cue reward condition 2 471
+{0: 'TTL code 0', 8: 'TTL code 8', 9: 'start trial', 18: 'end trial', 21: 'feedback', 23: 'value object start', 24: 'central cue end', 28: 'onedr', 30: 'left cue reward condition 1', 31: 'left cue reward condition 2', 35: 'right cue reward condition 1', 36: 'right cue reward condition 2', 50: 'central cue fixation started', 51: 'value cue fixation started', 53: 'forced trial valuecue fix started', 60: 'error fixation break target', 61: 'error fixation break initial', 62: 'error fixation never started', 65: 'error choice value initial fix break', 66: 'error choice fixbreak right', 67: 'error choice fixbreak left', 69: 'error forced trial value cue fix break', 81: 'image 1', 88: 'image 8', 101: 'big reward', 105: 'reward delivery end', 115: 'transient value condition', 117: 'left condition', 118: 'right condition', 119: 'forced trial condition', 120: 'choice trial condition', 121: 'right choice chosen code', 122: 'left choice chosen code', 128: 'intended trial start', 144: 'TTL code 144'}
+reward runs [13  2  4  3  1  1  1  4  1  5  2  2  2  1  1  1  2  1  1  4  1  1  2  1
+  1  3  2  1  2  3  1  1  1  2  1  1  1  4  1  2  1  1  1  4  2  1  2  1
+  1  1] 594
+side runs [13  2  4  3  1  1  1  4  1  5  2  2  2  1  1  1  2  1  1  4  1  1  2  1
+  1  3  2  1  2  3  1  1  1  2  1  1  5  1  2  1  1  1  4  2  1  2  1  1
+  1  1] 591
+col_0    0    1
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/amjad-2025; cat > $TMPDIR/s2.py <<'EOF'
+import numpy as np, pandas as pd, amjad as A
+f=A.open_file(A.PATHS["direction"])
+ev,nm=A.events(f); n=f["intervals/trials/id"].shape[0]; tr=A.decode_trials(ev,n)
+print(pd.crosstab([tr.has_40,tr.has_41],[tr.has_100|tr.has_101]))
+s=tr[tr.has_100|tr.has_101]
+print(pd.crosstab([s.has_41,s.has_40],[s.has_101,s.has_117]))
+c=np.where(tr.has_41,1,np.where(tr.has_40,2,0))
+ch=np.r_[0,np.where(np.diff(c)!=0)[0]+1,len(c)]
+print(list(zip(c[ch[:-1]],np.diff(ch))))
 EOF
+PYTHONPATH=. ../../executed/amjad-2025/.venv/bin/python $TMPDIR/s2.py
 ```
 
 ```
-=== cell 11
-samples per scan: 214 ; scans: 241200 ; sample interval 40.0 µs
-applied voltage -0.347 to 1.339 V (first 50 scans -0.347 to 1.340); stored attributes {'comments': 'no comments', 'description': 'FSCV excitation series for applied voltage waveform.', 'namespace': 'ndx-fscv', 'neurodata_type': 'FSCVExcitationSeries', 'scan_frequency': np.float64(10.0), 'sweep_rate': np.float64(400.0), 'waveform_shape': 'Triangle'}
-applied voltage data attributes: {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-current data attributes: {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-scan start intervals (s): [0.1]
-raw FSCV spans 14120.168 to 38240.168 s; trials (trial starts) span 14120.168 to 32910.208 s; first scan - first trial start = 0.000000 s
-current: unit attribute 'amperes', values -1526.5 to 1557.0; other attributes {'comments': 'no comments', 'current_to_voltage_factor': np.float64(0.00499), 'description': 'FSCV response current before background subtraction.', 'namespace': 'ndx-fscv', 'neurodata_type': 'FSCVResponseSeries'}
-
-=== cell 13
-current at 0.608 V (sample 61) compared with the stored iox, both high-passed at 0.5 Hz; search over the whole raw record:
-  row 0 (trial 1): r at the stored time -0.058; best r 0.172, raw -14678.2 s from the stored time
-  row 50 (trial 51): r at the stored time -0.001; best r 0.202, raw -11607.4 s from the stored time
-  row 200 (trial 201): r at the stored time -0.017; best r 0.186, raw -1421.0 s from the stored time
-  row 400 (trial 401): r at the stored time -0.014; best r 0.177, raw -14810.5 s from the stored time
-  row 600 (trial 601): r at the stored time -0.014; best r 0.164, raw +3754.1 s from the stored time
-  row 733 (trial 734): r at the stored time -0.021; best r 0.172, raw -1793.7 s from the stored time
-
-Raw current at 0.6 V, mean over 0.5 to 3 s after the value cue minus at the cue, large minus sm
-[... 215 more lines not kept]
+col_0          False  True 
+has_40 has_41              
+False  True       63    570
+True   False     266    602
+has_101       False       True       
+has_117       False True  False True 
+has_41 has_40                        
+False  True     290   312     0     0
+True   False      0     0   288   282
+[(np.int64(2), np.int64(13)), (np.int64(1), np.int64(2)), (np.int64(2), np.int64(4)), (np.int64(1), np.int64(3)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(4)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(6)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(2)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(4)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(9)), (np.int64(1), np.int64(3)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(3)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(3)), (np.int64(2), np.int64(3)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(3)), (np.int64(1), np.int64(5)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(2)), (np.int64(2), np.int64(3)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(4)), (np.int64(2), np.int64(3)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(3)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(6)), (np.int64(1), np.int64(4)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(2)), (np.int64(1), np.int64(1)), (np.int64(2), np.int64(1)), (np.int64(1), np.int64(1)), (np.int64(2), np
+[... 1 more lines not kept]
 ```
-
-**Agent**
-
-Outputs look good. The new checks change no outcome. Now I'll update the markdown cells to match.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025 && python - <<'EOF'
-import nbformat
-p="reproduce_amjad_2025.ipynb"; nb=nbformat.read(p,as_version=4); C=nb.cells
-def sub(i, old, new):
-    assert old in C[i].source, (i, old[:60]); C[i].source=C[i].source.replace(old,new)
-sub(40, "for a in np.arange(-0.5, 1.0, 0.1).round(1):", "for a in np.arange(-5, 10) / 10:")
-sub(19, "first event {z_str[0]!r}", "first event {str(z_str[0])!r}")
-sub(19, "dict(zip(*np.unique(z_ttl, return_counts=True))))", "{int(a): int(b) for a, b in zip(*np.unique(z_ttl, return_counts=True))})")
-sub(0, """**Outside input.** One claim (`zenodo-link`) compares the dandiset with the paper's own Zenodo files:
-four lists of trial numbers and the beta power of one example trial. Nothing else uses outside data.""",
-"""**Outside input.** One claim (`zenodo-link`) compares the dandiset with the paper's own Zenodo files:
-four lists of trial numbers and the beta power of one example trial. The data check also reads Monkey P's
-Neuralynx events file from the same deposit (`session126_events.mat`), for the time of its first event,
-which places the spike times on the raw signal's clock, and to show its event codes (`fig5a-spike-reward`).
-No other claim uses outside data.""")
-sub(12, "The raw current is stored as amperes,", "The data of both series have conversion 1 and offset 0, so the voltage is read as stored. The raw current is stored as amperes,")
-sub(14, """The raw current shows no large-against-small
-contrast at the stored value cue times (p = 0.46), while some shifted times give smaller p values. Searches at
-neighbouring samples of the voltammogram, run while preparing (not run here), found nothing better.""",
-"""The raw current shows no large-against-small
-contrast at the stored value cue times (p = 0.46), while some shifted times give smaller p values. The same
-search at 0.50 and 0.70 V and at -0.19 V on the falling sweep gives the same picture (best r 0.17 to 0.22, at
-offsets that differ from row to row). Computed at the stored times, the background-subtracted voltammogram of
-large-reward trials has its largest rising-sweep value at -0.24 V, not near 0.6 V (where it is -0.033), and
-its most negative value at the switching potential (1.34 V), not near -0.2 V; its values (SD 0.042 over the
-scan) are small. This is not a test of the claim, since the clock is not established.""")
-sub(16, "The raw ephys has a start time of 0", """The 1497 joins are all
-intervals shorter than 1 ms (overlaps of the trial windows, none longer than 1 ms), and the signal does not
-step at them: the change between the two samples at a join (median 2.73 µV, largest 20.28 µV) is no larger
-than between other neighbouring samples (median 5.17 µV, 99.9th percentile 25.99 µV). 118 of the 1172
-successful trials have a join within -0.5 to 1 s of the value cue, spread over the four reward and side
-conditions (23 to 36 each). The raw ephys has a start time of 0""")
-sub(20, """Moved back by 6800.666 s (the time of the first event in the paper's Zenodo
-events file, "Starting Recording"),""", """Moved back by 6800.666 s (the time of the first event, "Starting Recording",
-in the session's events file on Zenodo, read above),""")
-sub(20, "Only unit 1 is the sorted unit.", """Only unit 1 is the sorted unit. The Zenodo events file holds
-20812 events with 37 distinct TTL values and no names; they are not the Monkey T codes (for example, the
-value cue code 23 occurs only 20 times, against about 825 for several others), so the trials of this session
-cannot be decoded from them.""")
-open(p,"w")
-nbformat.write(nb,p)
+cd entries/amjad-2025; cat >> $TMPDIR/s2.py <<'EOF'
+same=(s.has_101.values==s.has_117.values).astype(int)
+ch=np.r_[0,np.where(np.diff(same)!=0)[0]+1,len(same)]
+print("runs of big==left mapping:",list(zip(same[ch[:-1]],np.diff(ch), s.trial.values[ch[:-1]])))
 EOF
-echo ok
+PYTHONPATH=. ../../executed/amjad-2025/.venv/bin/python $TMPDIR/s2.py 2>&1 | tail -1
+```
+
+```
+runs of big==left mapping: [(np.int64(1), np.int64(77), np.int64(0)), (np.int64(0), np.int64(84), np.int64(92)), (np.int64(1), np.int64(53), np.int64(188)), (np.int64(0), np.int64(70), np.int64(249)), (np.int64(1), np.int64(88), np.int64(327)), (np.int64(0), np.int64(86), np.int64(445)), (np.int64(1), np.int64(88), np.int64(568)), (np.int64(0), np.int64(93), np.int64(673)), (np.int64(1), np.int64(65), np.int64(796)), (np.int64(0), np.int64(56), np.int64(875)), (np.int64(1), np.int64(65), np.int64(938)), (np.int64(0), np.int64(50), np.int64(1021)), (np.int64(1), np.int64(61), np.int64(1087)), (np.int64(0), np.int64(87), np.int64(1163)), (np.int64(1), np.int64(75), np.int64(1260)), (np.int64(0), np.int64(74), np.int64(1364))]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i "direction task\|contralateral\|block" paper/*.txt | head -30
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1021-acschemneuro.5c00071.txt",
+ "offset": 590,
+ "limit": 80
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -l "verifications:" attempts/*.yaml | head -3; f=$(grep -l "verifications:" attempts/*.yaml | head -1); sed -n '/^verifications:/,$p' $f | head -60; grep -n -A40 '"verifications"' schemas/*.json | head -120
+```
+
+```
+attempts/andrews-2024-01.yaml
+attempts/armstrong-2026-01.yaml
+attempts/asari-2009-01.yaml
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text under paper/. The verifier queried the
+    DANDI API for the version's assets and metadata, checked Table 1 against cell 16 by hand, and
+    tested light_steps, window_rates and reduce_chunk on synthetic inputs.
+  results:
+  - claim: table1-cohort
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cells 5 and 16 give 12 slices and 7 patients (patient read from the slice-name letter),
+      5 F and 2 M, ages 20 to 52, and every patient's age and sex match Table 1. All 8 HcKCR1 slice
+      names are present. No opsin is recorded in the asset metadata or the inspected objects, so "8
+      HcKCR1 / 2 ChR2 / 2 none" cannot be derived from the data, which meets the criterion's partial
+      clause. But the search for opsin, virus, genotype or condition fields skips every object under
+[... 84 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat questions/README.md | head -60; head -30 questions/asari-2009.yaml; sed -n '/"verifications"/,/^    "/p' schemas/attempt.schema.json | sed -n 40,120p
+```
+
+```
+# Questions
+
+`<dandiset>.yaml` holds an attempt's questions to a reader: places where the author or a verifier
+believes the claims file misreads the paper (docs/protocol.md, "Author", step 1.6, and "Hand over for
+verification"), and the reader's answers ("Reader", step 6), which say whether the claims file was
+amended and why. Each question has `claim`, `question`, `passage`, `why` (how the misreading could
+change the outcome), and, once answered, `answer` and `answered` (a date). Method details the claims
+file lacks are not asked here: the author takes them from the paper, and a detail the paper does not
+settle is a question for the paper's authors, recorded in the claim's notes and as a
+`methods_unavailable` finding in the attempt. Files from before protocol `pilot-11` also hold
+questions about method details, asked under the earlier rule.
+questions:
+- claim: fig2-example-long-context
+  question: The criterion says the example cell and probe are not identified and accepts any
+    current-clamp cell with seven natural sound fragments and a probe tested after silence and
+    two other fragments. Does the Figure 2 legend identify them? Figure 2A gives the cell's
+    reliability (0.61 +/- 0.07 over its stimuli) and the probe's (0.74 +/- 0.08), and Figure 2B
+    says its red trace is "the one shown in A". In the data set only 20051222-ha1-001-002 has
+    those values (0.611 +/- 0.081, and 0.737 for probe 4), so its probe 4 would be the example.
+    Should the criterion test that probe?
+[... 92 more lines not kept]
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/amjad-2025/amjad.py",
+ "old_string": "def beta_power(x, fs=LFP_RATE):\n    \"\"\"Beta power of the continuous bipolar LFP: 13 to 28 Hz 4th-order Butterworth run forwards and\n    backwards, squared Hilbert envelope, smoothed with a 0.25 s Hanning window of unit sum\n    (claims file, method choices; paper, Methods: \"bandpass filtered around 13 to 28 Hz, squared,\n    enveloped, and then smoothed with a Hanning window of 0.25 s\"). Unit sum keeps the units V^2.\"\"\"\n    b, a = signal.butter(4, [13, 28], btype=\"bandpass\", fs=fs)\n    y = signal.filtfilt(b, a, x)\n    env = np.abs(signal.hilbert(y)) ** 2\n    w = np.hanning(int(0.25 * fs))\n    return np.convolve(env, w / w.sum(), mode=\"same\")",
+ "new_string": "def beta_power(x, fs=LFP_RATE, order=\"envelope_squared\", smooth=True):\n    \"\"\"Beta power of the continuous bipolar LFP: 13 to 28 Hz 4th-order Butterworth run forwards and\n    backwards, squared Hilbert envelope, smoothed with a 0.25 s Hanning window of unit sum\n    (claims file, method choices; paper, Methods: \"bandpass filtered around 13 to 28 Hz, squared,\n    enveloped, and then smoothed with a Hanning window of 0.25 s\"). Unit sum keeps the units V^2.\n\n    order=\"squared_enveloped\" is the paper's order read literally, a variant: the band-passed signal\n    is squared and then enveloped as MATLAB's envelope() does by default (the magnitude of the\n    analytic signal of the mean-removed input, plus the mean). smooth=False skips the Hanning\n    window, a variant for the burst claim.\"\"\"\n    b, a = signal.butter(4, [13, 28], btype=\"bandpass\", fs=fs)\n    y = signal.filtfilt(b, a, x)\n    if order == \"envelope_squared\":\n        env = np.abs(signal.hilbert(y)) ** 2\n    else:\n        y2 = y ** 2\n        env = y2.mean() + np.abs(signal.hilbert(y2 - y2.mean()))\n    if not smooth:\n        return env\n    w = np.hanning(int(0.25 * fs))\n    return np.convolve(env, w / w.sum(), mode=\"same\")"
+}
+```
+
+```
+The file entries/amjad-2025/amjad.py has been updated successfully.
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cat > $TMPDIR/edit1.py <<'PYEOF'
+import json
+p = "entries/amjad-2025/reproduce_amjad_2025.ipynb"
+nb = json.load(open(p))
+C = nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setc(i, s): C[i]["source"] = s.splitlines(keepends=True)
+def rep(i, old, new):
+    s = src(i); assert old in s, (i, old[:60]); setc(i, s.replace(old, new))
+
+# cell 3: release notes
+rep(3, 'print("\\ndescription:", meta["description"])',
+    'print("\\ndescription:", meta["description"])\n'
+    'notes = meta.get("releaseNotes", "")\n'
+    'print("\\nrelease notes of this version, section \'Known gaps\':")\n'
+    'print(notes[notes.find("**Known gaps**"):])')
+rep(4, "compared here.", "compared here. The release notes of the pinned version (printed above) list what it does not\n"
+    "hold: the second FSCV site c8ds, the trial-aligned FSCV beyond the first 734 trials, names for\n"
+    "Monkey P's event codes, the units of the trial-aligned series, and the implant dates. The checks\n"
+    "below test each of these against the files. The notes also say that the clock offsets of the\n"
+    "earlier version (raw EPhys, raw FSCV and Monkey P's spikes) were corrected; the clock checks below\n"
+    "test the pinned version itself.")
+
+# cell 8: feedback timing (shape) and side-reward mapping blocks (direction)
+rep(8, 'print("   value cue minus trial start in successful forced trials (s):", (sh.value_cue - sh.start)[sh.success].describe().round(3).to_dict())',
+    'print("   value cue minus trial start in successful forced trials (s):", (sh.value_cue - sh.start)[sh.success].describe().round(3).to_dict())\n'
+    'fb = np.sort(EV["shape"][21])\n'
+    'sh["feedback"] = np.nan\n'
+    'k_fb = np.searchsorted(fb, sh.value_cue.values[sh.success.values])\n'
+    'sh.loc[sh.success, "feedback"] = fb[np.minimum(k_fb, len(fb) - 1)]\n'
+    'd_fb = (sh.feedback - sh.value_cue)[sh.success]\n'
+    'print("   first feedback (21) after the value cue, successful forced trials (s):", d_fb.describe().round(3).to_dict(),\n'
+    '      " feedback within the value cue\'s trial:", bool(((sh.feedback < sh.start.shift(-1).fillna(np.inf)) | ~sh.success).all()),\n'
+    '      " feedback earlier than 3 s:", int((d_fb < 3).sum()))')
+rep(8, 'print("   reward condition code 41 (all big) vs 101:", pd.crosstab(di.has_41[di.success], di.has_101[di.success]).to_dict())',
+    'print("   reward condition code 41 (all big) vs 101:", pd.crosstab(di.has_41[di.success], di.has_101[di.success]).to_dict())\n'
+    '# blocks of the side-reward mapping: runs of successful trials in which the big reward is on the same side\n'
+    'dsu = di[di.success]\n'
+    'big_left = (dsu.has_101.values == dsu.has_117.values)\n'
+    'chg = np.r_[0, np.where(np.diff(big_left.astype(int)) != 0)[0] + 1, len(dsu)]\n'
+    'di["map_block"] = -1\n'
+    'for b_, (a0, b0) in enumerate(zip(chg[:-1], chg[1:])):\n'
+    '    di.loc[dsu.index[a0:b0], "map_block"] = b_\n'
+    'mb = pd.DataFrame({"first_trial": dsu.trial.values[chg[:-1]], "successful_trials": np.diff(chg),\n'
+    '                   "big_reward_side": np.where(big_left[chg[:-1]], "left", "right")})\n'
+    'print("   blocks of the side-reward mapping (successful trials):", len(mb), "; lengths", mb.successful_trials.min(), "to", mb.successful_trials.max())\n'
+    'print(mb.T.to_string())\n'
+    'print("   reward by side, successful trials:", pd.crosstab(dsu.has_101.rename("big"), dsu.has_117.rename("left")).to_dict())')
+rep(9, "as the claims file says.", "as the claims file says.\n\n"
+    "In the shape task the first feedback after the value cue comes 3.75 to 4.03 s after it in every\n"
+    "successful forced trial, so the 0 to 3 s window of fig4a-dopamine-reward ends before feedback, as\n"
+    "its criterion says. In the direction task reward size and side vary from trial to trial, but\n"
+    "which side gives the big reward is fixed within blocks of 50 to 93 successful trials and swaps\n"
+    "between them (16 blocks), as the paper says (\"The big and small reward locations were changed on\n"
+    "every block\", Methods, Behavioral Tasks). Within a block, large against small is also one side\n"
+    "against the other; fig4b and fig4c show tests that separate the two.")
+
+# cell 11: first and last stored sample of a scan
+rep(11, 'print(f"voltage of a scan (V): {volt.min():.3f} to {volt.max():.3f}; largest',
+    'print(f"voltage of a scan (V): first sample {volt[0]:.4f}, last sample {volt[-1]:.4f}, sample of the lowest {int(np.argmin(volt))}, "\n'
+    '      f"of the highest {int(np.argmax(volt))} of {len(volt)}")\n'
+    'print(f"voltage of a scan (V): {volt.min():.3f} to {volt.max():.3f}; largest')
+rep(12, "the 25 kHz of the description.", "the 25 kHz of the description. Each stored scan starts at its lowest potential\n"
+    "(first sample), rises to 1.34 V and falls back (sample indices printed above).")
+rep(14, "The raw current at 0.6 V and the table's `iox` change together at lag 0 to 1 scan (z about 18 to\n19, against at most about 10 at other lags), so",
+    "The raw current at 0.6 V and the table's `iox` change together at lags -1 and 0 scans (the largest\n"
+    "z is at lag -1, the z at lag 0 is printed beside it, against at most about 10 at other lags), so")
+rep(14, "agree to within 0.1 s.", "agree to within 0.1 s. The raw current may sit one scan (0.1 s) off the table; fig3a-redox-peaks\nand fig4a-dopamine-reward show their results with the cue moved by one scan either way.")
+nb["cells"] = C
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False); open(p, "a").write("\n")
+PYEOF
+cd  && python3 $TMPDIR/edit1.py && echo ok
+```
+
+```
+Exit code 1
+Tue Nov 24 23:40:26 UTC 2026
+Traceback (most recent call last):
+  File "/tmp/claude-1001/edit1.py", line 62, in <module>
+    rep(12, "the 25 kHz of the description.", "the 25 kHz of the description. Each stored scan starts at its lowest potential\n"
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "(first sample), rises to 1.34 V and falls back (sample indices printed above).")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/edit1.py", line 8, in rep
+    s = src(i); assert old in s, (i, old[:60]); setc(i, s.replace(old, new))
+                       ^^^^^^^^
+AssertionError: (12, 'the 25 kHz of the description.')
+```
+
+**Agent calls Bash**
+
+```bash
+python3 - <<'EOF'
+import re
+s=open('/tmp/claude-1001/edit1.py').read()
+i=s.index('rep(12,'); j=s.index('rep(14,')
+s=s[:i]+s[j:]
+open('/tmp/claude-1001/edit1.py','w').write(s)
+EOF
+python3 $TMPDIR/edit1.py && echo ok
 ```
 
 ```
@@ -906,598 +620,739 @@ ok
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-p="reproduce_amjad_2025.ipynb"; nb=nbformat.read(p,as_version=4); C=nb.cells
-def sub(i, old, new):
-    assert old in C[i].source, (i, old[:60]); C[i].source=C[i].source.replace(old,new)
-sub(19, 'print("its TTL values and counts (no names are given):",', 'print(f"its {len(np.unique(z_ttl))} distinct TTL values and their counts (no names are given):",')
-sub(20, """20812 events with 37 distinct TTL values and no names; they are not the Monkey T codes (for example, the
-value cue code 23 occurs only 20 times, against about 825 for several others), so the trials of this session
-cannot be decoded from them.""", """20812 events with 36 distinct TTL values and no names. They do not follow the Monkey T codes: the
-trial-start code 128 does not occur, and the value cue code 23 occurs 20 times, against about 825 for several
-others. The trials of this session cannot be decoded from them.""")
-sub(35, "after the feedback, which comes at a median of 3.78 s.", """after the feedback, which comes at a median of 3.78 s. On the smoothed power 95.1% of runs above the threshold last at least 50 ms (median 206 ms), so the minimum length does little; on the unsmoothed envelope (67.1% of runs last 50 ms) the rate also falls after the cue (3.07 to 2.11 per s, p = 6.8e-34). At the deciding threshold the fall in bursts after the cue coincides with the drop in beta power after the cue (power ratio 0.495 in the data check), so it is not separate evidence from the suppression tested in `fig4b-beta-reward`.""")
-sub(38, "Only the first 734 of the session's 1468 trials have FSCV in the dandiset.", """With a baseline of the mean over -1 to 0 s in place of the single sample at the cue, the result is the same (1.38 against 0.10, p = 0.022). Only the first 734 of the session's 1468 trials have FSCV in the dandiset. For the c8dg half of `fig3a-dual-channel` (blocked, as c8ds is missing): the mean over 0 to 3 s is above zero in 56 of 85 large-reward trials (65.9%).""")
-sub(41, "and over 0.25 to 0.75 s there is no difference (p = 0.66).", """and over 0.25 to 0.75 s there is no difference (p = 0.66). The 0.25 s smoothing does not carry the difference from before the cue: on the unsmoothed envelope it holds over 0 to 0.5 s (ratio 0.834, p = 1.9e-08) and over 0.125 to 0.5 s (ratio 0.671, p = 4.8e-19), and in 0.1 s bins large and small do not differ before the cue (ratios 0.95 to 1.05, p 0.2 or above), large is lower from 0.1 to 0.4 s (ratios 0.85, 0.59, 0.60) and higher from 0.5 s on (1.32 to 1.49). The suppression is deeper after large-reward cues, and beta power returns sooner after them.""")
-sub(44, "Small-reward trials show the same side difference (p = 1.5e-10).", """Small-reward trials show the same side difference (p = 1.5e-10). On the unsmoothed envelope left is lower over 0 to 0.5 s (ratio 0.807, p = 1.7e-06) and over 0.125 to 0.5 s (ratio 0.688, p = 3.2e-17), most in the bins from 0.1 to 0.3 s (ratios 0.54 and 0.55). The files do not record the implanted hemisphere, so left as contralateral rests on the Methods.""")
-nbformat.write(nb,p)
-print(C[48].source[C[48].source.index("**How"):])
-EOF
+cat > $TMPDIR/edit2.py <<'PYEOF'
+import json
+p = "entries/amjad-2025/reproduce_amjad_2025.ipynb"
+nb = json.load(open(p))
+C = nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setc(i, s): C[i]["source"] = s.splitlines(keepends=True)
+def rep(i, old, new):
+    s = src(i); assert old in s, (i, old[:60]); setc(i, s.replace(old, new))
+
+# cell 22: noise without samples near the input limit; STA trough on the same filter
+rep(22, "    noise_seg[start] = (ts[0], nz, float(np.mean(np.abs(r) >= 0.99e-3)))",
+    "    clip = np.abs(r) >= 0.99e-3\n"
+    "    near = np.convolve(clip, np.ones(61), mode=\"same\") > 0      # within 1 ms of a sample at the limit\n"
+    "    nz_free = float(np.median(np.abs(y[~near] - np.median(y[~near]))) / 0.6745)")
+rep(22, "    best = max(res); at0 = [x for x in res if x[1] == 0][0]",
+    "    best = max(res); at0 = [x for x in res if x[1] == 0][0]\n"
+    "    noise_seg[start] = (ts[0], nz, float(np.mean(clip)), nz_free, float(np.mean(near)), -best[2])")
+
+# chronic-duration: release notes
+rep(27, "are not implantation dates.", "are not implantation dates. The release notes of the pinned version (data check) say so too:\n\"The implant dates are not given\".")
+# fig3a-dual-channel
+rep(40, "The c8dg half alone is shown below; it does not\ndecide the claim.",
+    "The release notes (data check) list it as a known gap:\n\"The second FSCV site of Figure 3A (c8ds) is not in the dandiset\". The c8dg half alone is shown\nbelow; it does not decide the claim.")
+# fig5a
+rep(57, "cannot be read from the data.", "cannot be read from the data. The release notes (data check) confirm that \"no code map exists\nfor that session\".")
+
+# zenodo-link: sort check and the paper-order beta power
+rep(38, "k35 = Z[\"large\"][34] - 1",
+    "print(\"Zenodo lists in ascending trial order without repeats:\", {k: bool(np.all(np.diff(v) > 0)) for k, v in Z.items()})\n"
+    "k35 = Z[\"large\"][34] - 1")
+rep(38, "print(f\"plotted range: Zenodo {ref.min()*1e12:.1f} to {ref.max()*1e12:.1f}, here {bp[i0:i0+len(ref)].min()*1e12:.1f} to {bp[i0:i0+len(ref)].max()*1e12:.1f}\")",
+    "print(f\"plotted range: Zenodo {ref.min()*1e12:.1f} to {ref.max()*1e12:.1f}, here {bp[i0:i0+len(ref)].min()*1e12:.1f} to {bp[i0:i0+len(ref)].max()*1e12:.1f}\")\n"
+    "# variant (not deciding): the paper's order read literally, squared and then enveloped (amjad.beta_power)\n"
+    "bp_se = A.beta_power(x_lfp, order=\"squared_enveloped\")\n"
+    "rs2 = np.array([np.corrcoef(bp_se[i0 + L:i0 + L + len(ref)], ref)[0, 1] for L in lags]); kb2 = int(np.argmax(rs2))\n"
+    "print(f\"squared, then enveloped: r at lag 0 {rs2[200]:.4f}; best r {rs2[kb2]:.4f} at lag {lags[kb2]} ms; \"\n"
+    "      f\"median ratio here/Zenodo {np.median(bp_se[i0:i0+len(ref)] / ref):.3f}; range {bp_se[i0:i0+len(ref)].min()*1e12:.1f} to {bp_se[i0:i0+len(ref)].max()*1e12:.1f}\")")
+
+# fig3a-redox-peaks: more references and the outputs asked for
+rep(43, "for shift in [-5, 5]:", "for shift in [-10, -5, -0.1, 0.1, 5, 10]:")
+rep(43, "    print(f\"cue shifted {shift:+d} s:", "    print(f\"cue shifted {shift:+g} s:")
+rep(43, "fig, ax = plt.subplots(figsize=(6, 3))",
+    "# noise at 0.6 V: spread of the single-trial background-subtracted values, and the scan-to-scan noise\n"
+    "j6 = up[np.argmin(np.abs(volt[up] - 0.6))]\n"
+    "sd_tr = VL[:, j6].std()\n"
+    "sd_scan = np.median([cur[(t_scan >= c + 0.5) & (t_scan <= c + 2), j6].std() for c in lg.value_cue.values])\n"
+    "print(f\"at {volt[j6]:.3f} V: SD over trials of the single-trial change {sd_tr:.3f} nA; median within-trial SD over the \"\n"
+    "      f\"0.5-2 s scans {sd_scan:.3f} nA; SEM of the mean {sd_tr/np.sqrt(len(VL)):.3f} nA\")\n"
+    "# the window where the table's da differs most (2 to 3 s, fig4a-dopamine-reward), large against small\n"
+    "VL23 = A.voltammograms(t_scan, cur, lg.value_cue.values, post=(2.0, 3.0)); VS23 = A.voltammograms(t_scan, cur, sm.value_cue.values, post=(2.0, 3.0))\n"
+    "for name, vg in [(\"large, 2-3 s\", VL23), (\"large, 2-3 s, trials 0-733\", VL23[lg.trial.values < 734]), (\"small, 2-3 s\", VS23)]:\n"
+    "    vu, au, vd, ad = peaks(vg)\n"
+    "    print(f\"{name} (n={len(vg)}): rising max {au:.3f} nA at {vu:.3f} V; falling min {ad:.3f} nA at {vd:.3f} V; \"\n"
+    "          f\"at {volt[j6]:.3f} V {vg[:, j6].mean():.3f} +- {vg[:, j6].std()/np.sqrt(len(vg)):.3f} nA\")\n"
+    "d6 = VL23[:, j6]; s6 = VS23[:, j6]\n"
+    "print(f\"change at {volt[j6]:.3f} V over 2-3 s, large against small: Mann-Whitney p = {stats.mannwhitneyu(d6, s6).pvalue:.3g}\")\n"
+    "fig, ax = plt.subplots(figsize=(6, 3))")
+
+# fig3b-beta-bursts: length of runs above threshold; variants
+rep(46, "    w = stats.wilcoxon(pre, post)",
+    "    w = stats.wilcoxon(pre, post)\n"
+    "    ab = np.r_[0, (bp > thr_q).astype(np.int8), 0]; dd = np.diff(ab)\n"
+    "    run_ms = np.where(dd == -1)[0] - np.where(dd == 1)[0]\n"
+    "    print(f\"   runs above threshold: {len(run_ms)}, median length {np.median(run_ms):.0f} ms, \"\n"
+    "          f\"10th-90th percentile {np.percentile(run_ms, 10):.0f} to {np.percentile(run_ms, 90):.0f} ms; shorter than 50 ms: {100*np.mean(run_ms < 50):.1f}%\")")
+setc(46, src(46) + "\n"
+    "# variants (not deciding): the envelope without the 0.25 s Hanning smoothing, and the paper's order (squared, then enveloped)\n"
+    "bp_raw = A.beta_power(x_lfp, smooth=False)\n"
+    "for name, x_ in [(\"unsmoothed envelope\", bp_raw), (\"squared, then enveloped\", bp_se)]:\n"
+    "    for q in [75, 50, 90]:\n"
+    "        thr_q = np.percentile(x_[mask], q)\n"
+    "        on = A.burst_onsets(x_, thr_q, 50)\n"
+    "        pre = np.array([((on >= i - 1000) & (on < i)).sum() for i in ii]); post = np.array([((on >= i) & (on < i + 1000)).sum() for i in ii])\n"
+    "        ab = np.r_[0, (x_ > thr_q).astype(np.int8), 0]; dd = np.diff(ab); run_ms = np.where(dd == -1)[0] - np.where(dd == 1)[0]\n"
+    "        print(f\"{name}, {q}th percentile: bursts/s before {pre.mean():.3f}, after {post.mean():.3f}; Wilcoxon p = {stats.wilcoxon(pre, post).pvalue:.2g}; \"\n"
+    "              f\"median run {np.median(run_ms):.0f} ms, runs of 50 ms or more {100*np.mean(run_ms >= 50):.1f}%\")\n"
+    "del bp_raw")
+
+# fig4a: one-scan shifts
+rep(49, "for shift in [-10, -5, 5, 10]:\n    v = A.window_mean(T[\"da\"], icue + shift * 10, (0, 3))",
+    "for shift in [-10, -5, -0.1, 0.1, 5, 10]:\n    v = A.window_mean(T[\"da\"], icue + int(round(shift * 10)), (0, 3))")
+rep(49, "    print(f\"cue shifted {shift:+d} s:", "    print(f\"cue shifted {shift:+g} s:")
+
+# fig4b: block structure and the paper-order beta power
+blk = ("\n"
+"# side-reward mapping blocks (data check): reward and side are tied within a block\n"
+"v05 = A.window_power(bp, t_lfp, ds.value_cue.values, (0, 0.5)) * 1e12\n"
+"left_ = ds.has_117.values\n"
+"per = pd.DataFrame({\"block\": ds.map_block.values, \"big\": L, \"left\": left_, \"v\": v05})\n"
+"bt = per.groupby(\"block\").apply(lambda g: pd.Series({\"big_side\": \"left\" if (g.big == g.left).all() else \"right\",\n"
+"     \"n_large\": int(g.big.sum()), \"n_small\": int((~g.big).sum()), \"large\": g.v[g.big].median(), \"small\": g.v[~g.big].median()}), include_groups=False)\n"
+"bt[\"large_minus_small\"] = bt.large - bt.small\n"
+"print(bt.round(1).to_string())\n")
+rep(52, "\nfig, ax = plt.subplots(figsize=(6, 3))", blk +
+"print(f\"blocks with large below small: {int((bt.large_minus_small < 0).sum())} of {len(bt)}; Wilcoxon over blocks p = {stats.wilcoxon(bt.large_minus_small).pvalue:.3g}\")\n"
+"for side_name, s_ in [(\"left\", left_), (\"right\", ~left_)]:\n"
+"    a_, b_ = v05[L & s_], v05[~L & s_]\n"
+"    print(f\"{side_name} cues only: large {np.median(a_):.1f} (n={len(a_)}), small {np.median(b_):.1f} (n={len(b_)}), Mann-Whitney p = {stats.mannwhitneyu(a_, b_).pvalue:.3g}\")\n"
+"vse = A.window_power(bp_se, t_lfp, ds.value_cue.values, (0, 0.5))\n"
+"print(f\"squared, then enveloped: large {np.median(vse[L])*1e12:.1f}, small {np.median(vse[~L])*1e12:.1f}, p = {stats.mannwhitneyu(vse[L], vse[~L]).pvalue:.3g}\")\n"
+"\nfig, ax = plt.subplots(figsize=(6, 3))")
+
+# fig4c
+setc(55, src(55) +
+"# side-reward mapping blocks: large-reward left trials and large-reward right trials come from different blocks\n"
+"v05 = A.window_power(bp, t_lfp, ds.value_cue.values, (0, 0.5)) * 1e12\n"
+"per = pd.DataFrame({\"block\": ds.map_block.values, \"big\": ds.has_101.values, \"left\": ds.has_117.values, \"v\": v05})\n"
+"bc = per.groupby(\"block\").apply(lambda g: pd.Series({\"big_side\": \"left\" if (g.big == g.left).all() else \"right\",\n"
+"     \"left\": g.v[g.left].median(), \"right\": g.v[~g.left].median(), \"large\": g.v[g.big].median()}), include_groups=False)\n"
+"bc[\"left_minus_right\"] = bc.left - bc.right\n"
+"print(bc.round(1).to_string())\n"
+"lb, rb = bc.large[bc.big_side == \"left\"], bc.large[bc.big_side == \"right\"]\n"
+"print(f\"block medians of large-reward trials: left blocks {np.median(lb):.1f} (n={len(lb)}), right blocks {np.median(rb):.1f} (n={len(rb)}), \"\n"
+"      f\"Mann-Whitney p = {stats.mannwhitneyu(lb, rb).pvalue:.3g}\")\n"
+"print(f\"within blocks, left minus right (all rewards): below zero in {int((bc.left_minus_right < 0).sum())} of {len(bc)}, Wilcoxon p = {stats.wilcoxon(bc.left_minus_right).pvalue:.3g}\")\n"
+"vse = A.window_power(bp_se, t_lfp, ds.value_cue.values, (0, 0.5))\n"
+"print(f\"squared, then enveloped: left {np.median(vse[Lf])*1e12:.1f}, right {np.median(vse[Rt])*1e12:.1f}, p = {stats.mannwhitneyu(vse[Lf], vse[Rt]).pvalue:.3g}\")\n")
+
+# fig5bc
+rep(59, "for start, (tstart, nz, sat) in noise_seg.items():\n    print(f\"600 s from {tstart:.0f} s: noise {nz*1e6:.2f} uV, trough {trough*1e6:.1f} uV = {trough/nz:.2f} x noise\")",
+    "for start, (tstart, nz, sat, nz_free, near, sta_tr) in noise_seg.items():\n"
+    "    print(f\"600 s from {tstart:.0f} s: noise {nz*1e6:.2f} uV, trough {trough*1e6:.1f} uV = {trough/nz:.2f} x noise; \"\n"
+    "          f\"without samples within 1 ms of the input limit ({100*near:.1f}% left out) noise {nz_free*1e6:.2f} uV, {trough/nz_free:.2f} x; \"\n"
+    "          f\"trough of the 300-6000 Hz spike-triggered average {sta_tr*1e6:.1f} uV = {sta_tr/nz:.2f} x noise\")")
+nb["cells"] = C
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False); open(p, "a").write("\n")
+PYEOF
+cd  && python3 $TMPDIR/edit2.py && echo ok
 ```
 
 ```
-**How the analysis differs from the paper's.** The paper's dopamine and beta code is not public; the beta
-filter and envelope are common choices, which match the paper's example trace at r = 0.94. Trial
-conditions are decoded from event codes; in the shape task small reward is inferred from the absence of the
-big-reward code, which the cue condition codes confirm. Dopamine is re-referenced at the value cue from the
-stored PCA output, without the original currents. Only the first 734 trials of the shape-task session have
-dopamine. The paper gives no statistics or windows for Figures 3 to 5; the tests and windows here were fixed
-before those analyses ran.
-
-**What was found about the dandiset.**
-- Each event is stored about five times in the events tables, once per overlapping 60 s trial window.
-- The trials tables hold no conditions; the shape task has no small-reward code, and the labels of codes 35
-  and 36 do not say they code reward size.
-- The trial-aligned FSCV table covers only the first 734 of 1468 trials; its columns have no units; the stored
-  `da` is not referenced at the value cue.
-- The raw FSCV current is labelled amperes with values in the hundreds; its scan times are a regular grid from
-  the first trial start; it cannot be matched to the trial-aligned series or to the task at any offset.
-- The bipolar LFP's conversion factor is wrong (values are already in volts).
-- The raw ephys of 09/26/2024 starts at 0 s but belongs 9831.35 s later on the trial clock.
-- Monkey P's spike times are 6800.666 s later than its raw signal's clock; its units table counts the
-  unsorted and poor-quality spikes as unit 0; the poor-quality spikes are not in time order; the file has
-[... 4 more lines not kept]
+ok
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-p="reproduce_amjad_2025.ipynb"; nb=nbformat.read(p,as_version=4); C=nb.cells
-def sub(i, old, new):
-    assert old in C[i].source, (i, old[:60]); C[i].source=C[i].source.replace(old,new)
-sub(41, "The suppression is deeper after large-reward cues, and beta power returns sooner after them.", "The suppression is deeper after large-reward cues, and beta power is higher after them from 0.5 s on.")
-sub(48, "before those analyses ran.\n", """before those analyses ran. Outside data come only from the paper's Zenodo deposit: the trial lists and example
-trace of `zenodo-link`, and Monkey P's events file, used in the data check for its clock offset.
-""")
-sub(48, "no trials or events, so Figure 5A cannot be made.", "no trials or events, so Figure 5A cannot be made (the Zenodo events of this session are TTL values without\n  names).")
-nbformat.write(nb,p)
-EOF
-cd ../.. && python tools/entry.py all entries/002013-amjad-2025 2>&1 | tail -4
+cd  grep -i "^pandas\|^scipy\|^numpy" entries/amjad-2025/requirements.lock.txt; sed -i 's/near = np.convolve(clip, np.ones(61)/near = np.convolve(clip.astype(float), np.ones(61)/' entries/amjad-2025/reproduce_amjad_2025.ipynb; grep -c "clip.astype(float)" entries/amjad-2025/reproduce_amjad_2025.ipynb
 ```
 
 ```
-Installed kernelspec registry-002013-amjad-2025 in executed/002013-amjad-2025/.venv/share/jupyter/kernels/registry-002013-amjad-2025
+numpy==2.5.5 \
+pandas==3.1.1 \
+scipy==1.18.1 \
+1
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; time python tools/entry.py all entries/amjad-2025 2>&1 | tail -30
+```
+
+```
+Tue Nov 24 23:41:22 UTC 2026
+Installed kernelspec registry-amjad-2025 in executed/amjad-2025/.venv/share/jupyter/kernels/registry-amjad-2025
 0 error(s)
-pass  reproduce_amjad_2025.ipynb  (157 s)
+pass  reproduce_amjad_2025.ipynb  (90 s)
+
+real	1m41.166s
+user	0m40.821s
+sys	0m8.429s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    if i not in (3,8,11,13,22,38,43,46,49,52,55,59,61): continue
+    print('=====',i)
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text'])[-6000:])
+        elif o.get('output_type')=='error': print(o['ename'],o['evalue'])
+"
+```
+
+```
+===== 3
+                                                    0.261012.0921  0.261120.1306
+sub-Monkey-T/sub-Monkey-T_ses-09132024_ecephys.nwb      635366923      870350366
+sub-Monkey-T/sub-Monkey-T_ses-09262024_ecephys.nwb     2677518722     2681648047
+sub-Monkey-P/sub-Monkey-P_ses-08132018_ecephys.nwb     1376700802     2040584384
+
+subjects in the metadata: 2  files: 3
+
+description: This dataset contains chronic neurochemical and electrophysiological recordings from the striatum of two adult female rhesus monkeys (Macaca mulatta; Monkey P and Monkey T), obtained with shaft-assisted micro-invasive probes (s-µIPs) and collected by the Schwerdt Lab at the University of Pittsburgh. It includes the processed data published on Zenodo (https://doi.org/10.5281/zenodo.14826579) together with the raw recordings from which they were derived. Recordings were made while the monkeys performed reward-biased eye movement tasks, in which the animal fixates a central cue, is shown a value cue signaling a large or small reward, and makes a saccade to a left or right target to obtain reward; trials include forced and free-choice conditions. Electrophysiology was acquired with a Neuralynx Digital Lynx SX system through a unity-gain headstage (HS-36, ±1 mV input range) at 30 kHz (Monkey P) or 32 kHz (Monkey T), bandpass filtered 0.1–7500 Hz. FSCV was performed with a triangular waveform (−0.35 to 1.34 V, 400 V/s) applied at 10 Hz, with current sampled at 25 kHz. For Monkey P (session 08/13/2018), the dataset includes raw broadband electrophysiology from striatal site cl3, spike-sorted units from Plexon Offline Sorter, and threshold-detected spikes with 48-sample waveforms. For Monkey T, session 09/13/2024 includes raw FSCV current and applied voltage from site c8dg together with trial-aligned, PCA-extracted dopamine, pH, motion, and oxidation current (at 0.6 V) time series (10 Hz, 60 s per trial); session 09/26/2024 includes raw broadband electrophysiology from sites c3bs and c3a and a bi
+[... 218 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/edit3.py <<'PYEOF'
+import json
+p = "entries/amjad-2025/reproduce_amjad_2025.ipynb"
+nb = json.load(open(p))
+C = nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setc(i, s): C[i]["source"] = s.splitlines(keepends=True)
+def rep(i, old, new):
+    s = src(i); assert old in s, (i, old[:60]); setc(i, s.replace(old, new))
+
+rep(12, "the 25 kHz of the description.", "the 25 kHz of the description. Each stored scan starts at its lowest potential, -0.347 V (sample\n"
+    "0), peaks at sample 107 and ends at -0.3205 V (sample 213).")
+rep(23, "A share of the raw\nsamples sit at the +-1 mV limit of the input range (printed above).",
+    "A share of the raw\nsamples sit at the +-1 mV limit of the input range: 10.7% in the first segment, 3.0% and 2.9% in\nthe two later ones.")
+
+rep(39, "so the raw example trace itself could not be compared.",
+    "so the raw example trace itself could not be compared. The four Zenodo lists are in ascending trial\n"
+    "order without repeats, so their 35th entry is the 35th trial. The criterion for the trace was written\n"
+    "after r = 0.94 was known (claims file header), so this part is not an independent check.\n\n"
+    "Variant, not deciding: with the paper's order read literally (squared, then enveloped), the trace\n"
+    "correlates with the Zenodo trace at r = 0.9132 at lag 0 (best 0.9134 at 4 ms), with a median ratio\n"
+    "of 1.689 and a range of 242.1 to 1628.3e-12 V^2 against 36.0 to 1559.6 for Zenodo. The claims file's\n"
+    "order (the squared Hilbert envelope) matches the Zenodo trace more closely (r = 0.9421, median\n"
+    "ratio 0.943), though its range (14.1 to 2184.5) is wider than the Zenodo one.")
+
+setc(44, """**Result: not reproduced.** In the mean background-subtracted voltammogram of the 164
+successful forced large-reward trials, the most negative value on the falling sweep is at 0.897 V,
+outside -0.35 to -0.05 V, so the criterion fails. The largest value on the rising sweep is at
+0.512 V, inside 0.45 to 0.75 V, but this does not show an oxidation peak: the mean is flat within
+its noise (0.074 nA at most; -0.014 +- 0.020 nA at 0.608 V and -0.006 +- 0.018 nA at -0.192 V, mean
++- SEM), and with the cue moved by 5 or 10 s either way the extremes fall anywhere on the sweep
+(rising maxima at 0.864, -0.240, 1.329 and -0.144 V). With the trials of the table only (n=87)
+neither extreme is in its range; 8 of 164 single trials meet both ranges. Moving the cue by one
+scan (0.1 s) either way, the most negative falling value moves to -0.080 V (inside its range) and
+the rising maximum to 1.329 V (outside), so the outcome is the same.
+
+No dopamine redox signal is detectable in the raw current on average. At 0.608 V the single-trial
+change has an SD of 0.259 nA over trials (median within-trial scan-to-scan SD 0.209 nA), so the mean
+over 164 trials would show a change of about 0.04 nA or more (twice the SEM of 0.020 nA). Over 2 to
+3 s, where the table's `da` differs most between large and small reward (fig4a-dopamine-reward), the
+change at 0.608 V is -0.045 +- 0.023 nA for large and -0.049 +- 0.025 nA for small reward (p = 0.938),
+and the rising maxima are at 1.281 and 1.329 V. The data cannot tell whether a dopamine signal
+smaller than this is present.
+
+This does not fit the stored trial-aligned series. The PCA `da` of the same trials shows a
+large-reward advantage (fig4a-dopamine-reward, p = 0.0226), while the raw current at 0.6 V, the
+stored `iox` re-referenced (p = 0.446) and the raw voltammograms show none. The raw current and the
+table share a clock (data check: z 19.3 at lag -1 scan, 18.4 at lag 0), so this is not a time
+offset. The PCA weights and the calibration are not in the dataset, so whether `da` draws its
+reward contrast from parts of the voltammogram other than the oxidation and reduction potentials
+cannot be checked here. Figure 3A shows one trial, which cannot be identified in the files.
+""")
+
+setc(47, """**Result: reproduced.** With the 75th percentile threshold (356.2e-12 V^2) the burst rate over
+the 570 successful large-reward trials falls from 1.512 bursts/s before the value cue to 1.207
+after it (240 trials fewer, 123 more, 207 equal), Wilcoxon p = 9.5e-10. The rates also differ at
+the 50th percentile (0.695 to 1.421, p = 2.5e-47) and the 90th (1.475 to 0.661, p = 2.4e-45), but
+the direction depends on the threshold. Every LFP sample lies in some trial window, so the threshold
+is the percentile of the whole series. The claim says only that the rate changes, so the criterion
+holds under every threshold.
+
+These events are longer than the paper's bursts of "1-few cycles": with the 0.25 s Hanning
+smoothing that the claims file applies, the runs above the 75th percentile last 206 ms at the median
+(10th to 90th percentile 70 to 583 ms), and only 4.9% are shorter than 50 ms, so the minimum length
+removes almost nothing. Without the smoothing (variant, not deciding) the median run is 67 ms, 67.1%
+of runs last 50 ms or more, and the rate also falls after the cue at the 75th percentile (3.074 to
+2.105 bursts/s, p = 6.8e-34); at the 50th it rises (2.635 to 3.260, p = 7.4e-14) and at the 90th it
+falls (p = 4e-51). With the paper's order read literally (squared, then enveloped) it changes at all
+three thresholds (p = 4.3e-07, 2.7e-35 and 6.9e-40), in the same directions as the main analysis.
+""")
+
+setc(50, """**Result: reproduced.** Over 0 to 3 s after the value cue, the re-referenced dopamine has a
+median of 1.367 in large-reward trials (n=85) against 0.191 in small-reward trials (n=80),
+P(large > small) = 0.603, Mann-Whitney p = 0.0226; 3 trials were dropped for a NaN at the cue. The
+window ends before feedback, which comes 3.75 to 4.03 s after the value cue in every successful
+forced trial (data check). With the cue moved by one scan either way, p = 0.0272 (-0.1 s) and
+0.0175 (+0.1 s).
+
+The evidence is weak. The deciding p-value is close to 0.05, and of the variants only 1.5 to 3 s
+is significant (p = 0.00636); 0 to 1.5 s (p = 0.334), `da` without re-referencing (p = 0.298) and the
+re-referenced `iox` (large -0.015, small -0.001, p = 0.446) are not. With the cue moved by -10, -5
+and +5 s there is no difference (p 0.46 to 0.95), but at +10 s the test also gives p < 0.05
+(p = 0.00577), with the small-reward median the higher. The raw FSCV current shows no reward contrast
+at 0.6 V in the same trials (fig3a-redox-peaks).
+""")
+
+setc(53, """**Result: reproduced.** Over 0 to 0.5 s after the value cue the median beta power is
+275.1e-12 V^2 for large reward (n=570) against 327.2e-12 for small (n=602), P(large < small) =
+0.597, p = 1.03e-08; divided by the -0.5 to 0 s baseline, 0.455 against 0.553 (p = 1.09e-06). The
+difference is confined to this brief window: over 0 to 1 s (p = 0.09) and 0.25 to 0.75 s
+(p = 0.658), with or without the baseline, it is not significant, and over 0 to 1 s the large median
+is the higher.
+
+Within each block the big reward is on one side, so large against small is also one side against
+the other. The reward difference holds with the side fixed: on left cues 244.5 against 290.3
+(p = 0.00164), on right cues 301.9 against 394.2 (p = 9.91e-08). Over the 16 blocks, the large
+median is below the small one in 12 (Wilcoxon over blocks p = 0.025); the 4 exceptions are blocks
+where the big reward is on the right. With the paper's order read literally (squared, then
+enveloped) the result is the same (378.8 against 409.0, p = 5.42e-06).
+""")
+
+setc(56, """**Result: reproduced.** In large-reward trials the median beta power over 0 to 0.5 s is
+244.5e-12 V^2 for left cues (n=282) against 301.9e-12 for right (n=288), P(left < right) = 0.616,
+p = 1.61e-06; with the baseline, 0.389 against 0.546 (p = 2.07e-09). Over 0 to 1 s left is also
+lower (p = 0.0188; 0.000136 with the baseline); over 0.25 to 0.75 s it is not (p = 0.75 and 0.0751).
+Small-reward trials show the same side difference (left 290.3, right 394.2, p = 1.48e-10).
+
+Large-reward left trials come from the 8 blocks with the big reward on the left, and large-reward
+right trials from the other 8. Taking each block's median as one value, the left blocks are lower
+(251.0 against 306.8, p = 0.000622). Within blocks, over both rewards, left is below right in 12 of
+16 blocks (Wilcoxon p = 0.00336). With the paper's order read literally (squared, then enveloped)
+left is also lower (363.2 against 393.4, p = 0.00734).
+""")
+
+setc(60, """**Result: reproduced.** Unit ch33#1 (Plexon unit 1) has 1 interspike interval under 1 ms of
+31246 (0.0032%), and its mean stored waveform has a trough of 30.6 uV, 4.58 times the noise of
+6.69 uV over the first 600 s of the recording (5.62 and 5.50 times in two later segments). Both
+conditions hold. The unsorted cluster ch33#0 has 11.633% of its intervals under 1 ms.
+
+Two checks of the noise comparison. Leaving out the samples within 1 ms of the input limit (12.8%
+of the first segment, 5.0% and 4.9% of the later ones), the ratio is 4.48, 5.90 and 5.78. The
+stored waveforms come from Plexon's own filter; the trough of the spike-triggered average of the
+same 300 to 6000 Hz signal used for the noise is 34.9 to 35.5 uV, 5.21 to 6.50 times the noise.
+Every ratio is above 3.
+""")
+nb["cells"] = C
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False); open(p, "a").write("\n")
+PYEOF
+cd  && python3 $TMPDIR/edit3.py && echo ok; date -u
+```
+
+```
+Traceback (most recent call last):
+  File "/tmp/claude-1001/edit3.py", line 10, in <module>
+    rep(12, "the 25 kHz of the description.", "the 25 kHz of the description. Each stored scan starts at its lowest potential, -0.347 V (sample\n"
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "0), peaks at sample 107 and ends at -0.3205 V (sample 213).")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/edit3.py", line 8, in rep
+    s = src(i); assert old in s, (i, old[:60]); setc(i, s.replace(old, new))
+                       ^^^^^^^^
+AssertionError: (12, 'the 25 kHz of the description.')
+Tue Nov 24 23:43:47 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+sed -i 's/rep(12, "the 25 kHz of the description.", "the 25 kHz of the description. Each/rep(12, "25 kHz of the description.", "25 kHz of the description. Each/' $TMPDIR/edit3.py && python3 $TMPDIR/edit3.py && echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/edit4.py <<'PYEOF'
+import json
+p = "entries/amjad-2025/reproduce_amjad_2025.ipynb"
+nb = json.load(open(p))
+C = nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setc(i, s): C[i]["source"] = s.splitlines(keepends=True)
+def rep(i, old, new):
+    s = src(i); assert old in s, (i, old[:60]); setc(i, s.replace(old, new))
+rep(62, "description; it matches the paper's example trace (r = 0.94).",
+    "description, as the claims file reads it (the squared Hilbert envelope); it matches the paper's\n"
+    "example trace (r = 0.94). The paper's order read literally (squared, then enveloped) matches it\n"
+    "less closely (r = 0.91) and gives the same outcomes for fig3b, fig4b and fig4c.")
+rep(62, "For the burst claim the paper does\nnot define a burst, and the claims file's definition was used.",
+    "For the burst claim the paper does\nnot define a burst, and the claims file's definition was used; with the 0.25 s smoothing its\n"
+    "events last about 0.2 s, longer than the paper's bursts of one to a few cycles.")
+rep(62, "The raw FSCV current shows no dopamine redox signature after large-reward cues,\nwhile the stored PCA dopamine of the same trials shows the reward effect.",
+    "The raw FSCV current shows no dopamine redox signature after large-reward cues,\n"
+    "while the stored PCA dopamine of the same trials shows the reward effect (p = 0.0226, weak, with\n"
+    "most variants not significant). In the direction task the side of the big reward is fixed within\n"
+    "blocks of 50 to 93 successful trials, so reward and side are tied within a block; the reward and\n"
+    "side effects on beta power hold when the other is held fixed. The release notes of the pinned\n"
+    "version list the gaps that block four claims.")
+nb["cells"] = C
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False); open(p, "a").write("\n")
+PYEOF
+cd  && python3 $TMPDIR/edit4.py && echo ok; cat entries/amjad-2025/README.md
+```
+
+```
+ok
+# Amjad et al. (2025) on DANDI:002013
+
+Tests the claims in `claims/amjad-2025.yaml` on version 0.261120.1306 of
+[DANDI:002013](https://dandiarchive.org/dandiset/002013/0.261120.1306), streaming the three NWB
+files. `reproduce_amjad_2025.ipynb` holds the analysis; `amjad.py` holds the loading and the
+measures, each parameter with its source. The claim `zenodo-link` also reads the paper's Zenodo
+deposit (doi:10.5281/zenodo.14826579).
+
+Of 14 claims, 8 are reproduced, 1 partially reproduced (fscv-waveform), 1 not reproduced
+(fig3a-redox-peaks) and 4 blocked (the second dopamine channel, the implantation dates and list of
+implanted sensors, and a code map for Monkey P's events are not in the dataset).
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
+and the differences from the paper's method.
+
+Run with `python tools/entry.py all entries/amjad-2025`; it takes about 4 minutes and 3.5 GB of
+memory.
 ```
 
 **Agent**
 
-Verifying that all numbers quoted in conclusions are unchanged in the rerun:
+Now re-run with the final text, then check outputs match.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-nb=nbformat.read("executed/002013-amjad-2025/reproduce_amjad_2025.ipynb",as_version=4)
-txt="".join(o.get("text","") for c in nb.cells if c.cell_type=="code" for o in c.outputs)
-for s in ["9.5e-10","0.023","1e-08","1.6e-06","6.8e-34","95.1%","206 ms","0.022","56 of 85","1.9e-08","4.8e-19","1.7e-06","3.2e-17","-0.240 V","-0.033","0.042","36 distinct","2.73 µV","20.28","5.17","25.99","118 of 1172","5.66","r 0.943"," 0.943","-26.43","6800.66578"]:
-    print(s, s in txt)
-c=nb.cells[19]; print([o.text for o in c.outputs if 'Zenodo' in o.get('text','')])
-c=nb.cells[40]; print([o.text for o in c.outputs if 'bins' in o.get('text','')])
-EOF
+cd  sed -i 's/it takes about 4 minutes and 3.5 GB of/it takes about 2 to 4 minutes and 4.4 GB of/' entries/amjad-2025/README.md; python tools/entry.py all entries/amjad-2025 2>&1 | tail -4; python3 -c "
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+for i in (43,46,49,52,55,59,61):
+    c=nb['cells'][i]
+    print('=====',i)
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text'])[:3000])
+        elif o.get('output_type')=='error': print(o['ename'],o['evalue'])
+" | grep -v "^$" | head -120
 ```
 
 ```
-9.5e-10 True
-0.023 True
-1e-08 True
-1.6e-06 True
-6.8e-34 True
-95.1% True
-206 ms True
-0.022 True
-56 of 85 True
-1.9e-08 True
-4.8e-19 True
-1.7e-06 True
-3.2e-17 True
--0.240 V True
--0.033 True
-0.042 True
-36 distinct True
-2.73 µV True
-20.28 True
-5.17 True
-[... 9 more lines not kept]
+Installed kernelspec registry-amjad-2025 in executed/amjad-2025/.venv/share/jupyter/kernels/registry-amjad-2025
+0 error(s)
+pass  reproduce_amjad_2025.ipynb  (61 s)
+===== 43
+all large (n=164): largest rising value 0.074 nA at 0.512 V (in 0.45-0.75: True); most negative falling value -0.048 nA at 0.897 V (in -0.35 to -0.05: False)
+large, trials 0-733 (n=87): largest rising value 0.077 nA at 1.152 V (in 0.45-0.75: False); most negative falling value -0.041 nA at 0.865 V (in -0.35 to -0.05: False)
+small (reference) (n=139): largest rising value 0.093 nA at 1.217 V (in 0.45-0.75: False); most negative falling value -0.040 nA at -0.321 V (in -0.35 to -0.05: True)
+mean at 0.608 V (rising): -0.014 +- 0.020 nA (SEM)
+mean at -0.192 V (falling): -0.006 +- 0.018 nA (SEM)
+single trials meeting both ranges: 8 of 164
+cue shifted -10 s: rising max at 0.864 V (0.042 nA), falling min at 1.308 V (-0.053 nA)
+cue shifted -5 s: rising max at -0.240 V (0.043 nA), falling min at 0.112 V (-0.039 nA)
+cue shifted -0.1 s: rising max at 1.329 V (0.075 nA), falling min at -0.080 V (-0.050 nA)
+cue shifted +0.1 s: rising max at 1.329 V (0.052 nA), falling min at -0.080 V (-0.039 nA)
+cue shifted +5 s: rising max at 1.329 V (0.026 nA), falling min at 1.217 V (-0.027 nA)
+cue shifted +10 s: rising max at -0.144 V (0.042 nA), falling min at 0.080 V (-0.064 nA)
+at 0.608 V: SD over trials of the single-trial change 0.259 nA; median within-trial SD over the 0.5-2 s scans 0.209 nA; SEM of the mean 0.020 nA
+large, 2-3 s (n=164): rising max 0.097 nA at 1.281 V; falling min -0.046 nA at -0.321 V; at 0.608 V -0.045 +- 0.023 nA
+large, 2-3 s, trials 0-733 (n=87): rising max 0.127 nA at 1.312 V; falling min -0.030 nA at -0.272 V; at 0.608 V -0.110 +- 0.031 nA
+small, 2-3 s (n=139): rising max 0.146 nA at 1.329 V; falling min -0.041 nA at -0.321 V; at 0.608 V -0.049 +- 0.025 nA
+[... 102 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "questions/amjad-2025.yaml",
+ "content": "questions:\n- claim: fig4b-beta-reward\n  question: The claims file's method choices compute beta power as \"the squared Hilbert envelope\"\n    of the 13 to 28 Hz signal, smoothed with a 0.25 s Hanning window. The Methods list the steps\n    in the other order, squared and then enveloped. Should the beta power follow the paper's order\n    (square the band-passed signal, then take its envelope, then smooth)? The same definition is\n    used by fig3b-beta-bursts, fig4c-beta-side and zenodo-link.\n  passage: 'Methods, Analysis, \"Signals were bandpass filtered around 13 to 28 Hz, squared,\n    enveloped, and then smoothed with a Hanning window of 0.25 s, as done previously.\"'\n  why: The two orders give different amplitudes. Raised by the round-1 verifier, who notes that the\n    beta power computed under the claims file ranges from 14 to 2184e-12 V^2 on the paper's\n    example trial, against 36 to 1560e-12 in the paper's Zenodo trace. In the attempt the paper's\n    order, with MATLAB's default envelope, matches the Zenodo trace less closely (r = 0.913 against\n    0.942) and gives the same outcomes for fig3b-beta-bursts, fig4b-beta-reward and fig4c-beta-side\n    (p = 4.3e-07, 5.42e-06 and 0.00734), so the reading is unlikely to change an outcome, but the\n    claims file states an order the paper does not.\n"
+}
+```
+
+```
+File created successfully at: questions/amjad-2025.yaml (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls schemas; python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'))
-print(json.dumps(s['properties']['verifications'],indent=1)[:2500])
-print(json.dumps(s['properties']['inputs'],indent=1)[:800])"
+cd  python3 -c "import ruamel.yaml; print('ruamel')" ; python3 -c "import yaml; print('pyyaml')"; grep -rn "width\|dump" tools/*.py | grep -i yaml | head
+```
+
+```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import ruamel.yaml; print('ruamel')
+    ^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'ruamel'
+pyyaml
+tools/author_notes.py:103:    path(key).write_text(yaml.safe_dump(body, sort_keys=False, allow_unicode=True, width=100))
+tools/author_notes.py:112:        print(yaml.safe_dump({"notes": load(paper_records.resolve(argv[1]))}, sort_keys=False, allow_unicode=True))
+tools/authors.py:93:                   + yaml.safe_dump({"schema_version": 1, "papers": dict(sorted(known.items()))}, sort_keys=False,
+tools/build_reuse_targets.py:145:                            + yaml.safe_dump(body, sort_keys=False, width=100, allow_unicode=True))
+tools/build_reuse_targets.py:152:    reuse_path.write_text(HEADER + yaml.safe_dump({"schema_version": 1, "papers": listed}, sort_keys=False,
+tools/build_site.py:549:            items[key] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
+tools/contributors.py:129:                   + yaml.safe_dump({"schema_version": 1, "datasets": dict(sorted(known.items()))}, sort_keys=False,
+tools/journals.py:92:                   + yaml.safe_dump({"schema_version": 1, "papers": dict(sorted(known.items()))}, sort_keys=False, allow_unicode=True))
+tools/migrate_paper_first.py:262:            + yaml.safe_dump({"schema_version": 1, **body}, sort_keys=False, width=100))
+tools/migrate_paper_first.py:266:        + yaml.safe_dump({"schema_version": 1, "attempts": p["ids"], "entries": p["entries"],
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/rec.py <<'PYEOF'
+import yaml
+p = "attempts/amjad-2025-02.yaml"
+r = yaml.safe_load(open(p))
+O = {o["claim"]: o for o in r["outcomes"]}
+
+O["chronic-duration"]["notes"] += (" The release notes of the pinned version say so too: \"The implant dates are not given, so the"
+    " days after implant that the paper reports cannot be checked\".")
+O["insertion-yield"]["notes"] += " The asset metadata gives no list of sensors either."
+O["fig3a-dual-channel"]["notes"] += (" The release notes of the pinned version list it as a known gap (\"The second FSCV site of"
+    " Figure 3A (c8ds) is not in the dandiset\").")
+O["fig5a-spike-reward"]["notes"] += " The release notes of the pinned version confirm that no code map exists for that session."
+O["fscv-waveform"]["notes"] += (" Each stored scan starts at its lowest potential (sample 0, -0.347 V), peaks at sample 107 and"
+    " ends at -0.3205 V.")
+O["zenodo-link"]["notes"] += (" The four Zenodo lists are in ascending trial order without repeats, so their 35th entry is the"
+    " 35th trial. The trace criterion was written after r = 0.94 was known, so that part is not an independent check."
+    " With the paper's order read literally (squared, then enveloped), r = 0.9132 at lag 0 and the median ratio is 1.689;"
+    " the claims file's order matches the Zenodo trace more closely, though its range (14.1 to 2184.5e-12 V^2) is wider"
+    " than Zenodo's (36.0 to 1559.6e-12).")
+O["zenodo-link"]["deviations"] = ["The 35th trial of the large-reward list is read as the 35th entry of the Zenodo list (trial 84),"
+    " as the file name and the claims file say; the list is in ascending order."]
+O["fig3a-redox-peaks"]["notes"] = (
+    "In the mean background-subtracted voltammogram of the 164 successful forced large-reward trials, the most negative"
+    " falling-sweep value (-0.048 nA) is at 0.897 V, outside -0.35 to -0.05 V, so the criterion fails. The largest rising-sweep"
+    " value (0.074 nA) is at 0.512 V, inside 0.45 to 0.75 V, but the mean is flat within its noise and this is not an"
+    " oxidation peak: at 0.608 V the mean change is -0.014 +- 0.020 nA and at -0.192 V -0.006 +- 0.018 nA (SEM), and with the"
+    " cue moved by -10, -5, +5 and +10 s the rising maxima fall at 0.864, -0.240, 1.329 and -0.144 V. No redox signal is"
+    " detectable: the single-trial change at 0.608 V has an SD of 0.259 nA over trials, so the mean would show about 0.04 nA"
+    " or more. Over 2 to 3 s, where the table's da differs most, the change at 0.608 V is -0.045 +- 0.023 nA for large and"
+    " -0.049 +- 0.025 nA for small reward (p = 0.938). With the 87 trials of the trial-aligned table neither extreme is in range"
+    " (1.152 and 0.865 V); 8 of 164 single trials meet both ranges; with the cue moved one scan (0.1 s) either way the falling"
+    " minimum is at -0.080 V and the rising maximum at 1.329 V, so one condition still fails. The raw current is on the trial"
+    " clock (cross-correlation of the raw 0.6 V current with the table's iox, z 19.3 at lag -1 scan and 18.4 at lag 0). The"
+    " stored PCA da shows a reward contrast (fig4a-dopamine-reward) where the raw current and the stored iox show none; the"
+    " PCA weights are not in the dataset, so the source of that contrast cannot be checked. Figure 3A shows a single trial"
+    " that cannot be identified in the files, so the mean over trials is the criterion's test, not the paper's display.")
+O["fig3b-beta-bursts"]["notes"] += (
+    " With the claims file's 0.25 s Hanning smoothing the runs above the 75th percentile last 206 ms at the median (10th to"
+    " 90th percentile 70 to 583 ms) and 4.9% are shorter than 50 ms, so the minimum length removes almost nothing and these"
+    " events are longer than the paper's bursts of one to a few cycles. Variants, not deciding; without the smoothing (median"
+    " run 67 ms) the rate falls at the 75th percentile (3.074 to 2.105, p = 6.8e-34); with the paper's order read literally"
+    " (squared, then enveloped) it falls at the 75th (1.318 to 1.077, p = 4.3e-07), rises at the 50th and falls at the 90th.")
+O["fig4a-dopamine-reward"]["notes"] += (
+    " The window ends before feedback, which comes 3.75 to 4.03 s after the value cue in every successful forced trial. With the"
+    " cue moved one scan either way p = 0.0272 (-0.1 s) and 0.0175 (+0.1 s). The evidence is weak; the p-value is near 0.05,"
+    " three of four variants are not significant, the +10 s control also gives p < 0.05 (in the other direction), and the raw"
+    " current shows no reward contrast at 0.6 V (fig3a-redox-peaks).")
+O["fig4b-beta-reward"]["notes"] += (
+    " The side of the big reward is fixed within 16 blocks of 50 to 93 successful trials (\"The big and small reward locations"
+    " were changed on every block\", Methods, Behavioral Tasks), so large against small is also one side against the other"
+    " within a block. With the side fixed the difference holds (left cues 244.5 against 290.3, p = 0.00164; right cues 301.9"
+    " against 394.2, p = 9.91e-08), and the large median is below the small one in 12 of 16 blocks (Wilcoxon over blocks p ="
+    " 0.025). With the paper's order read literally (squared, then enveloped) 378.8 against 409.0, p = 5.42e-06.")
+O["fig4c-beta-side"]["notes"] += (
+    " Large-reward left and right trials come from different blocks of the side-reward mapping. Taking each block's median as"
+    " one value, the 8 left blocks are lower than the 8 right blocks (251.0 against 306.8, p = 0.000622); within blocks over"
+    " both rewards left is below right in 12 of 16 (Wilcoxon p = 0.00336). With the paper's order read literally (squared, then"
+    " enveloped) 363.2 against 393.4, p = 0.00734.")
+O["fig5bc-unit-isolation"]["notes"] += (
+    " Leaving out samples within 1 ms of the input limit the ratio is 4.48, 5.90 and 5.78; the trough of the spike-triggered"
+    " average of the same 300 to 6000 Hz signal is 34.9 to 35.5 uV, 5.21 to 6.50 times the noise.")
+
+R = [
+ ("insertion-yield", True, "blocked", "No file and no dandiset metadata lists the implanted sensors (cell 5). I checked the archive API: the asset metadata has none either, and nothing mentions a yield.",
+  "No change of outcome. The notes now say that the asset metadata has no list either."),
+ ("chronic-duration", True, "blocked", "Cell 26 finds no implant date. The release notes of 0.261120.1306 say so directly: \"The implant dates are not given\". The asset metadata gives only ages (P11Y, P8Y).",
+  "No change of outcome. The data check now prints the release notes' known gaps, and the claim's section and notes cite them (problem 8)."),
+ ("fscv-waveform", True, "partially_reproduced", "Cell 29 meets 3 of 4 values: the high point is 1.3395 V, the sweep 400.46 V/s and the scan rate 9.9999 Hz, but the low point is -0.347 V against -0.4 +- 0.04. The low point is stable across the session (-0.3479 to -0.3474 V), and the dandiset description also gives -0.35 V.",
+  "No change of outcome. The data check now prints the first and last sample of a scan and the samples of its extremes: each scan starts at its lowest potential (sample 0, -0.347 V), peaks at sample 107 and ends at -0.3205 V (point C4)."),
+ ("ephys-acquisition", True, "reproduced", "Cell 31 measures 29999.9997 Hz (P), 31999.96 Hz (T), and a low cut of 0.1 Hz. The stored high cut is 8000 Hz, not 7500 Hz. It passes only because it falls inside the +-750 Hz tolerance.",
+  "No change. The notes and the finding already record the 8000 Hz high cut."),
+ ("shape-task-structure", True, "reproduced", "Forced trials are 24.39% (358 of 1468). The 8 complete blocks are 71 to 273 trials, all within 45 to 330 (cell 33).",
+  "No change."),
+ ("zenodo-link", True, "reproduced", "The lists agree at 99.82%, 100%, 100% and 99.83%; the only mismatch is trial 1501, whose window runs past the end of the LFP. The beta power of the example trial gives r = 0.942 at lag 0 and 0.943 at 6 ms (cell 35). The claims file admits this criterion was written after r = 0.94 was known.",
+  "No change of outcome. The cell now checks that the Zenodo lists are in ascending order without repeats (they are), and the conclusion and notes say that the trace criterion is not an independent check (problem 6). The paper's order of the beta power steps is shown as a variant (r = 0.913)."),
+ ("fig3a-dual-channel", True, "blocked", "c8ds is not in the files, and the release notes say so (\"Known gaps\"). The c8dg half can be tested and passes: 65.9% of 85 forced large-reward trials are above zero (cell 37). It cannot decide a two-site claim.",
+  "No change of outcome. The section and notes now cite the release notes."),
+ ("fig3a-redox-peaks", True, "not_reproduced", "Cell 39: the reduction minimum is at 0.897 V, outside -0.35 to -0.05 V. The rising maximum at 0.512 V lands in range by chance, because the mean voltammogram is flat noise (figure range +-0.06 nA; at 0.608 V it is -0.014 +- 0.020 nA). The first-half variant fails both conditions.",
+  "No change of outcome. The conclusion and notes now say that no redox signal is detectable and that the rising maximum in range is not an oxidation peak, with cue shifts of -10, -5, +5 and +10 s as references (problem 1). Added the per-trial SD at 0.6 V (0.259 nA) and the voltammograms over 2 to 3 s, where the table's da differs most (no reward contrast at 0.6 V, p = 0.938) (point C2), and one-scan cue shifts (problem 5). The conclusion discusses the mismatch with the stored PCA da."),
+ ("fig3b-beta-bursts", True, "reproduced", "At the 75th percentile, burst rate is 1.512/s before the cue and 1.207/s after, Wilcoxon p = 9.5e-10, n = 570 (cell 41). Both variants are also significant, but the 50th percentile one changes in the opposite direction. The claim only says the rate changes.",
+  "No change of outcome. The cell now prints the length of the runs above threshold (median 206 ms, 4.9% under 50 ms), and the conclusion says these events are longer than the paper's bursts (problem 4). Variants without the smoothing and with the paper's order of the beta power steps are shown; all change significantly."),
+ ("fig4a-dopamine-reward", True, "reproduced", "Medians are 1.367 (large) and 0.191 (small), Mann-Whitney p = 0.0226, n = 85 and 80 (cell 43). The result is fragile: the stored da gives p = 0.30, iox gives p = 0.45 with large below small, and the 0 to 1.5 s window gives p = 0.33. Only the 1.5 to 3 s window agrees (p = 0.006).",
+  "No change of outcome; the criterion is met. The conclusion and notes now say the evidence is weak, including the +10 s control at p = 0.006 (problem 2). The data check now shows that feedback comes 3.75 to 4.03 s after the value cue in every successful forced trial, so the 0 to 3 s window ends before it (point C1). One-scan cue shifts give p = 0.0272 and 0.0175 (problem 5)."),
+ ("fig4b-beta-reward", True, "reproduced", "Over 0 to 0.5 s the medians are 275.1 (large) and 327.2 (small), in 1e-12 V^2, p = 1.0e-8. Dividing by the pre-cue baseline keeps it (p = 1.1e-6). The 0 to 1 s and 0.25 to 0.75 s windows are not significant (cell 45).",
+  "No change of outcome. Added the block structure asked for (point C3): the side of the big reward is fixed in 16 blocks; with the side fixed the reward difference holds (p = 0.00164 and 9.91e-08), and over blocks the large median is lower in 12 of 16 (p = 0.025). The paper's order of the beta power steps gives p = 5.42e-06 (problem 3)."),
+ ("fig4c-beta-side", True, "reproduced", "The medians are 244.5 (left) and 301.9 (right), p = 1.6e-6, and the baseline-divided variant gives p = 2.1e-9 (cell 47). The paper confirms that left is contralateral (Methods, Behavioral Tasks).",
+  "No change of outcome. Added a per-block summary (point C3): block medians of large-reward trials are lower in the 8 left blocks (p = 0.000622), and within blocks left is below right in 12 of 16 (p = 0.00336). The paper's order of the beta power steps gives p = 0.00734 (problem 3)."),
+ ("fig5a-spike-reward", True, "blocked", "Monkey P's 36 event codes have no names, and the release notes confirm no code map exists. I listed the Zenodo deposit: it has no trial lists for Monkey P, only session126_events.mat. Assigning value-cue and reward codes would be a guess, so no part can be tested.",
+  "No change of outcome. The section and notes now cite the release notes."),
+ ("fig5bc-unit-isolation", True, "reproduced", "0.0032% of ISIs are under 1 ms. The 30.6 uV trough is 4.58 times the noise in the first 600 s, and 5.5 to 5.6 times in the two later segments (cell 50).",
+  "No change of outcome. Added the noise without samples within 1 ms of the input limit (ratios 4.48 to 5.90) and the trough of the spike-triggered average on the same 300 to 6000 Hz filter as the noise (5.21 to 6.50 times) (problem 7)."),
+]
+results = [{"claim": c, "agrees": a, "outcome": o, "reason": rs, "response": rp} for c, a, o, rs, rp in R]
+assert [x["claim"] for x in results] == [o["claim"] for o in r["outcomes"]]
+r["verifications"] = [{
+    "date": "2026-11-24",
+    "kind": "agent",
+    "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+    "reviewed": ("Round 1: the executed notebook with the conclusion cells and the summary removed, the helper module and"
+                 " the claims file, with the paper's full text under paper/. The verifier queried the DANDI API for the"
+                 " version's assets, metadata and release notes, listed the Zenodo deposit, and tested waveform_parameters,"
+                 " burst_onsets, window_mean, cue_sample, window_power, beta_power, noise_level and decode_trials on"
+                 " synthetic inputs."),
+    "results": results,
+}]
+with open(p, "w") as fh:
+    yaml.safe_dump(r, fh, sort_keys=False, allow_unicode=True, width=110)
+PYEOF
+cd  cp attempts/amjad-2025-02.yaml $TMPDIR/rec.bak; python3 $TMPDIR/rec.py && git diff --no-index --stat $TMPDIR/rec.bak attempts/amjad-2025-02.yaml; head -5 attempts/amjad-2025-02.yaml
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "—\|rather" attempts/amjad-2025-02.yaml questions/amjad-2025.yaml entries/amjad-2025/README.md entries/amjad-2025/amjad.py; grep -c "—\| rather " entries/amjad-2025/reproduce_amjad_2025.ipynb; python tools/entry.py check entries/amjad-2025 2>&1 | tail -15
+```
+
+```
+0
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls tools | head -60; grep -n "attempts/\|questions" tools/entry.py | head
+```
+
+```
+__pycache__
+agent_run.py
+archive_transcripts.sh
+archives
+author_notes.py
+authors.py
+backfill_summaries.py
+blind.sh
+build_dryad_targets.py
+build_figshare_targets.py
+build_openneuro_targets.py
+build_osf_targets.py
+build_reuse_targets.py
+build_site.py
+build_sparc_targets.py
+build_targets.py
+build_zenodo_targets.py
+changed_entries.py
+claims_check.py
+colab.py
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "def check\|attempt\b\|schema" tools/entry.py | head -30
+```
+
+```
+13:`check` validates entry.yaml, and the claims and attempt files that mention
+14:the entry, against the schemas, and applies the conventions that keep a result
+41:Requires `uv` on PATH, and `pyyaml`, `jsonschema` and `nbformat` to run this
+60:from jsonschema import Draft202012Validator
+86:    """The identifier of the one dataset a claims file or attempt record is about, in its archive: None for a
+87:    paper's own claims file (claims/<paper>.yaml) and for an attempt on several datasets."""
+95:    """The identifiers of every dataset an attempt record used."""
+110:def lookup(index: dict, attempt: dict):
+111:    """The claims an attempt was tested on: the per-dataset file of its one dataset if there is one, else the
+113:    one = dataset_id(attempt)
+114:    if one is not None and (attempt.get("paper"), one) in index:
+115:        return index[(attempt.get("paper"), one)]
+116:    return index.get((attempt.get("paper"), None))
+119:def schema(name: str) -> Draft202012Validator:
+120:    return Draft202012Validator(json.loads((ROOT / "schemas" / f"{name}.schema.json").read_text()))
+123:# Every entry's check reads every claims file and attempt record, so each text is parsed and validated once
+138:def _schema_errors(text: str, schema_name: str) -> tuple[str, ...]:
+141:                 for err in sorted(schema(schema_name).iter_errors(_plain(data)), key=lambda e: list(e.path)))
+152:def validate(report: Report, path: Path, schema_name: str) -> dict | None:
+156:    for message in _schema_errors(path.read_text(), schema_name):
+[... 10 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls schemas; python3 -c "
+import yaml,json,jsonschema,glob
+s=[f for f in glob.glob('schemas/*question*')]
+print(s)
+for f in s:
+    jsonschema.validate(yaml.safe_load(open('questions/amjad-2025.yaml')), json.load(open(f))); print('valid')
+"; ls executed/amjad-2025/; python tools/entry.py handover entries/amjad-2025 2>&1 | tail -2
 ```
 
 ```
 attempt.schema.json
 claims.schema.json
 entry.schema.json
-{
- "type": "array",
- "items": {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-   "date",
-   "kind",
-   "by",
-   "results"
-  ],
-  "properties": {
-   "date": {
-    "type": "string",
-    "format": "date"
-   },
-   "kind": {
-[... 75 more lines not kept]
-```
-
-**Agent**
-
-Now the attempt record. First the provenance, inputs, and outcome notes.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p="attempts/002013-amjad-2025-01.yaml"; s=open(p).read()
-def sub(old,new):
-    global s
-    assert s.count(old)==1, old[:60]; s=s.replace(old,new)
-sub("    protocol: pilot-6\n","    protocol: pilot-7\n")
-sub("""    values.
-  source: doi:10.5281/zenodo.14826579
-""","""    values.
-  source: doi:10.5281/zenodo.14826579
-- what: The Neuralynx events file of Monkey P's session in the paper's Zenodo deposit
-    (session126_events.mat), read in the data check for the time of its first event, which places
-    the spike times on the raw signal's clock, and to show its event codes for fig5a-spike-reward.
-  source: doi:10.5281/zenodo.14826579
-""")
-sub("""    nominal waveform.
-  deviations:
-  - Measured on session 09/13/2024 only""","""    nominal waveform. The data of the applied voltage have conversion 1 and offset 0, so the values
-    are read as stored.
-  deviations:
-  - Measured on session 09/13/2024 only""")
-sub("""    itself could not be compared.
-""","""    itself could not be compared. The criterion tests only r and was written after r = 0.94 was
-    known. The amplitudes differ (maxima 2184 against 1560 µV² in the plotted trial), so the paper's
-    filter or envelope probably differs from the one used here.
-""")
-sub("""    including c8ds, which were not deposited.
-""","""    including c8ds, which were not deposited. The c8dg half can be tested and holds: the mean of the
-    re-referenced dopamine over 0 to 3 s is above zero in 56 of 85 large-reward forced trials
-    (65.9%), and in 58 of 85 with a baseline of the mean over -1 to 0 s.
-""")
-sub("""    value cue times (p = 0.46). A colour plot of a forced large-reward trial therefore cannot be
-    placed in the trial.
-""","""    value cue times (p = 0.46). The same search at 0.50 V, 0.70 V and -0.19 V gives best r 0.17 to
-    0.22 at offsets that differ from row to row. Computed at the stored times (not deciding), the
-    background-subtracted voltammogram of 164 large-reward forced trials has its largest
-    rising-sweep value at -0.24 V (at 0.6 V it is -0.033) and its most negative value at the
-    switching potential, 1.34 V, with an SD of 0.042 over the scan; it does not meet the criterion.
-    A colour plot of a forced large-reward trial therefore cannot be placed in the trial.
-""")
-sub("""    s in 0 to 0.25 s) and falls again from 6 s after it, after the feedback.
-""","""    s in 0 to 0.25 s) and falls again from 6 s after it, after the feedback. On the smoothed power
-    95.1% of runs above the 75th percentile last at least 50 ms (median 206 ms), so the minimum length
-    does little; on the unsmoothed envelope the rate also falls after the cue (3.07 to 2.11 per s, p =
-    6.8e-34). At the deciding threshold the fall in bursts coincides with the drop in beta power after
-    the cue, so it is not separate evidence from the suppression of fig4b-beta-reward.
-""")
-sub("""    trials 1 to 367 (p = 0.013) and not in
-    trials 368 to 734 (p = 0.51).
-""","""    trials 1 to 367 (p = 0.013) and not in
-    trials 368 to 734 (p = 0.51). With a baseline of the mean over -1 to 0 s in place of the sample
-    at the cue it is the same (1.38 against 0.10, p = 0.022).
-""")
-open(p,"w").write(s)
-EOF
-grep -n "trials 368 to 734" attempts/002013-amjad-2025-01.yaml
-```
-
-```
-Traceback (most recent call last):
-  File "<stdin>", line 47, in <module>
-  File "<stdin>", line 4, in sub
-AssertionError:     trials 1 to 367 (p = 0.013) and not in
-    trials 368 to
-130:    trials 368 to 734 (p = 0.51).
+paper-match.schema.json
+[]
+reproduce_amjad_2025.ipynb
+result.json
+wrote executed/amjad-2025/handover
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 127,131p attempts/002013-amjad-2025-01.yaml | cat -A | cut -c1-120
-```
-
-```
-1.5 s (p = 0.41). The effect is weak. Before the cue the groups differ the other way (p =$
-    0.064). Without re-referencing (the stored da) there is no difference (p = 0.3), nor in the$
-    re-referenced oxidation current (p = 0.41). It holds in trials 1 to 367 (p = 0.013) and not in$
-    trials 368 to 734 (p = 0.51).$
-  deviations:$
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/rec1.py <<'EOF'
-p="attempts/002013-amjad-2025-01.yaml"; s=open(p).read()
-def sub(old,new):
-    global s
-    assert s.count(old)==1, old[:60]; s=s.replace(old,new)
-sub("    protocol: pilot-6\n","    protocol: pilot-7\n")
-sub("""    values.
-  source: doi:10.5281/zenodo.14826579
-""","""    values.
-  source: doi:10.5281/zenodo.14826579
-- what: The Neuralynx events file of Monkey P's session in the paper's Zenodo deposit
-    (session126_events.mat), read in the data check for the time of its first event, which places
-    the spike times on the raw signal's clock, and to show its event codes for fig5a-spike-reward.
-  source: doi:10.5281/zenodo.14826579
-""")
-sub("""    nominal waveform.
-  deviations:
-  - Measured on session 09/13/2024 only""","""    nominal waveform. The data of the applied voltage have conversion 1 and offset 0, so the values
-    are read as stored.
-  deviations:
-  - Measured on session 09/13/2024 only""")
-sub("""    itself could not be compared.
-""","""    itself could not be compared. The criterion tests only r and was written after r = 0.94 was
-    known. The amplitudes differ (maxima 2184 against 1560 µV² in the plotted trial), so the paper's
-    filter or envelope probably differs from the one used here.
-""")
-sub("""    including c8ds, which were not deposited.
-""","""    including c8ds, which were not deposited. The c8dg half can be tested and holds: the mean of the
-    re-referenced dopamine over 0 to 3 s is above zero in 56 of 85 large-reward forced trials
-    (65.9%), and in 58 of 85 with a baseline of the mean over -1 to 0 s.
-""")
-sub("""    value cue times (p = 0.46). A colour plot of a forced large-reward trial therefore cannot be
-    placed in the trial.
-""","""    value cue times (p = 0.46). The same search at 0.50 V, 0.70 V and -0.19 V gives best r 0.17 to
-    0.22 at offsets that differ from row to row. Computed at the stored times (not deciding), the
-    background-subtracted voltammogram of 164 large-reward forced trials has its largest
-    rising-sweep value at -0.24 V (at 0.6 V it is -0.033) and its most negative value at the
-    switching potential, 1.34 V, with an SD of 0.042 over the scan; it does not meet the criterion.
-    A colour plot of a forced large-reward trial therefore cannot be placed in the trial.
-""")
-sub("""    s in 0 to 0.25 s) and falls again from 6 s after it, after the feedback.
-""","""    s in 0 to 0.25 s) and falls again from 6 s after it, after the feedback. On the smoothed power
-    95.1% of runs above the 75th percentile last at least 50 ms (median 206 ms), so the minimum length
-    does little; on the unsmoothed envelope the rate also falls after the cue (3.07 to 2.11 per s, p =
-    6.8e-34). At the deciding threshold the fall in bursts coincides with the drop in beta power after
-    the cue, so it is not separate evidence from the suppression of fig4b-beta-reward.
-""")
-sub("""    trials 368 to 734 (p = 0.51).
-""","""    trials 368 to 734 (p = 0.51). With a baseline of the mean over -1 to 0 s in place of the sample
-    at the cue the result is the same (1.38 against 0.10, p = 0.022).
-""")
-sub("""    over 0.25 to 0.75 s there is no difference (p = 0.66).
-""","""    over 0.25 to 0.75 s there is no difference (p = 0.66). The 0.25 s smoothing does not carry the
-    difference from before the cue: on the unsmoothed envelope it holds over 0 to 0.5 s (ratio 0.834,
-    p = 1.9e-08) and 0.125 to 0.5 s (ratio 0.671, p = 4.8e-19); in 0.1 s bins large and small do not
-    differ before the cue (ratios 0.95 to 1.05), large is lower from 0.1 to 0.4 s (0.85, 0.59, 0.60)
-    and higher from 0.5 s on (1.32 to 1.49). The LFP's 1497 joins do not step (largest change at a
-    join 20.3 µV, below the 99.9th percentile of 26.0 µV over all samples), and 118 of 1172
-    successful trials have one within -0.5 to 1 s of the cue, 23 to 36 in each reward and side
-    condition. Trial 1501, absent from the Zenodo lists, is included; one trial of 570 cannot
-    change the result.
-""")
-sub("""    0.25 to 0.75 s (p = 0.75), and also in small-reward trials (p = 1.5e-10).
-""","""    0.25 to 0.75 s (p = 0.75), and also in small-reward trials (p = 1.5e-10). On the unsmoothed
-    envelope left is lower over 0 to 0.5 s (ratio 0.807, p = 1.7e-06) and 0.125 to 0.5 s (ratio
-    0.688, p = 3.2e-17), most from 0.1 to 0.3 s (ratios 0.54 and 0.55).
-""")
-sub("""    Monkey T sessions, so they could not be decoded (metadata insufficient).
-""","""    Monkey T sessions, so they could not be decoded (metadata insufficient). The notebook now reads
-    that file: 20812 events with 36 distinct TTL values and no names; the trial-start code 128 does not
-    occur and the value cue code 23 occurs 20 times.
-""")
-open(p,"w").write(s)
-EOF
-python $TMPDIR/rec1.py && echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import nbformat
-nb=nbformat.read("executed/002013-amjad-2025/reproduce_amjad_2025.ipynb",as_version=4)
-for o in nb.cells[31].outputs:
-    if o.output_type=="stream": print(o.text)
-EOF
-```
-
-```
-big rew: Zenodo 569, here 570, both 569 (99.82% of the larger); only Zenodo [], only here [1501]
-small rew: Zenodo 602, here 602, both 602 (100.00% of the larger); only Zenodo [], only here []
-left: Zenodo 594, here 594, both 594 (100.00% of the larger); only Zenodo [], only here []
-right: Zenodo 577, here 578, both 577 (99.83% of the larger); only Zenodo [], only here [1501]
-
-Zenodo example: its 'data' variable equals its time variable: True ; times -3.0 to 12.0 s
-35th large-reward trial = trial 84; r at lag 0 0.942; best r 0.943 at 6 ms; median ratio here / Zenodo 0.943
-
-plotted range: Zenodo 36.0 to 1559.6 µV², here 14.1 to 2184.5
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p="attempts/002013-amjad-2025-01.yaml"; s=open(p).read()
-old="The amplitudes differ (maxima 2184 against 1560 µV² in the plotted trial)"
-assert old in s
-s=s.replace(old,"The amplitudes differ (maximum 2184 µV² here against 1560 µV² in the Zenodo trace)")
-open(p,"w").write(s)
-EOF
-tail -5 attempts/002013-amjad-2025-01.yaml
-```
-
-```
-acquisition high cut is 8000 Hz in the Neuralynx settings, not the 7500 Hz the description
-    states.
-- kind: other
-  statement: The applied FSCV waveform runs from -0.347 to 1.340 V, as the dandiset description says;
-    the paper's Methods give -0.4 to 1.3 V.
-```
-
-**Agent**
-
-Now the verification round record.
-
-**Agent calls Bash**
-
-```bash
-cat >> attempts/002013-amjad-2025-01.yaml <<'EOF'
-verifications:
-- date: '2026-10-15'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
-    module and the claims file, with the paper's full text (PMC12183687). The verifier read the
-    archive's file list and metadata through the DANDI API and tested the helpers on synthetic inputs
-    (beta_power, burst_onsets, window_mean, codes_per_trial, rereference, fscv_window_mean, best_lag,
-    reward_blocks). It had no attempt record and took the claims from the claims file.
-  results:
-  - claim: insertion-yield
-    agrees: true
-    outcome: blocked
-    reason: The archive has 3 assets with sites c8dg, c3bs, c3a and cl3, and nothing about implanted
-      or failed sensors. Figure 3 names 4 functional Monkey T sites against the paper's "3/14", so
-      "sensor" may mean probe. Neither count can be checked; an implant log of sensors per monkey is
-      not in the archive.
-    response: No change.
-  - claim: chronic-duration
-    agrees: true
-    outcome: blocked
-    reason: Asset metadata gives only age (P11Y, P8Y) and no implant date. The one testable part
-      agrees, the two Monkey T sessions are 13 days apart, as 496 - 483 = 13.
-    response: No change.
-  - claim: fscv-waveform
-    agrees: true
-    outcome: partially_reproduced
-    reason: The lowest potential is -0.347 V against -0.4 +- 0.04 V, which fails; the highest (1.3395
-      V), sweep rate (400.46 V/s) and scan rate (10.0 Hz) are within tolerance, so three of four is
-      partial. The dandiset description also says -0.35 V. Separately, raw_fscv reads the applied
-      voltage without checking the conversion and offset attributes of the data itself, which cell
-      11 does not print; the scaling is probably correct, as the values agree with the description.
-    response: raw_fscv now returns the attributes of the data of both series and the data check
-      prints them; both have conversion 1 and offset 0, so the voltage is read as stored. Added to
-      the notes. Outcome unchanged.
-  - claim: ephys-acquisition
-    agrees: true
-    outcome: reproduced
-    reason: 30 kHz for P, 32 kHz for T and the 0.1 Hz low cut are within tolerance, and the 8000 Hz
-      high cut is within 7500 +- 750. The electrodes table stores 8000 Hz while the dandiset
-      description repeats the paper's 7500 Hz, an inconsistency in the metadata that does not affect
-      the outcome.
-    response: No change; the 8000 against 7500 Hz difference was already a finding (metadata_error).
-  - claim: shape-task-structure
-    agrees: true
-    outcome: reproduced
-    reason: Forced trials are 358/1468 = 24.4%, and the 8 complete blocks are 71 to 273 trials long,
-      all within 45 to 330. The image-code counts are consistent with forced trials carrying one image
-      code each, which reward_blocks assumes.
-    response: No change.
-  - claim: zenodo-link
-    agrees: true
-    outcome: reproduced
-    reason: Every trial list agrees on at least 99.8% of trials, the only difference being trial 1501,
-      missing from the Zenodo lists, and the beta power correlates at r = 0.943 at a 6 ms lag. The
-      criterion was written after r = 0.94 was known and tests only r; the amplitudes differ (maxima
-      2184 against 1560 µV², median ratio 0.943), so the paper's filter or envelope was probably
-      different.
-    response: The notes now say that the criterion tests only r and was written after r was known, and
-      give the difference in amplitude. Outcome unchanged.
-  - claim: fig3a-dual-channel
-    agrees: true
-    outcome: blocked
-    reason: The archive has no c8ds. The c8dg half can be tested and passes (large-reward median of
-      re-referenced da over 0 to 3 s +1.28, n 85), but the fraction of trials with a positive change
-      is only inferred from the median, not printed.
-    response: The fig4a-dopamine-reward cell now prints the fraction, 56 of 85 large-reward trials
-      above zero (65.9%), and 58 of 85 with a baseline of the mean over -1 to 0 s. Added to the
-      notes. Outcome unchanged, as c8ds is missing.
-  - claim: fig3a-redox-peaks
-    agrees: true
-    outcome: blocked
-    reason: The raw FSCV exists, but at the stored times it does not match the trial-aligned iox (r
-      about -0.06 to 0), and a search over the whole record finds only r of about 0.17 to 0.20 at
-      offsets that differ from row to row, so the raw current cannot be placed on the trial clock.
-      Part of the case rests on searches at neighbouring potentials run while preparing and not shown.
-      It asked for those searches and for the criterion's background-subtracted voltammogram computed
-      at the stored times.
-    response: The data check now runs the search at 0.50 V, 0.70 V and -0.19 V (best r 0.17 to 0.22,
-      offsets differing from row to row), and computes the criterion's voltammogram at the stored
-      times, marked as not deciding; for 164 large-reward trials its largest rising-sweep value is at
-      -0.24 V and its most negative value at the switching potential, so it does not meet the
-      criterion there either. Added to the notes. Outcome unchanged.
-  - claim: fig3b-beta-bursts
-    agrees: true
-    outcome: reproduced
-    reason: At the 75th percentile the burst rate is 1.51/s before the cue and 1.21/s after (Wilcoxon
-      p = 9.5e-10, n 570). The direction reverses at the 50th percentile. The power is already
-      smoothed with a 0.25 s Hanning window, so the 50 ms minimum length is nearly always met, and at
-      the 75th percentile the drop in bursts is largely the same desynchronisation measured in fig4b,
-      not separate evidence for bursts.
-    response: Added the share of runs that pass the minimum length (95.1% on the smoothed power,
-      median 206 ms) and a variant on the unsmoothed envelope (3.07 to 2.11 bursts per s, p =
-      6.8e-34). The conclusion and notes now say that the fall in bursts at the deciding threshold
-      coincides with the drop in beta power and is not separate evidence. Outcome unchanged, as the
-      criterion is met.
-  - claim: fig4a-dopamine-reward
-    agrees: true
-    outcome: reproduced
-    reason: Large median 1.28 against small 0.19, Mann-Whitney p = 0.023, meets the criterion, but the
-      evidence is weak; 0 to 1.5 s (p = 0.41), da as stored (p = 0.3), iox (p = 0.41) and trials 368
-      to 734 (p = 0.51) are not significant, and the pre-cue window differs the other way (-0.73, p =
-      0.064). The result relies on re-referencing to a single sample at the cue and on the first half
-      of the session. It asked for the test with a pre-cue baseline mean, for example -1 to 0 s.
-    response: Added that variant, da minus its mean over -1 to 0 s (1.38 against 0.10, p = 0.022; 1.5
-      to 3 s p = 0.0062), to the notebook, the conclusion and the notes. The conclusion already called
-      the effect weak. Outcome unchanged.
-  - claim: fig4b-beta-reward
-    agrees: true
-    outcome: reproduced
-    reason: Over 0 to 0.5 s the large median is 275 µV² against 327 µV² for small, p = 1e-8, and the
-      direction holds within each side. The difference appears only in 0 to 0.5 s; beta_power uses a
-      zero-phase filter and centred smoothing, so that mean includes about 125 ms of pre-cue signal,
-      and the effect may be a difference in when the suppression starts. The LFP has 1,497 timestamp
-      irregularities, and a step at a join would leave a transient of about 230 ms; it asked where the
-      joins fall relative to the cue and the size of the step at each. Trial 1501 is in the
-      selections but not in the Zenodo lists, which cannot change a result.
-    response: Added variants on the unsmoothed envelope (0 to 0.5 s ratio 0.834, p = 1.9e-08; 0.125
-      to 0.5 s ratio 0.671, p = 4.8e-19) and the large/small ratio in 0.1 s bins, which shows no
-      difference before the cue, lower power for large from 0.1 to 0.4 s and higher from 0.5 s. Added
-      the joins to the data check; all are intervals shorter than 1 ms, the change at a join is no
-      larger than between other samples (largest 20.3 µV against a 99.9th percentile of 26.0 µV), and
-      118 of 1172 trials have one within -0.5 to 1 s of the cue, spread over the conditions. Trial
-      1501 is left in, as noted. Outcome unchanged.
-  - claim: fig4c-beta-side
-    agrees: true
-    outcome: reproduced
-    reason: Over 0 to 0.5 s the left median is 245 µV² against 301 µV² for right, p = 1.6e-6, and
-      normalising to the pre-cue baseline makes the difference stronger (ratio 0.71). Left is treated
-      as contralateral from the paper; the files do not record the implant hemisphere, and the
-      pre-cue baseline also differs between sides (left higher, p = 0.013).
-    response: Added the same unsmoothed variants (0 to 0.5 s ratio 0.807, p = 1.7e-06; 0.125 to 0.5 s
-      ratio 0.688, p = 3.2e-17) and 0.1 s bins. The hemisphere cannot be checked from the files or the
-      dandiset metadata; the conclusion now says the label rests on the Methods, and it was already a
-      deviation. Outcome unchanged.
-  - claim: fig5a-spike-reward
-    agrees: true
-    outcome: blocked
-    reason: Monkey P's file has no trials or events table, while the spike times are present. Cell 20
-      refers to a Monkey P events file in the Zenodo deposit, so the claim might be testable with
-      outside data, but not from the dandiset. Cell 19 hard-codes 6800.66578, said to come from that
-      file, which the notebook never loads, contradicting the header's statement that nothing else
-      uses outside data.
-    response: The data check now loads session126_events.mat from Zenodo, takes the offset from its
-      first event instead of a typed number, and prints its codes; the file is listed under inputs and
-      the header says what it is used for. Its 36 TTL values have no names, the trial-start code 128
-      does not occur and the value cue code 23 occurs 20 times, so the trials cannot be decoded and an
-      outside-data test was not attempted. Outcome unchanged.
-  - claim: fig5bc-unit-isolation
-    agrees: true
-    outcome: reproduced
-    reason: 1 of 31,246 ISIs (0.003%) is under 1 ms, and the trough of -30.64 µV against noise of 5.41
-      µV gives a ratio of 5.66, above the required 3. The raw spike-triggered mean (-26.4 µV) confirms
-      the waveform units.
-    response: No change.
-EOF
-python tools/entry.py check entries/002013-amjad-2025 2>&1 | tail -5
-```
-
-```
-error: attempts/002013-amjad-2025-01.yaml: not valid YAML: mapping values are not allowed here
-  in "<unicode string>", line 103, column 84:
-     ... 8dg half can be tested and holds: the mean of the
-                                         ^
-1 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/The c8dg half can be tested and holds: the mean of the/The c8dg half can be tested and holds; the mean of the/' attempts/002013-amjad-2025-01.yaml && grep -nE '^\s+[^-#].*: .*' attempts/002013-amjad-2025-01.yaml | grep -vE '^\s*[0-9]+:\s+(- )?[a-z_]+: ' | head; python tools/entry.py check entries/002013-amjad-2025 2>&1 | tail -5
-```
-
-```
-169:    difference from before the cue: on the unsmoothed envelope it holds over 0 to 0.5 s (ratio 0.834,
-202:    that file: 20812 events with 36 distinct TTL values and no names; the trial-start code 128 does not
-error: attempts/002013-amjad-2025-01.yaml: not valid YAML: mapping values are not allowed here
-  in "<unicode string>", line 169, column 35:
-        difference from before the cue: on the unsmoothed envelope it  ... 
-                                      ^
-1 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i -e '169s/before the cue: on the/before the cue; on the/' -e '202s/that file: 20812/that file, with 20812/' attempts/002013-amjad-2025-01.yaml && python tools/entry.py check entries/002013-amjad-2025 2>&1 | tail -5; grep -n "—\|rather" attempts/002013-amjad-2025-01.yaml entries/002013-amjad-2025/*.py entries/002013-amjad-2025/*.ipynb | head
+cd  rm -rf executed/amjad-2025/handover; python tools/entry.py check entries/amjad-2025 | tail -1; date -u
 ```
 
 ```
 0 error(s)
+Tue Nov 24 23:46:52 UTC 2026
 ```
 
 **Agent**
 
-I've answered every point in the round-1 report and re-run the entry. `python tools/entry.py all entries/002013-amjad-2025` passes: the notebook ran in 157 s and the check found 0 errors. Every number quoted in the conclusions and notes matches the new output.
+I've worked through the round-1 report. No outcome changed: the verifier agreed with all 14 (8 reproduced, 1 partially reproduced, 1 not reproduced, 4 blocked). I re-ran the entry with `python tools/entry.py all entries/amjad-2025`. It passed in about 1 minute with a peak memory of 4.4 GB, every number it shared with the earlier run came out the same, and `check` reports 0 errors.
 
-**Outcomes:** none changed. The verifier gave the same outcome as the record on all 14 claims; it called fig4a "reproduced (weak)", which I recorded as agreeing with `reproduced`. The new analyses support the existing outcomes.
+**Output the verifier asked for**
+- **fig4a timing (C1):** in every successful forced shape-task trial, feedback comes 3.75 to 4.03 s after the value cue. The 0 to 3 s window therefore always ends before feedback.
+- **fig3a noise (C2):**
+  - The single-trial change at 0.6 V varies with an SD of 0.259 nA across trials, so the trial average could only show a change of about 0.04 nA or more.
+  - Over 2 to 3 s, where the stored dopamine series differs most between rewards, the raw current at 0.6 V shows no reward contrast (p = 0.938).
+- **fig4b/4c blocks (C3):** in the direction task, the side that gives the big reward is fixed within 16 blocks of 50 to 93 successful trials.
+  - The reward effect holds with the side held fixed: p = 0.00164 for left cues and 9.91e-08 for right cues. Large is below small in 12 of 16 blocks (p = 0.025).
+  - The side effect holds across block medians (p = 0.000622) and within blocks (12 of 16, p = 0.00336).
+- **Scan samples (C4):** each stored scan starts at its lowest potential (sample 0, -0.347 V), peaks at sample 107 and ends at -0.3205 V.
 
-**Output added for what the verifier asked:**
-- **FSCV scaling:** the applied-voltage and current data both have conversion 1 and offset 0, so the voltage is read as stored.
-- **fig3a-redox-peaks:** the searches at neighbouring potentials now run in the notebook (0.50 V, 0.70 V and -0.19 V). The best r is 0.17 to 0.22, at offsets that differ from row to row. I also computed the claim's voltammogram at the stored times, marked as not deciding. For large-reward trials its largest value on the rising sweep is at -0.24 V, not near 0.6 V, so the claim stays blocked.
-- **fig3a-dual-channel, c8dg half:** 56 of 85 large-reward trials (65.9%) are above zero. The claim stays blocked because c8ds is not in the dandiset.
-- **fig4a:** with a pre-cue baseline mean (-1 to 0 s) in place of the single sample at the cue, the result is 1.38 against 0.10, p = 0.022.
-- **fig4b and fig4c:**
-  - The effect is not smoothing carrying pre-cue signal forward. On the unsmoothed envelope fig4b holds (0 to 0.5 s ratio 0.834, p = 1.9e-08), and fig4c too (ratio 0.807, p = 1.7e-06).
-  - In 0.1 s bins, large and small do not differ before the cue, and large is lower from 0.1 to 0.4 s.
-  - The 1,497 LFP joins are all intervals shorter than 1 ms, and the signal does not jump at them: the largest change at a join is 20.3 µV, below the 99.9th percentile of 26.0 µV over all samples.
-  - 118 of 1,172 trials have a join near the cue, spread over the four conditions.
-- **fig3b:** 95.1% of runs above threshold on the smoothed power already last at least 50 ms, so the minimum length does little. An unsmoothed variant also shows a fall in bursts after the cue (p = 6.8e-34). The conclusion now says this fall is the same beta drop tested in fig4b, not separate evidence.
-- **Monkey P offset:** the notebook now loads `session126_events.mat` from Zenodo and takes the offset from its first event, instead of the typed number 6800.66578. The file is listed under `inputs`, and the header no longer says nothing else uses outside data. Its 36 TTL values have no names and do not follow the Monkey T codes, so fig5a stays blocked.
+**Corrections and variants for the other points**
+1. **fig3a-redox-peaks:** the conclusion now says no redox signal is detectable. The rising maximum landing inside its range is not an oxidation peak, as cue shifts of ±5 and ±10 s put the extremes anywhere on the sweep. It also now discusses why the stored dopamine series shows a reward effect when the raw current does not.
+2. **fig4a:** the conclusion and notes now say the evidence is weak, including that the +10 s control also reaches p < 0.05.
+3. **Beta power order:** the paper says "squared, enveloped", the reverse of the claims file. I ran the paper's order as a variant. It matches the paper's Zenodo trace less closely (r = 0.913 against 0.942) and gives the same outcomes for fig3b, fig4b and fig4c. Since the claims file states an order the paper does not, I added a question for a reader in `questions/amjad-2025.yaml` and left the claim unchanged.
+4. **Bursts:** with the claims file's smoothing, runs above threshold last 206 ms at the median and only 4.9% are under 50 ms, so the 50 ms minimum removes almost nothing. The conclusion now says these events are longer than the paper's bursts. A variant without smoothing gives a median run of 67 ms, and the rate still changes.
+5. **Clock offset of one scan:** moving the cue by 0.1 s gives p = 0.0272 and 0.0175 for fig4a and leaves fig3a not reproduced.
+6. **Zenodo trial lists:** they are in ascending order without repeats, so the 35th entry is the 35th trial. The notes now say the trace criterion is not an independent check, since it was written after r = 0.94 was known.
+7. **fig5bc noise:** leaving out samples within 1 ms of the input limit gives ratios of 4.48 to 5.90. Measuring the trough on the same filter as the noise gives 5.21 to 6.50. All are above the threshold of 3.
+8. **Release notes:** the data check now prints the "Known gaps" section of the pinned version's release notes, and the four blocked claims cite it.
 
-**Corrections:**
-- The zenodo-link notes now say the criterion tests only r and was written after r was known, and give the amplitude difference.
-- The fig4c conclusion says that "left is contralateral" rests on the Methods.
-- I changed `provenance.protocol` from `pilot-6` to `pilot-7`, because the protocol was already at pilot-7 when the author ran. No claim needed the new `elsewhere` data kind.
-- Round 1 is recorded under `verifications`, with the verifier's reasons and my response for each claim.
+I recorded round 1 under `verifications` in `attempts/amjad-2025-02.yaml`, with the verifier's reasons and my responses, and updated the outcome notes and the notebook summary. No finding is rated critical, so no finding review was needed, and no new finding was added.
 
-**Not done:**
-- **Implant hemisphere, implant log and implant dates:** none are in the files or the archive's metadata, so these stay unchecked.
-- **fig5a with outside data:** I did not attempt it, because the Zenodo event codes cannot be decoded without a code map.
-- **Trial 1501:** I left it in the selections; one trial out of 570 or more cannot change a result.
-
-Nothing was committed or pushed.
+**Not done:** I left the claims file unchanged and did not commit or push.
 
 ## End of run
 
-39 turns, 14 minutes, result: success.
+42 turns, 9 minutes, $2.85 at API prices, result: success.

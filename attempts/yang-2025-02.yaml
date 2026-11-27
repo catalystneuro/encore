@@ -1,0 +1,782 @@
+schema_version: 3
+id: yang-2025-02
+datasets:
+- archive: dandi
+  id: '001212'
+  version: 0.241023.0931
+  doi: 10.48324/dandi.001212/0.241023.0931
+  relation: primary
+paper: doi:10.1109/tnsre.2025.3614867
+date: 2026-11-27
+entry: yang-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45915569385
+outcomes:
+- claim: tables1-network-stable-short-term
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:tables1-network-stable-short-term
+  measured:
+  - 0.698
+  - 0.22
+  - 0.272
+  - -0.04
+  - 0.663
+  - 0.489
+  - 0.555
+  - 0.47
+  - 0.531
+  - 0.32
+  - 0.706
+  - 0.501
+  - 0.596
+  - 0.513
+  notes: Reproduced under readings (a) and (d) of the criterion (each pair once, self pairs included), with 1 kHz
+    GC and the main onset. Intra-group r exceeds inter-group r with Mann-Whitney p < 0.05 in all 7 rats, and 13
+    of 14 means lie within the Table S1 SDs (R5 inter-group 0.32 against 0.71 +- 0.28 does not). The outcome depends
+    on the self-pairs reading, which the criterion names but which adds an r of 1 per seizure to the intra-group
+    set and so favours intra over inter. With self pairs excluded (reading (c)) the test holds in 5 rats (R1, R2,
+    R3, R5, R6; R4 p = 0.88, R7 p = 0.66), which would be partially reproduced, with 13 of 14 means within tolerance;
+    in 6 rats with the onset thresholds 1.5 or 3; and in 2 or 3 rats with 250 Hz GC. The VAR fits are stable in
+    all but 2 of 266 seizures, but their residuals are not white at the BIC order (Ljung-Box p < 0.05 in 83% of
+    channel-windows at the median seizure). At a fixed order of 40 the residuals are close to white (median share
+    0.00, at most 0.33), though the largest modulus is 1.000 at the median seizure and 54 of 266 seizures have a
+    window that is not stable; reading (d) again holds in 7 rats with 12 of 14 means within tolerance, and reading
+    (c) in 4 (R1, R2, R3, R6). With the 7 baseline seizures that carry trains left out, the counts are those of
+    the main reading.
+  deviations:
+  - Seizure onset is not in the dandiset and the paper gives no rule for it. Assumed, as reading (b) of the claims
+    file's opening comment, an onset found from the LFP (1-45 Hz line length in 1 s windows, largest over channels
+    of the ratio to the channel's median, above 2, with hysteresis down to 1.5); thresholds 1.5 and 3 are shown.
+  - Conditional GC is computed here from OLS VAR fits (full and reduced regressions), not with the MVGC toolbox
+    (Methods B, ref. 37), which obtains the reduced model by spectral factorization. Model order by BIC up to 20
+    (a standard choice named in the claims file); the median order is 11 at 1 kHz. The residuals at that order are
+    not white. Decimation to 250 Hz, and a fixed order of 40 at 1 kHz at which the residuals are close to white,
+    are shown as variants.
+  - The two readings of combining the 9 windows are the same number, as cf_w is linear in the GC matrix; the cf_w
+    sign does not change Pearson r.
+- claim: fig2-r1-target-shifts
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig2-r1-target-shifts
+  notes: With cf_w as out-strength minus in-strength (reading (a)), 1 kHz GC and the main onset, the nodes with
+    the highest mean cf_w in R1's four baseline groups are ANT, ANT, CA3 and DG, as named. The single-seizure top
+    node agrees with its group's in 9 of 9, 8 of 10, 4 of 5 and 6 of 11 seizures. The groups hold 9, 10, 5 and 11
+    seizures (Figure 2A shows 9, 9, 7, 9). Variants give 3 of 4 (250 Hz), 4 of 4 (onset threshold 3), 2 of 4
+    (onset threshold 1.5), 4 of 4 (fixed VAR order 40) and 4 of 4 (baseline seizures with trains left out); with
+    the sign as worded in Methods B (in minus out), 0 of 4.
+  deviations:
+  - Seizure onset found from the LFP, as for tables1-network-stable-short-term (an assumption).
+  - GC computed here, not with MVGC, as for tables1-network-stable-short-term.
+- claim: figs2-target-assignment
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:figs2-target-assignment
+  measured:
+  - 8
+  - 20
+  notes: 'Under reading (a), the top node, with 1 kHz GC and cf_w as out minus in, 18 of 28 baseline groups give
+    the Figure S2 target set (R1, R3, R4 and R7 four of four, R2 one, R5 none, R6 one). Applied to the next file''s
+    site, this labels 8 groups target and 20 non-target, but only 20 of the 28 labels agree with Figure S2. At 250
+    Hz, 18 baseline groups match and 24 labels agree; at a fixed VAR order of 40, 19 and 21; with the baseline seizures
+    that carry trains left out, 18 and 20. Reading (b), a node significantly above each other node, matches at most
+    15 groups (12 at the BIC order). With the sign as worded (in minus out), at most 2 match. The criterion asks for 24 groups
+    and all 28 labels for reproduced and 18 groups for partial. All 28 labels cannot agree under any reading: the
+    dandiset''s order of stimulated sites differs from Figure S2''s for R5 and R6 (a finding), and Figure S2''s
+    own target sets applied to the dandiset''s order label 9 groups target.'
+  deviations:
+  - Seizure onset found from the LFP, and GC computed here, as for tables1-network-stable-short-term.
+  - The next group is the next file in the dandiset; for R5 and R6 this is not the order Figure S2 shows.
+- claim: fig3a-target-reduces-each-rat
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig3a-target-reduces-each-rat
+  notes: Mean normalized duration (relative change against the preceding baseline group's mean) is below zero in
+    3 of the 8 target groups (R3 CA3 -0.026, R6 CA3 -0.172, R7 ANT -0.200); R1 DG +0.100, R2 DG +0.070, R2 CA1 +0.080,
+    R4 CA3 +0.019, R5 ANT +0.014. The three normalizations share the sign. Under the variants (thresholds 1.5 and
+    3, ending before a final train, stimulated seizures only, groups with trains in most seizures, baseline by epoch
+    dates or in Figure S2's order, baseline seizures with trains left out) 2 to 4 of 8 are below zero.
+  deviations:
+  - Seizure onset and end found from the LFP (an assumption, as reading (b) of the claims file); in stimulation
+    groups, detected stimulation trains count as ictal and the seizure is the run holding the first train. The paper's
+    durations may come from visual marking. No stimulated seizure has a further train within 12 s after its detected
+    end.
+  - Target and non-target labels by rat and site from Figure S2, as the claims file says; the preceding baseline
+    is the previous file of the dandiset. R3-07 (CA1) is dated before R3-06, its preceding file; taking the baseline
+    by the epoch dates (R3-04) is shown as a variant.
+  - Stimulation trains are found from the LFP (the files have no stimulation times) as runs of comb score of at
+    least 4 s, at the pulse rate (120 to 145 Hz in 0.25 Hz steps, 125 Hz = fs / 8 left out) that gives the most
+    train time in the epoch. Choosing the rate by the 99th percentile of the score alone, as in the first version,
+    missed every train of R3-07 (trains in 0 of its 8 seizures, now 8) and most of R7-01 (1 of 12, now 7), and found
+    false 125 Hz trains in baseline epochs.
+- claim: fig3a-nontarget-can-lengthen
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig3a-nontarget-can-lengthen
+  notes: 13 of 20 non-target groups have a positive mean normalized duration with the main detector (R1 ANT, R2
+    CA3, R3 ANT and DG, R4 CA1, DG and ANT, R5 CA1, DG and CA3, R6 ANT and CA1, R7 DG at +0.006); 10 to 13 under
+    the variants (12 with the baseline seizures that carry trains left out). Of the 10 groups positive in Figure 3A, 8 are positive here (R1 CA3 at -0.06 and R6 DG at -0.28
+    are negative).
+  deviations:
+  - Seizure onset and end, group order and trains as for fig3a-target-reduces-each-rat.
+- claim: fig3a-per-rat-site-differences
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig3a-per-rat-site-differences
+  notes: 'With the main detector, 5 of the 11 listed pairs are significant by unadjusted Dunn''s test (reading (b):
+    R2 ANT-CA3, R3 DG-CA1, R3 DG-CA3, R4 DG-CA1, R4 DG-CA3) and 4 with Bonferroni adjustment (reading (a); R3 DG-CA3
+    Bonferroni p = 0.078). None in R5 or R7 (Kruskal-Wallis p 0.94 and 0.31). R1 has no significant pair (Kruskal-Wallis
+    p 0.42), but R6, which the statement says has none, has two under the unadjusted reading (DG-ANT p = 0.006, DG-CA1
+    p = 0.020) and one after Bonferroni adjustment (DG-ANT p = 0.037; Kruskal-Wallis p 0.022). The outcome sits at
+    the threshold of 5 and rests on the unadjusted reading. Running Dunn''s test only after a significant Kruskal-Wallis
+    test gives the same 5. With the baseline taken by the epoch dates (R3-07 normalized to R3-04), 5 unadjusted and
+    4 adjusted, as in the main reading, and with the baseline seizures that carry trains left out also 5 and 4; the
+    other variants give 2 to 6 listed pairs.'
+  deviations:
+  - Seizure onset and end, group order and trains as for fig3a-target-reduces-each-rat.
+- claim: fig3a-target-vs-nontarget-total
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig3a-target-vs-nontarget-total
+  measured:
+  - -0.0259
+  - 0.0655
+  notes: Pooled over seizures (85 target, 167 non-target), target -0.026 +- 0.026 and non-target 0.066 +- 0.035,
+    Mann-Whitney p = 0.16; target is lower, without significance, and its mean is far outside -0.26 +- 0.03 (the
+    non-target mean is within 0.028 of 0.038, inside the 0.03 tolerance). Over the 28 groups p = 0.50. No normalization
+    or variant gives p < 0.05 (smallest 0.10, ending before a final train; 0.18 with the baseline seizures that carry
+    trains left out) or a target mean near -0.26.
+  deviations:
+  - Seizure onset and end, group order and trains as for fig3a-target-reduces-each-rat.
+- claim: fig3a-some-nontarget-shorten
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig3a-some-nontarget-shorten
+  notes: Of the five named groups, R2 ANT (-0.25), R3 CA1 (-0.65) and R7 CA3 (-0.23) are significantly shorter than
+    baseline by reading (a) (Mann-Whitney, p 0.015, 0.0005 and 0.028) and by reading (c); R2 ANT and R3 CA1 by reading
+    (b). R4 CA1 (+0.06) and R5 CA3 (+0.23) are longer. The named group is less effective than the rat's target group
+    in 2 of 5 rats (R4, R5); in R2, R3 and R7 it is more effective. No variant reaches 3 significant and 3 less
+    effective. R6 DG is the one other non-target group shorter than baseline by reading (a). R3 CA1 normalized to
+    R3-04 (by the epoch dates) is -0.53.
+  deviations:
+  - Seizure onset and end, group order and trains as for fig3a-target-reduces-each-rat.
+- claim: fig3b-same-site-target-vs-nontarget
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig3b-same-site-target-vs-nontarget
+  notes: With relative change, ANT target seizures are shorter than ANT non-target ones (-0.11 against +0.11, Mann-Whitney
+    p = 0.035), but DG (target +0.09 against +0.19, p = 0.51) and CA3 (-0.07 against +0.11, p = 0.13; t-test p =
+    0.050) are not significant, and CA1 is not either (p = 0.20). Other normalizations and variants give at most
+    one of DG, CA3 and ANT (ANT or CA3).
+  deviations:
+  - Seizure onset and end, group order and trains as for fig3a-target-reduces-each-rat.
+- claim: seizure-duration-proportion
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Seizure duration proportion is seizure time over total recording time. The dandiset holds only 600 s epochs
+    around seizures, with dates and no start times, and no record of how long each group was recorded; the recording
+    time cannot be recovered. Not public elsewhere (the paper has no data availability statement beyond the dandiset).
+- claim: fig3c-frequency-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Seizures per hour need the recording time of each group, which the dandiset does not hold (see seizure-duration-proportion).
+    Whether every seizure of a group is deposited is not stated either.
+- claim: fig4b-psd-target-bands
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig4b-psd-target-bands
+  notes: 'In none of the 72 readings (window, change measure, Welch segment, total range, channels, post hoc adjustment)
+    do the three bands hold under either band reading, nor alpha and gamma together. Relative change and log2 ratio
+    give the same Kruskal-Wallis and Dunn p values, so 48 of the 72 readings are distinct tests. Main reading (main window,
+    relative change, 1 s segments, 0.5-120 Hz, all channels; 266 sham, 75 target, 153 non-target seizures): theta
+    falls after target stimulation (median -0.41, sham -0.04, non-target -0.33; Kruskal-Wallis p = 5.9e-12), alpha
+    differs (p < 0.001) with the target median (0.48) between sham (0.62) and non-target (0.25), beta differs (p
+    = 0.044) with target not above sham (Dunn p = 0.80), and gamma does not differ (p = 0.17). With the difference
+    measure on the stimulated channel, beta is higher after target stimulation than after sham and non-target (Dunn
+    p 0.0004 and 0.0013); alpha holds in no reading. Gamma holds in one reading, the difference measure on the stimulated
+    channel with the 0-500 Hz total and unadjusted Dunn tests (Kruskal-Wallis p = 0.036, Dunn p 0.011 against sham
+    and 0.022 against non-target), where alpha does not (p = 0.53). The window as worded, the same without the 48
+    seizures whose next train falls in it, and a 5 s pre window give no reading that holds either, nor does the main
+    reading with the 7 baseline seizures that carry trains left out of the sham set.'
+  deviations:
+  - Stimulation trains are found from the LFP (the files have no stimulation times) as runs of comb score of at
+    least 4 s, at the pulse rate (120 to 145 Hz in 0.25 Hz steps, 125 Hz = fs / 8 left out) that gives the most
+    train time in the epoch. Choosing the rate by the 99th percentile of the score alone, as in the first version,
+    missed every train of R3-07 (trains in 0 of its 8 seizures, now 8) and most of R7-01 (1 of 12, now 7), and found
+    false 125 Hz trains in baseline epochs.
+  - Windows of Methods D ("the pre-stimulation period was from seizure onset to stimulation start, while the post-stimulation
+    period was 5s after the first stimulation train"). Assumed for the main reading that the post window ends where
+    the next train starts when that is within the 5 s (48 of 228 stimulation seizures), so that the next train's
+    artifact stays out; the window as worded, the same leaving those seizures out, and a 5 s pre window are run
+    as variants. Stimulation seizures with no train after onset (most of R7's ANT, CA1 and CA3 groups) are left
+    out.
+  - Seizure onset found from the LFP, as for tables1-network-stable-short-term (an assumption).
+- claim: fig4b-psd-other-bands-unchanged
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig4b-psd-other-bands-unchanged
+  notes: fig4b-psd-target-bands was decided by neither band reading, so both are judged on the main method reading.
+    Delta differs between sham, target and non-target (Kruskal-Wallis p = 1.5e-15, epsilon squared 0.035; mean change
+    +1.90, -0.01, +0.33), and so does high gamma (p = 0.0026, epsilon squared 0.006). Beta, judged under band reading
+    (i), differs (p = 0.044), and theta, judged under (ii), does too (p = 5.9e-12). Delta differs in 29 of the 36
+    method readings (all 18 with all four channels) and high gamma in 31. With the 7 baseline seizures that carry
+    trains left out of the sham set, delta (p = 2.9e-16), high gamma (p = 0.0025) and theta still differ, and beta
+    does not (p = 0.062).
+  deviations:
+  - As for fig4b-psd-target-bands.
+- claim: fig5b-iis-post-seizure
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig5b-iis-post-seizure
+  notes: The IIS rate 15-45 s after the seizure end is 0.141 /s after target stimulation (85 seizures, 340 seizure-channels)
+    and 0.212 /s after non-target stimulation (167, 668); sham 0.196. Reading (b), paired t-test over 30 bins of
+    1 s, p = 8.5e-10 (6 bins of 5 s, p = 0.0017); reading (a), Mann-Whitney over seizure-channels, p = 0.0013, which
+    alone would give partially reproduced; per seizure, p = 0.016. Reading (b), which the criterion names, treats
+    the time bins of the two mean curves as independent samples (lag-1 autocorrelation of their difference 0.40
+    at 1 s). Target is lower than non-target in 5 of 7 rats (higher in R3 and R4); with the rat as the unit, not
+    a reading of the criterion, p = 0.23.
+  deviations:
+  - Seizure end found from the LFP, as for fig3a-target-reduces-each-rat.
+  - The threshold baseline is the 180 s before onset (reading (a)); the interictal segments of reading (b) are not
+    in the dandiset. Peak width is the width at half prominence (a standard choice named in the claims file). Stimulation
+    trains are not searched for spikes.
+- claim: fig5c-interictal-iis-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim needs 30 min interictal segments at least an hour from seizures (Methods F). The dandiset holds
+    only 600 s epochs, each around a seizure (onsets 38 to 514 s into the epoch), so no such segment exists in it.
+- claim: fig5d-iis-seizure-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs interictal IIS rates (no interictal segments in the dandiset) and seizure frequency (no recording
+    time); see fig5c-interictal-iis-no-difference and fig3c-frequency-no-difference.
+- claim: fig6cd-interictal-hfo-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs six 30 min interictal segments per day (Methods E), which the dandiset does not hold.
+- claim: fig6e-ictal-ripples-no-difference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig6e-ictal-ripples-no-difference
+  notes: 'Paired t-test by rat (reading (a)), target against non-target normalized ictal ripple rate, p = 0.061
+    over 7 rats (target +1.46, non-target +4.22; unpaired over groups p = 0.19), with all four channels, the main
+    window and the threshold over the epoch. The result is weak: 5 of the 12 method readings (window, threshold
+    reference, channels) are significant with target lower, among them the stimulated channel at the main window
+    and threshold (p = 0.037), so the outcome rests on the all-channels reading. The median per-window change is
+    -0.75 after target and +1.22 after non-target stimulation. Group means rise from the pre to the post window
+    in every condition, while Figure 6E shows small decreases (about -0.16 and -0.04).'
+  deviations:
+  - 'HFO are detected with the HFO App''s short line length detector (Methods E, ref. 50) at the defaults its detector
+    dialog sets, read from its source (github.com/zelanolab/hfoapp, commit 1ccff19, GUIs/ConfigAutoDetector.mlapp
+    and Functions/HFOAutoDetectorSLL.m): FIR band-pass (fieldtrip fir1, order 3 x fix(fs / low edge), two-pass),
+    line length over 5 ms, threshold the 97.5th percentile over the epoch loaded, events longer than 12 ms. Assumed
+    that the epoch loaded is the 600 s file epoch (the dialog''s default is the whole loaded series); the epoch
+    outside the trains and the 180 s before onset are shown as variants. The paper''s manual review of candidates
+    cannot be repeated and is not done.'
+  - Windows of Methods D ("the pre-stimulation period was from seizure onset to stimulation start, while the post-stimulation
+    period was 5s after the first stimulation train"). Assumed for the main reading that the post window ends where
+    the next train starts when that is within the 5 s (48 of 228 stimulation seizures), so that the next train's
+    artifact stays out; the window as worded, the same leaving those seizures out, and a 5 s pre window are run
+    as variants. Stimulation seizures with no train after onset (most of R7's ANT, CA1 and CA3 groups) are left
+    out.
+  - The group value is its mean post rate over its mean pre rate minus 1, so that windows without a pre event do
+    not divide by zero; R6-04 and R6-05 have no pre event and no value.
+  - Stimulation trains are found from the LFP (the files have no stimulation times) as runs of comb score of at
+    least 4 s, at the pulse rate (120 to 145 Hz in 0.25 Hz steps, 125 Hz = fs / 8 left out) that gives the most
+    train time in the epoch. Choosing the rate by the 99th percentile of the score alone, as in the first version,
+    missed every train of R3-07 (trains in 0 of its 8 seizures, now 8) and most of R7-01 (1 of 12, now 7), and found
+    false 125 Hz trains in baseline epochs.
+- claim: fig6f-ictal-fast-ripples-reduced
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yang_2025.ipynb
+  output: claim:fig6f-ictal-fast-ripples-reduced
+  notes: Main reading, normalized fast ripple rate after target stimulation +14.8, baseline +8.5, non-target +4.8;
+    paired by rat, target against baseline p = 0.58 and against non-target p = 0.44. R3's target group (+109) dominates
+    the target mean. The target mean is below both others in none of the 12 method readings, and no comparison is
+    significant with target lower. By the median per-window change, not tested by the criterion, target is lowest
+    (-0.19 against 0.00 baseline and +0.79 non-target). With the baseline seizures that carry trains left out, baseline
+    is +8.1 and the paired p values are 0.57 and 0.44.
+  deviations:
+  - As for fig6e-ictal-ripples-no-difference; fast ripples band-passed 250 to 490 Hz.
+findings:
+- kind: data_missing
+  statement: The files hold only 600 s, 4-channel LFP epochs around seizures (one ElectricalSeries per seizure,
+    starting_time 0). There are no seizure onset or end times, no stimulation times, no interictal recordings and
+    no recording durations, so seizure frequency, seizure duration proportion and every interictal IIS and HFO measure
+    of the paper cannot be computed, and seizure times and stimulation trains have to be inferred from the LFP.
+- kind: metadata_insufficient
+  statement: The epoch names carry the date only (in two formats, `R1_2023_7_16` and `R4_2023_9-11`) and the series
+    start at 0 s, so the time of day and the order of seizures within a day are not recorded; how the 600 s windows
+    were cut, and what the suffix `-small` on some epoch names means, is not described.
+- kind: other
+  statement: The order of the stimulation groups differs from Figure S2 for two rats. In the dandiset R5 is stimulated
+    at CA1, ANT, DG, CA3 (Figure S2 ANT, DG, CA1, CA3) and R6 at ANT, DG, CA1, CA3 (Figure S2 CA1, ANT, DG, CA3).
+    The epoch dates follow the dandiset's order. This changes which baseline group precedes each stimulation group
+    in these rats.
+- kind: other
+  statement: 'No stimulation artifact is found in most seizures of some stimulation groups: trains are found in
+    7 of 12, 3 of 13, 2 of 7 and 0 of 4 seizures of R7''s DG, ANT, CA1 and CA3 groups, against every seizure of
+    the other 24 groups. Of the R7 seizures without a train, none in the CA1 and CA3 groups has a run of comb score
+    of 2 s or more at R7''s pulse rates, while in the DG and ANT groups 3 of 5 and 3 of 10 have a run of 2 to 3.75
+    s inside the seizure, shorter than the 5 s trains of Methods C. Whether stimulation was delivered in these seizures
+    cannot be told from the files.'
+- kind: metadata_error
+  statement: The epochs of R3's CA1 stimulation group (07CA1-stim) are dated 2023-10-18 to 10-20, inside the dates
+    of R3's DG stimulation group (05DG-stim, 10-18 to 10-22) and before R3's last baseline group (06base3, 10-22
+    to 10-23), against the alternating order the paper describes; its trains have the pulse rate of 05DG-stim (131.75
+    Hz), not that of R3's first two stimulation groups (125.25 and 125.75 Hz). Other groups share single dates with
+    the next group (R1 2023-09-20, R3 09-09 and 09-25, R4 09-15 and 09-17, R7 2024-01-03).
+- kind: other
+  statement: 'Seven baseline epochs carry 4.25 to 5.5 s trains at the pulse rate of their rat''s own stimulator:
+    R1-04 (R1_2023_8_29-ictal1, three trains; R1_2023_8_30-ictal1), R4-00 (R4_2023_9_6-ictal1, -ictal2 and -ictal3),
+    R5-00 (R5_2023_10_25-ictal1) and R6-02 (R6_2023_9_17-ictal1), so these baseline seizures appear to have been
+    stimulated.'
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) How were seizure onset and end marked offline, and are the times
+    available? (2) The GC settings - VAR model order, any filtering or downsampling, and the test behind 'significantly
+    high' cf_w - and whether cf_w is out minus in (as Figure 2 and the Discussion imply) or in minus out (as Methods
+    B words it). (3) The formula of the normalized seizure duration. (4) The HFO App settings (detector parameters
+    and the length of the epoch the threshold is computed over), and the pre and post windows used for ictal HFOs,
+    in particular whether the post window stops at the next train. (5) How the 180 s IIS curves of Figure 5B were
+    tested, and which baseline set the 5 SD threshold. This attempt assumed an LFP line-length rule for (1), BIC
+    order and out minus in for (2), relative change for (3) and the HFO App dialog defaults over the 600 s file
+    epoch, with the post window cut at the next train, for (4).
+- kind: metadata_error
+  found: on_prompt
+  severity: minor
+  statement: Sixteen epoch names (date and seizure number) occur in two groups of the same rat, and in each
+    case the two epochs hold different data (different MD5 of the stored values, 600000 samples each). They are
+    R1_2023_9_20-ictal1 to 3 in R1-06 (base3) and R1-07 (DG-stim); R3_2023_9_9-ictal1 in R3-01 and R3-02;
+    R3_2023_9_25-ictal1 to 3 in R3-03 and R3-04; R3_2023_10_18-ictal1, R3_2023_10_20-ictal1 and -ictal2 in R3-05
+    (DG-stim) and R3-07 (CA1-stim); R3_2023_10_22-ictal1 in R3-05 and R3-06; R4_2023_9-15-ictal1 in R4-03 and
+    R4-04; R4_2023_9-17-ictal1 and -ictal2 in R4-04 and R4-05; and R7_2024_1_3-ictal1 and -ictal2 in R7-05 and
+    R7-06. An epoch name does not identify a seizure across the files. R5's first baseline group (R5-00) holds
+    epochs dated 2023-09-08 to 2023-10-25, a span of seven weeks against the 5 to 10 days per group of Methods C.
+- kind: metadata_error
+  found: on_prompt
+  severity: minor
+  statement: The electrodes table, the same in all 56 files, gives the ANT electrode at AP -1.2, ML +2.0, DV -5.6
+    mm, where Methods A gives DV -6.0 mm; the DG, CA1 and CA3 coordinates match Methods A. Every file gives the
+    subject's age as P2M and weight as 300-350g, although each rat's session start dates span 19 to 106 days and
+    Methods A gives 7-9 weeks and 250-300 g for the rats as obtained.
+inputs:
+- what: HFO App source code, read only for the defaults of its short line length detector (no data)
+  source: https://github.com/zelanolab/hfoapp at commit 1ccff19cf493a551c914c6c69a33e5fbbcfdf164
+verifications:
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text. The verifier read the archive's asset list and metadata through
+    the DANDI API and tested the helpers on synthetic inputs (cond_gc, cfw_onset, detect_iis, detect_seizure, find_trains).
+    It had no attempt record and took the claims from the claims file.
+  results:
+  - claim: tables1-network-stable-short-term
+    agrees: true
+    outcome: reproduced
+    reason: With self-pairs included (reading d), 7/7 rats are significant and 13/14 means are within tolerance.
+      With self-pairs excluded (reading c), only 4/7 rats are significant at the main detector, which is not even
+      partial; 6/7 at the other onset thresholds. The outcome rests entirely on reading (d). Reading (d) adds n
+      values of r = 1 to the intra-group set, which makes intra > inter nearly automatic (R4 goes from p = 0.878
+      to p < 0.001); the criterion allows the reading.
+    response: 'Outcome kept: the criterion names reading (d) and asks for one reading. The notes and conclusion
+      now say that the outcome rests on it and that it favours intra over inter. After the train detector fix, reading
+      (c) holds in 5 rats (R1, R2, R3, R5, R6), which would be partial. VAR stability and residual whiteness are
+      now printed: stable in all but 2 of 266 seizures, residuals not white.'
+  - claim: fig2-r1-target-shifts
+    agrees: true
+    outcome: reproduced
+    reason: Under out minus in at 1 kHz the top nodes are ANT, ANT, CA3, DG, 4 of 4 match. Within-group agreement
+      of the top node is 9/9, 8/10, 4/5 and 6/11.
+    response: No change; the numbers are the same after the re-run.
+  - claim: figs2-target-assignment
+    agrees: true
+    outcome: partially_reproduced
+    reason: At best 18/28 baseline groups match Figure S2 (reading a, 1 kHz or 250 Hz), and at best 24/28 stimulation
+      labels agree, never 28. For R5 and R6 the dandiset order differs from Figure S2 and the dates support the
+      dandiset order; Figure S2's own targets applied to the dandiset order give 9 target groups, so all 28 labels
+      cannot agree even with perfect targets. The notebook printed the 9 but did not flag it. This is a data against
+      paper conflict, not a misreading in the claims file.
+    response: The conclusion and notes now say that all 28 labels cannot agree under any reading and why. Outcome
+      unchanged.
+  - claim: fig3a-target-reduces-each-rat
+    agrees: true
+    outcome: not_reproduced
+    reason: Only 3/8 target groups are below zero at the main settings, and at most 4/8 under any variant. Partial
+      needs 6. Stimulation groups have few or no detected trains (R3-07 0/8, R7-05 0/7, R7-07 0/4, R7-01 1/12, R7-03
+      1/13); it is never checked whether the train detector misses these trains or whether the seizures were not
+      stimulated, and the main analysis counts all of them as stimulation. R7 ANT, one of the few target groups
+      below zero, becomes -0.07 with n = 1 when only stimulated seizures are kept. 11 baseline epochs have trains,
+      mostly at about 125 Hz, which points to false positives or mislabeled files. The clock check is circular,
+      as detect_seizure counts train windows as ictal, so the 0.983 overlap does not validate the onset and end
+      times (does not affect a conclusion).
+    response: 'The train detector missed trains: it chose the pulse rate by the 99th percentile of the comb score,
+      which short bursts at 125 Hz (fs / 8) won. It now takes the rate with the most train time and leaves 125 Hz
+      out. Trains are now found in all 8 seizures of R3-07, 7 of 12 of R7-01 and every seizure of 24 groups; R7-03,
+      R7-05 and R7-07 keep 3 of 13, 2 of 7 and 0 of 4, and their spectrograms show no comb. The 7 baseline epochs
+      left with trains are at their rat''s own pulse rate (a finding). Example spectrograms and traces per rat with
+      onset, end and trains are added, with the comb score per group. The clock check now uses the seizure found
+      without the trains: 0.989 of trains overlap it, 0.47 with a 30 s shift. Variants added: preceding baseline
+      by the epoch dates, and groups with trains in most seizures. 2 to 4 of 8 target groups are below zero under
+      all variants (R7 ANT -0.095 with its 3 stimulated seizures). Outcome unchanged.'
+  - claim: fig3a-nontarget-can-lengthen
+    agrees: true
+    outcome: reproduced
+    reason: 13/20 non-target groups have a positive mean (main), and 10 to 14 under the variants; the criterion
+      needs 5 or more.
+    response: No change; 13 of 20 after the re-run, 10 to 13 under the variants.
+  - claim: fig3a-per-rat-site-differences
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of the 11 listed pairs are significant at the main settings (Bonferroni Dunn), which meets the threshold
+      of 5 exactly. R6 has significant pairs (DG-ANT, Bonferroni p = 0.021), and R5 and R7 have none (KW p = 0.66
+      and 0.33). The partial outcome is fragile. R3-07 (CA1) predates
+      R3-06 by the session and epoch dates, so bi = index - 1 normalizes R3 CA1 to a later baseline; the R3 DG-CA1
+      pair is one of the 5; the date-based order was not tested. Dunn tests are run even where KW is not significant
+      (R5, R7); none of those reach significance anyway. The notebook adds variants the claims file does not name
+      (onset thresholds 1.5 and 3, 250 Hz, end before final train, Figure S2 order); no positive outcome depends on
+      them alone.
+    response: 'Added the variant that takes the preceding baseline by the epoch dates (R3-07 against R3-04): 5 listed
+      pairs unadjusted and 4 adjusted, as in the main reading. After the train detector fix the main reading has
+      5 unadjusted and 4 Bonferroni-adjusted (R3 DG-CA3 Bonferroni p = 0.078), so partial now rests on the unadjusted
+      reading; the notes say so. Outcome unchanged.'
+  - claim: fig3a-target-vs-nontarget-total
+    agrees: true
+    outcome: not_reproduced
+    reason: Target -0.020+-0.028 against non-target 0.087+-0.034, Mann-Whitney p = 0.085. No variant has p < 0.05,
+      and no target mean is near -0.26.
+    response: 'Re-run: target -0.026 against 0.066, p = 0.16; smallest p over the variants 0.10. Outcome unchanged.'
+  - claim: fig3a-some-nontarget-shorten
+    agrees: true
+    outcome: not_reproduced
+    reason: At most 3 of the 5 named groups are significant (reading c), and only 2 of 5 are less effective than
+      the rat's target. Partial needs 3 of each.
+    response: 'Re-run: 3 significant by readings (a) and (c), 2 less effective than the target. Outcome unchanged.'
+  - claim: fig3b-same-site-target-vs-nontarget
+    agrees: true
+    outcome: not_reproduced
+    reason: Each reading has at most one of DG, CA3 and ANT significant with target lower (ANT for main rel; CA3
+      for stimulated-only). Partial needs two. CA1 is not significant.
+    response: No change of outcome; same pattern after the re-run.
+  - claim: seizure-duration-proportion
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: the 56 assets hold only 600 s seizure-centred epochs, and the API metadata
+      gives only a session start date per asset, with no duration or recording-time fields. The dandiset also appears
+      to hold a selection of seizures, so per-group seizure counts cannot stand in for frequency either. data_missing
+      is right.'
+    response: No change.
+  - claim: fig3c-frequency-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: the 56 assets hold only 600 s seizure-centred epochs, and the API metadata
+      gives only a session start date per asset, with no duration or recording-time fields. The dandiset also appears
+      to hold a selection of seizures, so per-group seizure counts cannot stand in for frequency either. data_missing
+      is right.'
+    response: No change.
+  - claim: fig4b-psd-target-bands
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 36 method by post-hoc readings hold, and alpha with gamma holds in none. The post window (5 s after
+      the first train) can include the next train in roughly a quarter of seizures, and aliases of the pulses fall
+      in gamma and higher bands; the notebook neither excludes nor counts these cases. The latency from onset to
+      the first train has a median of 12.8 s and reaches 40.5 s; pre windows of 0.5 to 1 s use Welch with nperseg
+      equal to the window length, a coarser resolution than the post window's. The effect is unquantified.
+    response: The post window now ends where the next train starts (48 of 228 seizures); the window as worded, the
+      same without those seizures, and a 5 s pre window are variants; the pre-window lengths are printed (median
+      13.1 s, 2 of 228 under 2 s, none under 1 s). 0 of 72 readings hold. Outcome unchanged.
+  - claim: fig4b-psd-other-bands-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Delta KW p ranges from 4.8e-21 to 2.5e-3 across all readings, and high gamma has p < 0.05 in several.
+    response: 'Re-run with the new windows: delta differs in 29 of 36 method readings (main p = 1.5e-15) and high
+      gamma in 31. Outcome unchanged.'
+  - claim: fig5b-iis-post-seizure
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (b), paired t over 30 bins of 1 s, p = 2.1e-9. Under reading (a) p = 0.0032, which is
+      partial, and per seizure p = 0.033. The p < 0.001 comes only from the t-test across 30 autocorrelated bins
+      of grand-mean curves, which are not independent samples; per rat, target is lower in only 5 of 7 rats.
+    response: 'Outcome kept: the criterion names reading (b) and asks for one reading. The notes and conclusion
+      now say that the outcome rests on the time-bin test, print the lag-1 autocorrelation of the bins (0.40) and
+      a test with the rat as the unit (p = 0.23, not a reading of the criterion). Re-run: (b) p = 8.5e-10, (a) p
+      = 0.0013.'
+  - claim: fig5c-interictal-iis-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: there are no interictal segments at least 1 h from a seizure, only 600 s
+      epochs around seizures. No part of the claim can be tested.'
+    response: No change.
+  - claim: fig5d-iis-seizure-correlation
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: there are no interictal segments at least 1 h from a seizure, only 600 s
+      epochs around seizures. No part of the claim can be tested.'
+    response: No change.
+  - claim: fig6cd-interictal-hfo-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: there are no interictal segments at least 1 h from a seizure, only 600 s
+      epochs around seizures. No part of the claim can be tested.'
+    response: No change.
+  - claim: fig6e-ictal-ripples-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Paired t-test by rat gives p = 0.26. This is a weak absence: the measure''s magnitudes (+229% and +348%,
+      against about -0.16 and -0.04) do not resemble the paper''s. The detector parameters are presented as HFO
+      App defaults without that being checked, and the post window can include the next train.'
+    response: The detector is now the HFO App's short line length detector at its dialog defaults, read from its
+      source (zelanolab/hfoapp, commit 1ccff19), and the post window ends at the next train. Main reading p = 0.061
+      (target +1.46, non-target +4.22); 5 of 12 readings are significant with target lower, including the stimulated
+      channel (p = 0.037). Outcome kept as reproduced under the all-channels reading, recorded as weak and as resting
+      on that reading.
+  - claim: fig6f-ictal-fast-ripples-reduced
+    agrees: true
+    outcome: not_reproduced
+    reason: Target (+4.16) is not below baseline (+2.31) under the main reading, and is below both others in none
+      of the 8 readings; all paired p > 0.19.
+    response: 'Re-run with the HFO App defaults and the new windows: target +14.8, baseline +8.5, non-target +4.8,
+      below both in none of 12 readings. Outcome unchanged.'
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the round-1 revision, with its conclusions and summary, the helper
+    module, the claims file and the attempt record, with the paper's full text.
+  results:
+  - claim: tables1-network-stable-short-term
+    agrees: true
+    outcome: reproduced
+    reason: This holds only under reading (d), self-pairs included. Under reading (c) it holds in 5 of 7 rats, which
+      is partial. The criterion allows reading (d), and the record states the dependence. New, VAR misspecification
+      - the residuals are non-white in 83% of channel-windows, and the median largest eigenvalue modulus is 0.993,
+      close to instability; the three network outcomes all rest on these fits.
+    response: Outcome kept. Added a variant at a fixed VAR order of 40, where the residuals are close to white (median
+      share of channel-windows with Ljung-Box p < 0.05 0.00, against 0.83 at the BIC order), with its stability
+      printed (median largest modulus 1.000, 54 of 266 seizures with a window not stable); reading (d) holds in 7
+      rats with 12 of 14 means within tolerance, reading (c) in 4. The 250 Hz fits are printed too (residuals not
+      white). Added a variant leaving out the 7 baseline seizures that carry trains (same counts as the main reading).
+  - claim: fig2-r1-target-shifts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable. The outcome rests on the VAR
+      fits, whose residuals are non-white in 83% of channel-windows, close to instability.
+    response: Outcome kept. At the fixed order 40 and with the baseline seizures that carry trains left out, the top
+      nodes are ANT, ANT, CA3, DG, 4 of 4.
+  - claim: figs2-target-assignment
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. No misreading of the paper in the claims file; the R5 and R6 order conflict
+      with Figure S2 is between the data and the paper. The outcome rests on the VAR fits, whose residuals are non-white
+      in 83% of channel-windows, close to instability.
+    response: Outcome kept. At the fixed order 40, 19 baseline groups match and 21 labels agree (reading (b) 15 groups);
+      with the baseline seizures that carry trains left out, 18 and 20, as in the main reading.
+  - claim: fig3a-target-reduces-each-rat
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The deviation text "missed every train of R3-07 and most of R7-01 and
+      R5-07" - the R5-07 part cannot be checked here, and the round-1 counts did not list R5-07 among the groups
+      with few trains. Possible missed trains in R7-01 and R7-03 (cell 11 shows 2-4 s runs at the rat's own pulse
+      rate in 2 epochs of R7-01 and 4 of R7-03, against 4 of 267 baseline epochs); the 7 baseline seizures that carry
+      trains stay in the baseline sets, and no variant leaves them out. Neither changes an outcome.
+    response: The deviation now gives the counts the notebook and the round-1 report show (R3-07 0 of 8 then, 8 now;
+      R7-01 1 of 12 then, 7 now) and drops R5-07. Added a cell listing, for every R7 stimulation seizure without
+      a train, the runs of comb score of 2 s or more at R7's pulse rates, with spectrograms; 3 of 5 (R7-01) and 3
+      of 10 (R7-03) have a 2 to 3.75 s run inside the seizure, none in R7-05 and R7-07. Added the variant leaving
+      the baseline seizures that carry trains out of the baseline (3 of 8 below zero). Outcome unchanged.
+  - claim: fig3a-nontarget-can-lengthen
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
+    response: No change of outcome; 12 of 20 with the baseline seizures that carry trains left out.
+  - claim: fig3a-per-rat-site-differences
+    agrees: true
+    outcome: partially_reproduced
+    reason: This rests on the unadjusted Dunn reading and sits exactly at the threshold of 5. Bonferroni gives 4.
+      The sentence "R1 has no significant pair, but R6 has one (DG-ANT, Bonferroni p 0.037)" is true only after Bonferroni
+      adjustment; under the unadjusted reading the outcome rests on, R6 has two significant pairs, DG-ANT (p = 0.006)
+      and DG-CA1 (p = 0.0195). Dunn tests are still run after a non-significant KW (R5, R7).
+    response: The conclusion and the notes now say that R6 has two significant pairs unadjusted (DG-ANT p = 0.006,
+      DG-CA1 p = 0.020) and one adjusted. Added the reading that runs Dunn's test only after a significant Kruskal-Wallis
+      test (5 listed pairs, as the main reading) and the variant without the baseline seizures that carry trains
+      (5 and 4). Outcome unchanged.
+  - claim: fig3a-target-vs-nontarget-total
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
+    response: No change of outcome; p = 0.18 with the baseline seizures that carry trains left out.
+  - claim: fig3a-some-nontarget-shorten
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
+    response: No change of outcome; the new variant gives 3 significant and 1 less effective.
+  - claim: fig3b-same-site-target-vs-nontarget
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
+    response: No change of outcome; the new variant gives ANT only.
+  - claim: seizure-duration-proportion
+    agrees: true
+    outcome: blocked
+    reason: data_missing is right for all five blocked claims, as confirmed in round 1.
+    response: No change.
+  - claim: fig3c-frequency-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing is right for all five blocked claims, as confirmed in round 1.
+    response: No change.
+  - claim: fig4b-psd-target-bands
+    agrees: true
+    outcome: not_reproduced
+    reason: The conclusion "With the difference measure beta rises ... (stimulated channel ...), but alpha and gamma
+      do not [differ]" is correct for 0.5-120 Hz; with 0-500 Hz on the stimulated channel, gamma does hold (unadjusted;
+      KW p = 0.036, Dunn p = 0.011 and 0.022), and cell 43 lists "beta,gamma" as holding in some reading. The rel
+      and log2 measures are rank-equivalent, so they give identical KW and Dunn p values, and a third of the "72
+      readings" are duplicates. This does not change the outcome.
+    response: The conclusion and notes now name the reading in which gamma holds (where alpha does not, p = 0.53) and
+      say that alpha holds in no reading. A printed check shows rel and log2 give the same p values in 72 of 72 band
+      and method readings, and the text says 48 of the 72 readings are distinct. Added the main reading with the
+      baseline seizures that carry trains left out of the sham set (no band holds). Outcome unchanged.
+  - claim: fig4b-psd-other-bands-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
+    response: No change of outcome. Without the baseline seizures that carry trains, delta, high gamma and theta still
+      differ and beta does not (p = 0.062); this is now stated.
+  - claim: fig5b-iis-post-seizure
+    agrees: true
+    outcome: reproduced
+    reason: This rests on reading (b), the paired t-test over 30 autocorrelated time bins, which the claims file names.
+      Reading (a) gives p = 0.0013, which is partial; with the rat as the unit p = 0.23.
+    response: No change; the conclusion and notes already state the dependence on reading (b), the reading (a) result
+      and the per-rat test.
+  - claim: fig5c-interictal-iis-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing is right for all five blocked claims, as confirmed in round 1.
+    response: No change.
+  - claim: fig5d-iis-seizure-correlation
+    agrees: true
+    outcome: blocked
+    reason: data_missing is right for all five blocked claims, as confirmed in round 1.
+    response: No change.
+  - claim: fig6cd-interictal-hfo-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing is right for all five blocked claims, as confirmed in round 1.
+    response: No change.
+  - claim: fig6e-ictal-ripples-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: The absence holds under the all-channels reading only, with p = 0.061. The stimulated-channel reading at
+      the main window and threshold gives p = 0.037, and 5 of 12 readings are significant with target lower. The
+      measure's magnitudes (+1.46 and +4.22) are far from the paper's (about -0.16 and -0.04). The record states
+      all of this. The HFO defaults were read from the HFO App source at commit 1ccff19; the verifier did not verify
+      the source.
+    response: No change; the conclusion and notes already state the dependence on the all-channels reading and the
+      difference in magnitude.
+  - claim: fig6f-ictal-fast-ripples-reduced
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
+    response: No change of outcome. With the baseline seizures that carry trains left out, baseline +8.1, paired p
+      0.57 and 0.44.
+reconciliation:
+  earlier: yang-2025-01
+  date: '2026-11-27'
+  blind: false
+  blind_note: In its author-revise-1 run the author listed transcripts/yang-2025 and read the first 3000 characters
+    of the earlier attempt's author-revise-1-report.md, which was still in that folder (tools/blind.sh moves the
+    earlier transcripts out only for the author role). That text gives the earlier attempt's round-1 revisions
+    and some of its results, among them that no outcome changed, 21 of 28 groups and the counts 8 and 20 for
+    figs2-target-assignment, the dependence of fig5b-iis-post-seizure on R7, and the HFO App repository and commit
+    1ccff19. The author reported it in that run's report; the transcript then shows a GitHub search for the HFO
+    App, and every outcome had been set in the author run before and none changed after. The author and author-revise-2
+    runs read nothing of the earlier attempt; the audit's lines in author-answers.md and author-answers-report.md
+    are the earlier attempt's own transcripts (run 42729502254, 2026-11-10).
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Finding 1 reports the same, the files hold only 600 s epochs around seizures, with no seizure or stimulation
+      times, no interictal recordings and no recording durations.
+  - finding: 2
+    status: still_present
+    now: 6
+    note: Finding 6 names the same baseline epochs with trains (R1_2023_8_29-ictal1, R1_2023_8_30-ictal1, R4_2023_9_6-ictal1
+      to 3, R5_2023_10_25-ictal1, R6_2023_9_17-ictal1), seven where the earlier attempt counted eleven; the R7 CA3
+      stimulation epochs without trains are in finding 4.
+  - finding: 3
+    status: still_present
+    now: 8
+    note: Checked in earlier_findings.ipynb, 16 epoch names occur in two groups of a rat and none of the 16 pairs holds
+      the same data; R3-07 is dated 2023-10-18 to 10-20 and R5-00 2023-09-08 to 10-25. The R3-07 dates are also in
+      finding 5.
+  - finding: 4
+    status: still_present
+    now: 3
+    note: Finding 3 gives the same order of stimulated sites for R5 (CA1, ANT, DG, CA3) and R6 (ANT, DG, CA1, CA3)
+      against Figure S2.
+  - finding: 5
+    status: still_present
+    now: 2
+    note: Finding 2 says that how the 600 s windows were cut and what the -small suffix means is not described; the
+      files hold 20 -small and 2 -large names (earlier_findings.ipynb), and the groups of 5 (R1 base2) and 4 (R7 CA3)
+      seizures appear in this attempt's notes and finding 4.
+  - finding: 6
+    status: still_present
+    now: 9
+    note: Checked in earlier_findings.ipynb, the electrodes table of all 56 files gives the ANT depth as DV -5.6 mm
+      (Methods A -6.0), and all 56 files give P2M and 300-350g while each rat's session dates span 19 to 106 days.
+  - finding: 7
+    status: still_present
+    now: 7
+    note: Finding 7 asks the paper's authors the same open points on onset and end marking, GC settings and cf_w sign,
+      the normalization formula and the HFO App settings and windows; it does not repeat the earlier questions on
+      the post hoc test, the PSD measure and the pairing of the Figure 6 tests.
+  outcomes:
+  - claim: fig2-r1-target-shifts
+    earlier: partially_reproduced
+    cause: reading
+    choice: How seizure onset is marked from the LFP when the files hold no times; the earlier attempt took the centre
+      of the first 1 s window of 1-40 Hz line length above 2 times the channel median in a run reaching 3, this
+      one the start of the first window of 1-45 Hz line length above 1.5 in a run above 2.
+    note: At the same GC reading (BIC order up to 20, out minus in, 1 kHz) the earlier attempt's R1 top nodes are CA1,
+      ANT, ANT, DG (2 of 4; 3 of 4 with AIC order, its recorded reading) and this one's ANT, ANT, CA3, DG. A check
+      on R1's 35 baseline seizures found the earlier onsets a median 1.00 s later (quartiles 0.75 and 1.88 s); with
+      this attempt's onsets both attempts' GC code give 4 of 4, with the earlier onsets 2 (earlier code) or 3 (this
+      code), so the onset rule decides it, as this attempt's own onset variants (2 to 4 of 4) show.
+    confidence: high
+  - claim: fig3a-some-nontarget-shorten
+    earlier: partially_reproduced
+    cause: reading
+    choice: How seizure onset and end are marked from the LFP when the files hold no times (the two attempts used
+      different line-length rules and stimulation train detectors), which sets every seizure duration.
+    note: Both use reading (c) and find the same 3 named groups significantly shorter (R2 ANT, R3 CA1, R7 CA3); the
+      difference is R7, where the earlier attempt has R7 CA3 at -0.1899 against the R7 ANT target's -0.2561 (less
+      effective, 3 of 5) and this one -0.2258 against -0.1995 (more effective, 2 of 5), over the same 4 CA3 seizures.
+      The earlier attempt's own Figure S2 order and device-end variants also give 2 of 5, and this one's variants
+      give 1 or 2.
+    confidence: high

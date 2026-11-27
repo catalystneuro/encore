@@ -1,9 +1,0 @@
-You are the author of attempt `{attempt}` on paper `{key}` (data: {dataset}; entry `entries/{entry}`), coming back to it after a reader answered your questions on the claims file. Follow docs/protocol.md, "Author". The paper's full text is under `paper/`: read it to understand the claims. The claims file, which a reader wrote from the paper and a second reader checked, decides what is tested and how: do not change a claim's statement, expected values or criterion. Take a method detail it lacks from the paper, citing the passage, as step 1.6 of the Author section says; ask a reader only when you believe the claims file misreads the paper.
-
-The answers are in `{questions}`; where the reader found that the claims file misread the paper, it amended the claim. For each answered question, re-run the affected claims as the claims file now has them, update the notebook, the conclusions and the attempt record, and say in each claim's notes what the answer changed. Then lock, check and run the entry (`python tools/entry.py lock|all entries/{entry}`) and run `python tools/entry.py handover entries/{entry}`. Do not verify your own work. Do not commit or push.
-
-Write prose plainly: no em dashes, never the word "rather", no bold except the "**Result: ...**" openers. YAML plain scalars must not contain ": ".
-
-Your final message is a report: each question, what its answer changed, and the outcome per affected claim, with the earlier outcome next to it.
-
-Run every command in the foreground and wait for it to finish: the run ends when you stop, and anything still running is lost. Before a command that may take long, time it on a subset and estimate the whole (docs/protocol.md, "Develop on a subset").

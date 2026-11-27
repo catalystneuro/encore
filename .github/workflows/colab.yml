@@ -7,7 +7,7 @@ name: Colab copies
 on:
   push:
     branches: [main]
-    paths: ["entries/**", "tools/colab.py"]
+    paths: ["entries/**", "tools/colab.py", "protocol.lock"]
   workflow_dispatch:
     inputs:
       entries:
@@ -29,6 +29,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: bash tools/protocol.sh
 
       - uses: actions/setup-python@v5
         with:

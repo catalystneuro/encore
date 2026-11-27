@@ -1,29 +1,25 @@
-I've answered every point in the round-1 report and re-run the entry. `python tools/entry.py all entries/002013-amjad-2025` passes: the notebook ran in 157 s and the check found 0 errors. Every number quoted in the conclusions and notes matches the new output.
+I've worked through the round-1 report. No outcome changed: the verifier agreed with all 14 (8 reproduced, 1 partially reproduced, 1 not reproduced, 4 blocked). I re-ran the entry with `python tools/entry.py all entries/amjad-2025`. It passed in about 1 minute with a peak memory of 4.4 GB, every number it shared with the earlier run came out the same, and `check` reports 0 errors.
 
-**Outcomes:** none changed. The verifier gave the same outcome as the record on all 14 claims; it called fig4a "reproduced (weak)", which I recorded as agreeing with `reproduced`. The new analyses support the existing outcomes.
+**Output the verifier asked for**
+- **fig4a timing (C1):** in every successful forced shape-task trial, feedback comes 3.75 to 4.03 s after the value cue. The 0 to 3 s window therefore always ends before feedback.
+- **fig3a noise (C2):**
+  - The single-trial change at 0.6 V varies with an SD of 0.259 nA across trials, so the trial average could only show a change of about 0.04 nA or more.
+  - Over 2 to 3 s, where the stored dopamine series differs most between rewards, the raw current at 0.6 V shows no reward contrast (p = 0.938).
+- **fig4b/4c blocks (C3):** in the direction task, the side that gives the big reward is fixed within 16 blocks of 50 to 93 successful trials.
+  - The reward effect holds with the side held fixed: p = 0.00164 for left cues and 9.91e-08 for right cues. Large is below small in 12 of 16 blocks (p = 0.025).
+  - The side effect holds across block medians (p = 0.000622) and within blocks (12 of 16, p = 0.00336).
+- **Scan samples (C4):** each stored scan starts at its lowest potential (sample 0, -0.347 V), peaks at sample 107 and ends at -0.3205 V.
 
-**Output added for what the verifier asked:**
-- **FSCV scaling:** the applied-voltage and current data both have conversion 1 and offset 0, so the voltage is read as stored.
-- **fig3a-redox-peaks:** the searches at neighbouring potentials now run in the notebook (0.50 V, 0.70 V and -0.19 V). The best r is 0.17 to 0.22, at offsets that differ from row to row. I also computed the claim's voltammogram at the stored times, marked as not deciding. For large-reward trials its largest value on the rising sweep is at -0.24 V, not near 0.6 V, so the claim stays blocked.
-- **fig3a-dual-channel, c8dg half:** 56 of 85 large-reward trials (65.9%) are above zero. The claim stays blocked because c8ds is not in the dandiset.
-- **fig4a:** with a pre-cue baseline mean (-1 to 0 s) in place of the single sample at the cue, the result is 1.38 against 0.10, p = 0.022.
-- **fig4b and fig4c:**
-  - The effect is not smoothing carrying pre-cue signal forward. On the unsmoothed envelope fig4b holds (0 to 0.5 s ratio 0.834, p = 1.9e-08), and fig4c too (ratio 0.807, p = 1.7e-06).
-  - In 0.1 s bins, large and small do not differ before the cue, and large is lower from 0.1 to 0.4 s.
-  - The 1,497 LFP joins are all intervals shorter than 1 ms, and the signal does not jump at them: the largest change at a join is 20.3 µV, below the 99.9th percentile of 26.0 µV over all samples.
-  - 118 of 1,172 trials have a join near the cue, spread over the four conditions.
-- **fig3b:** 95.1% of runs above threshold on the smoothed power already last at least 50 ms, so the minimum length does little. An unsmoothed variant also shows a fall in bursts after the cue (p = 6.8e-34). The conclusion now says this fall is the same beta drop tested in fig4b, not separate evidence.
-- **Monkey P offset:** the notebook now loads `session126_events.mat` from Zenodo and takes the offset from its first event, instead of the typed number 6800.66578. The file is listed under `inputs`, and the header no longer says nothing else uses outside data. Its 36 TTL values have no names and do not follow the Monkey T codes, so fig5a stays blocked.
+**Corrections and variants for the other points**
+1. **fig3a-redox-peaks:** the conclusion now says no redox signal is detectable. The rising maximum landing inside its range is not an oxidation peak, as cue shifts of ±5 and ±10 s put the extremes anywhere on the sweep. It also now discusses why the stored dopamine series shows a reward effect when the raw current does not.
+2. **fig4a:** the conclusion and notes now say the evidence is weak, including that the +10 s control also reaches p < 0.05.
+3. **Beta power order:** the paper says "squared, enveloped", the reverse of the claims file. I ran the paper's order as a variant. It matches the paper's Zenodo trace less closely (r = 0.913 against 0.942) and gives the same outcomes for fig3b, fig4b and fig4c. Since the claims file states an order the paper does not, I added a question for a reader in `questions/amjad-2025.yaml` and left the claim unchanged.
+4. **Bursts:** with the claims file's smoothing, runs above threshold last 206 ms at the median and only 4.9% are under 50 ms, so the 50 ms minimum removes almost nothing. The conclusion now says these events are longer than the paper's bursts. A variant without smoothing gives a median run of 67 ms, and the rate still changes.
+5. **Clock offset of one scan:** moving the cue by 0.1 s gives p = 0.0272 and 0.0175 for fig4a and leaves fig3a not reproduced.
+6. **Zenodo trial lists:** they are in ascending order without repeats, so the 35th entry is the 35th trial. The notes now say the trace criterion is not an independent check, since it was written after r = 0.94 was known.
+7. **fig5bc noise:** leaving out samples within 1 ms of the input limit gives ratios of 4.48 to 5.90. Measuring the trough on the same filter as the noise gives 5.21 to 6.50. All are above the threshold of 3.
+8. **Release notes:** the data check now prints the "Known gaps" section of the pinned version's release notes, and the four blocked claims cite it.
 
-**Corrections:**
-- The zenodo-link notes now say the criterion tests only r and was written after r was known, and give the amplitude difference.
-- The fig4c conclusion says that "left is contralateral" rests on the Methods.
-- I changed `provenance.protocol` from `pilot-6` to `pilot-7`, because the protocol was already at pilot-7 when the author ran. No claim needed the new `elsewhere` data kind.
-- Round 1 is recorded under `verifications`, with the verifier's reasons and my response for each claim.
+I recorded round 1 under `verifications` in `attempts/amjad-2025-02.yaml`, with the verifier's reasons and my responses, and updated the outcome notes and the notebook summary. No finding is rated critical, so no finding review was needed, and no new finding was added.
 
-**Not done:**
-- **Implant hemisphere, implant log and implant dates:** none are in the files or the archive's metadata, so these stay unchecked.
-- **fig5a with outside data:** I did not attempt it, because the Zenodo event codes cannot be decoded without a code map.
-- **Trial 1501:** I left it in the selections; one trial out of 570 or more cannot change a result.
-
-Nothing was committed or pushed.
+**Not done:** I left the claims file unchanged and did not commit or push.

@@ -1,28 +1,145 @@
-# mah-2023 · recorder · run 42838716882
+# mah-2023 · recorder · run 45634380981
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  git log --diff-filter=A --name-only --format= -- docs/pilot-notes | head -n 5; ls transcripts/mah-2023/; python tools/readme_row.py mah-2023; cat attempts/mah-2023-01.yaml; python -c "
-import json;d=json.load(open('targets/dandisets.json'));
-items=d if isinstance(d,list) else d.get('dandisets',d)
-for x in (items if isinstance(items,list) else items.values()):
-  if '001169' in json.dumps(x): print(json.dumps(x,indent=1))
-"
+git log --diff-filter=A --name-only --format= -- docs/pilot-notes | head -n 5; ls transcripts/mah-2023/; python tools/readme_row.py mah-2023; ls summaries | head
+```
+
+```
+docs/pilot-notes/amjad-2025-01.md
+docs/pilot-notes/andrews-2024-01.md
+docs/pilot-notes/armstrong-2026-01.md
+docs/pilot-notes/asari-2009-01.md
+docs/pilot-notes/asari-2009-02.md
+attempt-01
+author-report.md
+author-revise-1-report.md
+author-revise-1.md
+author-revise-2-report.md
+author-revise-2.md
+author.md
+reconcile-report.md
+reconcile.md
+verifier-1-report.md
+verifier-1.md
+verifier-2-report.md
+verifier-2.md
+| [001169](https://dandiarchive.org/dandiset/001169) | [Mah et al. 2023](https://doi.org/10.1038/s41467-023-43250-x) | 24 | 6 | 2 | 0 | [`mah-2023`](entries/mah-2023) |
+README.md
+[... 9 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+for f in amjad-2025-01 andrews-2024-01 armstrong-2026-01 asari-2009-01 asari-2009-02 knierim-2000-02; do echo "=== $f"; cat docs/pilot-notes/$f.md; done; grep -n -B2 -A2 "readme_row\|| Dandiset" README.md | head -20; cat summaries/asari-2009-02.md summaries/README.md
 ```
 
 ```
 <persisted-output>
-Output too large (283.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/28eee053-e8cc-4a7b-a316-0f017d7dd302/tool-results/b3zusxtcp.txt
+Output too large (37.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/981e5faa-4e7e-4733-ae11-f8f19425f09e/tool-results/bg1q2y49r.txt
 
 Preview (first 2KB):
-docs/pilot-notes/shi-2013-01.md
-docs/pilot-notes/crcns-fcx-2-johnson-2018-01.md
-docs/pilot-notes/crcns-fcx-3-johnson-2019-01.md
-docs/pilot-notes/crcns-apl-1-bruno-2017-01.md
-docs/pilot-notes/crcns-ssc-10-lemessurier-2019-01.md
+=== amjad-2025-01
+# 002013, Amjad et al. 2025
+
+Seven claims reproduced, one partially and five blocked on the dandiset,
+plus one claim linking the dandiset to the paper's Zenodo deposit,
+reproduced (trial lists agree for 99.8 to 100% of trials); both rounds
+agreed with every outcome. The paper describes microinvasive probes for
+recording dopamine and electrical activity in monkeys; the beta burst,
+reward and unit isolation claims reproduce, the dopamine reward effect
+weakly (p = 0.023, and not in the stored trial-aligned `da`).
+
+The dandiset was converted by CatalystNeuro (catalystneuro/schwerdt-lab-to-nwb,
+the same conversion as 002014), and many findings are the same: each event
+is stored about five times, once per overlapping trial window; trial
+conditions are not in the trials table; the FSCV table columns carry no
+units and the raw FSCV current is labelled amperes with values in the
+[... 18 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat attempts/mah-2023-02.yaml; cat claims/mah-2023.yaml; python -c "
+import json;d=json.load(open('targets/dandisets.json'))
+it=d if isinstance(d,list) else d.get('dandisets',d)
+for e in (it if isinstance(it,list) else it.values()):
+  if '001169' in json.dumps(e): print(json.dumps(e,indent=1))
+"; ls transcripts/mah-2023/attempt-01
+```
+
+```
+<persisted-output>
+Output too large (352.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/981e5faa-4e7e-4733-ae11-f8f19425f09e/tool-results/b0o2twig5.txt
+
+Preview (first 2KB):
+schema_version: 3
+id: mah-2023-02
+datasets:
+- archive: dandi
+  id: "001169"
+  version: 0.261120.1450
+  doi: 10.48324/dandi.001169/0.261120.1450
+  relation: primary
+paper: doi:10.1038/s41467-023-43250-x
+date: '2026-11-24'
+entry: mah-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+[... 39 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/981e5faa-4e7e-4733-ae11-f8f19425f09e/tool-results/bg1q2y49r.txt"
+}
+```
+
+```
+1	=== amjad-2025-01
+2	# 002013, Amjad et al. 2025
+3	
+4	Seven claims reproduced, one partially and five blocked on the dandiset,
+5	plus one claim linking the dandiset to the paper's Zenodo deposit,
+6	reproduced (trial lists agree for 99.8 to 100% of trials); both rounds
+7	agreed with every outcome. The paper describes microinvasive probes for
+8	recording dopamine and electrical activity in monkeys; the beta burst,
+9	reward and unit isolation claims reproduce, the dopamine reward effect
+10	weakly (p = 0.023, and not in the stored trial-aligned `da`).
+11	
+12	The dandiset was converted by CatalystNeuro (catalystneuro/schwerdt-lab-to-nwb,
+13	the same conversion as 002014), and many findings are the same: each event
+14	is stored about five times, once per overlapping trial window; trial
+15	conditions are not in the trials table; the FSCV table columns carry no
+16	units and the raw FSCV current is labelled amperes with values in the
+17	thousands; the bipolar LFP is stored in volts with a conversion factor that
+18	makes it picovolts; and the raw ephys of one session and the spike times of
+19	Monkey P are on different clocks from the rest of the file, by 9831.35 s and
+20	6800.666 s, with nothing saying so. In addition, one session's trial-aligned
+[... 524 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts/ | grep mah; ls docs/pilot-notes | grep mah; ls summaries | grep mah; ls transcripts/mah-2023/attempt-01; wc -c attempts/mah-2023-02.yaml claims/mah-2023.yaml transcripts/mah-2023/*report.md
+```
+
+```
+mah-2023-01.yaml
+mah-2023-02.yaml
+mah-2023-01.md
+mah-2023-01.md
 answer-report.md
 answer.md
 author-answers-report.md
@@ -34,267 +151,94 @@ author-revise-2-report.md
 author-revise-2.md
 author.md
 claims-check-report.md
-[... 47 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat attempts/mah-2023-01.yaml | wc -c; grep -n '001169' targets/dandisets.json | head; for f in shi-2013-01 crcns-fcx-2-johnson-2018-01 crcns-fcx-3-johnson-2019-01 crcns-apl-1-bruno-2017-01 crcns-ssc-10-lemessurier-2019-01; do echo "=== $f"; cat docs/pilot-notes/$f.md; done
-```
-
-```
-Exit code 1
-65672
-4762:   "dandiset": "001169",
-=== shi-2013-01
-# shi-2013, Shi et al. 2013
-
-Seven claims reproduced, five partially, 13 not reproduced and three blocked,
-two for insufficient metadata and one for missing data; eleven outcomes rest on
-an assumption, among them `hold-vision-main-effect`, `cv2-larger-nv`,
-`fig6-decoding-nvnv` and `decoding-v-better-than-nv`. The first verification
-round agreed with 26 of the 28 outcomes and disagreed on `fig4-indx1-means` and
-`rate-variance-nv-higher`, both of which it held not reproduced, and the second
-agreed with all 28, withdrawing both disagreements; nothing was proposed after
-the second, so there was no third round. CRCNS does not version data sets, so
-the version is recorded as unversioned with the data set's DOI
-(10.6080/K0CZ353K). The paper, Shi, Apker and Buneo in the Journal of
-Neurophysiology (109:2097-2107), records single neurons in superficial area 5 of
-the superior parietal lobule in two rhesus monkeys (X and B) holding the arm at
-eight targets in a 3D virtual environment, with the hand cursor visible (V) or
-blanked (NV) during the hold, and reports that V and NV endpoints rarely differ,
-[... 100 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  git log --diff-filter=A --name-only --format= -- docs/pilot-notes | head -n 20; ls docs/pilot-notes | head -50; ls docs/pilot-notes | wc -l
-```
-
-```
-docs/pilot-notes/shi-2013-01.md
-docs/pilot-notes/crcns-fcx-2-johnson-2018-01.md
-docs/pilot-notes/crcns-fcx-3-johnson-2019-01.md
-docs/pilot-notes/crcns-apl-1-bruno-2017-01.md
-docs/pilot-notes/crcns-ssc-10-lemessurier-2019-01.md
-docs/pilot-notes/crcns-hc-28-jadhav-2016-01.md
-docs/pilot-notes/crcns-hc-13-yu-2017-01.md
-docs/pilot-notes/crcns-vim-3-mannion-2015-01.md
-docs/pilot-notes/crcns-ssc-8-goncalves-2013-01.md
-docs/pilot-notes/crcns-hc-14-girardeau-2017-01.md
-docs/pilot-notes/002034-thompson-2026-01.md
-docs/pilot-notes/002035-weible-2022-01.md
-docs/pilot-notes/002020-nakamuta-2025-01.md
-docs/pilot-notes/crcns-alm-1-li-2015-01.md
-docs/pilot-notes/crcns-alm-3-li-2016-01.md
-docs/pilot-notes/crcns-pfc-2-fujisawa-2008-01.md
-docs/pilot-notes/crcns-fcx-1-watson-2016-01.md
-docs/pilot-notes/crcns-hc-7-kohus-2016-01.md
-docs/pilot-notes/000055-peterson-2021-01.md
-docs/pilot-notes/001950-su-2026-01.md
-[... 51 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd docs/pilot-notes; for f in johnson-2018-01 johnson-2019-01 bruno-2017-01 lemessurier-2019-01; do echo "=== $f"; cat $f.md; done; head -3 knierim-2000-02.md
-```
-
-```
-<persisted-output>
-Output too large (33.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/28eee053-e8cc-4a7b-a316-0f017d7dd302/tool-results/b8lkq7icm.txt
-
-Preview (first 2KB):
-=== johnson-2018-01
-# crcns-fcx-2, Johnson et al. 2018
-
-Five claims reproduced, none partially, seven not reproduced and nine blocked,
-all for methods underspecified; three outcomes rest on an assumption,
-`behavior-no-difficulty-difference`, `erp-no-condition-difference` and
-`psi-theta-shift`. The first verification round agreed with 19 of the 21
-outcomes and disagreed on behavior-no-difficulty-difference and psi-theta-shift,
-both of which it held partial, and the second agreed with all 21, though it
-questioned the label of the nine blocked claims; nothing was proposed after the
-second, so there was no third round. CRCNS does not version data sets, so the
-version is recorded as unversioned with the data set's DOI (10.6080/K0VX0DQD)
-and the MD5 sums in the notebook header. The paper, Johnson, Adams, Solbakk,
-Endestad, Larsson, Ivanovic, Meling, Lin and Knight in PLoS Biology (16,
-e2004274), records intracranial EEG from the medial temporal lobe (MTL), lateral
-prefrontal cortex (PFC) and orbitofrontal cortex (OFC) in ten adults with
-[... 14 more lines not kept]
+claims-check.md
+claims-report.md
+claims.md
+recorder-report.md
+recorder.md
+[... 13 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/28eee053-e8cc-4a7b-a316-0f017d7dd302/tool-results/b8lkq7icm.txt"
+ "file_path": "attempts/mah-2023-02.yaml"
 }
 ```
 
 ```
-1	=== johnson-2018-01
-2	# crcns-fcx-2, Johnson et al. 2018
-3	
-4	Five claims reproduced, none partially, seven not reproduced and nine blocked,
-5	all for methods underspecified; three outcomes rest on an assumption,
-6	`behavior-no-difficulty-difference`, `erp-no-condition-difference` and
-7	`psi-theta-shift`. The first verification round agreed with 19 of the 21
-8	outcomes and disagreed on behavior-no-difficulty-difference and psi-theta-shift,
-9	both of which it held partial, and the second agreed with all 21, though it
-10	questioned the label of the nine blocked claims; nothing was proposed after the
-11	second, so there was no third round. CRCNS does not version data sets, so the
-12	version is recorded as unversioned with the data set's DOI (10.6080/K0VX0DQD)
-13	and the MD5 sums in the notebook header. The paper, Johnson, Adams, Solbakk,
-14	Endestad, Larsson, Ivanovic, Meling, Lin and Knight in PLoS Biology (16,
-15	e2004274), records intracranial EEG from the medial temporal lobe (MTL), lateral
-16	prefrontal cortex (PFC) and orbitofrontal cortex (OFC) in ten adults with
-17	epilepsy during a visuospatial working memory task of 120 trials split between
-18	identity, spatial and temporal conditions, and reports that accuracy and
-19	response time do not differ by condition, that ERPs do not either, that theta
-20	power is sustained over encoding and delay, that phase locking peaks in theta
-[... 459 more lines not kept]
-```
-
-**Agent**
-
-Now the sources. I'll read the attempt record first.
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,400p attempts/mah-2023-01.yaml
-```
-
-```
-schema_version: 3
-id: mah-2023-01
-datasets:
-- archive: dandi
-  id: 001169
-  version: 0.260825.1909
-  doi: 10.48324/dandi.001169/0.260825.1909
-  relation: primary
-paper: doi:10.1038/s41467-023-43250-x
-date: 2026-11-10
-entry: mah-2023
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code
-    model: claude-opus-5-5
-    protocol: pilot-14
-  runner:
-[... 380 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 400,900p attempts/mah-2023-01.yaml
-```
-
-```
-<persisted-output>
-Output too large (32.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/28eee053-e8cc-4a7b-a316-0f017d7dd302/tool-results/bwxnkaryp.txt
-
-Preview (first 2KB):
-  - Logistic fits with scipy's bounded least_squares from 10 random starts in place of fmincon (my_fit_sigmoid.m), with
-    its bounds; transition curves with 30 trials either side and 10-trial smoothing (Figure3.m).
-- claim: fig4a-wait-time-block-sensitivity-emerges
-  outcome: blocked
-  blocked_by: data_missing
-  notes: 'Fig. 4 uses all stage 8 sessions, including those that fail the inclusion criterion (Methods, Learning dynamics);
-    Figure4.m reads them from the lab''s S structs. The dandiset was converted from A_Structs_Final (the conversion script
-    constantinople-lab-to-nwb, mah_2024_convert_all_sessions.py), which holds only the sessions the lab''s parser keeps
-    after screen_perf.m. The S structs are not in the Zenodo deposit, which holds A_Structs_Final, A_Structs_all and
-    the model fits. A_Structs_all was not read here; whether it holds the excluded sessions is not known. A partial test
-    on the included sessions was not run: the claims are about how behavior changes from the first stage 8 sessions,
-    which are the ones the criterion removes, so a trend over the included sessions would test a different selection.'
-- claim: fig4c-initiation-previous-reward-stable
-  outcome: blocked
-  blocked_by: data_missing
-  notes: 'As fig4a-wait-time-block-sensitivity-emerges; the sessions that fail the inclusion criterion are not in the
-[... 10 more lines not kept]
+1	schema_version: 3
+2	id: mah-2023-02
+3	datasets:
+4	- archive: dandi
+5	  id: "001169"
+6	  version: 0.261120.1450
+7	  doi: 10.48324/dandi.001169/0.261120.1450
+8	  relation: primary
+9	paper: doi:10.1038/s41467-023-43250-x
+10	date: '2026-11-24'
+11	entry: mah-2023
+12	provenance:
+13	  kind: agent
+14	  accountable:
+15	    name: CatalystNeuro
+16	  agent:
+17	    harness: Claude Code
+18	    model: claude-opus-5-5
+19	    protocol: pilot-18
+20	  runner:
+[... 817 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/28eee053-e8cc-4a7b-a316-0f017d7dd302/tool-results/bwxnkaryp.txt"
+ "file_path": "attempts/mah-2023-02.yaml",
+ "offset": 838,
+ "limit": 400
 }
 ```
 
 ```
-1	  - Logistic fits with scipy's bounded least_squares from 10 random starts in place of fmincon (my_fit_sigmoid.m), with
-2	    its bounds; transition curves with 30 trials either side and 10-trial smoothing (Figure3.m).
-3	- claim: fig4a-wait-time-block-sensitivity-emerges
-4	  outcome: blocked
-5	  blocked_by: data_missing
-6	  notes: 'Fig. 4 uses all stage 8 sessions, including those that fail the inclusion criterion (Methods, Learning dynamics);
-7	    Figure4.m reads them from the lab''s S structs. The dandiset was converted from A_Structs_Final (the conversion script
-8	    constantinople-lab-to-nwb, mah_2024_convert_all_sessions.py), which holds only the sessions the lab''s parser keeps
-9	    after screen_perf.m. The S structs are not in the Zenodo deposit, which holds A_Structs_Final, A_Structs_all and
-10	    the model fits. A_Structs_all was not read here; whether it holds the excluded sessions is not known. A partial test
-11	    on the included sessions was not run: the claims are about how behavior changes from the first stage 8 sessions,
-12	    which are the ones the criterion removes, so a trend over the included sessions would test a different selection.'
-13	- claim: fig4c-initiation-previous-reward-stable
-14	  outcome: blocked
-15	  blocked_by: data_missing
-16	  notes: 'As fig4a-wait-time-block-sensitivity-emerges; the sessions that fail the inclusion criterion are not in the
-17	    dandiset. A partial test on the included sessions was not run: the claims are about how behavior changes from the
-18	    first stage 8 sessions, which are the ones the criterion removes, so a trend over the included sessions would test
-19	    a different selection.'
-20	- claim: fig4d-overshoot-grows-with-training
-[... 482 more lines not kept]
+838	    agrees: true
+839	    outcome: reproduced
+840	    reason: I agree with every outcome (section 1).
+841	    response: No change of outcome.
+842	  - claim: fig1e-wait-time-increases-with-reward
+843	    agrees: true
+844	    outcome: reproduced
+845	    reason: I agree with every outcome (section 1).
+846	    response: No change of outcome.
+847	  - claim: fig1f-wait-time-block-effect
+848	    agrees: true
+849	    outcome: reproduced
+850	    reason: I agree with every outcome (section 1).
+851	    response: No change of outcome.
+852	  - claim: fig1i-initiation-block-effect
+853	    agrees: true
+854	    outcome: reproduced
+855	    reason: I agree with every outcome (section 1).
+856	    response: No change of outcome.
+857	  - claim: suppfig2-initiation-block-effect-after-unrewarded
+[... 363 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 900,1200p attempts/mah-2023-01.yaml; python - <<'E'
+grep -n "^| Dandiset\|^|---" README.md | head -3; sed -n 1,60p tools/readme_row.py; python - <<'E'
 import json
 d=json.load(open('targets/dandisets.json'))
-L=d if isinstance(d,list) else next(v for v in d.values() if isinstance(v,list))
-for x in L:
-  if x.get('dandiset')=='001169': print(json.dumps(x,indent=1))
+def walk(x):
+    if isinstance(x,dict):
+        if any('001169'==str(v) for v in x.values()): print(json.dumps(x,indent=1)); return
+        for v in x.values(): walk(v)
+    elif isinstance(x,list):
+        for v in x: walk(v)
+walk(d)
 E
-```
-
-```
-agrees: true
-    outcome: blocked
-    reason: Agrees with data_missing; the reason for not running a partial test is stated and reasonable.
-    response: No change of outcome.
-  - claim: fig4c-initiation-previous-reward-stable
-    agrees: true
-    outcome: blocked
-    reason: Agrees with data_missing; the reason for not running a partial test is stated and reasonable.
-    response: No change of outcome.
-  - claim: fig4d-overshoot-grows-with-training
-    agrees: true
-    outcome: blocked
-    reason: Agrees with data_missing; the reason for not running a partial test is stated and reasonable.
-    response: No change of outcome.
-  - claim: fig5b-pre-cue-initiation-sensitive-to-offer
-    agrees: true
-    outcome: reproduced
-    reason: Agrees with the unchanged reproduced outcome; the dependence on the link is stated in the notes.
-    response: No change of outcome.
-  - claim: fig5c-pre-cue-initiation-still-sensitive-to-previous-reward
-[... 53 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat tools/readme_row.py | head -80; grep -n "^| Dandiset\|^| Data" README.md | head
 ```
 
 ```
@@ -318,180 +262,182 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+[... 67 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,40p claims/mah-2023.yaml; grep -n "^- id:\|^  id:\|  location:\|  kind:\|  data:\|  inputs:" claims/mah-2023.yaml | head -120
+```
+
+```
+# Claims for Mah, Schiereck, Bossio & Constantinople (2023), "Distinct value computations support
+# rapid sequential decisions", Nature Communications 14, 7573, doi:10.1038/s41467-023-43250-x,
+# tested on DANDI:001169 (primary; the dandiset's title is the paper's and its description is the
+# paper's abstract, so it is meant to hold the behavioral data of the 291 rats).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.1038-s41467-023-43250-x.txt, the version of record as served by Europe PMC
+# (PMC10663503), with the main text, figure legends, Methods, Data and Code availability, and three
+# supplement files extracted from their PDFs. Supplement 1 (MOESM1) is the Supplementary
+# Information, Supplementary Figs 1 to 14 with legends; supplement 2 is the peer review file;
+# supplement 3 is the reporting summary. No PDF of the main article was supplied; none was needed,
+# as the text of every legend and table was legible. Source Data are not in the text read.
+#
+# Code read. github.com/constantinoplelab/published, folder rat_behavior, at commit b7b68ca8c107
+# (HEAD, 2026-09-25; the folder was last changed in commit 87fd4a40b3, 2024-09-20, and its files
+# were uploaded in f3cb954ef7, 2023-10-22). It holds MATLAB scripts that redraw each figure
+# (Figures/Figure1.m to Figure5.m, FigureS1.m to FigureS14.m), the analyses they call (Analysis/:
+# wtcurves, iticurves, waittime_20ul_by_previous_vol, latency_post20ul_by_previous_vol,
+# regress_wt_vs_rew, regress_latency_vs_rew, block_dynamics_wt, block_dynamics_latency,
 [... 59 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -nE "^  - id:|^- id:|^ *(kind|data|figure|section|source|where):" claims/mah-2023.yaml | head -150; head -60 claims/mah-2023.yaml
+sed -n 40,68p claims/mah-2023.yaml; sed -n 361,405p claims/mah-2023.yaml; sed -n 513,531p claims/mah-2023.yaml; sed -n 553,570p claims/mah-2023.yaml; sed -n 644,666p claims/mah-2023.yaml; sed -n 815,900p claims/mah-2023.yaml
 ```
 
 ```
-69:- id: cohort-size
-72:  source: Results, Rats' deliberative and motivational decisions are sensitive to the value of the
-92:- id: fig1e-wait-time-increases-with-reward
-95:  source: Figure 1d,e; Results, Computational modeling reveals distinct value computations,
-103:- id: fig1f-wait-time-block-effect
-106:  source: Figure 1d-f; Results, Rats' deliberative and motivational decisions are sensitive to the
-129:- id: fig1i-initiation-block-effect
-132:  source: Figure 1g-i; Supplementary Fig. 1; Results, Rats' deliberative and motivational decisions
-147:- id: suppfig2-initiation-block-effect-after-unrewarded
-151:  source: Supplementary Fig. 2b; Results, Rats' deliberative and motivational decisions are
-179:- id: suppfig3-wait-time-not-affected-by-previous-outcome
-181:  source: Supplementary Fig. 3; Results, Rats' deliberative and motivational decisions are sensitive
-190:- id: fig2a-wait-time-converges-in-mixed-blocks
-194:  source: Figure 2a,b; Supplementary Figs 4 and 5; Results, Trial initiation and wait times
-214:- id: suppfig5-mixed-to-adaptation-transitions
-217:  source: Supplementary Fig. 5; Results, Trial initiation and wait times exhibited distinct temporal
-232:- id: fig2c-d-regression-on-previous-rewards
-236:  source: Figure 2c,d; Results, Trial initiation and wait times exhibited distinct temporal
-254:- id: fig2e-tau-differ
-258:  source: Figure 2e; Results, Trial initiation and wait times exhibited distinct temporal dynamics,
-[... 112 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd transcripts/mah-2023; wc -w *-report.md; cat author-report.md
-```
-
-```
-130 answer-report.md
-  278 author-answers-report.md
-  993 author-report.md
-  614 author-revise-1-report.md
-  574 author-revise-2-report.md
-  464 claims-check-report.md
-  498 claims-report.md
- 2110 verifier-1-report.md
- 1437 verifier-2-report.md
- 7098 total
-I've done steps 1 to 6 of the author protocol for `entries/mah-2023`. The entry passes its checks and runs from a clean environment in about 12 minutes, 9.5 of them streaming the 23,034 files. The handover package is in `executed/mah-2023/handover/`. Nothing is committed, and I did not verify my own work.
-
-## 1. Outcomes (33 claims: the paper's 32 plus one link claim I added)
-
-| claim | outcome |
-|---|---|
-| cohort-size | reproduced: 291 rats, median 33,493 trials and 71 sessions, exactly the paper's numbers |
-| fig1e, fig1f, fig1i | reproduced (Fig. 1i p = 1.82e-49, same as the paper) |
-| suppfig2, suppfig3 | reproduced |
-| fig2a, suppfig5, suppfig6 | reproduced |
-[... 56 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd transcripts/mah-2023; for f in answer author-answers author-revise-1 author-revise-2; do echo "=== $f"; cat $f-report.md; done
-```
-
-```
-=== answer
-There were no questions to answer, so I changed nothing in either file.
-
-`questions/mah-2023.yaml` does not exist. No file under `questions/` mentions mah-2023 or DANDI:001169, and no commit on any branch has ever added one. The author's report (`transcripts/mah-2023/author-report.md`) explains why: "I asked no questions of a reader." The author's open points were all method details for the paper's authors, such as the model-fitting choices, the H0 versus H0/2 transition matrix, the dates in Figure5.m, and the two different r values for Fig. 2f. The author recorded those as findings in the attempt, and under step 6 they are not for a reader to settle.
-
-I did not run `tools/claims_check.py`, because the claims file is unchanged. If a verifier writes questions later, run this again once the questions file exists.
-=== author-answers
-There were no questions to answer, so nothing in the claims file, notebook, conclusions or attempt record changed. All 33 outcomes are the same as before.
-
-- **No questions file.** `questions/mah-2023.yaml` does not exist. The first author run asked a reader nothing: its open points were method details for the paper's authors, and it recorded them as `methods_unavailable` findings in `attempts/mah-2023-01.yaml`. The answer run (`transcripts/mah-2023/answer-report.md`) found nothing to answer and changed no file.
-- **Claims file unchanged.** `claims/mah-2023.yaml` has not changed since the author run (commit a3a7df4d2c), so no claim needed re-running.
-
-**Outcomes, all unchanged from the first author run:**
-
-| claims | outcome |
-|---|---|
-| cohort-size, fig1e, fig1f, fig1i, suppfig2, suppfig3, fig2a, suppfig5, suppfig6, fig2c-d, fig2e, fig2f, fig2g-h, fig2j, fig2k, fig2l, fig3c, bayes-observer, suppfig12, suppfig14, fig5b, fig5c, fig5d | reproduced |
-| fig3i | partially reproduced, rests on an assumption |
-| pre-cue-session-link (the link claim the author added) | partially reproduced, 14 of 16 rats |
-| fig3j, suppfig8, fig3f, supp
-[... 56 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd transcripts/mah-2023; cat verifier-1-report.md | head -120; echo ======; cat verifier-2-report.md | head -80
-```
-
-```
-**Verification report, round 1: Mah et al. 2023 on DANDI:001169 (0.260825.1909)**
-
-The claims file has 33 claims (32 from the paper plus the link claim). The notebook tests 25 and blocks 8.
-
-### A. Outcomes
-
-| claim | my outcome | reason |
-|---|---|---|
-| cohort-size | reproduced | Cell 13 finds 291 rats, a median of 33,493 trials and 71 sessions, all exact. |
-| fig1e-wait-time-increases-with-reward | reproduced | Cell 15: the mixed-block means are 10.45, 10.77, 11.11, 13.03 and 13.81 s, rising at every step. |
-| fig1f-wait-time-block-effect | reproduced | Cell 17: the mean ratio is 0.894 (0.90 ± 0.025 expected). The signed-rank p is 4.6e-47 z-scored and 8.2e-47 raw. 244 rats have per-rat p < 0.05. |
-| fig1i-initiation-block-effect | reproduced | Cell 19: the mean ratio is 0.56. p is 1.82e-49 z-scored and 1.84e-49 raw (paper 1.82e-49). |
-| suppfig2-initiation-block-effect-after-unrewarded | reproduced | Cell 21: after unrewarded trials p is 1.8e-49 two-tailed and 9.0e-50 one-tailed, faster in high blocks for 291 of 291 rats. After rewarded trials the one-tailed p is 1. The two-tailed p (3.9e-9) points the opposite way (high slower), which the criterion allows. The paper's p = 1 fits the code's one-tailed test. |
-| suppfig3-wait-time-not-affected-by-previous-outcome | reproduced | Cell 23: the ratios are 0.899 after rewarded and 0.897 after unrewarded trials, both below 1. The difference test gives p = 0.64. |
-| fig2a-wait-time-converges-in-mixed-blocks | reproduced | Cell 25: the relative gap is 0.33 (1..20) and 0.08 (10..20) for wait times, against 2.0 to 2.4 for initiation times under both detrend readings. Part (2) gives p = 1.8e-49 with 291 of 291 rats higher after high blocks, on concatenated and within-session readings. |
-| suppfig5-mixed-to-adaptation-transitions | reproduced | Cell 27: the pre-transition initiation gap is +0.062 (pooled) and +0.049 (per session). The relative gap is 0.134 for wait times against 0.244 and 0.204 for initiation times. |
-| fig2c
+# alternate around mixed blocks. Catch probability cohorts (Fig. 3c) of N = 3, 183, 61, 151 and 39
+# rats for 0.1, 0.15, 0.2, 0.25 and 0.35. A further 16 rats ran a pre-initiation cue task (Fig. 5;
+# 12 switched from the standard task, 4 trained only on it). Fig. 4 uses all stage 8 sessions,
+# including sessions that fail the inclusion criterion. Whether the dandiset holds the pre-cue rats,
+# the excluded sessions and the catch probabilities is the author's to find.
+#
+# Common method, used by every criterion unless it says otherwise (Methods, Criteria for including
+# behavioral data and Statistical analyses, and the code).
+# - Sessions. Stage 8 sessions that pass the inclusion criterion (regression of catch-trial wait
+#   time on offered reward, after removing wait times above mean + 2 SD in that session; the
+#   Methods include sessions with a significantly positive slope that immediately precede another
+#   session with a positive slope. utils/screen_perf.m, a variant, asks only for a positive slope,
+#   a 7-session moving mean of the slope at or above 0, more than 100 trials and more than 5 catch
+#   trials, and keeps a session when the session before it also passed). If the dandiset holds
+#   only included sessions, they are used as given.
+# - Wait times. Opt-out wait times on catch trials; wait times more than 1 SD above the mean
+#   catch-trial wait time pooled over the rat's sessions are removed (Methods, Statistical
+#   analyses; parse_data_from_mysql.m:204). Timed-out catch trials (no opt-out within 100 s) are not
+#   catch trials (parse_data_from_mysql.m).
+# - Trial initiation times. All trials; values above the 99th percentile of the rat's pooled
 [... 140 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -A4 "^  statement:" claims/mah-2023.yaml | head -250
+cd transcripts/mah-2023; for f in author-report.md author-revise-1-report.md author-revise-2-report.md verifier-1-report.md verifier-2-report.md reconcile-report.md; do echo "=== $f"; cat $f; done
 ```
 
 ```
-70:  statement: The dataset comes from 291 rats, with a median of 33,493 behavioral trials and 71
-71-    sessions per rat.
-72-  source: Results, Rats' deliberative and motivational decisions are sensitive to the value of the
-73-    environment, paragraph 2
-74-  quote: We used a high-throughput facility to train 291 rats using computerized, semi-automated
---
-93:  statement: In mixed blocks, rats wait longer for larger offered rewards; mean wait time on catch
-94-    trials rises with offer across 5, 10, 20, 40 and 80 uL.
-95-  source: Figure 1d,e; Results, Computational modeling reveals distinct value computations,
-96-    paragraph 1 (Fig. 3b)
-97-  quote: This model captured key features of the rats' behavior, including the monotonic
---
-104:  statement: Rats wait about 10% less for 20 uL in high blocks than in low blocks, across the
-105-    population.
-106-  source: Figure 1d-f; Results, Rats' deliberative and motivational decisions are sensitive to the
-107-    value of the environment, paragraph 3
-108-  quote: rats adjusted how long they were willing to wait for rewards in each block, and on average
---
-130:  statement: Rats initiate trials more quickly in high blocks than in low blocks, across the
-131-    population.
-[... 177 more lines not kept]
+<persisted-output>
+Output too large (35.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/981e5faa-4e7e-4733-ae11-f8f19425f09e/tool-results/b41o1byuf.txt
+
+Preview (first 2KB):
+=== author-report.md
+I finished the blind repeat attempt on `mah-2023` against DANDI:001169 version 0.261120.1450. All 33 claims were tested and none is blocked. The entry passes its check, both notebooks ran from a clean environment, and the handover was built. I did not verify my own work, and nothing is committed.
+
+### 1. Outcomes
+
+| Claim | Outcome |
+|---|---|
+| cohort-size, fig1e, fig1f, fig1i, suppfig2, suppfig3, suppfig12, suppfig14 | reproduced |
+| fig2a, suppfig5, suppfig6, fig2c-d, fig2e, fig2f, fig2g-h, fig2j | reproduced |
+| fig2k, fig2l | reproduced, but only when using the trials the paper's code uses |
+| fig3c | reproduced, resting on an assumption |
+| bayes-observer, suppfig9 | reproduced |
+| fig3j | reproduced, resting on my model-fitting choices |
+| suppfig8 | reproduced, resting on my model-fitting choices; depends on the random seed |
+| fig3f | not reproduced, resting on my model-fitting choices; depends on the random seed |
+| fig3i | partially reproduced, resting on an assumption |
+[... 15 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/981e5faa-4e7e-4733-ae11-f8f19425f09e/tool-results/b41o1byuf.txt"
+}
+```
+
+```
+1	=== author-report.md
+2	I finished the blind repeat attempt on `mah-2023` against DANDI:001169 version 0.261120.1450. All 33 claims were tested and none is blocked. The entry passes its check, both notebooks ran from a clean environment, and the handover was built. I did not verify my own work, and nothing is committed.
+3	
+4	### 1. Outcomes
+5	
+6	| Claim | Outcome |
+7	|---|---|
+8	| cohort-size, fig1e, fig1f, fig1i, suppfig2, suppfig3, suppfig12, suppfig14 | reproduced |
+9	| fig2a, suppfig5, suppfig6, fig2c-d, fig2e, fig2f, fig2g-h, fig2j | reproduced |
+10	| fig2k, fig2l | reproduced, but only when using the trials the paper's code uses |
+11	| fig3c | reproduced, resting on an assumption |
+12	| bayes-observer, suppfig9 | reproduced |
+13	| fig3j | reproduced, resting on my model-fitting choices |
+14	| suppfig8 | reproduced, resting on my model-fitting choices; depends on the random seed |
+15	| fig3f | not reproduced, resting on my model-fitting choices; depends on the random seed |
+16	| fig3i | partially reproduced, resting on an assumption |
+17	| fig3l | reproduced under the Results' reading, resting on an assumption |
+18	| fig4a | partially reproduced (tested on the paper's Zenodo deposit) |
+19	| fig4c, fig4d | reproduced (tested on the Zenodo deposit) |
+20	| fig5b, fig5c | reproduced under the code's session reading |
+[... 277 more lines not kept]
 ```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "docs/pilot-notes/mah-2023-01.md",
- "content": "# mah-2023, Mah et al. 2023\n\nTwenty-three claims reproduced, two partially, two not reproduced and five\nblocked, three for missing data and two as too large; the link claim the author\nadded, `pre-cue-session-link`, is partially reproduced and not counted. Five\noutcomes rest on an assumption, `fig3i-retrospective-model-captures-initiation`,\n`fig3f-inferential-model-not-sensitive-to-previous-offer`,\n`suppfig9-wait-times-reflect-misinferences`,\n`fig3l-lambda-groups-wait-time-dynamics` and\n`fig5c-pre-cue-initiation-still-sensitive-to-previous-reward`. The first\nverification round agreed with 32 of the 33 outcomes and disagreed on fig5c,\nwhich it held partial, and the second agreed with all 33; nothing was proposed\nafter the second, so there was no third round. The paper, Mah, Schiereck,\nBossio and Constantinople in Nature Communications (14, 7573), trains 291 rats\nin a temporal wagering task with hidden blocks of high, low and mixed reward\noffers, and reports that wait times on catch trials follow the block through\ninference of the hidden state while trial initiation times follow recent\nrewards retrospectively, that the two have distinct dynamics at block\ntransitions and on previous offers, that an inferential model fits wait times\nbetter than a retrospective one, that block sensitivity of wait times emerges\nonly with training, and that a reward cue before initiation does not remove the\ninitiation times' dependence on previous rewards and blocks; the dataset holds\nthe behavioural trials of the 291 rats in 23,034 NWB files. The claims were\nwritten from the version of record (PMC10663503) as Europe PMC text with the\nthree supplement files, and from the paper's MATLAB code at commit b7b68ca8c107,\nwhich holds no model-fitting code, for 32 claims, to which the author added the\nlink claim. Reproduced are `cohort-size` (291 rats, median 33,493 trials and 71\nsessions, exact), `fig1i-initiation-block-effect` (p = 1.82e-49, the paper's\nvalue), `fig1f-wait-time-block-effect` (ratio 0.894), every Fig. 2 claim, among\nthem `fig2j-wait-time-not-sensitive-to-previous-offer` (38 of 291 rats, so 253\nnot, the paper's count) and `fig2l-sensitivity-greater-for-initiation` (p =\n6.09e-38 against 6.21e-38), `fig3c-wait-time-by-catch-probability`, the Bayes\nobserver claim, suppfig9 (230 of 291 rats, p = 9.72e-23), `fig5b` and `fig5d`.\nPartial are fig3i, where the alternatives to the Equation 10 model show both\nfeatures at three of six settings, and fig5c, where under the 20 uL reading of\nthe legend 14 of 16 rats have p < 0.05 but the population test gives p = 0.0676.\nNot reproduced are fig3f, where the refitted inferential model's wait times are\nsensitive to the previous offer (+0.065 z, rank-sum p = 9.52e-11), and fig3l,\nwhere the refitted lambdas pile up at the bounds (59 rats at 0, 69 at 1) and\nneither split shows the claimed dissociation, a failure that cannot be separated\nfrom the refit. Blocked are `fig3j-inferential-beats-retrospective-for-wait-times`\nand `suppfig8-belief-state-not-distinguished`, as too large (about 3.3 h on one\ncore in the final run, 5.5 h in the verifier's round 2 re-execution), and the\nthree Fig. 4 learning claims, for missing data. The author's first run had 23\nreproduced, 1 partially, none not reproduced and 8 blocked, with fig3f, suppfig9\nand fig3l blocked as too large on an estimate of about 138 h. The author asked\nno questions of a reader, so the answer and author-answers runs changed nothing.\nRound 1 held that the overshoot measure of fig3i is positive even on flat noise,\nthat the code reading of fig5c is confounded by post-violation trials that\nrepeat the previous offer, that the null of the fig2g-h shuffle test is not on\nthe observed scale, and that the too-large estimate timed a pure Python loop and\nleft fig3f feasible; in reply noise-only and noise-free controls were added to\nfig3i, fig5c moved to partial on the legend's reading, the fig2g-h variants were\nrun and a code_mismatch finding recorded, a compiled likelihood cut the estimate,\nfig3f, suppfig9 and fig3l were tested, the regressions moved to the male volumes\nand a question on the claims file header went to `questions/mah-2023.yaml`.\nRound 2 found stale timings for fig3j and suppfig8, a wrong statement on the\nfig2f readings, an unbacked deviation in fig3i, an unverified premise in fig5c\nand a missing caveat in fig3l; in reply a cell ran the Equation 10 model over\nalpha_0, a cell showed post-violation trials repeat the offer within a session\nand block in all 16 rats, and the text was corrected. The author's run took\nabout 1 h 55 min; the notebook ran in 12 min at first, with peak memory 3.1 GB,\n804 s after the author-answers run, 26 min after round 1 and 24.0 min after round\n2 (45.3 min in the verifier's re-execution). The first exponential fits stalled\nat the bound and were replaced by an exact profile fit, and one clean-environment\nrun failed because a bulk removal of bold markers also deleted `**` operators in\nthe code, which were restored.\n\nThe dataset was converted by CatalystNeuro (conversion code at\nhttps://github.com/catalystneuro/constantinople-lab-to-nwb). It was converted\nfrom the lab's A_Structs_Final and holds only the sessions that pass the paper's\ninclusion criterion, which neither its description nor its files say, so the\nsessions that fail it, which the learning analyses of Fig. 4 and the pre-cue\nanalyses of Fig. 5 use, are not in it. Nothing marks the sessions run on the\npre-initiation cue task: the 16 rats of Fig. 5 are among the 291, all sessions\nhave protocol RWTautowait2, and the switch dates in the paper's Figure5.m mark\nthem for 14 of the 16 rats. The processed trial table has no catch probability,\nas the conversion maps the field under the misspelled name prob_cacth; the\nvalue is only in the raw trial table (catch_percentage). The raw is_catch\ndiffers from the processed is_catch on 176,009 trials, and neither description\nsays which to use. One session of L011 is deposited twice, the second with a\n\"-x\" suffix and identical trial data. The subject age is empty in 21,853 of\n23,034 files and is the range P6M/P24M in the others. 360 sessions of 8 rats\nhave catch probability 0.3, not among the five cohorts the paper lists. Equation\n6 lets a mixed block become low or high with probability H0, while every model\nscript uses H0/2 for each; Figure5.m lists 16 rats but 20 start dates and lacks\nthe Methods' 30-session offset; myTauShuffleTest.m puts the shuffled and\nobserved fits on different scales; and the correlation of the two time\nconstants is r = 0.08, p = 0.18 in the Results and r = -0.03, p = 0.53 in the\nFigure 2f legend. Questions are put to the paper's authors: which trials enter\nthe likelihood of the wait time models, with what bounds, starting ranges and\nfolds, which transition matrix was used for the fits, whether the start dates\nare paired with the rats in order and sessions before the 30th pre-cue session\nleft out, and whether the wait time shuffle test was meant to include the\ncurrent offer.\n\nThe author's points on the protocol: it does not say whether the author may set\n`data: with_labels` and add `depends_on` on the reader's claims, as was done for\nfig5b to fig5d; nothing covers how blind an author-written link claim must be,\nand its rule was written after a first look at the same check; the reader rule\nthat a claim is reproduced under any listed reading conflicts with author step\n1.6 for fig5c; `docs/archives.md` says to stream with remfile, while fetching\neach file whole into memory was twice as fast; a too_large estimate is meant to\ncome from a timed subset, which a refit never written does not have; data_missing\nassumes the data are public nowhere, while the Zenodo deposit holds an unread\n`A_Structs_all`; and under one reading of variance in the Bayes observer claim a\nless uncertain posterior has the larger variance.\n"
+ "file_path": "docs/pilot-notes/mah-2023-02.md",
+ "content": "# mah-2023, Mah et al. 2023, second attempt\n\nTwenty-four claims reproduced, six partially, two not reproduced and none\nblocked, plus the link claim `pre-cue-session-link`, partially reproduced\n(14 of 16 rats linked). The first verification round agreed with 28 of the\n33 outcomes as they stood, and fig2k, fig2l, fig5b and fig5c moved from\nreproduced to partially reproduced and fig3l to not reproduced; the second\nround agreed with all 33, and nothing was proposed after it, so there was no\nthird round. The attempt pins version 0.261120.1450. The paper, Mah,\nSchiereck, Bossio and Constantinople in Nature Communications (14, 7573),\ntrains 291 rats in a temporal wagering task with hidden blocks of high, low\nand mixed rewards, and reports that wait times on catch trials follow an\ninference of the block while trial initiation times follow recently received\nrewards. Every claim could be tested: the cohort, the block effects and\ntrial-history regressions of Figures 1 and 2, the inferential against\nretrospective model comparison (Fig. 3j) and the pre-cue task of Figure 5\nreproduce, Figure 4 on the paper's Zenodo deposit (A_Structs_all), since\nthe dandiset holds only included sessions. Not reproduced are fig3f, where\nthe fitted inferential model's 20 uL wait times are longer after offers\nbelow 20 uL (+0.048 z, rank-sum p = 3.7e-05, unchanged from 6 starts), and\nfig3l, where neither reading of the wait time difference between the lambda\ngroups holds (C at mixed to low p = 0.337). fig2k, fig2l and fig5c hold only\nunder the code's trials, and only through the trials after violations, on\nwhich the task repeats the offer; fig3i is partial because the alternative\nmodels show overshoots of 0.0002 to 0.0058 z, fig4a because the first\nsession pair's mean wait time ratio (1.187) is not closer to 1 than over\npairs 16-25 (0.936), and fig5b because the Methods' 30-session reading\nrises from 5 to 10 uL. The model fits use the attempt's own bounds and 2\nrandom starts against the paper's 100, so fig3j, suppfig8, fig3f and fig3l\nrest on assumptions, and suppfig8 is seed sensitive (BIC and AIC p = 0.0305\nunder seed +3000, 0.0507 from 6 starts). The reconciliation with\n`mah-2023-01` found the attempt blind and traces the changed outcomes to an\nerror in the earlier attempt for fig2k and fig2l (session-first trials given\nthe previous session's last offer) and for the Figure 4 claims (blocked\nwithout reading the Zenodo deposit), and to readings for fig3j and suppfig8\n(fewer fit starts) and fig5b (where the 99th percentile cut is taken). The\nbehaviour notebook ran in 822 s and the models notebook in 2,766 s, with\npeak memory 9.7 GB; a development run was killed for memory in the Figure 4\ncells and Zenodo rate-limited the author twice. In the last revision the\nbehaviour notebook failed when Zenodo returned a 504 and was re-executed\nalone; the reconciliation's full run passed all four notebooks.\n\nThe dataset was converted by CatalystNeuro (catalystneuro/constantinople-lab-to-nwb).\nIt holds only the sessions that pass the paper's inclusion criterion, and\nnothing in it says so: the trial counter trials_in_stage jumps between\nconsecutive deposited sessions in 2,586 of 22,742 pairs (284 rats), the\nfirst deposited session of a rat starts at a median of 1,543 final-stage\ntrials, and the Zenodo deposit holds a median of 95 final-stage sessions per\nrat against 71 here, so Figure 4 and the pre-cue analyses cannot be run on\nthe dandiset alone. That deposit stops earlier than the dandiset for 49\nrats, with 1,718 dandiset sessions dated after the rat's last session in it.\nThe pre-cue sessions of Figure 5 are marked only by the undescribed task\nargument center_port_cue, True in 762 sessions, all of the 16 rats\nFigure5.m names. wait_time_threshold includes 16,086 timed-out catch trials\nat 100 s; over opt-out catch trials alone it would be lower in all 291 rats,\nby a median of 5.19 s. Catch probability 0.3 occurs in 180,591 trials of 8\nrats, a cohort the paper does not list, and two block transitions go\ndirectly between high and low blocks. No file gives a subject age: 275 rats\nhave a date of birth and the 1,181 files of the other 16 give only P6M/P24M.\nThe counts match the paper exactly (291 rats, 184 male and 107 female, a\nmedian of 33,493 trials and 71 sessions per rat). Of the earlier attempt's\nfindings on the data, the duplicated L011 session, the missing catch\nprobability and the undescribed is_catch flags are fixed in this version.\nIn the paper, the Methods use 20 uL trials for Fig. 2k, 2l and 5c while\nlatency_post20ul_by_previous_vol.m uses all mixed block trials, and without\nthe post-violation trials the population initiates faster after small\noffers; Fig. 2f is reported as r = 0.08, p = 0.18 in the Results and\nr = -0.03, p = 0.53 in the legend; the model fitting code is not public;\nthe Fig. 3c cohort sizes sum to 437 for 291 rats; Equation 6 uses H0 where\nGenerateSynthData_Bayes.m uses H0/2; Figure5.m pairs 16 rats with 20 dates\nand has no 30-session offset; and myTauShuffleTest.m scales the shuffled\ncoefficients by 10 under an amplitude bound of 1. Questions on these are put\nto the paper's authors.\n\nThe author's points on the protocol: the claims have no per-outcome `data`\nfield to mark Figure 4 as using data from elsewhere, so Zenodo was listed\nunder `inputs`; files were fetched whole instead of read with `remfile`;\nZenodo's rate limit was met with a few large range requests; the 60-minute\nlimit forced two notebooks, five seeds of model fits and a single-start\nlambda fit; the fig3i criterion gives no size for an overshoot; the\n`pre-cue-session-link` claim carries text from an earlier attempt, used as\nthe claims file has it; and the models notebook's `runtime_minutes` was\nleft at 35 against a run of 46, since editing it would invalidate the run.\n"
 }
 ```
 
 ```
-File created successfully at: docs/pilot-notes/mah-2023-01.md (file state is current in your context — no need to Read it back)
+File created successfully at: docs/pilot-notes/mah-2023-02.md (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "docs/pilot-notes/mah-2023-02.md",
+ "old_string": "rewards. Every claim could be tested: the cohort, the block effects and\ntrial-history regressions of Figures 1 and 2, the inferential against\nretrospective model comparison (Fig. 3j) and the pre-cue task of Figure 5\nreproduce, Figure 4 on the paper's Zenodo deposit (A_Structs_all), since\nthe dandiset holds only included sessions. Not reproduced",
+ "new_string": "rewards. Every claim could be tested, those of Figure 4 on the paper's\nZenodo deposit (A_Structs_all), since the dandiset holds only included\nsessions. The cohort, the block effects of Figure 1, most of the\ntrial-history results of Figure 2, the inferential against retrospective\nmodel comparison (Fig. 3j), fig4c, fig4d and fig5d reproduce. Not reproduced"
+}
+```
+
+```
+The file docs/pilot-notes/mah-2023-02.md has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "summaries/mah-2023-02.md",
+ "content": "Most of the paper's main findings held up in this data, and every claim could be tested: wait and trial initiation times both track the hidden reward blocks, initiation times follow recent rewards while wait times do not, and an inferential model fits wait times better than a retrospective one. Slower initiation after small offers held only on trials after violations, where the task repeats the offer; on the trials the Methods name, it reverses. Two model results did not reproduce, the inferential model's insensitivity to the previous offer and wait time differences between rats with good and poor inference, on refits made without the unpublished fitting code. Training effects, tested on the authors' Zenodo deposit, mostly held.\n"
+}
+```
+
+```
+File created successfully at: summaries/mah-2023-02.md (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  mkdir -p summaries; cat > summaries/mah-2023-01.md <<'E'
-The behavioural findings hold up in this data: rats wait less and initiate trials faster in high-reward blocks, and wait times follow the inferred block while initiation times follow recent rewards. The model findings hold only in part, as the paper's fitting code is not public and the agent's refits differ: the inferential model's wait times depend on the previous offer, and rats split by inference quality do not show the claimed dissociation. The comparison of inferential and retrospective models was too large to run. That wait times become block-sensitive only with training could not be tested, as the dataset holds only sessions that pass the inclusion criterion. With a reward cue before initiation, initiation times still depend on the previous block, but the previous-reward effect fails the population test.
-E
-wc -w summaries/mah-2023-01.md; git status --short
+cd  wc -w summaries/mah-2023-02.md; grep -c "—\|rather" docs/pilot-notes/mah-2023-02.md summaries/mah-2023-02.md; git status --short
 ```
 
 ```
-130 summaries/mah-2023-01.md
+118 summaries/mah-2023-02.md
+docs/pilot-notes/mah-2023-02.md:0
+summaries/mah-2023-02.md:0
 ?? .bash_profile
 ?? .bashrc
 ?? .gitconfig
@@ -502,71 +448,101 @@ wc -w summaries/mah-2023-01.md; git status --short
 ?? .vscode
 ?? .zprofile
 ?? .zshrc
-?? docs/pilot-notes/mah-2023-01.md
+?? docs/pilot-notes/mah-2023-02.md
 ?? scripts
-?? summaries/mah-2023-01.md
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat > summaries/mah-2023-01.md <<'E'
-The behavioural findings hold up: rats wait less and initiate trials faster in high-reward blocks, and wait times follow the inferred block while initiation times follow recent rewards. The model findings hold only in part, as the paper's fitting code is not public: in the agent's refits the inferential model's wait times depend on the previous offer, and rats split by inference quality lack the claimed dissociation. The comparison of inferential and retrospective models was too large to run. That wait times become block-sensitive only with training could not be tested, as the dataset holds only sessions passing the inclusion criterion. With a reward cue before initiation, the previous block still shapes initiation times, but the previous-reward effect fails the population test.
-E
-wc -w summaries/mah-2023-01.md
-```
-
-```
-122 summaries/mah-2023-01.md
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat > summaries/mah-2023-01.md <<'E'
-The behavioural findings hold up: rats wait less and initiate trials faster in high-reward blocks, and wait times follow the inferred block while initiation times follow recent rewards. The model findings hold only in part, as the paper's fitting code is not public: in the agent's refits the inferential model's wait times depend on the previous offer, and rats split by inference quality lack the claimed dissociation. Comparing inferential and retrospective models was too large to run. That wait times become block-sensitive only with training could not be tested, as the dataset holds only sessions passing the inclusion criterion. With a cue before initiation, the previous block still shapes initiation times, but the previous-reward effect fails the population test.
-E
-wc -w summaries/mah-2023-01.md
-```
-
-```
-119 summaries/mah-2023-01.md
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -nE "—|rather|\*\*[a-z]" docs/pilot-notes/mah-2023-01.md summaries/mah-2023-01.md
-```
-
-```
-(Bash completed with no output)
+?? summaries/mah-2023-02.md
 ```
 
 **Agent**
 
-I wrote two new files, `docs/pilot-notes/mah-2023-01.md` and `summaries/mah-2023-01.md`, and changed nothing else. Nothing is committed.
+# mah-2023, Mah et al. 2023, second attempt
 
-Two things to know:
-- Three of the five most recently added notes (the CRCNS ones) have since been renamed, so I read them under their current names (`johnson-2018-01.md` and the others).
-- `readme_row.py` prints 23, 2, 2 and 5. The record has 33 outcomes because the link claim the author added, `pre-cue-session-link`, is partially reproduced but left out of the counts. The note says so.
+Twenty-four claims reproduced, six partially, two not reproduced and none
+blocked, plus the link claim `pre-cue-session-link`, partially reproduced
+(14 of 16 rats linked). The first verification round agreed with 28 of the
+33 outcomes as they stood, and fig2k, fig2l, fig5b and fig5c moved from
+reproduced to partially reproduced and fig3l to not reproduced; the second
+round agreed with all 33, and nothing was proposed after it, so there was no
+third round. The attempt pins version 0.261120.1450. The paper, Mah,
+Schiereck, Bossio and Constantinople in Nature Communications (14, 7573),
+trains 291 rats in a temporal wagering task with hidden blocks of high, low
+and mixed rewards, and reports that wait times on catch trials follow an
+inference of the block while trial initiation times follow recently received
+rewards. Every claim could be tested, those of Figure 4 on the paper's
+Zenodo deposit (A_Structs_all), since the dandiset holds only included
+sessions. The cohort, the block effects of Figure 1, most of the
+trial-history results of Figure 2, the inferential against retrospective
+model comparison (Fig. 3j), fig4c, fig4d and fig5d reproduce. Not reproduced are fig3f, where
+the fitted inferential model's 20 uL wait times are longer after offers
+below 20 uL (+0.048 z, rank-sum p = 3.7e-05, unchanged from 6 starts), and
+fig3l, where neither reading of the wait time difference between the lambda
+groups holds (C at mixed to low p = 0.337). fig2k, fig2l and fig5c hold only
+under the code's trials, and only through the trials after violations, on
+which the task repeats the offer; fig3i is partial because the alternative
+models show overshoots of 0.0002 to 0.0058 z, fig4a because the first
+session pair's mean wait time ratio (1.187) is not closer to 1 than over
+pairs 16-25 (0.936), and fig5b because the Methods' 30-session reading
+rises from 5 to 10 uL. The model fits use the attempt's own bounds and 2
+random starts against the paper's 100, so fig3j, suppfig8, fig3f and fig3l
+rest on assumptions, and suppfig8 is seed sensitive (BIC and AIC p = 0.0305
+under seed +3000, 0.0507 from 6 starts). The reconciliation with
+`mah-2023-01` found the attempt blind and traces the changed outcomes to an
+error in the earlier attempt for fig2k and fig2l (session-first trials given
+the previous session's last offer) and for the Figure 4 claims (blocked
+without reading the Zenodo deposit), and to readings for fig3j and suppfig8
+(fewer fit starts) and fig5b (where the 99th percentile cut is taken). The
+behaviour notebook ran in 822 s and the models notebook in 2,766 s, with
+peak memory 9.7 GB; a development run was killed for memory in the Figure 4
+cells and Zenodo rate-limited the author twice. In the last revision the
+behaviour notebook failed when Zenodo returned a 504 and was re-executed
+alone; the reconciliation's full run passed all four notebooks.
 
-The summary is 119 words, just under the limit.
+The dataset was converted by CatalystNeuro (catalystneuro/constantinople-lab-to-nwb).
+It holds only the sessions that pass the paper's inclusion criterion, and
+nothing in it says so: the trial counter trials_in_stage jumps between
+consecutive deposited sessions in 2,586 of 22,742 pairs (284 rats), the
+first deposited session of a rat starts at a median of 1,543 final-stage
+trials, and the Zenodo deposit holds a median of 95 final-stage sessions per
+rat against 71 here, so Figure 4 and the pre-cue analyses cannot be run on
+the dandiset alone. That deposit stops earlier than the dandiset for 49
+rats, with 1,718 dandiset sessions dated after the rat's last session in it.
+The pre-cue sessions of Figure 5 are marked only by the undescribed task
+argument center_port_cue, True in 762 sessions, all of the 16 rats
+Figure5.m names. wait_time_threshold includes 16,086 timed-out catch trials
+at 100 s; over opt-out catch trials alone it would be lower in all 291 rats,
+by a median of 5.19 s. Catch probability 0.3 occurs in 180,591 trials of 8
+rats, a cohort the paper does not list, and two block transitions go
+directly between high and low blocks. No file gives a subject age: 275 rats
+have a date of birth and the 1,181 files of the other 16 give only P6M/P24M.
+The counts match the paper exactly (291 rats, 184 male and 107 female, a
+median of 33,493 trials and 71 sessions per rat). Of the earlier attempt's
+findings on the data, the duplicated L011 session, the missing catch
+probability and the undescribed is_catch flags are fixed in this version.
+In the paper, the Methods use 20 uL trials for Fig. 2k, 2l and 5c while
+latency_post20ul_by_previous_vol.m uses all mixed block trials, and without
+the post-violation trials the population initiates faster after small
+offers; Fig. 2f is reported as r = 0.08, p = 0.18 in the Results and
+r = -0.03, p = 0.53 in the legend; the model fitting code is not public;
+the Fig. 3c cohort sizes sum to 437 for 291 rats; Equation 6 uses H0 where
+GenerateSynthData_Bayes.m uses H0/2; Figure5.m pairs 16 rats with 20 dates
+and has no 30-session offset; and myTauShuffleTest.m scales the shuffled
+coefficients by 10 under an amplitude bound of 1. Questions on these are put
+to the paper's authors.
 
-## The subsection (`docs/pilot-notes/mah-2023-01.md`)
+The author's points on the protocol: the claims have no per-outcome `data`
+field to mark Figure 4 as using data from elsewhere, so Zenodo was listed
+under `inputs`; files were fetched whole instead of read with `remfile`;
+Zenodo's rate limit was met with a few large range requests; the 60-minute
+limit forced two notebooks, five seeds of model fits and a single-start
+lambda fit; the fig3i criterion gives no size for an overshoot; the
+`pre-cue-session-link` claim carries text from an earlier attempt, used as
+the claims file has it; and the models notebook's `runtime_minutes` was
+left at 35 against a run of 46, since editing it would invalidate the run.
 
-# mah-2023, Mah et al. 2023
+---
 
-Twenty-three claims reproduced, two partially, two not reproduced and five blocked, three for missing data and two as too large; the link claim the author added, `pre-cue-session-link`, is partially reproduced and not counted. Five outcomes rest on an assumption, `fig3i-retrospective-model-captures-initiation`, `fig3f-inferential-model-not-sensitive-to-previous-offer`, `suppfig9-wait-times-reflect-misinferences`, `fig3l-lambda-groups-wait-time-dynamics` and `fig5c-pre-cue-initiation-still-sensitive-to-previous-reward`. The first verification round agreed with 32 of the 33 outcomes and disagreed on fig5c, which it held partial, and the second agreed with all 33; nothing was proposed after the second, so there was no third round. The paper, Mah, Schiereck, Bossio and Constantinople in Nature Communications (14, 7573), trains 291 rats in a temporal wagering task with hidden blocks of high, low and mixed reward offers, and reports that wait times on catch trials follow the block through inference of the hidden state while trial initiation times follow recent rewards retrospectively, that the two have distinct dynamics at block transitions and on previous offers, that an inferential model fits wait times better than a retrospective one, that block sensitivity of wait times emerges only with training, and that a reward cue before initiation does not remove the initiation times' dependence on previous rewards and blocks; the dataset holds the behavioural trials of the 291 rats in 23,034 NWB files. The claims were written from the version of record (PMC10663503) as Europe PMC text with the three supplement files, and from the paper's MATLAB code at commit b7b68ca8c107, which holds no model-fitting code, for 32 claims, to which the author added the link claim. Reproduced are `cohort-size` (291 rats, median 33,493 trials and 71 sessions, exact), `fig1i-initiation-block-effect` (p = 1.82e-49, the paper's value), `fig1f-wait-time-block-effect` (ratio 0.894), every Fig. 2 claim, among them `fig2j-wait-time-not-sensitive-to-previous-offer` (38 of 291 rats, so 253 not, the paper's count) and `fig2l-sensitivity-greater-for-initiation` (p = 6.09e-38 against 6.21e-38), `fig3c-wait-time-by-catch-probability`, the Bayes observer claim, suppfig9 (230 of 291 rats, p = 9.72e-23), `fig5b` and `fig5d`. Partial are fig3i, where the alternatives to the Equation 10 model show both features at three of six settings, and fig5c, where under the 20 uL reading of the legend 14 of 16 rats have p < 0.05 but the population test gives p = 0.0676. Not reproduced are fig3f, where the refitted inferential model's wait times are sensitive to the previous offer (+0.065 z, rank-sum p = 9.52e-11), and fig3l, where the refitted lambdas pile up at the bounds (59 rats at 0, 69 at 1) and neither split shows the claimed dissociation, a failure that cannot be separated from the refit. Blocked are `fig3j-inferential-beats-retrospective-for-wait-times` and `suppfig8-belief-state-not-distinguished`, as too large (about 3.3 h on one core in the final run, 5.5 h in the verifier's round 2 re-execution), and the three Fig. 4 learning claims, for missing data. The author's first run had 23 reproduced, 1 partially, none not reproduced and 8 blocked, with fig3f, suppfig9 and fig3l blocked as too large on an estimate of about 138 h. The author asked no questions of a reader, so the answer and author-answers runs changed nothing. Round 1 held that the overshoot measure of fig3i is positive even on flat noise, that the code reading of fig5c is confounded by post-violation trials that repeat the previous offer, that the null of the fig2g-h shuffle test is not on the observed scale, and that the too-large estimate timed a pure Python loop and left fig3f feasible; in reply noise-only and noise-free controls were added to fig3i, fig5c moved to partial on the legend's reading, the fig2g-h variants were run and a code_mismatch finding recorded, a compiled likelihood cut the estimate, fig3f, suppfig9 and fig3l were tested, the regressions moved to the male volumes and a question on the claims file header went to `questions/mah-2023.yaml`. Round 2 found stale timings for fig3j and suppfig8, a wrong statement on the fig2f readings, an unbacked deviation in fig3i, an unverified premise in fig5c and a missing caveat in fig3l; in reply a cell ran the Equation 10 model over alpha_0, a cell showed post-violation trials repeat the offer within a session and block in all 16 rats, and the text was corrected. The author's run took about 1 h 55 min; the notebook ran in 12 min at first, with peak memory 3.1 GB, 804 s after the author-answers run, 26 min after round 1 and 24.0 min after round 2 (45.3 min in the verifier's re-execution). The first exponential fits stalled at the bound and were replaced by an exact profile fit, and one clean-environment run failed because a bulk removal of bold markers also deleted `**` operators in the code, which were restored.
-
-The dataset was converted by CatalystNeuro (conversion code at https://github.com/catalystneuro/constantinople-lab-to-nwb). It was converted from the lab's A_Structs_Final and holds only the sessions that pass the paper's inclusion criterion, which neither its description nor its files say, so the sessions that fail it, which the learning analyses of Fig. 4 and the pre-cue analyses of Fig. 5 use, are not in it. Nothing marks the sessions run on the pre-initiation cue task: the 16 rats of Fig. 5 are among the 291, all sessions have protocol RWTautowait2, and the switch dates in the paper's Figure5.m mark them for 14 of the 16 rats. The processed trial table has no catch probability, as the conversion maps the field under the misspelled name prob_cacth; the value is only in the raw trial table (catch_percentage). The raw is_catch differs from the processed is_catch on 176,009 trials, and neither description says which to use. One session of L011 is deposited twice, the second with a "-x" suffix and identical trial data. The subject age is empty in 21,853 of 23,034 files and is the range P6M/P24M in the others. 360 sessions of 8 rats have catch probability 0.3, not among the five cohorts the paper lists. Equation 6 lets a mixed block become low or high with probability H0, while every model script uses H0/2 for each; Figure5.m lists 16 rats but 20 start dates and lacks the Methods' 30-session offset; myTauShuffleTest.m puts the shuffled and observed fits on different scales; and the correlation of the two time constants is r = 0.08, p = 0.18 in the Results and r = -0.03, p = 0.53 in the Figure 2f legend. Questions are put to the paper's authors: which trials enter the likelihood of the wait time models, with what bounds, starting ranges and folds, which transition matrix was used for the fits, whether the start dates are paired with the rats in order and sessions before the 30th pre-cue session left out, and whether the wait time shuffle test was meant to include the current offer.
-
-The author's points on the protocol: it does not say whether the author may set `data: with_labels` and add `depends_on` on the reader's claims, as was done for fig5b to fig5d; nothing covers how blind an author-written link claim must be, and its rule was written after a first look at the same check; the reader rule that a claim is reproduced under any listed reading conflicts with author step 1.6 for fig5c; `docs/archives.md` says to stream with remfile, while fetching each file whole into memory was twice as fast; a too_large estimate is meant to come from a timed subset, which a refit never written does not have; data_missing assumes the data are public nowhere, while the Zenodo deposit holds an unread `A_Structs_all`; and under one reading of variance in the Bayes observer claim a less uncertain posterior has the larger variance.
-
-## The summary (`summaries/mah-2023-01.md`)
-
-The behavioural findings hold up: rats wait less and initiate trials faster in high-reward blocks, and wait times follow the inferred block while initiation times follow recent rewards. The model findings hold only in part, as the paper's fitting code is not public: in the agent's refits the inferential model's wait times depend on the previous offer, and rats split by inference quality lack the claimed dissociation. Comparing inferential and retrospective models was too large to run. That wait times become block-sensitive only with training could not be tested, as the dataset holds only sessions passing the inclusion criterion. With a cue before initiation, the previous block still shapes initiation times, but the previous-reward effect fails the population test.
+Most of the paper's main findings held up in this data, and every claim could be tested: wait and trial initiation times both track the hidden reward blocks, initiation times follow recent rewards while wait times do not, and an inferential model fits wait times better than a retrospective one. Slower initiation after small offers held only on trials after violations, where the task repeats the offer; on the trials the Methods name, it reverses. Two model results did not reproduce, the inferential model's insensitivity to the previous offer and wait time differences between rats with good and poor inference, on refits made without the unpublished fitting code. Training effects, tested on the authors' Zenodo deposit, mostly held.
 
 ## End of run
 
-21 turns, 2 minutes, $1.23 at API prices, result: success.
+17 turns, 2 minutes, $1.16 at API prices, result: success.
