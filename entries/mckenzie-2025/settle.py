@@ -506,12 +506,16 @@ def reactivation_windows(s, run):
     return dict(preA=(run["t0"] - 1800, run["t0"]), preB=(rec0, rec0 + 1800), post=(run["t1"], run["t1"] + 1800))
 
 
-def run_moments(s, run, units, off=0.0):
+def run_moments(s, run, units, off=0.0, whole=False):
     """The 100 ms moments of minute 1 and of minutes 10 to 11 (Figure 8B), counted from `off` s after
-    the epoch start (0, claims file E2; the first tracked frame as a variant)."""
+    the epoch start (0, claims file E2; the first tracked frame as a variant). With `whole`, every
+    moment of the run from `off` on; `early` still marks minute 1."""
     V = run_vectors(s, run, units)
     t = V["t"]
-    sel = np.r_[np.where((t >= off) & (t < off + 60))[0], np.where((t >= off + 600) & (t < off + 660))[0]]
+    if whole:
+        sel = np.where(t >= off)[0]
+    else:
+        sel = np.r_[np.where((t >= off) & (t < off + 60))[0], np.where((t >= off + 600) & (t < off + 660))[0]]
     return dict(units=V["units"], z=V["z"][sel], raw=V["counts"][sel], early=t[sel] < off + 60)
 
 

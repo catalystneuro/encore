@@ -20,7 +20,7 @@ norepinephrine (Figures 1 to 6) is not in the dandiset.
 | The same without conditioning on location (Figure S7G, H) | Reproduced |
 | Late moments more reactivated in post ripples (Figure 8B) | Not reproduced |
 | No early against late difference in the familiar environment (Figure 8D) | Not reproduced |
-| No reactivation in pre ripples (Figure 8A) | Not reproduced |
+| No reactivation in pre ripples (Figure 8A) | Not reproduced (above chance in the familiar run; in the novel run only through minute 1) |
 | Photometry findings (13) and the NE and settling time-course comparison | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the
@@ -34,9 +34,10 @@ reactivated more (Figure 8B), a variant shown and not judged. The attempt record
 [`attempts/mckenzie-2025-01.yaml`](../../attempts/mckenzie-2025-01.yaml).
 
 - `settling.ipynb`: the data check, the ensemble size, decorrelation, the UMAP embedding, nearest-neighbour
-  settling, place field deviations and the movement controls. About 25 minutes.
-- `reactivation.ipynb` and `reactivation_familiar.ipynb`: ripples detected on the LFP of the raw files, and
-  reactivation of the moments of the novel and the familiar run in them. About 40 and 25 minutes, most of it
-  the 1000 shuffles per ripple set.
+  settling, place field deviations and the movement controls. About 23 minutes.
+- `reactivation.ipynb` and `reactivation_familiar.ipynb`: ripples detected on the LFP of the raw files (for
+  e13-26m1-211119, which has no raw file in the pinned version, the LFP in the later version's file of the
+  session), and reactivation of the moments of the novel and the familiar run in them. About 57 and 34
+  minutes, most of it the 1000 shuffles per ripple set.
 - `settle.py`: loading, population vectors, nearest neighbours, the speed filters, place fields, the
   model of Figure S7E, F, ripple detection and the reactivation test, with where each parameter comes from.
