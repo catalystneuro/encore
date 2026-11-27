@@ -35,9 +35,11 @@ reasoning and the differences from the paper's method.
 The paper links no code. Computed as its equations describe, the surrogate kurtoses here are around
 3.6, where the paper reports surrogate kurtoses of 6 or more and a surrogate maximum of about 7, so
 the paper's kurtosis scale is not reached. The surrogate maximum here is set by a few windows
-(34.29), which leaves the threshold ranges of five claims empty; they are judged with the range
-started at every threshold below it, which gives the same outcome at every start for four of them,
-and from the paper's value of about 7 for the fifth. Over the whole range of thresholds the hit rate over high-kurtosis
+(34.29), which leaves the threshold ranges of five claims empty. Four of them are judged with the
+range started at every threshold below it and give the same outcome at every start. The fifth, the
+stability of the exponents, is judged from a few named starts, which disagree, and from the paper's
+value of about 7; a change of its outcome to partially reproduced, under a literal reading of its
+criterion, is proposed for a third verification round. Over the whole range of thresholds the hit rate over high-kurtosis
 windows is below that over low-kurtosis windows, and the non-natural image phase has the highest
 kurtosis. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/cambrainha-2025-01.yaml`](../../attempts/cambrainha-2025-01.yaml).

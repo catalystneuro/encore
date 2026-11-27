@@ -77,8 +77,8 @@ outcomes:
   assumed: true
   notebook: reproduce_cambrainha_2025.ipynb
   output: claim:fig3c-scaling-hit-rate-higher
-  notes: Under the adopted CV reading (a), and under (c), kappa_surr_max is 34.29 (O6 (a)) or 48.34
-    (O6 (b)), so the criterion's grid to 12.5 is empty. Started at any threshold from 3 to 12.45
+  notes: Under the adopted CV reading (a) kappa_surr_max is 34.29 (O6 (a)) or 48.34 (O6 (b)), and
+    under (c) 34.29 under both, so the criterion's grid to 12.5 is empty. Started at any threshold from 3 to 12.45
     (190 starts, CV (a) and (c), O5 (a) and (b)), the criterion gives not reproduced at every start,
     so the outcome does not depend on where kappa_surr_max lies. From the paper's value of 7 (M4)
     the scaling hit rate exceeds both comparators at none of 111 points (CV (a), O5 (a)); at 7 it
@@ -167,9 +167,9 @@ outcomes:
     (i), given as measured) leave 1 session, the good label (ii) 68 from 54 mice. On the 68
     sessions with their good units, the relative gain at kappa_th = 12 is -15.92% under CV (a) and
     -13.30% under (c), so the result does not hold either. Under CV (b) the fig3c test is partially
-    reproduced (93.8% of 96 points) and the gain at 12 is 66.08% on 4 trials, which would give
-    partially reproduced; across the five seeds of the strict surrogate that reading gives
-    partially reproduced or reproduced. On the single default-filter session the gain at 12 is
+    reproduced (93.8% of 96 points) and the gain at 12 is 66.08% on 4 trials; across the five seeds
+    of the strict surrogate that fig3c test gives partially reproduced or reproduced. The claim
+    itself is not reproduced under every CV reading, as no session count is within tolerance. On the single default-filter session the gain at 12 is
     -100% on 2 trials.
   deviations:
   - CV readings disagree (a and c not reproduced, b partially reproduced); reading (a) is adopted
@@ -259,13 +259,25 @@ outcomes:
   assumed: true
   notebook: reproduce_cambrainha_2025.ipynb
   output: claim:figs3-exponents-stable-with-threshold
+  proposed:
+    outcome: partially_reproduced
+    reason: The criterion asks for stability "at every grid point with at least 10 sessions
+      contributing", which holds vacuously for an exponent with no such point; the verified outcome
+      counted such an exponent as not shown stable, a convention the criterion does not state. Read
+      literally, the grid from 7 (CV (a)) fails for NNI z alone (0.083 against an SD of 0.058), so
+      three of four exponents hold, which is partially reproduced (resting on CV (a) and the start of
+      7). Passive and NNI mu are then not tested, as no grid point has 10 sessions with a mu (at most
+      7 and 6; 1.7% of windows pass the r^2 rule). From the 99th percentile the literal reading gives
+      the same, from the 99.9th percentile and under CV (b) reproduced (notebook, the cell after the
+      figs3 verdicts). Raised by the verifier in round 2.
   notes: Under CV (a) and (c) the grid from kappa_surr_max (34.29) to 12 is empty. From the paper's
     value of 7 to 12 (CV (a), 101 points, every point evaluated), alpha and beta stay within one SD
     of their all-window values in every phase, mu in the active phase (largest departure 0.122
     against an SD of 0.197) and z in the active and passive phases. In NNI (a) z departs by 0.083
     against an SD of 0.058, and mu has no point with 10 sessions in the passive and NNI phases. Two
-    exponents fail, so not reproduced. Counting an exponent with no evaluable point as passing
-    would leave z alone failing (partially reproduced). The 99th percentile start (6.51) gives the
+    exponents fail, so not reproduced. Read literally, the criterion holds vacuously for an exponent
+    with no evaluable point; that leaves z alone failing (partially reproduced; proposed above). At
+    most 7 passive and 6 NNI sessions have a mu at any point from 7, against 32 active. The 99th percentile start (6.51) gives the
     same as 7; the 99.9th percentile start (10.43), and CV (b) from 8.55 and 10.30, fail for mu alone
     (partially reproduced), as z stays within one SD there. On thresholds 4 to 12 in steps of 0.5
     (CV (a)) NNI z departs by 0.083 against an SD of 0.056. Question for the authors, as for
@@ -276,7 +288,9 @@ outcomes:
     paper's value of about 7 for kappa_surr_max, read from Figures 3C, 3D and 4A (claims file, M4),
     is adopted as an assumption.
   - CV reading (a) is adopted as an assumption, as for fig3a-kurtosis-broader-than-surrogate.
-  - An exponent with no grid point where 10 sessions contribute is counted as not shown stable.
+  - An exponent with no grid point where 10 sessions contribute is counted as not shown stable. This
+    is an assumption the outcome rests on; the literal reading of the criterion (the condition holds
+    vacuously) gives partially reproduced from 7, and a change to that outcome is proposed.
 - claim: figs4-initial-kurtosis-poor-predictor
   outcome: reproduced
   notebook: reproduce_cambrainha_2025.ipynb
@@ -364,9 +378,12 @@ findings:
 - kind: methods_unavailable
   statement: The surrogate maximum kappa_surr_max (about 7 in Figure 3) is, as defined here, set by a
     few windows (34.29 in the active phase, 24.45 to 35.46 over seeds; 13 of 28335 surrogate windows
-    above 15), which leaves every plotted threshold range empty. The windows that set it are not
-    windows with few active units. Five claims are judged with the range started at every threshold
-    below it. Question for the authors. Is kappa_surr_max the maximum over every surrogate window of
+    above 15), which leaves every plotted threshold range empty. The active maximum (34.29) comes from
+    a window with 182 active units. The all-phase maximum (48.34) comes from a passive window of
+    sub-545994 with 87 active and 84 silent units, and the next value (36.50) from a window of the
+    same session with 12 active units; with at least 128 active units the all-phase maximum falls to
+    34.29. Four claims are judged with the range started at every threshold
+    below it, and a fifth (figs3-exponents-stable-with-threshold) at named starts. Question for the authors. Is kappa_surr_max the maximum over every surrogate window of
     all sessions, one surrogate per window, or another summary?
 - kind: methods_unavailable
   statement: The CV of Appendix 1 ("of the activity across the window") is not defined. The CV of
@@ -589,3 +606,168 @@ verifications:
       NNI (a); under CV (b) passive exceeds NNI at 0% of points.
     response: Changed to not_reproduced. Every start from 3 to 14.95 gives not reproduced; passive
       lies above NNI at no point.
+- date: 2026-11-27
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook after the round-1 revision, the helper module criticality.py,
+    the claims file and the attempt record, with the paper's full text. Report in
+    transcripts/cambrainha-2025/verifier-2-report.md.
+  results:
+  - claim: sessions-selected
+    agrees: true
+    outcome: not_reproduced
+    reason: No assumption needed; gives the same verdict under every reading. All analyses run on 97
+      sessions from 68 mice, not the paper's 62 from 44, which cannot be resolved from the files.
+    response: No change.
+  - claim: fig3a-kurtosis-broader-than-surrogate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Rests on CV reading (a); the assumption is stated and is reasonable. Reading (a) drops 0
+      of 11,639 active windows, (b) drops 9,702 and (c) drops 209, and the paper calls the exclusion a
+      removal of rare artefacts. (a) gives partially reproduced, (c) not reproduced. The surrogate
+      median is 3.64 and the minimum 2.80, against the paper's about 6; the correlation-matrix
+      variant overshoots instead (surrogate median 15.88). This is stated, and asked of the authors.
+    response: No change.
+  - claim: fig3c-scaling-hit-rate-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: Rests on CV reading (a), stated and reasonable; the readings disagree only through CV (b).
+      Under the claims file's literal rule an empty grid "cannot meet the criterion", so it is not
+      reproduced under CV (a) whatever the start. The notes say "Under the adopted CV reading (a),
+      and under (c), kappa_surr_max is 34.29 (O6 (a)) or 48.34 (O6 (b))"; under CV (c), O6 (b) gives
+      34.29, not 48.34. Trial counting (O5) has no reading that counts aborted trials, the only rule
+      that matches the paper's three to five trials per window; under it the outcome stays not
+      reproduced (47.7% of points from 7), so this is a claims-file point, not an outcome change.
+    response: Corrected the notes (under CV (c) kappa_surr_max is 34.29 under both O6 readings). The
+      O5 point is already in the questions file. Outcome unchanged.
+  - claim: fig3c-hit-rate-rises-with-threshold
+    agrees: true
+    outcome: not_reproduced
+    reason: Rests on CV reading (a), stated and reasonable; the readings disagree only through CV (b),
+      and under the literal rule an empty grid cannot meet the criterion.
+    response: No change.
+  - claim: fig3d-relative-gain-24
+    agrees: true
+    outcome: not_reproduced
+    reason: No assumption needed; gives the same verdict under every reading. Counting aborted trials
+      the outcome stays not reproduced (+11.72% at 8 and -22.40% at 12).
+    response: No change.
+  - claim: figs1-other-window-lengths
+    agrees: true
+    outcome: not_reproduced
+    reason: No assumption needed; gives the same verdict under every reading.
+    response: No change.
+  - claim: figs2-strict-units
+    agrees: true
+    outcome: not_reproduced
+    reason: Rests on CV reading (a), stated and reasonable; CV (b) would give partially reproduced.
+      The notes say "across the five seeds of the strict surrogate that reading gives partially
+      reproduced or reproduced"; this is the verdict of the fig3c sub-test. figs2 itself cannot be
+      reproduced, because no session count is within tolerance. The sentence should say so.
+    response: Corrected the notes. They now say that the seed verdicts are those of the fig3c test,
+      and that the claim is not reproduced under every CV reading, as no session count is within
+      tolerance.
+  - claim: fig4a-active-most-scaling
+    agrees: true
+    outcome: not_reproduced
+    reason: Rests on CV reading (a), stated and reasonable; the readings disagree only through CV (b).
+      The statement that the windows setting kappa_surr_max are not windows with few active units
+      holds only for the active-phase maximum (34.29, N = 182). The all-phase maximum used here (O6
+      (b)) is 48.34, from a passive window of sub-545994 with 87 active units, 84 silent, a rate of
+      0.031 and CV (a) 3.89; the next value, 36.50, comes from a window with 12 active units. With N
+      >= 128 it falls to 34.29. No outcome changes, because every start was run.
+    response: Corrected the sentence in the notebook ("How readings decide" and "Surrogate reference")
+      and in the kappa_surr_max finding, which now give the windows that set the all-phase maximum.
+      Outcome unchanged.
+  - claim: fig4-exponents-active
+    agrees: true
+    outcome: not_reproduced
+    reason: No assumption needed; gives the same verdict under every reading. Fitting ranks 1 to K/2
+      gives mu = 1.06, still outside tolerance.
+    response: No change.
+  - claim: fig4-exponents-passive
+    agrees: true
+    outcome: not_reproduced
+    reason: No assumption needed; gives the same verdict under every reading.
+    response: No change.
+  - claim: fig4-exponents-nni
+    agrees: true
+    outcome: not_reproduced
+    reason: No assumption needed; gives the same verdict under every reading.
+    response: No change.
+  - claim: fig4bc-static-exponents-trend
+    agrees: true
+    outcome: partially_reproduced
+    reason: No assumption needed; gives the same verdict under every reading. The paired Wilcoxon
+      test is added.
+    response: No change.
+  - claim: figs3-exponents-stable-with-threshold
+    agrees: false
+    outcome: partially_reproduced
+    reason: Agrees only in part. The record states the grid start of 7 (M4) as an assumption, but the
+      verdict also rests on a second convention, listed only as a deviation, that "an exponent with no
+      grid point where 10 sessions contribute is counted as not shown stable". The criterion says the
+      condition must hold "at every grid point with at least 10 sessions contributing"; with no such
+      point, that is met vacuously. Read literally, the grid from 7 fails only NNI z (0.083 against
+      an SD of 0.058), which gives partially reproduced. Passive and NNI mu are not evaluable because
+      only 1.7% of windows pass the r^2 rule, so mu was never really tested. The verifier would rate
+      it partially reproduced (assumed); at minimum, the convention should be stated as an assumption
+      the outcome rests on. The sentence "the hit rate, phase order and exponent results here do not
+      depend on where the threshold or the grid start is put" is wrong for the exponents, and the
+      summary's "give the same outcome at every start except figs3" overstates, as figs3 was run only
+      at the named starts and on the 4 to 12 variant.
+    response: In round 2 the outcome may not change, so it stays not reproduced and the change to
+      partially reproduced is proposed (`proposed`), for a third round. The convention is now stated
+      as an assumption in the deviations and the result cell. A cell gives the verdict under both
+      conventions at every start run (literal reading, partially reproduced from 7 and the 99th
+      percentile, reproduced from the 99.9th percentile and under CV (b)) and the most sessions with
+      a mu at any point (7 passive, 6 NNI). The sentences of "How readings decide", the summary and the
+      README now say that the exponent result depends on the start and was run only at named starts.
+  - claim: figs4-initial-kurtosis-poor-predictor
+    agrees: true
+    outcome: reproduced
+    reason: No assumption needed; gives the same verdict under every reading.
+    response: No change.
+  - claim: figs5a-firing-rate-order
+    agrees: true
+    outcome: reproduced
+    reason: Rests on CV reading (a), stated and reasonable; CV (b) would give partially reproduced.
+    response: No change.
+  - claim: figs5c-hit-rate-firing-rate-nonmonotonic
+    agrees: true
+    outcome: reproduced
+    reason: No assumption needed; gives the same verdict under every reading.
+    response: No change.
+  - claim: figs7-fatigue-halves
+    agrees: true
+    outcome: not_reproduced
+    reason: Rests on CV reading (a), stated and reasonable; CV (b) would give reproduced.
+    response: No change.
+  - claim: figs8-halves-and-phase-order
+    agrees: true
+    outcome: not_reproduced
+    reason: Rests on CV reading (a), stated and reasonable; the readings disagree only through CV (b).
+      The all-phase maximum used for fig4a and figs8 (O6 (b)) is 48.34, from a passive window of
+      sub-545994 with 87 active units and 84 silent; no outcome changes, because every start was run.
+    response: Corrected the sentences on the all-phase maximum, as for fig4a-active-most-scaling.
+      Outcome unchanged.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: No finding is rated critical. Finding 1, selection_undocumented, is rightly major. It
+      changes the analysis set of every claim.
+  - finding: 6
+    agrees: true
+    reason: Minor is right; the block order is evident from the values.
+  - finding: 7
+    agrees: true
+    reason: Minor is right; the trial density is evident from the values.
+  - finding: 8
+    agrees: true
+    reason: Minor is right. The dropout windows of sub-545994 set the all-phase kappa_surr_max (48.34
+      and 36.50), but that is evident from the printed N and rates, so minor is still the right
+      rating.
+  - finding: 9
+    agrees: true
+    reason: Severity none is right. No session is deposited twice and the clocks agree.
