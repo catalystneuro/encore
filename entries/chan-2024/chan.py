@@ -518,6 +518,62 @@ TABLE_S13_CITIES = {
 }
 
 
+# Table S13 as printed in the Supplementary Materials (page 33 on): city, population, present
+# recognition distance (m) and present percentage of the preindustrial distance, in the table's
+# order (impact rank 1 to 97). Copied from the paper's text for the regressions of Fig. S9.
+TABLE_S13_PRINTED = [
+    ("Hong Kong", 7684801, 1326.6, 4.9), ("Tokyo", 37468000, 1014.6, 6.7), ("Jakarta", 10517000, 2859.5, 7.2),
+    ("Kuwait City", 3297759, 433.9, 7.9), ("Osaka", 19013434, 1561.7, 8.0),
+    ("Shanghai", 25582000, 1512.9, 8.2), ("Guangzhou", 14284353, 2144.9, 8.8),
+    ("Xinbei", 4504147, 2109.3, 9.3), ("Los Angeles", 12458000, 452.4, 9.5),
+    ("Guayaquil", 3142466, 1280.8, 10.1), ("Chongqing", 17340704, 1028.9, 11.0),
+    ("Riyadh", 6907000, 245.4, 11.3), ("Chennai", 11776147, 2818.8, 11.4), ("Madrid", 6497000, 240.9, 12.3),
+    ("Tehran", 8896000, 622.2, 12.4), ("Seoul", 9963000, 1972.5, 12.4), ("New York", 18819000, 751.0, 12.5),
+    ("Dhaka", 19578000, 2236.9, 13.3), ("Jiddah", 4862941, 382.4, 13.9), ("Kolkata", 15332793, 1804.3, 14.8),
+    ("Buenos Aires", 14967000, 678.3, 15.2), ("Barcelona", 5687356, 177.4, 15.9),
+    ("Paris", 10901000, 282.8, 16.6), ("Berlin", 3573938, 706.4, 17.6), ("Rome", 4315671, 451.1, 18.0),
+    ("Mashhad", 3367852, 855.3, 18.2), ("Dehli", 28514000, 557.9, 18.4), ("London", 9046000, 532.4, 18.4),
+    ("Bangalore", 13607800, 4751.5, 18.6), ("Singapore", 5792000, 1508.4, 18.7),
+    ("Toronto", 6371958, 612.3, 19.0), ("Milan", 3154570, 157.6, 19.0), ("Lahore", 13979390, 330.5, 19.6),
+    ("Rio De Janeiro", 13727720, 1972.1, 19.8), ("Johannesburg", 5486000, 716.8, 20.2),
+    ("Athens", 3154563, 1148.4, 20.5), ("Manila", 13482000, 2494.3, 21.9),
+    ("Hyderabad", 10801163, 5567.2, 22.1), ("Casablanca", 3892837, 1159.8, 23.3),
+    ("Mexico City", 21581000, 1076.1, 24.0), ("Beijing", 21766214, 870.0, 24.7),
+    ("Ahmedabad", 8650605, 3795.0, 25.0), ("Medellin", 4102308, 1649.8, 25.1),
+    ("Guatemala City", 3095099, 923.5, 25.7), ("Ho Chi Minh City", 9320866, 6404.8, 25.7),
+    ("Belo Horizonte", 6247889, 1687.4, 26.5), ("Santo Domingo", 3523890, 5568.6, 26.5),
+    ("Lima", 10391000, 3579.9, 26.6), ("Sao Paulo", 21650000, 1878.9, 26.6),
+    ("Pyongyang", 3157538, 2293.2, 27.5), ("Dakar", 3429536, 2512.1, 27.6), ("Sanaa", 3292497, 980.4, 29.4),
+    ("Ankara", 5397098, 1386.5, 29.8), ("Moscow", 12410000, 1249.8, 30.3), ("Hanoi", 5253385, 3956.9, 30.7),
+    ("Kiev", 3016789, 2119.9, 30.7), ("Puebla", 3344761, 2403.9, 31.6), ("Santiago", 6903392, 101.8, 32.5),
+    ("Istanbul", 14751000, 1795.0, 32.6), ("Bangkok", 10156000, 6504.7, 35.1),
+    ("Recife", 4263940, 7011.8, 35.6), ("Bogota", 10574000, 1944.3, 35.8),
+    ("Kuala Lumpur", 7564000, 2370.3, 36.2), ("Baghdad", 7711305, 1975.3, 39.2),
+    ("Khartoum", 6344348, 2787.1, 42.3), ("Monterrey", 5116647, 4061.2, 45.0),
+    ("Melbourne", 5235407, 2874.4, 45.1), ("Porto Alegre", 4211933, 3815.9, 46.7),
+    ("Durban", 3228003, 2053.5, 47.5), ("Montereal", 4307958, 1806.7, 47.6),
+    ("Cairo", 20076000, 1345.8, 48.6), ("Tel Aviv", 4420855, 2615.9, 50.8), ("Kano", 4348481, 2729.2, 51.5),
+    ("Alexandria", 5588477, 3350.2, 52.0), ("Lagos", 13463000, 4912.6, 52.6), ("Kabul", 4588666, 73.1, 52.7),
+    ("Brasilia", 4873048, 3239.1, 53.3), ("Cape Town", 4890280, 12313.0, 56.7),
+    ("Asuncion", 3510511, 3060.7, 59.2), ("Yangon", 5610241, 11357.8, 59.4),
+    ("Sydney", 5231147, 1678.4, 60.2), ("Kampala", 3846102, 1206.3, 60.6),
+    ("Mumbai", 21296516, 16212.5, 62.2), ("Karachi", 15400000, 10303.0, 63.3),
+    ("Dar Es Salaam", 6048000, 9636.5, 63.4), ("Ibadan", 3874908, 5703.5, 64.2),
+    ("Abuja", 3839646, 4049.4, 64.6), ("Nairobi", 5325160, 9510.7, 70.8), ("Lusaka", 3181250, 3598.3, 73.9),
+    ("Ouagadougou", 3203923, 4788.6, 75.1), ("Douala", 4063200, 5189.3, 75.4),
+    ("Yaonde", 4509287, 3575.6, 76.4), ("Kumasi", 3768239, 7512.6, 78.7), ("Luanda", 9292336, 6196.0, 78.9),
+    ("Abidjan", 5686350, 7639.9, 81.3), ("Addis Ababa", 5460591, 7535.6, 82.5),
+    ("Kinshasa", 13171000, 1892.5, 89.8),
+]
+
+
+def table_s13_printed():
+    """Table S13 as the paper prints it, with the impact rank (row order)."""
+    t = pd.DataFrame(TABLE_S13_PRINTED, columns=["city", "population", "distance_m", "percent_of_preindustrial"])
+    t["rank"] = np.arange(1, len(t) + 1)
+    return t
+
+
 def table_s13_cities():
     """The Table S13 cities with WUP 2018 coordinates and 2018 population (persons). Every city
     must match exactly one agglomeration."""

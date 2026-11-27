@@ -46,6 +46,10 @@ inputs:
     read from the Internet Archive's copy of 2024-08-24, as the UN site no longer serves it. Table
     S13 cites WPP 2019 Highlights (ref. 79), which give no coordinates.
   source: https://web.archive.org/web/20240824204902id_/https://population.un.org/wup/Download/Files/WUP2018-F22-Cities_Over_300K_Annual.xls
+- what: Table S13 as printed in the paper's Supplementary Materials (97 rows of city, population,
+    present recognition distance and percentage of preindustrial), copied into the helper (TABLE_S13_PRINTED)
+    from the paper's text for the Fig. S9 regressions and for the printed cities below 400 m.
+  source: doi:10.1126/science.adi0858 (Supplementary Materials, Table S13)
 outcomes:
 - claim: fig1d-assemblage-day-night
   outcome: blocked
@@ -225,6 +229,8 @@ outcomes:
   - The workbook does not say which segment is which oxidant; the earlier one is taken as the O3 stage
     and the later as the NO3 stage, as the Supplementary Methods (Characterization of free-radical
     oxidation) run each flowtube experiment as clean air, then O3 (stage II), then NO3 (stage III).
+    Each segment has its own clean-air rows (9 and 7 before onset), so that order alone does not settle
+    which run is which; that organic nitrates need NO3 supports the same assignment.
   - The paper does not define a rise above the clean-air level; three readings were run (a one-sided
     Welch test on 5 against 9 and 4 against 7 points, every point above the clean mean plus 3 SD,
     a mean of at least twice the clean mean). All three are this attempt's choices. Only the doubling
@@ -262,8 +268,7 @@ outcomes:
   deviations:
   - Counts from the Fig. 3B sheet in the Zenodo release.
   - 'Assumption: the floral-odor reference is the Fig. 3B sheet''s group (11 of 12), the paper''s
-    own deposited data for Fig. 3B, whose 54% decrease matches the paper''s 50% where the 0.01x row''s
-    41% does not. The Methods say Manduca were tested at 1/100 floral equivalent in all Fig. 3B treatments
+    own deposited data for Fig. 3B. The Methods say Manduca were tested at 1/100 floral equivalent in all Fig. 3B treatments
     (Supplementary Methods, Behavioral wind tunnel experiments), which points to the 0.01x row of
     Fig. S7C; both readings are run.'
   assumed: true
@@ -353,6 +358,19 @@ outcomes:
     S13's distances are not matched (table-s13-recognition-distances), and the count falls to 0 or
     1 with the monthly mean speed, so the second part rests on the wind reading. Before the revision
     this claim was blocked (data_missing, no wind); the verifier pointed to the public MERRA-2 wind.
+    The round-2 verifier would give partially reproduced; the outcome is kept as reviewed and the
+    change is proposed below.
+  proposed:
+    outcome: partially_reproduced
+    reason: The more severe part holds under every NO3 and O3 reading (share 1.0) and needs no wind.
+      The 400 m part holds only with the speed of the mean wind vector (x), and the two readings under
+      which both parts hold match 0 and 1 of the 8 Table S13 values, so the dependency is not matched
+      under them; of their 10 and 8 cities below 400 m, 6 and 5 are among the printed table's nine,
+      and London, Delhi, Los Angeles, Rome and Beijing are not in it. The vector speed falls to 0.05
+      m/s over land (115 of 4197 cells below 0.5 m/s), where wind directions cancel. The paper's "mean
+      horizontal wind speed" reads more naturally as the monthly mean speed (y), under which 0 or 1
+      cities are below 400 m. The claim therefore holds in part. Analysis in the notebook, the cell
+      after the fig4ab table.
   deviations:
   - 'The recognition distance is the degradation time times the bottom-level wind, which the deposited
     output lacks; it is taken from GEOS-Chem''s processed MERRA-2 files for July and January 2013
@@ -378,7 +396,9 @@ outcomes:
   - 0.0
   - 0.0
   - 52.3
-  notes: No reading has more than 1 of the 8 values within tolerance (6 needed for partial). Measured
+  notes: No reading has more than 1 of the 8 values within tolerance (6 needed for partial). The three
+    percentages need no wind and fail under every reading, so even if all five distances matched only
+    5 of the 8 values could pass and the outcome does not depend on the assumed wind. Measured
     gives the first reading the criteria list (density at the cell's T and P, threshold a, NO3 alone,
     speed of the mean wind vector, containing cell, nearest factor map), where Hong Kong and Tokyo
     print as 0.0% (below 0.05). With NO3 and O3 and the same other choices Kabul is 134.5 m (73.1),
@@ -447,31 +467,24 @@ outcomes:
     unmodified, where the paper used a modified version.
 - claim: figs9-urban-regressions
   outcome: reproduced
-  assumed: true
   notebook: reproduce_chan_2024.ipynb
   output: claim:figs9-urban-regressions
-  measured: 0.379
-  notes: Over 128 readings (32 of the distance and percentage maps, population raw or log10, R2 plain
-    or adjusted), A (distance on population) has p of 0.089 or more in all; B (impact on population)
-    has p below 0.01 in 28, all with NO3 and O3, R2 0.094 to 0.111 (paper 0.09); C (impact on distance)
-    has p below 0.001 in 64, all with NO3 and O3, with shorter distances going with a larger impact
-    (Spearman 0.40 to 0.56), but R2 0.16 to 0.38. All parts hold in 4 readings, threshold (a), monthly
-    mean speed, containing cell, bilinear factor map, either density and either population scale,
-    with C R2 0.372 to 0.379 (measured gives the first). With NO3 alone neither B (p 0.12 or more)
-    nor C (p 0.065 or more) holds. The distances behind these regressions do not match Table S13,
-    and the populations are WUP 2018's, so the outcome rests on the assumed wind, coordinates and
-    populations and holds in few readings. Before the revision this claim was blocked (data_missing).
+  measured: 0.411
+  notes: 'On the 97 rows Table S13 prints, with population raw (millions) or log10, A (distance on
+    population) has R2 0.008, F 0.39, p 0.68 (log, p 0.47); B (impact on population) R2 0.094, F
+    4.90, p 0.0095 (log, R2 0.096, p 0.0085); C (impact on distance) R2 0.411, adjusted 0.398, F 32.79,
+    p 1.6e-11, with shorter distances going with a larger impact (Spearman 0.62). These match Fig.
+    S9 (R2 0.008, 0.09, 0.41; F 0.39, 4.89, 32.78), so all parts hold under both population readings;
+    this needs no wind or coordinates. The residual degrees of freedom are 94, where the paper gives
+    96. Variant on the recomputed distances and percentages (MERRA-2 wind, WUP 2018 coordinates and
+    populations), 128 readings: A has p of 0.089 or more in all, B p below 0.01 in 28, C p below 0.001
+    in 64 with R2 0.16 to 0.38, and all parts hold in 4, all with the monthly mean speed, C R2 0.372
+    to 0.379; those distances do not match Table S13. Before round 2 the outcome rested on that variant;
+    the round-2 verifier asked for the printed rows as the deciding test.'
   deviations:
-  - 'The recognition distance is the degradation time times the bottom-level wind, which the deposited
-    output lacks; it is taken from GEOS-Chem''s processed MERRA-2 files for July and January 2013
-    at 0.5 x 0.625 degrees, averaged to the 2 x 2.5 degree grid (input). This is an assumption: the
-    model''s own wind may differ (regridding, averaging), and the 2 x 2.5 degree 2013 files are not
-    public.'
-  - City coordinates and populations are those of UN World Urbanization Prospects 2018 (input), as
-    Table S13's source (ref. 79, WPP 2019 Highlights) gives none; all 97 cities match one agglomeration
-    each. An assumption.
-  - The regressions use the 97 listed cities with WUP 2018 populations for 2018, which equal Table
-    S13's for Tokyo, Delhi and Kinshasa.
+  - The deciding regressions use Table S13 as printed in the Supplementary Materials (97 rows of population,
+    distance and percentage), copied into the helper from the paper's text, as the criterion runs them
+    on the Table S13 rows. The recomputed values are a variant.
 - claim: table-s1-field-conditions
   outcome: partially_reproduced
   notebook: reproduce_chan_2024.ipynb
@@ -521,7 +534,8 @@ findings:
   output: finding-eag-duplicated-series
   statement: In Fig_S5_Manduca_Hyles_EAG_dose_response_mean_of_largest.csv the Hyles column repeats
     eight consecutive values of one dose series (1e-5 to 3 floral equivalents, file rows 12 to 19)
-    as the next series (rows 21 to 28); only the 1e-6 value differs. No other run of eight identical
+    as the next series (rows 21 to 28); the 1e-6 values before them (rows 11 and 20) differ, 10.56
+    and 9.33 mV. No other run of eight identical
     values occurs in either column. One antenna's dose response appears to be deposited twice, as
     two antennae.
 - kind: metadata_error
@@ -533,7 +547,8 @@ findings:
     (318 in all) and 8 concentrations from 1:100,000,000 to 1:33. The file and README also call this
     Fig. S5, which is Fig. S7 in the paper.
 - kind: other
-  about: paper
+  about: data
+  severity: major
   notebook: reproduce_chan_2024.ipynb
   output: finding-fig3b-control-is-1x
   statement: In the Fig. 3B sheet of the Zenodo release, the Manduca floral-odor group is 11 of 12
@@ -619,7 +634,7 @@ findings:
   statement: Table S13 and Fig. 4. The bottom-level wind of the 12.1.0 run is not deposited, and ref.
     79, cited for the city coordinates, gives none. With the MERRA-2 2013 bottom-level wind averaged
     to 2 x 2.5 degrees and WUP 2018 coordinates, no reading matches more than 1 of the 8 Table S13
-    values checked (Kabul 105 to 155 m against 73.1 with the vector wind). Question for the authors
+    values checked (Kabul 105 to 335 m against 73.1 with the vector wind and threshold a). Question for the authors
     - which wind field and averaging, and which city coordinates, give Table S13?
 verifications:
 - date: '2026-11-26'
@@ -857,3 +872,210 @@ verifications:
       lines on the clocks, the iButtons' Timezone -7, the per-hour O3 and NO2 means and the window
       read as UTC; the logs cover 23:00 to 07:59 as written, supporting local time, and as UTC O3
       would be 28.3 ppb. A new minor finding records the missing time zone.
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full re-executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the claims file, the attempt record and the README, with the paper's full text.
+    It took the counts of claims and outcomes from the attempt record (27 claims, 27 outcomes).
+  results:
+  - claim: fig1d-assemblage-day-night
+    agrees: true
+    outcome: blocked
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig1e-bagged-fewer-fruit
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig1e-nocturnal-exclusion
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig1e-groups
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: nocturnal-share-of-fruit
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig2a-gcead-monoterpenes
+    agrees: true
+    outcome: blocked
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1. The skipped retention-time
+      comparison is explained in the record, and the reason is acceptable.
+    response: No change.
+  - claim: table-s6-emission-rates
+    agrees: true
+    outcome: blocked
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig2d-no3-degrades-monoterpenes
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1. The Dryad notebook's
+      cells are printed beside VOCUS_CODE and match (cell 28).
+    response: No change.
+  - claim: fig2d-other-compounds-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: figs5-blend-oxidation
+    agrees: true
+    outcome: partially_reproduced
+    reason: The missing reagent-ion trace is recorded as a limitation, with detrended and block-mean
+      variants (cell 36).
+    response: No change.
+  - claim: fig2-dose-dependent
+    agrees: true
+    outcome: blocked
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: figs6-oxidation-products
+    agrees: true
+    outcome: partially_reproduced
+    reason: Assumption reasonable. The deciding doubling threshold (r3) is now stated as this attempt's
+      own choice. The Methods' order (clean air, O3, NO3) is the order of stages within one run, but
+      the workbook holds two separate runs, each with its own clean-air baseline (9 and 7 rows before
+      onset), so that order does not settle which run is which. The chemistry does, since organic nitrates
+      need NO3, and that argument supports the same assignment. Cell 39 still contains the round-1
+      sentence giving the data as the reason, which disagrees with the new paragraph and with the record's
+      deviation.
+    response: The round-1 sentence is removed from the markdown before the cell, which now gives the
+      stage order, notes that each segment has its own clean-air rows, and adds the nitrate chemistry
+      as the support; the record's deviation says the same.
+  - claim: fig3b-hyles-no3-eliminates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig3b-manduca-no3-halves
+    agrees: true
+    outcome: reproduced
+    reason: Assumption reasonable, because the sheet is the paper's own Fig. 3B file. One of the two
+      stated reasons ("54% matches the paper's 50%") picks the reading by its result. Neither floral
+      reference gives the paper's p = 0.047 (cell 46).
+    response: The reason that picked the reading by its result is removed from the deviation and the
+      conclusion, which now say that neither reference gives p = 0.047. The verifier also said finding
+      4 (the floral-odor group with the 1x counts) would be data under the wrong label and should be
+      rated; it is now about the data, rated major, as the data cannot settle whether the group is mislabelled
+      and the sheet's 113 Manduca are far from the Methods' 138.
+  - claim: fig3b-o3-no2-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig3b-proxy-mixture
+    agrees: true
+    outcome: reproduced
+    reason: Assumption reasonable. The claim holds with either floral reference under the z-test, marginally
+      with the 0.01x row (p = 0.049, cell 46). The README row does not mark it as assumed.
+    response: The README row now marks it as assumed.
+  - claim: figs7-manduca-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig3d-field-no3-fewer-visits
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig3d-real-and-synthetic-alike
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig3d-visits-per-night
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: fig4ab-no3-shortens-recognition
+    agrees: false
+    outcome: partially_reproduced
+    reason: The more severe part holds under every NO3 and O3 reading, with share 1.0 in cell 67, and
+      does not depend on wind. The below 400 m part holds only with the speed of the mean wind vector
+      (x), in 2 of 32 readings. Under those same two readings Table S13's distances are matched for 0
+      and 1 of 8 values (cell 65); Santiago comes out at 634 and 2122 m against 101.8, and the dependency,
+      table-s13, is not reproduced. The count of 8 or 10 cities is therefore a count of recomputed cities
+      that only partly overlap the paper's nine; London, Delhi, Los Angeles, Rome and Beijing appear on
+      the recomputed lists. The vector speed goes as low as 0.05 m/s (cell 63), where wind directions
+      cancel. The paper's "mean horizontal wind speed" reads more naturally as reading (y), the monthly
+      mean speed, and under (y) the count is 0 or 1.
+    response: Agreed. As round 2 allows no change of outcome, the outcome stays reproduced and partially
+      reproduced is proposed under `proposed`, for a third round. A new cell after the fig4ab table
+      shows the analysis, joining each reading's count of cities below 400 m with the Table S13 values
+      it matches and with the nine cities below 400 m in the printed table, and printing the counts under
+      each wind reading and the low vector speeds (115 of 4197 land cells below 0.5 m/s). The conclusion
+      and the README say a change is proposed.
+  - claim: table-s13-recognition-distances
+    agrees: true
+    outcome: not_reproduced
+    reason: The outcome does not depend on the assumed wind. The three percentages need no wind, and
+      they fail under every reading (cell 65), Hong Kong 0 to 2.2% against 4.9, Tokyo 0 to 2.7% against
+      6.7, Kinshasa 52 to 76% against 89.8. Even if all five distances matched, only 5 of 8 values could
+      pass, short of the 6 needed for partial. The record could say this. The README row leaves out "(assumed)".
+    response: The notes and the conclusion now say this, and the README row is marked assumed. Finding
+      15, which gave Kabul as 105 to 155 m with the vector wind, now gives 105 to 335 m with the vector
+      wind and threshold (a), as cell 65 prints.
+  - claim: fig4c-preindustrial-change
+    agrees: true
+    outcome: not_reproduced
+    reason: The Greenland condition needs neither wind nor city coordinates. In cell 69 the Greenland
+      median is 34 to 66% and at most 0.4% of cells are above 75%. The Greenland box is a stated and
+      reasonable choice. The README row leaves out "(assumed)".
+    response: The README row is marked assumed.
+  - claim: interannual-similar
+    agrees: true
+    outcome: blocked
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1.
+    response: No change.
+  - claim: figs8-no3-faster-than-o3
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1. The weighted means are
+      run (cell 60).
+    response: No change.
+  - claim: figs9-urban-regressions
+    agrees: false
+    reason: Not acceptable as it stands. It holds in 4 of 128 readings, all using the monthly mean speed
+      (y), while fig4ab holds only under the vector wind (x), so no single wind reading supports both
+      claims. Under the deciding readings Kabul comes out at 762 to 973 m against Table S13's 73.1 (cell
+      65). The criterion runs the regressions on the Table S13 rows; the paper prints population, distance
+      and percentage for all 97 cities, and those rows are the natural deciding test and need no assumed
+      wind. They were not run. As it stands, reproduced rests on distances an order of magnitude from
+      the paper's.
+    response: The regressions are now run on the 97 rows Table S13 prints (new cell before the recomputed
+      variant, rows copied into the helper from the paper's text). They match Fig. S9, A R2 0.008, F
+      0.39, p 0.68; B R2 0.094, F 4.90, p 0.0095; C R2 0.411, F 32.79, p 1.6e-11, with shorter distances
+      going with a larger impact, under raw and log population. The outcome stays reproduced, now decided
+      on the printed rows with no assumption, so `assumed` is removed and measured is 0.411; the recomputed
+      readings are kept as a variant and the notes say they do not match Table S13.
+  - claim: table-s1-field-conditions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged in round 2 and the same as the verifier gave in round 1. The time zone is checked
+      (cell 75). Finding 9 cites the sanity cell for a night temperature of 22.7 C, which is printed
+      in cell 75.
+    response: Outcome unchanged. The sanity cell now prints the iButton night temperature (22.68 C),
+      so finding 9's cell shows it.
+  findings:
+  - finding: 2
+    agrees: true
+    reason: The output shows it. Cell 10 prints Hyles rows 12 to 19 and 21 to 28, eight identical values,
+      and the search for runs of eight finds only (12, 21) in the Hyles column and none in the Manduca
+      column. The one point the output does not show is "only the 1e-6 value differs". The rating is
+      right; one antenna's dose series appears to be deposited as two antennae, and nothing in the file
+      marks it, so any per-antenna analysis takes it as given. In this attempt the effect is small; dropping
+      the series lowers Hyles means slightly, e.g. 25.35 to 24.71 mV at 1e-3, and leaves the outcome
+      unchanged. The finding gives no versions or fixed_in.
+    response: Severity kept as critical. Cell 10 now prints the two 1e-6 values (10.56 and 9.33 mV),
+      and the statement gives them. Dryad has one published version (289757), the one read, so there
+      is no other version to give under versions or fixed_in.

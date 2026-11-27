@@ -19,16 +19,17 @@ recognition distances need is read from GEOS-Chem's processed MERRA-2 files for 
 | In the whole blend, monoterpenes drop and aldoxime and eucalyptol do not change | Partially reproduced |
 | NO3 yields organic nitrates, O3 only C10H16O4 and C10H18O4 | Partially reproduced (assumed) |
 | NO3 eliminates Hyles feeding in the wind tunnel | Partially reproduced |
-| NO3 halves Manduca feeding (assumed); O3, NO2 and the NO3-proxy mixture | Reproduced |
+| NO3 halves Manduca feeding; the NO3-proxy mixture lowers feeding as NO3 does | Reproduced (assumed) |
+| O3 and NO2 do not change Manduca feeding | Reproduced |
 | Manduca is more sensitive than Hyles; 1/100 floral equivalent dose | Reproduced |
 | Field visits: NO3 odor fewer visits, real and synthetic odor alike, visits per night | Reproduced |
 | Typical NO3 and O3 levels and floral reactivity (Fig. S8) | Partially reproduced |
 | Field conditions of Table S1 | Partially reproduced |
 | Pollinator assemblage, GC-EAD, emission rates, dose dependence | Blocked: data missing |
-| NO3 shortens recognition distances, below 400 m in many populated areas (Fig. 4A, B) | Reproduced (assumed) |
-| Recognition distances around cities (Table S13) | Not reproduced |
-| 75% or more decrease since preindustrial times, small change in Greenland (Fig. 4C) | Not reproduced |
-| Urban regressions (Fig. S9) | Reproduced (assumed) |
+| NO3 shortens recognition distances, below 400 m in many populated areas (Fig. 4A, B) | Reproduced (assumed); partially reproduced proposed |
+| Recognition distances around cities (Table S13) | Not reproduced (assumed) |
+| 75% or more decrease since preindustrial times, small change in Greenland (Fig. 4C) | Not reproduced (assumed) |
+| Urban regressions (Fig. S9), on the rows Table S13 prints | Reproduced |
 | Interannual similarity of the model runs | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
