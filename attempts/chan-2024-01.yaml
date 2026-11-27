@@ -343,34 +343,30 @@ outcomes:
     a drop of 70.7%; with the synthetic floral odor as the untreated flower, 1.980 and a drop of 71.4%.
     Both readings are within tolerance.
 - claim: fig4ab-no3-shortens-recognition
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig4ab-no3-shortens-recognition
-  notes: Over the 4197 land cells kept, the NO3 map is shorter than the O3 map in all cells with NO3
-    and O3 together (ii), and in 37% (threshold a) or 51% (b) with NO3 alone (i). The Table S13 cities
-    below 400 m number 8, 10, 9 and 8 under four readings, all with the speed of the mean wind vector
+  notes: The more severe part holds and the below 400 m part is not matched. Over the 4197 land cells
+    kept, the NO3 map is shorter than the O3 map in all cells with NO3 and O3 together (ii), and in
+    37% (threshold a) or 51% (b) with NO3 alone (i); this part needs no wind. The Table S13 cities below
+    400 m number 8, 10, 9 and 8 under four readings, all with the speed of the mean wind vector (x)
     and threshold (a), and 0 to 6 or 11 under the other 28. Both parts hold under two of the 32 readings,
     density at the cell's T and P with the containing cell (10 cities) and Table S12's density with
-    interpolation (8 cities), both with NO3 and O3. Medians over land with density (1), threshold
-    (a) and the vector wind are 11.3 km for the O3 map and 31.4 km (i) or 6.8 km (ii) for the NO3
-    map. Of the cities below 400 m, 6 of the 10 and 5 of the 8 are among Table S13's nine, but Table
-    S13's distances are not matched (table-s13-recognition-distances), and the count falls to 0 or
-    1 with the monthly mean speed, so the second part rests on the wind reading. Before the revision
-    this claim was blocked (data_missing, no wind); the verifier pointed to the public MERRA-2 wind.
-    The round-2 verifier would give partially reproduced; the outcome is kept as reviewed and the
-    change is proposed below.
-  proposed:
-    outcome: partially_reproduced
-    reason: The more severe part holds under every NO3 and O3 reading (share 1.0) and needs no wind.
-      The 400 m part holds only with the speed of the mean wind vector (x), and the two readings under
-      which both parts hold match 0 and 1 of the 8 Table S13 values, so the dependency is not matched
-      under them; of their 10 and 8 cities below 400 m, 6 and 5 are among the printed table's nine,
-      and London, Delhi, Los Angeles, Rome and Beijing are not in it. The vector speed falls to 0.05
-      m/s over land (115 of 4197 cells below 0.5 m/s), where wind directions cancel. The paper's "mean
-      horizontal wind speed" reads more naturally as the monthly mean speed (y), under which 0 or 1
-      cities are below 400 m. The claim therefore holds in part. Analysis in the notebook, the cell
-      after the fig4ab table.
+    interpolation (8 cities), both with NO3 and O3. Under those two readings the dependency, table-s13-recognition-distances,
+    is not matched (0 and 1 of the 8 Table S13 values within tolerance; Santiago 634 m against 101.8
+    m), and of their 10 and 8 cities below 400 m only 6 and 5 are among the printed table's nine;
+    London, Delhi, Los Angeles, Rome and Beijing are not in it. The count therefore matches the paper's
+    nine in number only, not in the cities it names. With the monthly mean speed (y) the count is 0
+    or 1. The vector speed falls to 0.05 m/s over land (115 of 4197 cells below 0.5 m/s). Medians over
+    land with density (1), threshold (a) and the vector wind are 11.3 km for the O3 map and 31.4 km
+    (i) or 6.8 km (ii) for the NO3 map. The outcome rests on the failed dependency and the city mismatch,
+    not on which wind reading is preferred; the paper worked from monthly-averaged output, and (x)
+    is also a plausible reading of its "mean horizontal wind speed". The criterion defines no partial
+    outcome; partially reproduced follows its reference to table-s13-recognition-distances. Before
+    the first revision this claim was blocked (data_missing, no wind); the verifier pointed to the
+    public MERRA-2 wind. It was reproduced (assumed) until round 3, which agreed with the change to
+    partially reproduced proposed after round 2.
   deviations:
   - 'The recognition distance is the degradation time times the bottom-level wind, which the deposited
     output lacks; it is taken from GEOS-Chem''s processed MERRA-2 files for July and January 2013
@@ -381,7 +377,9 @@ outcomes:
     Table S13's source (ref. 79, WPP 2019 Highlights) gives none; all 97 cities match one agglomeration
     each. An assumption.
   - '"Many populated areas" is read, as the criterion says, as the count of Table S13 cities below
-    400 m within one of nine; the cities themselves are not compared.'
+    400 m within one of nine. The criterion does not say the cities must be the paper''s; the outcome
+    also compares them with the nine cities below 400 m in the printed table, as the criterion refers
+    to table-s13-recognition-distances.'
 - claim: table-s13-recognition-distances
   outcome: not_reproduced
   assumed: true
@@ -1079,3 +1077,41 @@ verifications:
     response: Severity kept as critical. Cell 10 now prints the two 1e-6 values (10.56 and 9.33 mV),
       and the statement gives them. Dryad has one published version (289757), the one read, so there
       is no other version to give under versions or fixed_in.
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on fig4ab-no3-shortens-recognition, with the
+    analysis behind it in the full re-executed notebook of the second revision, the attempt record and
+    the claims file. Nothing else was reviewed. The verifier agreed with the proposal and reported two
+    places where the claims file is underspecified, without correcting them. The outcome is now partially
+    reproduced. Report in transcripts/chan-2024/verifier-3-report.md.
+  results:
+  - claim: fig4ab-no3-shortens-recognition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced. The numbers come from the data. With NO3 and O3 together
+      (ii) the share of land cells where the NO3 map is shorter is 1.0 under every reading, and 0.374
+      to 0.506 with NO3 alone (cells 67 and 69); this part needs no wind and holds. The count of cities
+      below 400 m is 8 to 10 only with the speed of the mean wind vector (x) and threshold (a), and both
+      parts hold under 2 of the 32 readings; with the monthly mean speed (y) the count is 0 or 1. Under
+      those two readings 0 and 1 of the 8 Table S13 values are within tolerance (Santiago 634 m against
+      101.8 m), and 6 of the 10 and 5 of the 8 recomputed cities are among the printed table's nine,
+      counted again by hand; the nine in the helper match the paper's table. The vector speed has a minimum
+      of 0.05 m/s and is below 0.5 m/s in 115 of 4197 land cells. The choice was not made to reach the
+      result, as all 32 readings are run and shown. Read literally the criterion gives reproduced, but
+      it ties "many populated areas" to table-s13-recognition-distances, which fails under the only readings
+      where the count fits, and the cities counted are only about half the paper's nine, so the count
+      matches in number only. One part of the proposed reason is weak. That the paper's "mean horizontal
+      wind speed" reads more naturally as reading (y) is a judgement, not a demonstration; the paper
+      worked from monthly-averaged output, and reading (x) is also plausible. The outcome rests on the
+      failed dependency and the city mismatch, not on the wind reading. It also reported that the criterion
+      does not say whether the cities must be the paper's, and defines no partial outcome, and that reading
+      (y) is conditioned on the output holding one, which the deposited output does not, so both wind
+      readings rest on the MERRA-2 input.
+    response: Outcome changed to partially reproduced and the proposal removed; it stays assumed, as
+      the 400 m part is evaluated on the assumed wind and city coordinates. The notes, the notebook's
+      conclusion and summary and the README give the new outcome. The notes and the conclusion drop
+      the claim that (y) reads more naturally, say that both wind readings are plausible and that the
+      outcome rests on the failed dependency and the city mismatch, and say that the criterion defines
+      no partial outcome. The deviation that said the cities are not compared now says they are compared
+      with the printed table's nine.

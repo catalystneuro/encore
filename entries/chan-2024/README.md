@@ -26,7 +26,7 @@ recognition distances need is read from GEOS-Chem's processed MERRA-2 files for 
 | Typical NO3 and O3 levels and floral reactivity (Fig. S8) | Partially reproduced |
 | Field conditions of Table S1 | Partially reproduced |
 | Pollinator assemblage, GC-EAD, emission rates, dose dependence | Blocked: data missing |
-| NO3 shortens recognition distances, below 400 m in many populated areas (Fig. 4A, B) | Reproduced (assumed); partially reproduced proposed |
+| NO3 shortens recognition distances, below 400 m in many populated areas (Fig. 4A, B) | Partially reproduced (assumed) |
 | Recognition distances around cities (Table S13) | Not reproduced (assumed) |
 | 75% or more decrease since preindustrial times, small change in Greenland (Fig. 4C) | Not reproduced (assumed) |
 | Urban regressions (Fig. S9), on the rows Table S13 prints | Reproduced |
