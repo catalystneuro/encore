@@ -1,14 +1,36 @@
-# yang-2025 · author · run 42720022544
+# yang-2025 · author · run 45915569385
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; wc -l docs/protocol.md README.md docs/design.md docs/archives.md; ls entries/ | head -50; ls paper/ claims/ | head; ls entries/yang-2025 2>/dev/null
+date -u; cd  ls; ls docs entries claims attempts paper tools | head -100; wc -l docs/*.md README.md
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+Fri Nov 27 00:18:07 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+node_modules
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+pyproject.toml
+questions
+queue
+schemas
+[... 123 more lines not kept]
+```
 
 **Agent calls Read**
 
@@ -45,68 +67,16 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-ls paper* entries/yang-2025 entries/fouke-2025 2>&1; ls -d paper*; ls entries/fouke-2025/*
+cd  cat claims/yang-2025.yaml; ls paper/ papers/ 2>/dev/null | head; ls -R paper | head -30
 ```
 
-```
-ls: cannot access 'entries/yang-2025': No such file or directory
-entries/fouke-2025:
-README.md
-entry.yaml
-omr.py
-reproduce_fouke_2025.ipynb
-requirements.in
-requirements.lock.txt
-
-paper:
-10.1109-tnsre.2025.3614867.pdf
-10.1109-tnsre.2025.3614867.supp-fig-S1.png
-10.1109-tnsre.2025.3614867.supp-fig-S2.png
-10.1109-tnsre.2025.3614867.supp-fig-S3.png
-10.1109-tnsre.2025.3614867.supp.docx
-10.1109-tnsre.2025.3614867.txt
-
-papers:
-datasets
-keys.yaml
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat claims/yang-2025.yaml; cat papers/datasets/yang-2025.yaml; ls questions/ | grep yang
-```
-
-```
-<persisted-output>
-Output too large (35.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/f9d10362-13f7-4e66-94be-9e6b02591a28/tool-results/bo0ft31hb.txt
-
-Preview (first 2KB):
-# Claims for Yang, Ni, Sun, Xing, Wang, Zhang, Zhu & Xu (2025), IEEE Trans. Neural Syst. Rehabil.
-# Eng. 33:4008-4016, doi:10.1109/TNSRE.2025.3614867, on dandiset 001212.
-# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
-# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
-# files; only its title and description on the archive were read.
-#
-# Text read: the version of record (open access, CC BY-NC-ND), PDF supplied by a person, as text
-# (paper/10.1109-tnsre.2025.3614867.txt), with its one supplement, supp1-3614867.docx (Figures S1
-# to S3 with legends and Table S1). Figures 2 to 6 were read from the PDF (pages 4 to 7) for the
-# bars, significance marks and target boxes the text does not hold; Figure S2 from its image and
-# the transcription stored with the text; Figure S3 from its image.
-#
-# Code read: none. The paper links no code and gives no code or data availability statement. It
-# names two outside MATLAB toolboxes, the MVGC toolbox for conditional multivariate Granger
-# causality (ref. 37, Barnett and Seth 2014) and the HFO App (ref. 50), and says statistics are in
-# the figure legends; the software for statistics is not named.
-[... 10 more lines not kept]
-```
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/f9d10362-13f7-4e66-94be-9e6b02591a28/tool-results/bo0ft31hb.txt"
+ "file_path": "claims/yang-2025.yaml"
 }
 ```
 
@@ -131,89 +101,13 @@ Preview (first 2KB):
 18	# Data the paper used (Methods A to C). Male Sprague-Dawley rats, lithium-pilocarpine model of
 19	# temporal lobe epilepsy; 7 rats (R1 to R7) analysed, of 44 treated. Four depth electrodes per
 20	# rat, right hemisphere, DG, CA1, CA3 and ANT, each a recording strand and a bipolar stimulation
-[... 504 more lines not kept]
+[... 497 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-wc -c paper/*.txt; cat paper/*.txt | head -c 60000
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/f9d10362-13f7-4e66-94be-9e6b02591a28/tool-results/bz8lvq5yq.txt",
- "offset": 30,
- "limit": 420
-}
-```
-
-```
-30	enhancing θ and α frequency band activity while suppressing γ activity. Additionally, targeted stimulation briefly
-31	inhibited interictal spikes and suppressed high-frequency
-32	oscillations during seizures. These findings highlight the
-33	potential for personalized neuromodulation to improve
-34	Received 4 June 2025; revised 30 July 2025 and 30 August 2025;
-35	accepted 22 September 2025. Date of publication 26 September 2025;
-36	date of current version 10 October 2025. This work was supported in
-37	part by Science and Technology Innovation (STI) 2030—Major Projects
-38	under Grant 2021ZD0200405, in part by the National Natural Science
-39	Foundation of China under Grant 82272112, in part by the Outstanding
-40	Youth Program of Zhejiang Natural Science Foundation under Grant
-41	LR23H180002, in part by the Key Research and Development Program
-42	of Zhejiang under Grant 2023C03078, in part by the 5510 Project
-43	of the Second Affiliated Hospital of Zhejiang University under Grant
-44	551001852022, and in part by the Starry Night Science Fund of Zhejiang
-45	University Shanghai Institute for Advanced Study under Grant SN-ZJUSIAS-002. (Corresponding author: Kedi Xu.)
-46	This work involved human subjects or animals in its research.
-47	Approval of all ethical and experimental procedures and protocols was
-48	granted by Zhejiang University Animal Care and Use Committee under
-49	Application No. 15896.
-[... 400 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/f9d10362-13f7-4e66-94be-9e6b02591a28/tool-results/bz8lvq5yq.txt",
- "offset": 450,
- "limit": 260
-}
-```
-
-```
-450	stimulation group was normalized. Each baseline group served
-451	as a reference for subsequent stimulation groups, given the relatively consistent characteristics of short-term seizures. Fig. 3
-452	illustrates the effects of different site stimulations on seizure
-453	duration in seven rats. At the individual level, 130 Hz highfrequency stimulation of the target sites consistently reduced
-454	seizure duration. In some cases, non-target sites stimulation
-455	Fig. 3.
-456	Evaluation of seizure suppression effectiveness of different
-457	stimulation sites. (A) Effect of stimulation on normalized seizure duration
-458	in 7 rats, with target stimulation highlighted by red rectangles (KW test).
-459	The bar chart in the lower right corner summarizes normalized seizure
-460	duration for all rats (Mann-Whitney test). (B) Comparison of seizure
-461	duration reduction when the same stimulation site served as both the
-462	target and non-target stimulation site. (C) Effect of different stimulation
-463	sites on normalized seizure frequency (Mann-Whitney test). Values are
-464	represented as mean ± SEM. ∗p < 0.05, ∗∗p < 0.01, and ∗∗∗p < 0.001.
-465	increased seizure duration, worsening the severity of seizures.
-466	Overall, target site stimulation (normalized seizure duration
-467	reduction: −0.26
-468	±
-469	0.03) significantly shortened seizure
-[... 240 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,140p docs/archives.md
+cd  sed -n 1,140p docs/archives.md; ls entries/fouke-2025; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in; ls paper; ls questions | head -3; ls papers/datasets | grep yang; cat papers/datasets/yang-2025.yaml
 ```
 
 ```
@@ -237,238 +131,16 @@ The workflows take a dataset in any of these forms.
 - **Datasets.** A dandiset, identified by six digits (`000003`). Targets are the
   public dandisets whose metadata names a paper (`targets/dandisets.json`, built
   by `tools/build_targets.py` and refreshed daily by the Track DANDI workflow).
-[... 120 more lines not kept]
+[... 172 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/001212/ | python -m json.tool | head -40; curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/" | python -m json.tool | grep -E '"version"|"created"|"status"|"size"|asset_count'
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/0.241023.0931/assets/?page_size=200" > assets.json; python -c "
-import json;d=json.load(open('assets.json'));print(d['count'])
-for a in d['results']: print(a['path'],a['size'],a['asset_id'])"; curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/0.241023.0931/" | python -m json.tool | head -120
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/0.241023.0931/" | python -c "import json,sys;d=json.load(sys.stdin);print(d['description']);print(d.get('relatedResource'));print(d.get('assetsSummary'))"; python -c "import pynwb,remfile,h5py;print(pynwb.__version__)"; which uv; cat entries/fouke-2025/requirements.in entries/fouke-2025/entry.yaml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q env && . env/bin/activate && uv pip install -q pynwb remfile h5py numpy scipy pandas matplotlib statsmodels dandi 2>&1 | tail -2; python -c "import pynwb;print(pynwb.__version__)"
+cd  ls questions | grep yang; cat attempts/fouke-2025-01.yaml | head -150; cat entries/fouke-2025/README.md
 ```
 
 ```
-4.2.0
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > probe.py <<'EOF'
-import remfile,h5py,pynwb,sys,json,urllib.request
-aid=sys.argv[1]
-url=f"https://api.dandiarchive.org/api/assets/{aid}/download/"
-f=remfile.File(url); h=h5py.File(f,'r')
-def walk(g,p=''):
-    for k,v in g.items():
-        if isinstance(v,h5py.Dataset): print(p+'/'+k, v.shape, v.dtype, dict(v.attrs) if v.size<5 or k in('data','timestamps') else '')
-        else:
-            print(p+'/'+k, dict((a,str(b)[:200]) for a,b in v.attrs.items() if a not in ('object_id',)))
-            walk(v,p+'/'+k)
-walk(h)
-EOF
-python probe.py b014d56d-798d-4814-b3f1-744addd72fcd 2>&1 | head -150
-```
-
-```
-/acquisition {}
-/acquisition/R1_2023_7_16-ictal1 {'comments': 'no comments', 'description': 'Raw acquisition at 02base1 stage', 'namespace': 'core', 'neurodata_type': 'ElectricalSeries'}
-/acquisition/R1_2023_7_16-ictal1/data (600000, 4) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'microvolts'}
-/acquisition/R1_2023_7_16-ictal1/electrodes (4,) int64 {'description': 'all electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTableRegion', 'object_id': '24ceda16-c914-450e-b170-8db00bca791e', 'table': <HDF5 object reference>}
-/acquisition/R1_2023_7_16-ictal1/starting_time () float64 {'rate': np.float64(1000.0), 'unit': 'seconds'}
-/acquisition/R1_2023_7_21-ictal1 {'comments': 'no comments', 'description': 'Raw acquisition at 02base1 stage', 'namespace': 'core', 'neurodata_type': 'ElectricalSeries'}
-/acquisition/R1_2023_7_21-ictal1/data (600000, 4) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'microvolts'}
-/acquisition/R1_2023_7_21-ictal1/electrodes (4,) int64 {'description': 'all electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTableRegion', 'object_id': '8fdbe5b6-41b9-446c-94fb-4183bc69f40a', 'table': <HDF5 object reference>}
-/acquisition/R1_2023_7_21-ictal1/starting_time () float64 {'rate': np.float64(1000.0), 'unit': 'seconds'}
-/acquisition/R1_2023_7_21-ictal2 {'comments': 'no comments', 'description': 'Raw acquisition at 02base1 stage', 'namespace': 'core', 'neurodata_type': 'ElectricalSeries'}
-/acquisition/R1_2023_7_21-ictal2/data (600000, 4) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'microvolts'}
-/acquisition/R1_2023_7_21-ictal2/electrodes (4,) int64 {'description': 'all electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTableRegion', 'object_id': '525b2219-2c0d-4b05-8e91-6e00b3e2668c', 'table': <HDF5 object reference>}
-/acquisition/R
-[... 72 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > meta.py <<'EOF'
-import remfile,h5py,sys,json
-assets=json.load(open('assets.json'))['results']
-for a in sorted(assets,key=lambda a:a['path']):
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    h=h5py.File(remfile.File(url),'r')
-    acq=h['acquisition']; keys=list(acq.keys())
-    shapes=set(acq[k]['data'].shape for k in keys)
-    descs=set(acq[k].attrs['description'] for k in keys)
-    g=h['general']
-    print(a['path'].split('/')[1], len(keys), shapes, descs, h['session_description'][()], h['session_start_time'][0], g['session_id'][()], [x for x in g['extracellular_ephys/electrodes/location'][:]], [x for x in g['extracellular_ephys/electrodes/label'][:]], flush=True)
-    print('   ', keys[:3], keys[-2:], {k:g['subject'][k][()] for k in g['subject'] }, flush=True)
-EOF
-time python meta.py 2>&1 | tee meta.txt | head -30
-```
-
-```
-sub-RatR1_ses-RatR1-00base0_ecephys.nwb 9 {(600000, 4)} {'Raw acquisition at 00base0 stage'} b'Multi-site LFP activity recorded in temporal lobe epilepsy rats' b'2023-06-16T00:00:00.000000+08:00' b'RatR1_00base0' [b'AP:-5.0mm,ML:+3.2mm,DV:-3.2mm', b'AP:-4.2mm,ML:+3.0mm,DV:-2.2mm', b'AP:-3.7mm,ML:+4.0mm,DV:-2.8mm', b'AP:-1.2mm,ML:+2.0mm,DV:-5.6mm'] [b'R_DG-electrode1', b'R_CA1-electrode2', b'R_CA3-electrode3', b'R_ANT-electrode4']
-    ['R1_2023_6_16-ictal1', 'R1_2023_6_16-ictal2', 'R1_2023_6_18-ictal1'] ['R1_2023_6_25-ictal1', 'R1_2023_6_29-ictal1'] {'age': b'P2M', 'description': b'Sprague-Dawley', 'sex': b'M', 'species': b'Rattus norvegicus', 'subject_id': b'RatR1', 'weight': b'300-350g'}
-sub-RatR1_ses-RatR1-01CA1-stim_ecephys.nwb 11 {(600000, 4)} {'Raw acquisition at 01CA1_stim stage'} b'Multi-site LFP activity recorded in temporal lobe epilepsy rats' b'2023-07-08T00:00:00.000000+08:00' b'RatR1_01CA1_stim' [b'AP:-5.0mm,ML:+3.2mm,DV:-3.2mm', b'AP:-4.2mm,ML:+3.0mm,DV:-2.2mm', b'AP:-3.7mm,ML:+4.0mm,DV:-2.8mm', b'AP:-1.2mm,ML:+2.0mm,DV:-5.6mm'] [b'R_DG-electrode1', b'R_CA1-electrode2', b'R_CA3-electrode3', b'R_ANT-electrode4']
-    ['R1_2023_7_10-ictal1', 'R1_2023_7_19-ictal1', 'R1_2023_7_19-ictal2'] ['R1_2023_7_20-ictal6', 'R1_2023_7_8-ictal1'] {'age': b'P2M', 'description': b'Sprague-Dawley', 'sex': b'M', 'species': b'Rattus norvegicus', 'subject_id': b'RatR1', 'weight': b'300-350g'}
-sub-RatR1_ses-RatR1-02base1_ecephys.nwb 10 {(600000, 4)} {'Raw acquisition at 02base1 stage'} b'Multi-site LFP activity recorded in temporal lobe epilepsy rats' b'2023-07-16T00:00:00.000000+08:00' b'RatR1_02base1' [b'AP:-5.0mm,ML:+3.2mm,DV:-3.2mm', b'AP:-4.2mm,ML:+3.0mm,DV:-2.2mm', b'AP:-3.7mm,ML:+4.0mm,DV:-2.8mm', b'AP:-1.2mm,ML:+2.0mm,DV:-5.6mm'] [b'R_DG-electrode1', b'R_CA1-electrode2', b'R_CA3-electrode3', b'R_ANT-electrode4']
-    ['R1_2023_7_16-ictal1', 'R1_2023_7_21-ictal1', 'R1_2023_7_21-ictal2'] ['R1_2023_7_21-ictal8', 'R1_2023_7_21-ictal9'] {'age': b'P2M', 'description': b'Spragu
-[... 29 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > meta2.py <<'EOF'
-import remfile,h5py,sys,json
-assets=json.load(open('assets.json'))['results']
-for a in sorted(assets,key=lambda a:a['path']):
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    h=h5py.File(remfile.File(url),'r')
-    acq=h['acquisition']; keys=list(acq.keys())
-    d=acq[keys[0]]['data']
-    print(a['path'].split('/')[1].replace('_ecephys.nwb',''), len(keys), d.chunks, d.compression, h['session_start_time'][0].decode()[:10], h['general/extracellular_ephys/electrodes/location'][3].decode(), ' '.join(k.split('-',1)[1] if False else k for k in keys), flush=True)
-EOF
-python meta2.py > meta2.txt 2>&1; cat meta2.txt | cut -c1-400
-```
-
-```
-sub-RatR1_ses-RatR1-00base0 9 (600000, 1) gzip 2023-06-16 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_6_16-ictal1 R1_2023_6_16-ictal2 R1_2023_6_18-ictal1 R1_2023_6_21-ictal1 R1_2023_6_21-ictal2 R1_2023_6_22-ictal1 R1_2023_6_24-ictal1 R1_2023_6_25-ictal1 R1_2023_6_29-ictal1
-sub-RatR1_ses-RatR1-01CA1-stim 11 (600000, 1) gzip 2023-07-08 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_7_10-ictal1 R1_2023_7_19-ictal1 R1_2023_7_19-ictal2 R1_2023_7_19-ictal3 R1_2023_7_20-ictal1 R1_2023_7_20-ictal2 R1_2023_7_20-ictal3 R1_2023_7_20-ictal4 R1_2023_7_20-ictal5 R1_2023_7_20-ictal6 R1_2023_7_8-ictal1
-sub-RatR1_ses-RatR1-02base1 10 (600000, 1) gzip 2023-07-16 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_7_16-ictal1 R1_2023_7_21-ictal1 R1_2023_7_21-ictal2 R1_2023_7_21-ictal3 R1_2023_7_21-ictal4 R1_2023_7_21-ictal5 R1_2023_7_21-ictal6 R1_2023_7_21-ictal7 R1_2023_7_21-ictal8 R1_2023_7_21-ictal9
-sub-RatR1_ses-RatR1-03CA3-stim 7 (600000, 1) gzip 2023-08-16 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_8_16-ictal1-small R1_2023_8_19-ictal1 R1_2023_8_23-ictal1 R1_2023_8_24-ictal2 R1_2023_8_24-ictal3 R1_2023_8_25-ictal1 R1_2023_8_27-ictal1
-sub-RatR1_ses-RatR1-04base2 5 (600000, 1) gzip 2023-08-29 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_8_29-ictal1 R1_2023_8_30-ictal1 R1_2023_9_1-ictal1 R1_2023_9_2-ictal1 R1_2023_9_5-ictal1
-sub-RatR1_ses-RatR1-05ANT-stim 6 (600000, 1) gzip 2023-09-03 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_9_10-ictal1 R1_2023_9_12-ictal1 R1_2023_9_3-ictal1 R1_2023_9_4-ictal1 R1_2023_9_6-ictal1 R1_2023_9_8-ictal1
-sub-RatR1_ses-RatR1-06base3 11 (600000, 1) gzip 2023-09-15 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_9_15-ictal1 R1_2023_9_15-ictal2 R1_2023_9_15-ictal3 R1_2023_9_16-ictal1 R1_2023_9_16-ictal2 R1_2023_9_20-ictal1 R1_2023_9_20-ictal2 R1_2023_9_20-ictal3 R1_2023_9_20-ictal4 R1_2023_9_20-ictal5 R1_2023_9_20-ictal6
-sub-RatR1_ses-RatR1-07DG-stim 13 (600000, 1) gzip 2023-09-21 AP:-1.2mm,ML:+2.0mm,DV:-5.6mm R1_2023_9_20-ictal1 R1_2023_9_20-ictal2 R1_2023_9_20-ictal3 R1_2023_9_21-ictal1 R1_2023_9_21-ictal2 R1_
-[... 49 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > look.py <<'EOF'
-import remfile,h5py,json,time,numpy as np,sys
-import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-assets={a['path'].split('/')[1].replace('_ecephys.nwb',''):a['asset_id'] for a in json.load(open('assets.json'))['results']}
-name=sys.argv[1]; n=int(sys.argv[2])
-h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{assets[name]}/download/"),'r')
-keys=list(h['acquisition'].keys())
-fig,axs=plt.subplots(n,1,figsize=(16,3*n))
-for i,k in enumerate(keys[:n]):
-    t0=time.time(); x=h['acquisition'][k]['data'][:]; print(k, time.time()-t0, x.min(0), x.max(0), np.std(x,0), np.isnan(x).sum())
-    t=np.arange(len(x))/1000
-    for c in range(4): axs[i].plot(t, x[:,c]/ (8*np.std(x[:,c])) + c, lw=0.3)
-    axs[i].set_title(k)
-plt.tight_layout(); plt.savefig(f'look_{name}.png',dpi=60)
-EOF
-python look.py sub-RatR1_ses-RatR1-02base1 3; python look.py sub-RatR1_ses-RatR1-07DG-stim 3
-```
-
-```
-R1_2023_7_16-ictal1 0.5726592540740967 [ -901.68   -902.265 -2928.51   -880.23 ] [3678.87  2437.305 3033.615 1066.455] [ 41.89941359  44.80468944 113.84326443  44.90100883] 0
-R1_2023_7_21-ictal1 0.5201013088226318 [ -374.01   -374.4   -3877.185  -451.425] [ 631.215  667.485 2417.61   659.685] [ 46.21662439  55.88476361 166.04838751  55.30739218] 0
-R1_2023_7_21-ictal2 0.7582471370697021 [ -674.895  -605.67  -4331.34   -570.57 ] [ 558.48   606.645 2651.61   934.05 ] [ 49.13310418  57.40931874 159.09225284  59.74118315] 0
-R1_2023_9_20-ictal1 0.535412073135376 [ -576.03   -598.455 -2124.33   -469.365] [ 598.455  517.725 3032.64   667.095] [43.96957598 46.8844353  83.95334681 50.46076187] 0
-R1_2023_9_20-ictal2 0.47438979148864746 [ -628.485  -505.44  -2308.02   -441.675] [ 727.74   458.25  3105.18   639.405] [45.94353187 46.29853787 88.44915893 49.73196082] 0
-R1_2023_9_20-ictal3 0.6581785678863525 [ -679.77   -576.225 -1686.36   -748.215] [2784.6   1770.6   3255.525  864.045] [49.34277037 52.46406114 90.63172971 55.09815604] 0
-Shell cwd was reset to
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/look_sub-RatR1_ses-RatR1-02base1.png"
-}
-```
-
-Result: no output.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/look_sub-RatR1_ses-RatR1-07DG-stim.png"
-}
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > zoom.py <<'EOF'
-import remfile,h5py,json,numpy as np,sys
-import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-from scipy.signal import spectrogram
-assets={a['path'].split('/')[1].replace('_ecephys.nwb',''):a['asset_id'] for a in json.load(open('assets.json'))['results']}
-name,k,a,b=sys.argv[1],sys.argv[2],float(sys.argv[3]),float(sys.argv[4])
-h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{assets[name]}/download/"),'r')
-x=h['acquisition'][k]['data'][int(a*1000):int(b*1000)]
-t=a+np.arange(len(x))/1000
-fig,axs=plt.subplots(5,1,figsize=(18,14))
-for c in range(4):
-    axs[c].plot(t,x[:,c],lw=0.4)
-f,tt,S=spectrogram(x[:,0],fs=1000,nperseg=256,noverlap=192)
-axs[4].pcolormesh(tt+a,f,np.log(S+1e-9),shading='auto'); 
-plt.tight_layout(); plt.savefig('zoom.png',dpi=55)
-EOF
-python zoom.py sub-RatR1_ses-RatR1-07DG-stim R1_2023_9_20-ictal1 270 330
-```
-
-```
-Shell cwd was reset to
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/zoom.png"
-}
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-date -u; cat attempts/fouke-2025-01.yaml | head -150; python -c "
-import json;nb=json.load(open('entries/fouke-2025/reproduce_fouke_2025.ipynb'))
-print(nb['metadata'])
-for c in nb['cells'][:8]: print(c['cell_type'],c.get('metadata'),''.join(c['source'])[:600]);print('----')
-"
-```
-
-```
-Mon Nov  9 23:34:52 UTC 2026
 schema_version: 3
 id: fouke-2025-01
 datasets:
@@ -488,1773 +160,14 @@ provenance:
     harness: Claude Code (GitHub Actions)
     model: claude-opus-5-5
     protocol: pilot-5
-[... 215 more lines not kept]
+  runner:
+[... 164 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && cat > survey.py <<'EOF'
-import remfile,h5py,json,numpy as np,hashlib,pickle,time
-assets=sorted(json.load(open('assets.json'))['results'],key=lambda a:a['path'])
-out={}
-t0=time.time()
-win=500
-f=np.fft.rfftfreq(win,1/1000)
-def comb(x):
-    n=len(x)//win; X=x[:n*win].reshape(n,win,4)-x[:n*win].reshape(n,win,4).mean(1,keepdims=True)
-    P=np.abs(np.fft.rfft(X*np.hanning(win)[None,:,None],axis=1))**2  # n,freq,4
-    sc=[]
-    for fl in (130,260,390):
-        i=int(fl/2); nb=np.r_[i-8:i-2,i+3:i+9]
-        sc.append(np.log10(P[:,i,:]/np.median(P[:,nb,:],axis=1)))
-    return np.mean(sc,0)  # n,4
-for a in assets:
-    name=a['path'].split('/')[1].replace('_ecephys.nwb','')
-    h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),'r')
-    for k in h['acquisition']:
-        x=h['acquisition'][k]['data'][:]
-        n=len(x)//win
-        ll=np.abs(np.diff(x,axis=0))[:n*win-1]
-        ll=np.r_[ll,ll[-1:]].reshape(n,win,4).sum(1)
-        out[(name,k)]=dict(md5=hashlib.md5(x.tobytes()).hexdigest(), md5c=[hashlib.md5(x[:,c].tobytes()).hexdigest() for c in range(4)], ll=ll.astype(np.float32), comb=comb(x).astype(np.float32), sd=x.std(0))
-    print(name, round(time.time()-t0), flush=True)
-pickle.dump(out,open('survey.pkl','wb'))
-EOF
-python survey.py 2>&1 | tail -3
-```
-
-```
-sub-RatR7_ses-RatR7-05CA1-stim 378
-sub-RatR7_ses-RatR7-06base3 387
-sub-RatR7_ses-RatR7-07CA3-stim 390
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python -c "
-import pickle,numpy as np,collections
-d=pickle.load(open('survey.pkl','rb'))
-print(len(d))
-by=collections.defaultdict(list)
-for k,v in d.items(): by[v['md5']].append(k)
-print('dup full:',[v for v in by.values() if len(v)>1])
-byc=collections.defaultdict(set)
-for k,v in d.items():
-  for c in range(4): byc[v['md5c'][c]].add(k)
-print('dup channel:',[v for v in byc.values() if len(v)>1][:20])
-# comb stats
-for k,v in list(d.items()):
-  stim='stim' in k[0]
-  m=v['comb'].max(1)
-  v['ncomb']=(m>1.0).sum()
-import pandas as pd
-rows=[dict(sess=k[0][8:],seg=k[1],stim='stim' in k[0],n10=int((v['comb'].max(1)>1.0).sum()),n05=int((v['comb'].max(1)>0.5).sum()),best=int(np.argmax(np.sort(v['comb'],0)[-10:].mean(0)))) for k,v in d.items()]
-df=pd.DataFrame(rows)
-print(df.groupby('stim')[['n10','n05']].describe().T)
-print(df[df.stim].groupby('sess').agg(n=('n10','size'),zero=('n10',lambda s:(s==0).sum()),med=('n10','median'),best=('best',lambda s:s.value_counts().to_dict())).to_string())
-print(df[~df.stim & (df.n10>0)].to_string())
-"
-```
-
-```
-519
-dup full: []
-dup channel: []
-stim            False       True 
-n10 count  267.000000  252.000000
-    mean     0.097378    5.833333
-    std      0.774277   10.796008
-    min      0.000000    0.000000
-    25%      0.000000    0.000000
-    50%      0.000000    0.000000
-    75%      0.000000    9.000000
-    max     11.000000   61.000000
-n05 count  267.000000  252.000000
-    mean    53.322097   63.599206
-    std     18.228118   19.099083
-    min     18.000000   30.000000
-    25%     41.000000   52.000000
-    50%     51.000000   61.000000
-    75%     59.000000   70.000000
-    max    123.000000  152.000000
-[... 41 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python -c "
-import pickle,numpy as np
-d=pickle.load(open('survey.pkl','rb'))
-for k in [('sub-RatR5_ses-RatR5-03ANT-stim','R5_2023_11_16-ictal1'),('sub-RatR2_ses-RatR2-01DG-stim','R2_2023_7_10-ictal1'),('sub-RatR7_ses-RatR7-03ANT-stim','R7_2023_11_27-ictal1')]:
-  ll=d[k]['ll']; r=ll/np.median(ll,0); m=r.mean(1); i=np.where(m>2)[0]; print(k, i[:3]/2, i[-3:]/2, len(i))
-"; python zoom.py sub-RatR5_ses-RatR5-03ANT-stim R5_2023_11_16-ictal1 0 0 2>/dev/null; echo
-```
-
-```
-('sub-RatR5_ses-RatR5-03ANT-stim', 'R5_2023_11_16-ictal1') [296.  296.5 297. ] [319.5 320.  320.5] 30
-('sub-RatR2_ses-RatR2-01DG-stim', 'R2_2023_7_10-ictal1') [ 10. 260. 272.] [571.  577.  577.5] 71
-('sub-RatR7_ses-RatR7-03ANT-stim', 'R7_2023_11_27-ictal1') [10. 16. 17.] [369.  369.5 374. ] 158
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python zoom.py sub-RatR5_ses-RatR5-03ANT-stim R5_2023_11_16-ictal1 280 340 && cp zoom.png zoomR5.png && python zoom.py sub-RatR7_ses-RatR7-03ANT-stim R7_2023_11_27-ictal1 0 600 && cp zoom.png zoomR7.png
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/zoomR5.png"
-}
-```
-
-```
-Shell cwd was reset to
-```
-
-Result: no output.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/zoomR7.png"
-}
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python zoom.py sub-RatR7_ses-RatR7-03ANT-stim R7_2023_11_27-ictal1 305 380 && cp zoom.png zoomR7b.png
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/zoomR7b.png"
-}
-```
-
-```
-Shell cwd was reset to
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-date -u; cd $TMPDIR && . env/bin/activate && cat > comb2.py <<'EOF'
-import remfile,h5py,json,numpy as np,sys
-from scipy.ndimage import median_filter
-assets={a['path'].split('/')[1].replace('_ecephys.nwb',''):a['asset_id'] for a in json.load(open('assets.json'))['results']}
-def linescore(x,win=500,step=250):
-    n=(len(x)-win)//step+1
-    idx=np.arange(win)[None,:]+step*np.arange(n)[:,None]
-    out=np.zeros((n,4))
-    f=np.fft.rfftfreq(win,1/1000)
-    keep=(f>=100)&(f<=495)&(np.abs(((f+25)%50)-25)>3)
-    for c in range(4):
-        X=x[idx,c]; X=X-X.mean(1,keepdims=True)
-        P=np.log10(np.abs(np.fft.rfft(X*np.hanning(win),axis=1))**2+1e-12)
-        E=P-median_filter(P,size=(1,15),mode='nearest')
-        out[:,c]=(E[:,keep]>0.7).sum(1)
-    return out
-for name in sys.argv[1:]:
-    h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{assets[name]}/download/"),'r')
-    for k in list(h['acquisition'])[:4]:
-        x=h['acquisition'][k]['data'][:]
-        s=linescore(x).max(1)
-        print(name[8:],k,np.percentile(s,[50,90,99]).round(1),'n>=4:',(s>=4).sum(),'times',np.where(s>=4)[0][:40]*0.25)
-EOF
-python comb2.py sub-RatR5_ses-RatR5-03ANT-stim sub-RatR7_ses-RatR7-03ANT-stim sub-RatR7_ses-RatR7-02base1 sub-RatR2_ses-RatR2-01DG-stim
-```
-
-```
-Mon Nov  9 23:42:34 UTC 2026
-5_ses-RatR5-03ANT-stim R5_2023_11_16-ictal1 [ 7. 10. 22.] n>=4: 2276 times [ 0.    0.25  0.5   0.75  1.    1.25  1.5   1.75  2.    2.25  2.5   2.75
-  3.    3.25  3.5   3.75  4.    4.25  4.5   4.75  5.    5.25  5.5   5.75
-  6.    6.25  6.5   6.75  7.    7.25  7.5   8.    8.25  8.5   8.75  9.
-  9.25  9.5   9.75 10.  ]
-5_ses-RatR5-03ANT-stim R5_2023_11_16-ictal2 [ 8. 11. 27.] n>=4: 2340 times [0.   0.25 0.5  0.75 1.   1.25 1.5  1.75 2.   2.25 2.5  2.75 3.   3.25
- 3.5  3.75 4.   4.25 4.5  4.75 5.   5.25 5.5  5.75 6.   6.25 6.5  6.75
- 7.   7.25 7.5  7.75 8.   8.25 8.5  8.75 9.   9.25 9.5  9.75]
-5_ses-RatR5-03ANT-stim R5_2023_11_24-ictal1 [ 7. 10. 21.] n>=4: 2288 times [ 0.    0.25  0.5   0.75  1.    1.25  1.5   1.75  2.    2.5   2.75  3.
-  3.25  3.5   3.75  4.    4.25  4.5   4.75  5.    5.25  5.5   5.75  6.
-  6.25  6.5   6.75  7.    7.25  7.5   7.75  8.    8.25  8.5   8.75  9.25
-  9.5   9.75 10.   10.25]
-5_ses-RatR5-03ANT-stim R5_2023_11_24-ictal2 [ 7. 11. 25.] n>=4: 2320 times [ 0.    0.25  0.75  1.    1.25  1.5   1.75  2.    2.25  2.5   2.75  3.
-  3.25  3.5   3.75  4.    4.25  4.5   4.75  5.    5.25  5.5   5.75  6.
-  6.25  6.5   6.75  7.    7.25  7.5   7.75  8.    8.25  8.5   8.75  9.
-  9.25  9.5   9.75 10.25]
-7_ses-RatR7-03ANT-stim R7_2023_11_27-ictal1 [ 7. 10. 15.] n>=4: 2302 times [ 0.    0.25  0.5   0.75  1.    1.5   1.75  2.    2.25  2.5   2.75  3.
-  3.25  3.5   3.75  4.    4.25  4.5   4.75  5.    5.25  5.5   5.75  6.
-  6.25  6.5   6.75  7.    7.25  7.5   7.75  8.    8.25  8.5   8.75  9.
-  9.25  9.5   9.75 10.  ]
-[... 43 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import re
-s=open('comb2.py').read()
-s=s.replace("""        E=P-median_filter(P,size=(1,15),mode='nearest')
-        out[:,c]=(E[:,keep]>0.7).sum(1)""","""        E=P-median_filter(P,size=(1,15),mode='nearest')
-        E=E-np.median(E,0,keepdims=True)
-        out[:,c]=(E[:,keep]>1.0).sum(1)""")
-s=s.replace("(s>=4)","(s>=THR)").replace("import remfile","THR=5\nimport remfile")
-s=s.replace("np.where(s>=THR)[0][:40]*0.25","np.where(s>=THR)[0][:60]*0.25")
-open('comb3.py','w').write(s)
-EOF
-python comb3.py sub-RatR5_ses-RatR5-03ANT-stim sub-RatR7_ses-RatR7-03ANT-stim sub-RatR7_ses-RatR7-02base1 sub-RatR2_ses-RatR2-01DG-stim
-```
-
-```
-5_ses-RatR5-03ANT-stim R5_2023_11_16-ictal1 [ 1.  3. 16.] n>=4: 67 times [106.   186.   295.5  295.75 296.   296.25 296.5  296.75 297.   297.25
- 297.5  297.75 298.   298.25 298.5  298.75 299.   299.25 299.5  299.75
- 300.   305.75 306.   306.25 306.5  306.75 307.   307.25 307.5  307.75
- 308.   308.25 308.5  308.75 309.   309.25 309.5  309.75 310.   310.25
- 316.5  316.75 317.   317.25 317.5  317.75 318.   318.25 318.5  318.75
- 319.   319.25 319.5  319.75 320.   320.25 320.5  320.75 321.   332.5 ]
-5_ses-RatR5-03ANT-stim R5_2023_11_16-ictal2 [ 1.  3. 22.] n>=4: 99 times [ 45.75  95.   130.   152.25 154.75 169.5  207.25 213.5  215.   231.
- 234.   235.75 256.75 257.   257.25 257.5  257.75 258.   258.25 258.5
- 258.75 259.   259.25 259.5  259.75 260.   260.25 260.5  260.75 261.
- 261.25 268.   268.25 268.5  268.75 269.   269.25 269.5  269.75 270.
- 270.25 270.5  270.75 271.   271.25 271.5  271.75 272.   272.25 272.5
- 272.75 278.25 278.5  278.75 279.   279.25 279.5  279.75 280.   280.25]
-5_ses-RatR5-03ANT-stim R5_2023_11_24-ictal1 [ 1.  3. 17.] n>=4: 67 times [ 37.    41.25 166.   334.5  391.25 420.25 420.5  420.75 421.   421.25
- 421.5  421.75 422.   422.25 422.5  422.75 423.   423.25 423.5  423.75
- 424.   424.25 424.5  424.75 431.   431.25 431.5  431.75 432.   432.25
- 432.5  432.75 433.   433.25 433.5  433.75 434.   434.25 434.5  434.75
- 435.   435.25 435.5  442.75 443.   443.25 443.5  443.75 444.   444.25
- 444.5  444.75 445.   445.25 445.5  445.75 446.   446.25 446.5  446.75]
-5_ses-RatR5-03ANT-stim R5_2023_11_24-ictal2 [ 1.  3. 19.] n>=4: 70 times [130.   130.25 133.5  200.   229.5  273.75 314.5  314.75 315.   315.25
- 315.5  315.75 316.   316.25 316.5  316.75 317.   317.25 317.5  317.75
-[... 55 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle,numpy as np,collections,itertools
-d=pickle.load(open('survey.pkl','rb'))
-keys=list(d)
-def env(k):
-    e=np.log(d[k]['ll'].astype(float)).mean(1); return (e-e.mean())/e.std()
-E={k:env(k) for k in keys}
-rat=lambda k:k[0].split('-')[1][:6]
-best=[]
-for a,b in itertools.combinations(keys,2):
-    if rat(a)!=rat(b): continue
-    x,y=E[a],E[b]; n=len(x)
-    c=np.fft.irfft(np.fft.rfft(x,2*n)*np.conj(np.fft.rfft(y,2*n)))/n
-    best.append((c.max(),a,b,int(np.argmax(c))))
-best.sort(reverse=True)
-for r in best[:15]: print(round(r[0],3),r[1],r[2],r[3])
-EOF
-```
-
-```
-0.92 ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal3') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal9') 2301
-0.918 ('sub-RatR1_ses-RatR1-01CA1-stim', 'R1_2023_7_19-ictal1') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal9') 64
-0.914 ('sub-RatR7_ses-RatR7-01DG-stim', 'R7_2023_11_19-ictal3') ('sub-RatR7_ses-RatR7-02base1', 'R7_2023_11_25-ictal2') 2304
-0.913 ('sub-RatR5_ses-RatR5-01CA1-stim', 'R5_2023_11_1-ictal5') ('sub-RatR5_ses-RatR5-03ANT-stim', 'R5_2023_11_24-ictal2') 2
-0.912 ('sub-RatR6_ses-RatR6-01ANT-stim', 'R6_2023_9_11-ictal3') ('sub-RatR6_ses-RatR6-01ANT-stim', 'R6_2023_9_11-ictal5') 65
-0.911 ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal4') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal9') 2373
-0.91 ('sub-RatR1_ses-RatR1-01CA1-stim', 'R1_2023_7_19-ictal1') ('sub-RatR1_ses-RatR1-01CA1-stim', 'R1_2023_7_19-ictal2') 2387
-0.909 ('sub-RatR1_ses-RatR1-01CA1-stim', 'R1_2023_7_19-ictal2') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal9') 78
-0.908 ('sub-RatR6_ses-RatR6-07CA3-stim', 'R6_2023_10_23-ictal1') ('sub-RatR6_ses-RatR6-07CA3-stim', 'R6_2023_10_25-ictal1') 52
-0.908 ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal4') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal5') 16
-0.905 ('sub-RatR5_ses-RatR5-03ANT-stim', 'R5_2023_11_25-ictal2') ('sub-RatR5_ses-RatR5-05DG-stim', 'R5_2023_12_5-ictal1') 21
-0.903 ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal3') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal5') 2345
-0.902 ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal5') ('sub-RatR1_ses-RatR1-07DG-stim', 'R1_2023_9_21-ictal9') 2356
-0.901 ('sub-RatR2_ses-RatR2-01DG-stim', 'R2_2023_7_10-ictal3') ('sub-RatR2_ses-RatR2-01DG-stim', 'R2_2023_7_5-ictal2') 46
-0.901 ('sub-RatR6_ses-RatR6-01ANT-stim', 'R6_2023_9_11-ictal4') ('sub-RatR6_ses-RatR6-01ANT-stim', 'R6_2023_9_11-ictal5') 190
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p entries/yang-2025; date -u
-```
-
-```
-Mon Nov  9 23:44:18 UTC 2026
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/yang-2025/yang2025.py",
- "content": "\"\"\"Loading and measures for Yang et al. (2025) on DANDI:001212.\n\nPaper: Yang, Ni, Sun, Xing, Wang, Zhang, Zhu & Xu (2025), Individualized target selection of\nclosed-loop electrical stimulation for the treatment of spontaneous temporal lobe epilepsy,\nIEEE TNSRE 33:4008-4016, doi:10.1109/TNSRE.2025.3614867. Claims: claims/yang-2025.yaml.\n\nThe dandiset holds, for each of 7 rats and 8 groups (4 baseline, 4 stimulation), one NWB file\nwhose acquisition holds one ElectricalSeries per seizure clip: 600 s at 1 kHz, 4 channels\n(DG, CA1, CA3, ANT), in microvolts. It holds no seizure onset or end times, no stimulation\ntimes, no interictal recordings and no recording durations.\n\nWhere each parameter comes from is said where it is defined. The tags are:\n  [paper]      the paper's Methods, with the section cited;\n  [criterion]  the claim's criterion in claims/yang-2025.yaml;\n  [assumption] a choice the paper leaves open that could change a result, stated in the\n               attempt record as an assumption;\n  [standard]   a standard choice for a detail that cannot change a result.\n\nThe data are streamed from the archive (remfile + h5py) and reduced, clip by clip, to the\nquantities the claims use (`process_clip`), so no raw clip is held after it is processed.\n\"\"\"\n\nimport hashlib\nimport json\nimport re\nimport urllib.request\n\nimport h5py\nimport numpy as np\nimport remfile\nfrom scipy import signal, stats\nfrom scipy.ndimage import median_filter\n\nDANDISET_ID = \"001212\"\nDANDISET_VERSION = \"0.241023.0931\"\nAPI = \"https://api.dandiarchive.org/api\"\n\nFS = 1000.0  # Hz; the series' rate attribute and Methods A (\"sampling frequency of 1 kHz\")\nCHANNELS = [\"DG\", \"CA1\", \"CA3\", \"ANT\"]  # order of the electrodes table, checked in the notebook\n\n# ---------------------------------------------------------------------------------------------\n# Loading\n\n\ndef list_assets():\n    \"\"\"Assets of the pinned version: list of dicts with path, asset_id, size.\"\"\"\n    url = f\"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/assets/?page_size=500\"\n    out = []\n    while url:\n        with urllib.request.urlopen(url) as r:\n            d = json.load(r)\n        out += [{\"path\": a[\"path\"], \"asset_id\": a[\"asset_id\"], \"size\": a[\"size\"]} for a in d[\"results\"]]\n        url = d.get(\"next\")\n    return sorted(out, key=lambda a: a[\"path\"])\n\n\ndef version_metadata():\n    with urllib.request.urlopen(f\"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/\") as r:\n        return json.load(r)\n\n\ndef parse_session(path):\n    \"\"\"Rat, group index, kind and stimulated site from a file name such as\n    sub-RatR1/sub-RatR1_ses-RatR1-03CA3-stim_ecephys.nwb.\"\"\"\n    m = re.search(r\"ses-Rat(R\\d)-(\\d\\d)(base\\d|[A-Z0-9]+-stim)_\", path)\n    rat, idx, tag = m.group(1), int(m.group(2)), m.group(3)\n    if tag.startswith(\"base\"):\n        return {\"rat\": rat, \"index\": idx, \"kind\": \"baseline\", \"site\": None, \"group\": f\"base{tag[4:]}\"}\n    site = tag.split(\"-\")[0]\n    return {\"rat\": rat, \"index\": idx, \"kind\": \"stim\", \"site\": site, \"group\": f\"{site}-stim\"}\n\n\ndef open_asset(asset_id):\n    url = f\"{API}/assets/{asset_id}/download/\"\n    return h5py.File(remfile.File(url), \"r\")\n\n\ndef file_metadata(h):\n    \"\"\"Everything the file holds besides the clips' data, for the data check.\"\"\"\n    g = h[\"general\"]\n    el = g[\"extracellular_ephys/electrodes\"]\n    meta = {\n        \"session_id\": h[\"general/session_id\"][()].decode(),\n        \"session_start_time\": h[\"session_start_time\"][0].decode(),\n        \"session_description\": h[\"session_description\"][()].decode(),\n        \"electrode_labels\": [x.decode() for x in el[\"label\"][:]],\n        \"electrode_locations\": [x.decode() for x in el[\"location\"][:]],\n        \"electrode_group_names\": [x.decode() for x in el[\"group_name\"][:]],\n        \"subject\": {k: g[\"subject\"][k][()].decode() for k in g[\"subject\"]},\n        \"top_level\": sorted(h.keys()),\n        \"intervals\": sorted(h[\"intervals\"].keys()),\n        \"processing\": sorted(h[\"processing\"].keys()),\n        \"analysis\": sorted(h[\"analysis\"].keys()),\n        \"stimulus\": sorted(h[\"stimulus/presentation\"].keys()) + sorted(h[\"stimulus/templates\"].keys()),\n        \"clips\": [],\n    }\n    for k in h[\"acquisition\"]:\n        s = h[\"acquisition\"][k]\n        meta[\"clips\"].append({\n            \"name\": k, \"shape\": s[\"data\"].shape, \"dtype\": str(s[\"data\"].dtype),\n            \"unit\": s[\"data\"].attrs[\"unit\"], \"conversion\": float(s[\"data\"].attrs[\"conversion\"]),\n            \"rate\": float(s[\"starting_time\"].attrs[\"rate\"]), \"starting_time\": float(s[\"starting_time\"][()]),\n            \"description\": s.attrs[\"description\"],\n        })\n    return meta\n\n\ndef clip_date(name):\n    \"\"\"Date in a clip name such as R1_2023_7_16-ictal1 or R4_2023_9-11-ictal1 (both forms occur).\"\"\"\n    m = re.match(r\"R\\d_(\\d{4})_(\\d{1,2})[_-](\\d{1,2})-ictal(\\d+)\", name)\n    return (int(m.group(1)), int(m.group(2)), int(m.group(3))), int(m.group(4))\n\n\n# ---------------------------------------------------------------------------------------------\n# Stimulation trains, from the artefact they leave in the recording.\n#\n# The files hold no stimulation times. The 130 Hz pulse trains (Methods C: 5 s trains, 5 s\n# pause) leave narrow spectral lines in the 1 kHz recording (130 Hz and its aliased harmonics,\n# their exact place depending on the clock). A 0.5 s window, stepped by 0.25 s, is scored by\n# the number of bins in 100-495 Hz, away from the 50 Hz mains harmonics, whose log power is\n# more than 10 times above both the local spectral median (15 bins) and that bin's median over\n# the clip. A train is a run of windows scoring at least TRAIN_SCORE that lasts at least\n# TRAIN_MIN_S. [standard] These settings were chosen by inspecting spectrograms of a few\n# clips; the notebook shows that they find trains of about 5 s in stimulation groups and none\n# in baseline groups.\n\nTRAIN_WIN, TRAIN_STEP = 500, 250\nTRAIN_SCORE = 5\nTRAIN_MIN_S = 2.0\nTRAIN_GAP_S = 0.5\n\n\ndef line_score(x):\n    n = (len(x) - TRAIN_WIN) // TRAIN_STEP + 1\n    idx = np.arange(TRAIN_WIN)[None, :] + TRAIN_STEP * np.arange(n)[:, None]\n    f = np.fft.rfftfreq(TRAIN_WIN, 1 / FS)\n    keep = (f >= 100) & (f <= 495) & (np.abs(((f + 25) % 50) - 25) > 3)\n    win = np.hanning(TRAIN_WIN)\n    out = np.zeros((n, x.shape[1]))\n    for c in range(x.shape[1]):\n        X = x[idx, c]\n        X = X - X.mean(1, keepdims=True)\n        P = np.log10(np.abs(np.fft.rfft(X * win, axis=1)) ** 2 + 1e-12)\n        E = P - median_filter(P, size=(1, 15), mode=\"nearest\")\n        E = E - np.median(E, 0, keepdims=True)\n        out[:, c] = (E[:, keep] > 1.0).sum(1)\n    return out\n\n\ndef runs(mask, gap=0):\n    \"\"\"Start and end indices (inclusive) of runs of True, merging gaps of up to `gap` False.\"\"\"\n    idx = np.flatnonzero(mask)\n    if len(idx) == 0:\n        return []\n    out, s, p = [], idx[0], idx[0]\n    for i in idx[1:]:\n        if i - p > gap + 1:\n            out.append((s, p))\n            s = i\n        p = i\n    out.append((s, p))\n    return out\n\n\ndef find_trains(x):\n    \"\"\"Stimulation trains as (start_s, end_s), and the per-channel line scores.\"\"\"\n    sc = line_score(x)\n    m = sc.max(1) >= TRAIN_SCORE\n    trains = []\n    for a, b in runs(m, gap=int(TRAIN_GAP_S / (TRAIN_STEP / FS))):\n        t0 = a * TRAIN_STEP / FS + 0.25 * TRAIN_WIN / FS\n        t1 = b * TRAIN_STEP / FS + 0.75 * TRAIN_WIN / FS\n        if t1 - t0 >= TRAIN_MIN_S:\n            trains.append((t0, t1))\n    return trains, sc\n\n\n# ---------------------------------------------------------------------------------------------\n# Seizure onset and end. [assumption] The paper gives no rule for marking them offline (claims\n# file, opening comment, reading (b)), and the files hold none. Line length (sum of absolute\n# differences) per channel in 1 s windows stepped by 0.25 s, divided by the channel's median\n# over the clip (a clip is mostly interictal), averaged over the 4 channels. Windows that\n# overlap a detected stimulation train are left out, as the artefact inflates line length; they\n# bridge gaps inside a seizure. A seizure is a run of windows above SZ_THRESHOLD, merging gaps\n# up to SZ_GAP_S, lasting at least SZ_MIN_S; the clip's seizure is the run with the largest\n# excess line length. Onset is the centre of the run's first window, end the centre of its\n# last. The notebook shows results at thresholds 1.5, 2 and 3.\n\nLL_WIN, LL_STEP = 1000, 250\nSZ_THRESHOLD = 2.0\nSZ_GAP_S = 5.0\nSZ_MIN_S = 5.0\n\n\ndef line_length(x):\n    d = np.abs(np.diff(x, axis=0))\n    c = np.vstack([np.zeros((1, x.shape[1])), np.cumsum(d, axis=0)])\n    starts = np.arange(0, len(x) - LL_WIN, LL_STEP)\n    return (c[starts + LL_WIN - 1] - c[starts]), (starts + LL_WIN / 2) / FS\n\n\ndef detect_seizure(ll, centres, trains, threshold=SZ_THRESHOLD):\n    norm = ll / np.median(ll, axis=0, keepdims=True)\n    score = norm.mean(1)\n    stim = np.zeros(len(centres), bool)\n    for t0, t1 in trains:\n        stim |= (centres + 0.5 >= t0) & (centres - 0.5 <= t1)\n    above = (score > threshold) & ~stim\n    step = LL_STEP / FS\n    cand = runs(above | stim, gap=int(SZ_GAP_S / step))\n    best, best_ex = None, 0.0\n    for a, b in cand:\n        seg = np.arange(a, b + 1)\n        real = seg[above[seg]]\n        if len(real) == 0:\n            continue\n        a2, b2 = real[0], real[-1]\n        if centres[b2] - centres[a2] < SZ_MIN_S:\n            continue\n        ex = np.sum(score[a2:b2 + 1][~stim[a2:b2 + 1]] - 1)\n        if ex > best_ex:\n            best, best_ex = (centres[a2], centres[b2]), ex\n    if best is None:\n        return None\n    return {\"onset\": float(best[0]), \"end\": float(best[1]), \"excess\": float(best_ex)}\n\n\n# ---------------------------------------------------------------------------------------------\n# Granger causality and weighted causal flow (Methods B).\n#\n# [paper, Methods B] conditional multivariate GC (MVGC toolbox) between the 4 channels, first\n# 5 s after onset, 1 s windows with 0.5 s overlap (9 windows). The toolbox's time-domain\n# conditional GC from j to i is ln(Sigma_ii of the VAR without j / Sigma_ii of the full VAR),\n# from OLS fits; reproduced here in numpy. [standard] Each window is demeaned; the model order\n# is chosen per window by BIC up to GC_MAX_ORDER (the toolbox's own selection; AIC is shown as\n# a variant). cf_w: Methods B says \"difference between the weighted in-degree and out-degree\";\n# both signs are kept (claims file, readings (a) out minus in, (b) in minus out). As cf_w is\n# linear in the GC matrix, averaging cf_w over windows and computing cf_w of the averaged\n# matrix give the same value, so the two window-combination readings coincide.\n\nGC_WINDOWS = [(0.5 * i, 0.5 * i + 1.0) for i in range(9)]\nGC_MAX_ORDER = 20\n\n\ndef _lagged(X, p):\n    T, k = X.shape\n    Y = X[p:]\n    Z = np.hstack([X[p - l:T - l] for l in range(1, p + 1)])\n    return Y, Z\n\n\ndef _resid_cov(Y, Z):\n    beta, *_ = np.linalg.lstsq(Z, Y, rcond=None)\n    E = Y - Z @ beta\n    return E.T @ E / len(Y)\n\n\ndef select_order(X, max_order=GC_MAX_ORDER, crit=\"bic\"):\n    X = X - X.mean(0)\n    T, k = X.shape\n    best, best_v = 1, np.inf\n    for p in range(1, max_order + 1):\n        Y, Z = _lagged(X[max_order - p:], p)  # same sample for every order\n        S = _resid_cov(Y, Z)\n        n = len(Y)\n        pen = (np.log(n) if crit == \"bic\" else 2.0) * p * k * k / n\n        v = np.log(np.linalg.det(S)) + pen\n        if v < best_v:\n            best, best_v = p, v\n    return best\n\n\ndef conditional_gc(X, p):\n    \"\"\"F[i, j] = conditional GC from j to i given the other channels.\"\"\"\n    X = X - X.mean(0)\n    T, k = X.shape\n    Y, Z = _lagged(X, p)\n    S_full = _resid_cov(Y, Z)\n    F = np.zeros((k, k))\n    for j in range(k):\n        keep = [c for c in range(k) if c != j]\n        Yr, Zr = _lagged(X[:, keep], p)\n        S_red = _resid_cov(Yr, Zr)\n        for a, i in enumerate(keep):\n            F[i, j] = np.log(S_red[a, a] / S_full[i, i])\n    return F\n\n\ndef onset_gc(x, onset, crit=\"bic\"):\n    \"\"\"Mean GC matrix over the 9 windows of the first 5 s after onset, and the orders used.\"\"\"\n    Fs, orders = [], []\n    for a, b in GC_WINDOWS:\n        i0, i1 = int(round((onset + a) * FS)), int(round((onset + b) * FS))\n        X = x[i0:i1].astype(float)\n        p = select_order(X, crit=crit)\n        Fs.append(conditional_gc(X, p))\n        orders.append(p)\n    return np.mean(Fs, axis=0), orders\n\n\ndef cfw(F, sign=\"out_minus_in\"):\n    \"\"\"Weighted causal flow per node from a GC matrix F[i, j] (j to i).\"\"\"\n    out_s = F.sum(0)  # column sums: what node j sends\n    in_s = F.sum(1)  # row sums: what node i receives\n    return out_s - in_s if sign == \"out_minus_in\" else in_s - out_s\n\n\ndef targets_top(cf):\n    \"\"\"Reading (a): the node with the largest mean cf_w over a group's seizures. cf: (n, 4).\"\"\"\n    return {CHANNELS[int(np.argmax(cf.mean(0)))]}\n\n\ndef targets_test(cf, alpha=0.05):\n    \"\"\"Reading (b): Kruskal-Wallis across the 4 nodes, then the top node together with every\n    node not significantly below it by Mann-Whitney (ties allowed); empty when KW is not\n    significant.\"\"\"\n    if stats.kruskal(*[cf[:, c] for c in range(4)]).pvalue >= alpha:\n        return set()\n    top = int(np.argmax(cf.mean(0)))\n    out = {CHANNELS[top]}\n    for c in range(4):\n        if c != top and stats.mannwhitneyu(cf[:, top], cf[:, c], alternative=\"greater\").pvalue >= alpha:\n            out.add(CHANNELS[c])\n    return out\n\n\n# ---------------------------------------------------------------------------------------------\n# PSD ratio (Methods D). [paper] Welch PSD; bands delta 0.5-4, theta 4-8, alpha 8-12, beta\n# 12-30, gamma 30-90, high gamma 90-120 Hz; band sum over the total sum. Windows: stimulation\n# group, pre from onset to the start of the first train, post the 5 s after the first train\n# ([assumption] \"5s after the first stimulation train\" read as the 5 s from the train's end,\n# the pause before the next detection); baseline group, pre 0 to 5 s after onset, post 10 to\n# 15 s. Open [criterion]: segment length 1 s or 0.5 s (Hann, 50% overlap), total 0.5-120 Hz or\n# 0-500 Hz.\n\nBANDS = {\"delta\": (0.5, 4), \"theta\": (4, 8), \"alpha\": (8, 12), \"beta\": (12, 30),\n         \"gamma\": (30, 90), \"high_gamma\": (90, 120)}\nPSD_NPERSEG = (1000, 500)\nPSD_TOTALS = {\"0.5-120\": (0.5, 120), \"0-500\": (0, 500)}\n\n\ndef psd_ratios(seg):\n    \"\"\"{(nperseg, total): (4 channels, 6 bands)} band ratios for one window (samples, 4).\"\"\"\n    out = {}\n    for nps in PSD_NPERSEG:\n        n = min(nps, len(seg))\n        f, P = signal.welch(seg, fs=FS, window=\"hann\", nperseg=n, noverlap=n // 2, axis=0)\n        for tname, (lo, hi) in PSD_TOTALS.items():\n            tot = P[(f >= lo) & (f <= hi)].sum(0)\n            r = np.zeros((seg.shape[1], len(BANDS)))\n            for b, (blo, bhi) in enumerate(BANDS.values()):\n                sel = (f >= blo) & (f < bhi) if bhi < 120 else (f >= blo) & (f <= bhi)\n                r[:, b] = P[sel].sum(0) / tot\n            out[(nps, tname)] = r\n    return out\n\n\ndef psd_windows(kind, onset, trains):\n    if kind == \"baseline\":\n        return (onset, onset + 5.0), (onset + 10.0, onset + 15.0)\n    first = [t for t in trains if t[1] > onset]\n    if not first:\n        return None\n    t0, t1 = first[0]\n    return (onset, t0), (t1, t1 + 5.0)\n\n\n# ---------------------------------------------------------------------------------------------\n# Interictal spikes (Methods F). [paper] positive or negative peaks; peaks closer than 200 ms\n# keep the larger; peak width at most 100 ms; absolute height above mean + 5 SD of baseline.\n# [criterion] baseline reading (a), the 180 s before onset (the interictal segments of reading\n# (b) are not in the dataset); width at half prominence [criterion, standard choice]. Applied to\n# the raw LFP of each channel, demeaned by the baseline mean.\n\nIIS_MIN_DIST_S = 0.2\nIIS_MAX_WIDTH_S = 0.1\nIIS_SD = 5.0\nIIS_SPAN_S = 180.0\n\n\ndef detect_iis(xc, base):\n    \"\"\"IIS sample indices in the 1-D signal xc, with the threshold from the samples `base`.\"\"\"\n    mu, sd = base.mean(), base.std()\n    y = np.abs(xc - mu)\n    pk, prop = signal.find_peaks(y, height=IIS_SD * sd, distance=int(IIS_MIN_DIST_S * FS))\n    if len(pk) == 0:\n        return pk\n    w = signal.peak_widths(y, pk, rel_height=0.5)[0] / FS\n    return pk[w <= IIS_MAX_WIDTH_S]\n\n\n# ---------------------------------------------------------------------------------------------\n# HFOs during seizures (Methods E). [paper] short line length detector (HFO App, ref. 50);\n# ripples 80-250 Hz, fast ripples 250-500 Hz (here 250-490 Hz, below the 500 Hz Nyquist limit\n# [criterion]). The HFO App's settings are not given and its code was not read here, so\n# [assumption] a line length detector in the manner of Gardner et al. (2007): zero-phase 4th\n# order Butterworth band-pass; line length in sliding windows of HFO_WIN_MS; threshold the\n# HFO_PCT percentile of the channel's line length over the whole clip; an event is a run above\n# threshold lasting at least 4 cycles of the band's lower edge, runs closer than 10 ms merged.\n# The manual review of the paper cannot be repeated. Rates (events/s) in the PSD windows.\n\nHFO_BANDS = {\"ripple\": (80, 250), \"fast_ripple\": (250, 490)}\nHFO_WIN_MS = {\"ripple\": 20, \"fast_ripple\": 8}\nHFO_PCT = (97.5, 99.0)\n\n\ndef hfo_events(xc, band, pct):\n    lo, hi = HFO_BANDS[band]\n    sos = signal.butter(4, [lo, hi], btype=\"band\", fs=FS, output=\"sos\")\n    y = signal.sosfiltfilt(sos, xc)\n    w = int(HFO_WIN_MS[band] * FS / 1000)\n    d = np.abs(np.diff(y))\n    c = np.r_[0, np.cumsum(d)]\n    ll = c[w:] - c[:-w]\n    thr = np.percentile(ll, pct)\n    min_len = int(np.ceil(4 / lo * FS))\n    ev = []\n    for a, b in runs(ll > thr, gap=10):\n        if b + w - a >= min_len:\n            ev.append((a + (b + w - a) / 2) / FS)  # event centre, s\n    return np.array(ev)\n\n\n# ---------------------------------------------------------------------------------------------\n# One pass per clip.\n\n\ndef process_clip(x, kind, thresholds=(1.5, 2.0, 3.0)):\n    \"\"\"Reduce one clip (samples, 4) to what the claims use.\"\"\"\n    out = {\"md5\": hashlib.md5(np.ascontiguousarray(x).tobytes()).hexdigest(),\n           \"n_samples\": len(x), \"min\": x.min(0), \"max\": x.max(0), \"sd\": x.std(0),\n           \"n_nan\": int(np.isnan(x).sum())}\n    trains, sc = find_trains(x)\n    out[\"trains\"] = trains\n    out[\"line_score_max\"] = sc.max(0)\n    ll, centres = line_length(x)\n    out[\"ll_env\"] = (ll / np.median(ll, 0, keepdims=True)).mean(1).astype(np.float32)\n    out[\"seizures\"] = {thr: detect_seizure(ll, centres, trains, thr) for thr in thresholds}\n    sz = out[\"seizures\"][SZ_THRESHOLD]\n    if sz is None:\n        return out\n    on, end = sz[\"onset\"], sz[\"end\"]\n    # GC at onset (both order criteria), only where 6 s after onset are in the clip\n    if on + 5.0 <= len(x) / FS:\n        out[\"gc_bic\"], out[\"orders_bic\"] = onset_gc(x, on, \"bic\")\n        out[\"gc_aic\"], out[\"orders_aic\"] = onset_gc(x, on, \"aic\")\n        out[\"onset_has_train\"] = any(t0 < on + 5.0 and t1 > on for t0, t1 in trains)\n    # PSD and HFO windows\n    win = psd_windows(kind, on, trains)\n    out[\"psd_windows\"] = win\n    if win is not None:\n        (a0, a1), (b0, b1) = win\n        i = lambda t: int(round(t * FS))\n        if a1 - a0 >= 0.5 and b1 <= len(x) / FS:\n            out[\"psd_pre\"] = psd_ratios(x[i(a0):i(a1)])\n            out[\"psd_post\"] = psd_ratios(x[i(b0):i(b1)])\n        hfo = {}\n        for band in HFO_BANDS:\n            for pct in HFO_PCT:\n                counts = []\n                for c in range(4):\n                    ev = hfo_events(x[:, c], band, pct)\n                    counts.append([((ev >= a0) & (ev < a1)).sum(), ((ev >= b0) & (ev < b1)).sum()])\n                hfo[(band, pct)] = np.array(counts)\n        out[\"hfo_counts\"] = hfo\n    # IIS around the seizure, times relative to onset (pre) and to end (post)\n    i0 = int(max(0.0, on - IIS_SPAN_S) * FS)\n    i_on, i_end = int(on * FS), int(end * FS)\n    i1 = int(min(len(x) / FS, end + IIS_SPAN_S) * FS)\n    out[\"iis_span\"] = (i0 / FS - on, i1 / FS - end)\n    if i_on - i0 >= 30 * FS:\n        pre, post = [], []\n        for c in range(4):\n            base = x[i0:i_on, c]\n            pk_pre = detect_iis(x[i0:i_on, c], base) + i0\n            pk_post = detect_iis(x[i_end:i1, c], base) + i_end\n            pre.append(pk_pre / FS - on)\n            post.append(pk_post / FS - end)\n        out[\"iis_pre\"], out[\"iis_post\"] = pre, post\n    return out\n\n\ndef load_all(progress=print):\n    \"\"\"Stream every file of the pinned version and reduce each clip. Returns the files'\n    metadata and one record per clip.\"\"\"\n    files, clips = [], []\n    for a in list_assets():\n        s = parse_session(a[\"path\"])\n        h = open_asset(a[\"asset_id\"])\n        meta = file_metadata(h)\n        meta.update(s, path=a[\"path\"], asset_id=a[\"asset_id\"], size=a[\"size\"])\n        files.append(meta)\n        for c in meta[\"clips\"]:\n            x = h[\"acquisition\"][c[\"name\"]][\"data\"][:]\n            rec = process_clip(x, s[\"kind\"])\n            rec.update(s, clip=c[\"name\"], path=a[\"path\"])\n            clips.append(rec)\n            del x\n        h.close()\n        if progress:\n            progress(f\"{a['path']}: {len(meta['clips'])} clips\")\n    return files, clips\n"
-}
-```
-
-```
-File created successfully at: entries/yang-2025/yang2025.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t1.py <<'EOF'
-import sys,time,resource; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y, numpy as np
-assets={a['path']:a for a in y.list_assets()}
-for p in ['sub-RatR1/sub-RatR1_ses-RatR1-02base1_ecephys.nwb','sub-RatR5/sub-RatR5_ses-RatR5-03ANT-stim_ecephys.nwb','sub-RatR1/sub-RatR1_ses-RatR1-07DG-stim_ecephys.nwb']:
-    a=assets[p]; s=y.parse_session(p); h=y.open_asset(a['asset_id'])
-    for k in list(h['acquisition'])[:3]:
-        x=h['acquisition'][k]['data'][:]; t=time.time()
-        r=y.process_clip(x,s['kind'])
-        sz=r['seizures']
-        print(k, round(time.time()-t,1), {t:(None if v is None else (round(v['onset'],1),round(v['end'],1))) for t,v in sz.items()}, 'trains',[(round(a,1),round(b,1)) for a,b in r['trains']][:4], 'orders',r.get('orders_bic'), r.get('psd_windows'))
-        if 'gc_bic' in r: print('  cfw', y.cfw(r['gc_bic']).round(4), 'hfo', r['hfo_counts'][('ripple',97.5)].tolist(), 'iis pre', [len(v) for v in r['iis_pre']] if 'iis_pre' in r else None)
-print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
-EOF
-python t1.py
-```
-
-```
-Exit code 1
-R1_2023_7_16-ictal1 1.9 {1.5: (295.2, 335.8), 2.0: (307.2, 327.8), 3.0: (315.8, 327.0)} trains [] orders [3, 3, 3, 3, 2, 3, 3, 2, 3] ((307.25, 312.25), (317.25, 322.25))
-  cfw [ 0.0337 -0.038   0.0485 -0.0442] hfo [[10, 15], [3, 9], [0, 20], [0, 25]] iis pre [38, 73, 36, 55]
-R1_2023_7_21-ictal1 1.9 {1.5: (363.8, 382.0), 2.0: (367.2, 381.5), 3.0: None} trains [] orders [5, 3, 3, 2, 5, 3, 3, 5, 3] ((367.25, 372.25), (377.25, 382.25))
-  cfw [-0.0698  0.0655 -0.011   0.0154] hfo [[17, 26], [15, 25], [29, 33], [28, 30]] iis pre [41, 19, 88, 41]
-R1_2023_7_21-ictal2 2.0 {1.5: (481.2, 496.8), 2.0: (484.2, 493.8), 3.0: None} trains [] orders [5, 5, 5, 5, 3, 2, 2, 3, 5] ((484.25, 489.25), (494.25, 499.25))
-  cfw [-0.0748  0.0842 -0.0879  0.0785] hfo [[30, 21], [31, 27], [44, 12], [38, 22]] iis pre [35, 30, 98, 53]
-R5_2023_11_16-ictal1 0.8 {1.5: None, 2.0: None, 3.0: None} trains [(np.float64(295.6), np.float64(300.4)), (np.float64(305.9), np.float64(310.6)), (np.float64(316.6), np.float64(321.4))] orders None None
-R5_2023_11_16-ictal2 1.5 {1.5: (331.5, 343.0), 2.0: (331.8, 342.2), 3.0: (332.0, 337.2)} trains [(np.float64(256.9), np.float64(261.6)), (np.float64(268.1), np.float64(273.1)), (np.float64(278.4), np.float64(283.1)), (np.float64(293.9), np.float64(298.6))] orders [2, 2, 3, 3, 3, 3, 3, 3, 3] None
-Traceback (most recent call last):
-  File "/tmp/claude-1001/t1.py", line 11, in <module>
-    if 'gc_bic' in r: print('  cfw', y.cfw(r['gc_bic']).round(4), 'hfo', r['hfo_counts'][('ripple',97.5)].tolist(), 'iis pre', [len(v) for v in r['iis_pre']] if 'iis_pre' in r else None)
-                                                                         ~^^^^^^^^^^^^^^
-KeyError: 'hfo_counts'
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t2.py <<'EOF'
-import sys; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y, numpy as np
-assets={a['path']:a for a in y.list_assets()}
-p='sub-RatR5/sub-RatR5_ses-RatR5-03ANT-stim_ecephys.nwb'
-h=y.open_asset(assets[p]['asset_id'])
-for k in list(h['acquisition'])[:2]:
-    x=h['acquisition'][k]['data'][:]
-    ll,c=y.line_length(x); n=ll/np.median(ll,0)
-    for t in np.arange(240,350,2.0):
-        i=np.argmin(abs(c-t)); print(k[-6:],t, n[i].round(1), n[i].mean().round(1), np.median(n[i]).round(1))
-EOF
-python t2.py | awk 'NR%1==0' | head -110 | column -c 250
-```
-
-```
-ictal1 240.0 [1.  1.  1.  1.2] 1.0 1.0	ictal1 278.0 [1.1 1.  1.  1.2] 1.1 1.1	ictal1 316.0 [1.3 1.2 1.2 1. ] 1.2 1.2	ictal2 244.0 [1.  1.  1.  1.1] 1.0 1.0	ictal2 282.0 [8.  2.6 2.6 3.1] 4.1 2.9	ictal2 320.0 [1.1 1.1 1.1 1. ] 1.1 1.1
-ictal1 242.0 [1.  1.  1.  1.1] 1.0 1.0	ictal1 280.0 [1.1 1.  1.  1.1] 1.0 1.0	ictal1 318.0 [4.  1.4 1.5 1.4] 2.1 1.4	ictal2 246.0 [1. 1. 1. 1.] 1.0 1.0	ictal2 284.0 [2.5 2.  1.9 2.1] 2.1 2.0	ictal2 322.0 [1.1 1.1 1.1 1. ] 1.1 1.1
-ictal1 244.0 [1. 1. 1. 1.] 1.0 1.0	ictal1 282.0 [1.1 1.  1.  1.4] 1.1 1.0	ictal1 320.0 [3.9 1.4 1.4 1.4] 2.0 1.4	ictal2 248.0 [1.  1.  1.  1.1] 1.0 1.0	ictal2 286.0 [1.5 1.2 1.1 1.1] 1.2 1.1	ictal2 324.0 [1.1 1.1 1.1 1. ] 1.1 1.1
-ictal1 246.0 [1. 1. 1. 1.] 1.0 1.0	ictal1 284.0 [1.1 1.  1.  1.5] 1.2 1.1	ictal1 322.0 [1.1 1.1 1.  0.8] 1.0 1.0	ictal2 250.0 [1.  1.  1.  1.1] 1.0 1.0	ictal2 288.0 [2.6 1.9 1.7 1.6] 1.9 1.8	ictal2 326.0 [1.1 1.1 1.1 1. ] 1.1 1.1
-ictal1 248.0 [1. 1. 1. 1.] 1.0 1.0	ictal1 286.0 [1.2 1.  1.  1.6] 1.2 1.1	ictal1 324.0 [1.2 1.2 1.2 0.9] 1.1 1.2	ictal2 252.0 [1. 1. 1. 1.] 1.0 1.0	ictal2 290.0 [2.5 1.9 1.8 1.7] 2.0 1.9	ictal2 328.0 [1.1 1.1 1.1 1. ] 1.1 1.1
-ictal1 250.0 [1. 1. 1. 1.] 1.0 1.0	ictal1 288.0 [1.1 1.  1.  2. ] 1.3 1.1	ictal1 326.0 [1.2 1.1 1.2 0.9] 1.1 1.1	ictal2 254.0 [1. 1. 1. 1.] 1.0 1.0	ictal2 292.0 [2.5 2.  1.9 1.7] 2.0 2.0	ictal2 330.0 [1.1 1.1 1.1 1. ] 1.1 1.1
-ictal1 252.0 [1. 1. 1. 1.] 1.0 1.0	ictal1 290.0 [1.1 1.  1.1 2.6] 1.4 1.1	ictal1 328.0 [1.  1.1 1.2 0.9] 1.0 1.1	ictal2 256.0 [1.  1.1 1.1 1.2] 1.1 1.1	ictal2 294.0 [5.7 2.  1.8 1.8] 2.8 1.9	ictal2 332.0 [4.2 3.4 3.  2.8] 3.4 3.2
-ictal1 254.0 [1.  1.  1.  0.9] 1.0 1.0	ictal1 292.0 [1.1 1.  1.  2.4] 1.4 1.0	ictal1 330.0 [1.1 1.1 1.1 0.9] 1.0 1.1	ictal2 258.0 [7.2 1.3 1.4 1.5] 2.8 1.5	ictal2 296.0 [7.9 2.  2.  2. ] 3.5 2.0	ictal2 334.0 [5.2 4.2 4.  3.5] 4.2 4.1
-ictal1 256.0 [1.  1.  1.  1.1] 1.0 1.0	ictal1 294.0 [1.1 1.  1.  1.4] 1.1 1.1	ictal1 332.0 [1.  1.1 1.1 0.9] 1.0 1.0	ictal2 260.0 [7.1 1.3 1.3 1.5] 2.8 1.4	icta
-[... 11 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/yang-2025 && python - <<'EOF'
-s=open('yang2025.py').read()
-s=s.replace("""# over the clip (a clip is mostly interictal), averaged over the 4 channels.""","""# over the clip (a clip is mostly interictal), and the largest over the 4 channels (seizures
-# that stay at one site, as some do at ANT, are then found).""")
-s=s.replace("""    score = norm.mean(1)
-    stim""","""    score = norm.max(1)
-    stim""")
-s=s.replace("""    out["ll_env"] = (ll / np.median(ll, 0, keepdims=True)).mean(1).astype(np.float32)""","""    out["ll_env"] = (ll / np.median(ll, 0, keepdims=True)).max(1).astype(np.float32)""")
-open('yang2025.py','w').write(s)
-EOF
-cd $TMPDIR && . env/bin/activate && sed -i "s/r\['hfo_counts'\]\[('ripple',97.5)\].tolist()/r.get('hfo_counts',{}).get(('ripple',97.5))/" t1.py && python t1.py
-```
-
-```
-R1_2023_7_16-ictal1 1.8 {1.5: (295.0, 340.8), 2.0: (296.8, 335.8), 3.0: (307.5, 327.5)} trains [] orders [3, 3, 3, 2, 2, 2, 2, 2, 2] ((296.75, 301.75), (306.75, 311.75))
-  cfw [ 0.0289 -0.0338 -0.024   0.029 ] hfo [[4 9]
- [2 3]
- [0 0]
- [0 0]] iis pre [33, 69, 33, 52]
-R1_2023_7_21-ictal1 2.0 {1.5: (363.2, 382.2), 2.0: (363.8, 382.0), 3.0: (364.5, 381.8)} trains [] orders [3, 5, 5, 3, 3, 5, 5, 5, 3] ((363.75, 368.75), (373.75, 378.75))
-  cfw [-0.0787  0.0949 -0.1432  0.1269] hfo [[ 7 35]
- [10 28]
- [24 56]
- [28 36]] iis pre [34, 16, 98, 38]
-R1_2023_7_21-ictal2 2.0 {1.5: (480.5, 497.0), 2.0: (481.2, 497.0), 3.0: (482.5, 496.8)} trains [] orders [5, 5, 5, 3, 3, 3, 5, 5, 5] ((481.25, 486.25), (491.25, 496.25))
-  cfw [-0.0821  0.1064 -0.2012  0.177 ] hfo [[22 15]
- [22 19]
- [31 21]
- [30 22]] iis pre [32, 26, 104, 46]
-R5_2023_11_16-ictal1 2.0 {1.5: (283.8, 305.2), 2.0: (289.2, 305.2), 3.0: None} trains [(np.float64(295.6), np.float64(300.4)), (np.float64(305.9), np.float64(310.6)), (np.float64(316.6), np.float64(321.4))] orders [11, 11, 11, 11, 11, 11, 11, 11, 11] ((289.25, np.float64(295.625)), (np.float64(300.375), np.float64(305.375)))
-  cfw [-0.1555  0.2723 -0.1406  0.0238] hfo [[ 0  0]
- [ 0  7]
- [ 0 19]
- [15 25]] iis pre [28, 16, 26, 86]
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; cd $TMPDIR && . env/bin/activate && cat > t3.py <<'EOF'
-import sys,pickle; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y, numpy as np
-from scipy import signal
-assets=y.list_assets()
-sel=[a for a in assets if 'stim' in a['path']]
-cache=[]
-for a in sel[::2]:
-    s=y.parse_session(a['path']); h=y.open_asset(a['asset_id'])
-    for k in list(h['acquisition'])[:3]:
-        x=h['acquisition'][k]['data'][:]
-        trains,_=y.find_trains(x)
-        ll,c=y.line_length(x)
-        sos=signal.butter(4,[1,40],btype='band',fs=1000,output='sos'); xf=signal.sosfiltfilt(sos,x,axis=0)
-        llf,_=y.line_length(xf)
-        cache.append((a['path'],k,trains,ll,llf,c))
-pickle.dump(cache,open('t3.pkl','wb'))
-EOF
-python t3.py; ls -la t3.pkl
-```
-
-```
-Mon Nov  9 23:46:59 UTC 2026
--rw-r--r-- 1 runner runner 7256953 Nov  9 23:48 t3.pkl
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t4.py <<'EOF'
-import sys,pickle; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y, numpy as np
-cache=pickle.load(open('t3.pkl','rb'))
-def det(ll,c,trains,hi,lo,agg):
-    n=ll/np.median(ll,0,keepdims=True); sc=n.max(1) if agg=='max' else np.sort(n,1)[:,-2]
-    stim=np.zeros(len(c),bool)
-    for t0,t1 in trains: stim|=(c+0.5>=t0)&(c-0.5<=t1)
-    hiM=(sc>hi)&~stim; loM=(sc>lo)&~stim
-    best=None;bex=0
-    for a,b in y.runs(loM|stim,gap=int(5/0.25)):
-        seg=np.arange(a,b+1)
-        if not hiM[seg].any(): continue
-        real=seg[loM[seg]]; a2,b2=real[0],real[-1]
-        if c[b2]-c[a2]<5: continue
-        ex=np.sum((sc[a2:b2+1]-1)[~stim[a2:b2+1]])
-        if ex>bex: best,bex=(c[a2],c[b2]),ex
-    return best
-for name,ll_i in [('raw',3),('1-40',4)]:
-  for agg in ['max','2nd']:
-    for hi,lo in [(2,1.5),(3,1.5),(2,1.25),(3,2)]:
-        lat=[];fail=0;none=0;dur=[]
-        for rec in cache:
-            tr=rec[2]; ll=rec[ll_i]; c=rec[5]
-            r=det(ll,c,tr,hi,lo,agg)
-            if r is None: none+=1; continue
-            dur.append(r[1]-r[0])
-            if not tr: continue
-            first=[t for t in tr if t[1]>r[0]-30]
-            if not first: fail+=1; continue
-            lat.append(first[0][0]-r[0])
-        lat=np.array(lat)
-        print(name,agg,hi,lo,'n',len(cache),'none',none,'withtrain',len(lat),'lat<0',(lat<0).sum(),'lat>15',(lat>15).sum(),'median lat',np.median(lat).round(1),'dur med',np.median(dur).round(1))
-EOF
-python t4.py
-```
-
-```
-raw max 2 1.5 n 42 none 4 withtrain 38 lat<0 9 lat>15 13 median lat 10.0 dur med 41.9
-raw max 3 1.5 n 42 none 6 withtrain 36 lat<0 9 lat>15 13 median lat 11.5 dur med 47.6
-raw max 2 1.25 n 42 none 1 withtrain 40 lat<0 3 lat>15 23 median lat 17.0 dur med 59.2
-raw max 3 2 n 42 none 8 withtrain 34 lat<0 14 lat>15 5 median lat 1.9 dur med 32.4
-raw 2nd 2 1.5 n 42 none 13 withtrain 27 lat<0 8 lat>15 6 median lat 2.9 dur med 34.8
-raw 2nd 3 1.5 n 42 none 19 withtrain 22 lat<0 5 lat>15 6 median lat 3.9 dur med 51.2
-raw 2nd 2 1.25 n 42 none 10 withtrain 31 lat<0 6 lat>15 10 median lat 8.1 dur med 46.8
-raw 2nd 3 2 n 42 none 19 withtrain 22 lat<0 8 lat>15 3 median lat 2.0 dur med 31.8
-1-40 max 2 1.5 n 42 none 0 withtrain 41 lat<0 0 lat>15 25 median lat 17.6 dur med 65.6
-1-40 max 3 1.5 n 42 none 0 withtrain 41 lat<0 0 lat>15 24 median lat 17.6 dur med 65.6
-1-40 max 2 1.25 n 42 none 0 withtrain 42 lat<0 0 lat>15 34 median lat 61.4 dur med 113.1
-1-40 max 3 2 n 42 none 0 withtrain 42 lat<0 2 lat>15 13 median lat 6.1 dur med 47.5
-1-40 2nd 2 1.5 n 42 none 0 withtrain 42 lat<0 1 lat>15 15 median lat 8.1 dur med 50.4
-1-40 2nd 3 1.5 n 42 none 0 withtrain 42 lat<0 1 lat>15 14 median lat 8.1 dur med 50.4
-1-40 2nd 2 1.25 n 42 none 0 withtrain 42 lat<0 0 lat>15 28 median lat 22.1 dur med 74.5
-1-40 2nd 3 2 n 42 none 2 withtrain 40 lat<0 6 lat>15 5 median lat 4.0 dur med 38.1
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t5.py <<'EOF'
-import pickle,numpy as np
-import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-cache=pickle.load(open('t3.pkl','rb'))
-fig,axs=plt.subplots(14,1,figsize=(16,30))
-for ax,rec in zip(axs,cache[::3]):
-    for ll,col in [(rec[3],'k'),(rec[4],'b')]:
-        n=ll/np.median(ll,0); ax.plot(rec[5],n.max(1),col,lw=0.6)
-    for t0,t1 in rec[2]: ax.axvspan(t0,t1,color='r',alpha=0.3)
-    ax.set_ylim(0,8); ax.axhline(2,ls=':'); ax.axhline(3,ls=':'); ax.set_title(rec[0][10:]+' '+rec[1],fontsize=8)
-plt.tight_layout(); plt.savefig('t5.png',dpi=50)
-EOF
-python t5.py
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/t5.png"
-}
-```
-
-```
-Shell cwd was reset to
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd entries/yang-2025 && grep -n "SZ_\|def detect_seizure\|def line_length\|thresholds\|hfo_events\|for pct" yang2025.py
-```
-
-```
-185:# bridge gaps inside a seizure. A seizure is a run of windows above SZ_THRESHOLD, merging gaps
-186:# up to SZ_GAP_S, lasting at least SZ_MIN_S; the clip's seizure is the run with the largest
-188:# last. The notebook shows results at thresholds 1.5, 2 and 3.
-191:SZ_THRESHOLD = 2.0
-192:SZ_GAP_S = 5.0
-193:SZ_MIN_S = 5.0
-196:def line_length(x):
-203:def detect_seizure(ll, centres, trains, threshold=SZ_THRESHOLD):
-211:    cand = runs(above | stim, gap=int(SZ_GAP_S / step))
-219:        if centres[b2] - centres[a2] < SZ_MIN_S:
-408:def hfo_events(xc, band, pct):
-429:def process_clip(x, kind, thresholds=(1.5, 2.0, 3.0)):
-439:    out["seizures"] = {thr: detect_seizure(ll, centres, trains, thr) for thr in thresholds}
-440:    sz = out["seizures"][SZ_THRESHOLD]
-460:            for pct in HFO_PCT:
-463:                    ev = hfo_events(x[:, c], band, pct)
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/yang-2025/yang2025.py",
- "offset": 175,
- "limit": 55
-}
-```
-
-```
-175	    return trains, sc
-176	
-177	
-178	# ---------------------------------------------------------------------------------------------
-179	# Seizure onset and end. [assumption] The paper gives no rule for marking them offline (claims
-180	# file, opening comment, reading (b)), and the files hold none. Line length (sum of absolute
-181	# differences) per channel in 1 s windows stepped by 0.25 s, divided by the channel's median
-182	# over the clip (a clip is mostly interictal), and the largest over the 4 channels (seizures
-183	# that stay at one site, as some do at ANT, are then found). Windows that
-184	# overlap a detected stimulation train are left out, as the artefact inflates line length; they
-185	# bridge gaps inside a seizure. A seizure is a run of windows above SZ_THRESHOLD, merging gaps
-186	# up to SZ_GAP_S, lasting at least SZ_MIN_S; the clip's seizure is the run with the largest
-187	# excess line length. Onset is the centre of the run's first window, end the centre of its
-188	# last. The notebook shows results at thresholds 1.5, 2 and 3.
-189	
-190	LL_WIN, LL_STEP = 1000, 250
-191	SZ_THRESHOLD = 2.0
-192	SZ_GAP_S = 5.0
-193	SZ_MIN_S = 5.0
-194	
-[... 35 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-s=open('yang2025.py').read()
-a=s.index("# Seizure onset and end. [assumption]"); b=s.index("# ---------------------------------------------------------------------------------------------\n# Granger")
-new='''# Seizure onset and end. [assumption] The paper gives no rule for marking them offline (claims
-# file, opening comment, reading (b)), and the files hold none. Line length (sum of absolute
-# differences) of the 1-40 Hz band-passed LFP (4th order Butterworth, zero phase; this keeps
-# the seizure discharges and drops the high-frequency noise floor and the 50 Hz harmonics) per
-# channel in 1 s windows stepped by 0.25 s, divided by the channel's median over the clip (a
-# clip is mostly interictal), and the largest over the 4 channels (seizures that stay at one
-# site, as some do at ANT, are then found). Windows that overlap a detected stimulation train
-# are left out, as the artefact inflates line length; they bridge gaps inside a seizure. A
-# seizure is a run of windows above SZ_LOW, merging gaps up to SZ_GAP_S, that reaches SZ_HIGH
-# and lasts at least SZ_MIN_S (hysteresis); the clip's seizure is the run with the largest
-# excess line length. Onset is the centre of the run's first window, end the centre of its
-# last. The thresholds were chosen, before any claim was computed, on 42 stimulation-group
-# clips so that the stimulation trains, which the closed-loop detector starts on seizure
-# onset, follow the onset (notebook, data check); the notebook shows every result also at
-# (2, 1.5) and (4, 2.5).
-
-LL_WIN, LL_STEP = 1000, 250
-LL_BAND = (1.0, 40.0)
-SZ_HIGH, SZ_LOW = 3.0, 2.0
-SZ_VARIANTS = ((3.0, 2.0), (2.0, 1.5), (4.0, 2.5))
-SZ_GAP_S = 5.0
-SZ_MIN_S = 5.0
-
-
-def line_length(x):
-    sos = signal.butter(4, LL_BAND, btype="band", fs=FS, output="sos")
-    xf = signal.sosfiltfilt(sos, x, axis=0)
-    d = np.abs(np.diff(xf, axis=0))
-    c = np.vstack([np.zeros((1, x.shape[1])), np.cumsum(d, axis=0)])
-    starts = np.arange(0, len(x) - LL_WIN, LL_STEP)
-    return (c[starts + LL_WIN - 1] - c[starts]), (starts + LL_WIN / 2) / FS
-
-
-def detect_seizure(ll, centres, trains, high=SZ_HIGH, low=SZ_LOW):
-    score = (ll / np.median(ll, axis=0, keepdims=True)).max(1)
-    stim = np.zeros(len(centres), bool)
-    for t0, t1 in trains:
-        stim |= (centres + 0.5 >= t0) & (centres - 0.5 <= t1)
-    hi = (score > high) & ~stim
-    lo = (score > low) & ~stim
-    step = LL_STEP / FS
-    best, best_ex = None, 0.0
-    for a, b in runs(lo | stim, gap=int(SZ_GAP_S / step)):
-        seg = np.arange(a, b + 1)
-        if not hi[seg].any():
-            continue
-        real = seg[lo[seg]]
-        a2, b2 = real[0], real[-1]
-        if centres[b2] - centres[a2] < SZ_MIN_S:
-            continue
-        ex = np.sum((score[a2:b2 + 1] - 1)[~stim[a2:b2 + 1]])
-        if ex > best_ex:
-            best, best_ex = (centres[a2], centres[b2]), ex
-    if best is None:
-        return None
-    return {"onset": float(best[0]), "end": float(best[1]), "excess": float(best_ex)}
-
-
-'''
-s=s[:a]+new+s[b:]
-# HFO: one filter per band and channel
-a=s.index("def hfo_events"); b=s.index("# ---------------------------------------------------------------------------------------------\n# One pass")
-s=s[:a]+'''def hfo_events(xc, band, pcts=HFO_PCT):
-    """HFO event centres (s) in the 1-D signal xc, one array per threshold percentile."""
-    lo, hi = HFO_BANDS[band]
-    sos = signal.butter(4, [lo, hi], btype="band", fs=FS, output="sos")
-    y = signal.sosfiltfilt(sos, xc)
-    w = int(HFO_WIN_MS[band] * FS / 1000)
-    c = np.r_[0, np.cumsum(np.abs(np.diff(y)))]
-    ll = c[w:] - c[:-w]
-    min_len = int(np.ceil(4 / lo * FS))
-    out = {}
-    for pct in pcts:
-        thr = np.percentile(ll, pct)
-        ev = [(a + (b + w - a) / 2) / FS for a, b in runs(ll > thr, gap=10) if b + w - a >= min_len]
-        out[pct] = np.array(ev)
-    return out
-
-
-'''+s[b:]
-s=s.replace('''def process_clip(x, kind, thresholds=(1.5, 2.0, 3.0)):''','''def process_clip(x, kind):''')
-s=s.replace('''    out["seizures"] = {thr: detect_seizure(ll, centres, trains, thr) for thr in thresholds}
-    sz = out["seizures"][SZ_THRESHOLD]''','''    out["seizures"] = {v: detect_seizure(ll, centres, trains, *v) for v in SZ_VARIANTS}
-    sz = out["seizures"][(SZ_HIGH, SZ_LOW)]''')
-s=s.replace('''    # GC at onset (both order criteria), only where 6 s after onset are in the clip
-    if on + 5.0 <= len(x) / FS:''','''    # GC at onset (both order criteria), baseline groups only (Methods C), where the 5 s after
-    # onset are in the clip
-    if kind == "baseline" and on + 5.0 <= len(x) / FS:''')
-s=s.replace('''        out["onset_has_train"] = any(t0 < on + 5.0 and t1 > on for t0, t1 in trains)
-''','')
-s=s.replace('''        hfo = {}
-        for band in HFO_BANDS:
-            for pct in HFO_PCT:
-                counts = []
-                for c in range(4):
-                    ev = hfo_events(x[:, c], band, pct)
-                    counts.append([((ev >= a0) & (ev < a1)).sum(), ((ev >= b0) & (ev < b1)).sum()])
-                hfo[(band, pct)] = np.array(counts)
-        out["hfo_counts"] = hfo''','''        hfo = {(band, pct): np.zeros((4, 2), int) for band in HFO_BANDS for pct in HFO_PCT}
-        for band in HFO_BANDS:
-            for c in range(4):
-                for pct, ev in hfo_events(x[:, c], band).items():
-                    hfo[(band, pct)][c] = [((ev >= a0) & (ev < a1)).sum(), ((ev >= b0) & (ev < b1)).sum()]
-        out["hfo_counts"] = hfo''')
-open('yang2025.py','w').write(s)
-EOF
-grep -n "SZ_THRESHOLD" yang2025.py; cd $TMPDIR && . env/bin/activate && python t1.py 2>&1 | grep -v "^ \["
-```
-
-```
-R1_2023_7_16-ictal1 1.8 {(3.0, 2.0): (303.5, 331.0), (2.0, 1.5): (303.0, 334.0), (4.0, 2.5): (303.8, 329.5)} trains [] orders [2, 2, 2, 2, 2, 2, 2, 3, 3] ((303.5, 308.5), (313.5, 318.5))
-  cfw [ 0.0211 -0.0278 -0.0129  0.0196] hfo [[ 5 13]
-R1_2023_7_21-ictal1 1.8 {(3.0, 2.0): (347.8, 388.2), (2.0, 1.5): (344.8, 389.0), (4.0, 2.5): (350.0, 382.2)} trains [] orders [11, 11, 11, 11, 11, 11, 11, 11, 11] ((347.75, 352.75), (357.75, 362.75))
-  cfw [-0.0721  0.0607 -0.0486  0.0599] hfo [[0 1]
-R1_2023_7_21-ictal2 1.8 {(3.0, 2.0): (461.8, 497.0), (2.0, 1.5): (461.0, 497.2), (4.0, 2.5): (465.0, 497.0)} trains [] orders [12, 11, 11, 11, 11, 11, 11, 12, 12] ((461.75, 466.75), (471.75, 476.75))
-  cfw [-0.0706  0.0031 -0.0577  0.1252] hfo [[ 0 10]
-R5_2023_11_16-ictal1 1.1 {(3.0, 2.0): (275.2, 347.0), (2.0, 1.5): (205.0, 350.5), (4.0, 2.5): (275.5, 336.2)} trains [(np.float64(295.6), np.float64(300.4)), (np.float64(305.9), np.float64(310.6)), (np.float64(316.6), np.float64(321.4))] orders None ((275.25, np.float64(295.625)), (np.float64(300.375), np.float64(305.375)))
-R5_2023_11_16-ictal2 0.8 {(3.0, 2.0): (331.5, 343.8), (2.0, 1.5): (235.5, 311.2), (4.0, 2.5): (331.8, 343.8)} trains [(np.float64(256.9), np.float64(261.6)), (np.float64(268.1), np.float64(273.1)), (np.float64(278.4), np.float64(283.1)), (np.float64(293.9), np.float64(298.6))] orders None None
-R5_2023_11_24-ictal1 1.1 {(3.0, 2.0): (415.2, 452.8), (2.0, 1.5): (393.8, 452.8), (4.0, 2.5): (415.8, 451.5)} trains [(np.float64(420.4), np.float64(425.1)), (np.float64(431.1), np.float64(435.9)), (np.float64(442.9), np.float64(447.6))] orders None ((415.25, np.float64(420.375)), (np.float64(425.125), np.float64(430.125)))
-R1_2023_9_20-ictal1 1.1 {(3.0, 2.0): (282.0, 311.0), (2.0, 1.5): (281.5, 312.0), (4.0, 2.5): (283.5, 310.8)} trains [(np.float64(287.1), np.float64(292.1)), (np.float64(297.4), np.float64(302.4))] orders None ((282.0, np.float64(287.125)), (np.float64(292.125), np.float64(297.125)))
-R1_2023_9_20-ictal2 1.1 {
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/yang-2025 && python - <<'EOF'
-s=open('yang2025.py').read()
-s=s.replace('''# and lasts at least SZ_MIN_S (hysteresis); the clip's seizure is the run with the largest
-# excess line length.''','''# and lasts at least SZ_MIN_S (hysteresis). The clip's seizure is the run with the largest
-# excess line length or, in a clip with stimulation trains, the run that holds the first train
-# (Methods C: "Once the signal from any channel detects seizure onset, the neurostimulator
-# immediately triggers electrical stimulation"), when there is one.''')
-s=s.replace('''    best, best_ex = None, 0.0
-    for a, b in runs(lo | stim, gap=int(SZ_GAP_S / step)):''','''    best, best_ex, with_train = None, 0.0, None
-    first_train = trains[0][0] if trains else None
-    for a, b in runs(lo | stim, gap=int(SZ_GAP_S / step)):''')
-s=s.replace('''        ex = np.sum((score[a2:b2 + 1] - 1)[~stim[a2:b2 + 1]])
-        if ex > best_ex:
-            best, best_ex = (centres[a2], centres[b2]), ex
-    if best is None:
-        return None
-    return {"onset": float(best[0]), "end": float(best[1]), "excess": float(best_ex)}''','''        ex = np.sum((score[a2:b2 + 1] - 1)[~stim[a2:b2 + 1]])
-        if ex > best_ex:
-            best, best_ex = (centres[a2], centres[b2]), ex
-        if first_train is not None and with_train is None and centres[a] - 1 <= first_train <= centres[b] + 1:
-            with_train = (centres[a2], centres[b2]), ex
-    if with_train is not None:
-        best, best_ex = with_train
-    if best is None:
-        return None
-    return {"onset": float(best[0]), "end": float(best[1]), "excess": float(best_ex),
-            "by_train": with_train is not None}''')
-s=s.replace('''def load_all(progress=print):
-    """Stream every file of the pinned version and reduce each clip. Returns the files'
-    metadata and one record per clip."""
-    files, clips = [], []
-    for a in list_assets():
-        s = parse_session(a["path"])
-        h = open_asset(a["asset_id"])
-        meta = file_metadata(h)
-        meta.update(s, path=a["path"], asset_id=a["asset_id"], size=a["size"])
-        files.append(meta)
-        for c in meta["clips"]:
-            x = h["acquisition"][c["name"]]["data"][:]
-            rec = process_clip(x, s["kind"])
-            rec.update(s, clip=c["name"], path=a["path"])
-            clips.append(rec)
-            del x
-        h.close()
-        if progress:
-            progress(f"{a['path']}: {len(meta['clips'])} clips")
-    return files, clips''','''def process_file(a):
-    """Stream one file and reduce each of its clips; one clip is held in memory at a time."""
-    s = parse_session(a["path"])
-    h = open_asset(a["asset_id"])
-    meta = file_metadata(h)
-    meta.update(s, path=a["path"], asset_id=a["asset_id"], size=a["size"])
-    clips = []
-    for c in meta["clips"]:
-        x = h["acquisition"][c["name"]]["data"][:]
-        rec = process_clip(x, s["kind"])
-        rec.update(s, clip=c["name"], path=a["path"])
-        clips.append(rec)
-        del x
-    h.close()
-    return meta, clips
-
-
-def load_all(assets=None, workers=3):
-    """Stream every file of the pinned version (or `assets`) and reduce each clip, `workers`
-    files at a time (each worker holds one clip, about 20 MB, at a time). Returns the files'
-    metadata and one record per clip."""
-    import os
-    from concurrent.futures import ProcessPoolExecutor
-    os.environ.setdefault("OMP_NUM_THREADS", "1")
-    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
-    assets = list_assets() if assets is None else assets
-    files, clips = [], []
-    with ProcessPoolExecutor(workers) as ex:
-        for meta, cl in ex.map(process_file, assets):
-            files.append(meta)
-            clips += cl
-    return files, clips''')
-open('yang2025.py','w').write(s)
-EOF
-cd $TMPDIR && . env/bin/activate && cat > t6.py <<'EOF'
-import sys,time,resource,pickle; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y
-A=y.list_assets(); sub=[a for a in A if 'RatR1' in a['path']]
-t=time.time(); files,clips=y.load_all(sub,workers=3); print('R1', len(clips), round(time.time()-t), 's', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss/1e6)
-pickle.dump((files,clips),open('r1.pkl','wb'))
-EOF
-python t6.py
-```
-
-```
-R1 72 80 s 0.133224 0.30012
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import sys,pickle,numpy as np; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y
-files,clips=pickle.load(open('r1.pkl','rb'))
-for g in sorted(set((c['index'],c['group']) for c in clips)):
-    cs=[c for c in clips if c['group']==g[1]]
-    sz=[c['seizures'][(3.0,2.0)] for c in cs]
-    dur=[s['end']-s['onset'] for s in sz if s]
-    lat=[c['trains'][0][0]-s['onset'] for c,s in zip(cs,sz) if s and c['trains']]
-    line=f"{g} n={len(cs)} none={sum(s is None for s in sz)} dur={np.round(dur,0).tolist()} lat={np.round(lat,1).tolist()} ntrains={[len(c['trains']) for c in cs]}"
-    if cs[0]['kind']=='baseline':
-        for sign in ['out_minus_in','in_minus_out']:
-          for o in ['gc_bic','gc_aic']:
-            cf=np.array([y.cfw(c[o],sign) for c in cs if o in c])
-            line+=f"\n   {sign} {o} mean={cf.mean(0).round(3)} top={y.targets_top(cf)} test={y.targets_test(cf)}"
-    print(line)
-EOF
-```
-
-```
-(0, 'base0') n=9 none=0 dur=[31.0, 36.0, 33.0, 30.0, 30.0, 30.0, 207.0, 51.0, 37.0] lat=[] ntrains=[0, 0, 0, 0, 0, 0, 0, 0, 0]
-   out_minus_in gc_bic mean=[-0.022  0.039 -0.034  0.017] top={'CA1'} test=set()
-   out_minus_in gc_aic mean=[-0.02   0.042 -0.035  0.012] top={'CA1'} test=set()
-   in_minus_out gc_bic mean=[ 0.022 -0.039  0.034 -0.017] top={'CA3'} test=set()
-   in_minus_out gc_aic mean=[ 0.02  -0.042  0.035 -0.012] top={'CA3'} test=set()
-(1, 'CA1-stim') n=11 none=0 dur=[39.0, 31.0, 24.0, 25.0, 24.0, 34.0, 25.0, 39.0, 40.0, 36.0, 22.0] lat=[-15.1, 4.9, 4.4, 2.9, 3.1, 4.1, 3.6, 5.4, 5.6, 6.9, 8.9] ntrains=[4, 3, 3, 2, 3, 3, 3, 3, 4, 3, 1]
-(2, 'base1') n=10 none=0 dur=[28.0, 40.0, 35.0, 33.0, 42.0, 32.0, 41.0, 50.0, 24.0, 17.0] lat=[] ntrains=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-   out_minus_in gc_bic mean=[-0.066 -0.     0.01   0.055] top={'ANT'} test={'ANT'}
-   out_minus_in gc_aic mean=[-0.061 -0.006  0.025  0.041] top={'ANT'} test={'ANT'}
-   in_minus_out gc_bic mean=[ 0.066  0.    -0.01  -0.055] top={'DG'} test={'DG', 'CA3'}
-   in_minus_out gc_aic mean=[ 0.061  0.006 -0.025 -0.041] top={'DG'} test={'DG'}
-(3, 'CA3-stim') n=7 none=0 dur=[16.0, 22.0, 51.0, 34.0, 32.0, 36.0, 24.0] lat=[4.4, 4.6, -224.1, 10.4, 4.6, 19.4, 4.6] ntrains=[1, 1, 2, 4, 3, 2, 3]
-(4, 'base2') n=5 none=0 dur=[34.0, 45.0, 32.0, 28.0, 27.0] lat=[3.6, 3.9] ntrains=[3, 2, 0, 0, 0]
-   out_minus_in gc_bic mean=[-0.033 -0.044  0.024  0.052] top={'ANT'} test=set()
-   out_minus_in gc_aic mean=[-0.031 -0.052  0.051  0.031] top={'CA3'} test={'ANT', 'CA3'}
-   in_minus_out gc_bic mean=[ 0.033  0.044 -0.024 -0.052] top={'CA1'} test=set()
-   in_minus_out gc_aic mean=[ 0.031  0.052 -0.051 -0.031] top={'CA1'} test={'DG', 'CA1'}
-(5, 'ANT-stim') n=6 none=0 dur=[31.0, 36.0, 31.0, 33.0, 36.0, 28.0] lat=[4.9, 5.1, 4.9, 3.4, 2.6, 4.6] ntrains=[2, 2, 2, 3, 2, 3]
-(6, 'base3') n=11 none=0 dur=[31.0, 30.0, 16.0, 28.0, 25.0, 27.0, 32.0, 32.0, 32.0, 27.0, 37.0] lat=[] ntrains=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-   out_minus
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > tall.py <<'EOF'
-import sys,time,resource,pickle; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y
-t=time.time(); files,clips=y.load_all(workers=3); print(len(clips), round(time.time()-t), 's', resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss/1e6)
-pickle.dump((files,clips),open('all.pkl','wb'))
-EOF
-date -u; python tall.py; date -u
-```
-
-```
-Mon Nov  9 23:51:26 UTC 2026
-519 625 s 0.33132
-Tue Nov 10 00:01:52 UTC 2026
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import sys,pickle,numpy as np,pandas as pd; sys.path.insert(0,'entries/yang-2025')
-import yang2025 as y
-files,clips=pickle.load(open('all.pkl','rb'))
-rows=[]
-for c in clips:
-    s=c['seizures'][(3.0,2.0)]
-    rows.append(dict(rat=c['rat'],idx=c['index'],group=c['group'],kind=c['kind'],clip=c['clip'],ntr=len(c['trains']),det=s is not None,dur=(s['end']-s['onset']) if s else np.nan,lat=(c['trains'][0][0]-s['onset']) if (s and c['trains']) else np.nan, bytrain=s.get('by_train') if s else None))
-df=pd.DataFrame(rows)
-g=df.groupby(['rat','idx','group']).agg(n=('clip','size'),det=('det','sum'),withtr=('ntr',lambda s:(s>0).sum()),dur=('dur','mean'),lat_med=('lat','median'),lat_neg=('lat',lambda s:(s<0).sum()),lat_gt15=('lat',lambda s:(s>15).sum()))
-print(g.round(1).to_string())
-print(df[(df.kind=='baseline')&(df.ntr>0)].to_string())
-EOF
-```
-
-```
-n  det  withtr   dur  lat_med  lat_neg  lat_gt15
-rat idx group                                                      
-R1  0   base0      9    9       0  53.8      NaN        0         0
-    1   CA1-stim  11   11      11  30.8      4.4        1         0
-    2   base1     10   10       0  34.2      NaN        0         0
-    3   CA3-stim   7    7       7  30.8      4.6        1         1
-    4   base2      5    5       2  33.4      3.8        0         0
-    5   ANT-stim   6    6       6  32.5      4.8        0         0
-    6   base3     11   11       0  28.7      NaN        0         0
-    7   DG-stim   13   13      13  29.0      3.1        0         0
-R2  0   base0      8    8       0  48.8      NaN        0         0
-    1   DG-stim    7    7       7  57.5      4.4        0         0
-    2   base1      8    8       0  51.9      NaN        0         0
-    3   ANT-stim  10   10      10  37.8      3.4        0         1
-    4   base2     16   16       0  45.2      NaN        0         0
-    5   CA1-stim   9    9       9  49.3     14.9        0         4
-    6   base3     11   11       0  42.9      NaN        0         0
-    7   CA3-stim   9    9       9  47.8     14.6        0         4
-R3  0   base0     10   10       0  55.2      NaN        0         0
-    1   CA3-stim  13   13      13  52.9      7.6        0         1
-[... 51 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,80p tools/entry.py | head -80; grep -n "def cmd_\|argparse\|add_parser" tools/entry.py | head -30
-```
-
-```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py check entries/*/       # the same for every entry, in one process
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
-[... 63 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/cells_code.py",
- "content": "# %% load\nimport time\nimport warnings\n\nimport numpy as np\nimport pandas as pd\nfrom scipy import stats\n\nimport yang2025 as y\n\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 400)\n\nstarted = time.time()\nfiles, clips = y.load_all(workers=3)\nprint(f\"dandiset {y.DANDISET_ID} version {y.DANDISET_VERSION}: {len(files)} files, {len(clips)} clips, \"\n      f\"loaded and reduced in {(time.time() - started) / 60:.1f} min\")\n\n# %% tables\nMAIN = (y.SZ_HIGH, y.SZ_LOW)\n# Target groups as Figure S2 labels them (claims file, figs2-target-assignment; used by every later claim)\nS2_TARGETS = {(\"R1\", \"DG\"), (\"R2\", \"DG\"), (\"R2\", \"CA1\"), (\"R3\", \"CA3\"), (\"R4\", \"CA3\"), (\"R5\", \"ANT\"),\n              (\"R6\", \"CA3\"), (\"R7\", \"ANT\")}\n# Figure S2, per rat: the targets of baseline groups 1 to 4 and the site stimulated next (claims file)\nS2 = {\n    \"R1\": [({\"ANT\"}, \"CA1\"), ({\"ANT\"}, \"CA3\"), ({\"CA3\"}, \"ANT\"), ({\"DG\"}, \"DG\")],\n    \"R2\": [({\"DG\", \"CA1\"}, \"DG\"), ({\"CA1\"}, \"ANT\"), ({\"CA1\"}, \"CA1\"), ({\"ANT\"}, \"CA3\")],\n    \"R3\": [({\"CA3\"}, \"CA3\"), ({\"CA3\"}, \"ANT\"), ({\"ANT\"}, \"DG\"), ({\"CA3\", \"ANT\"}, \"CA1\")],\n    \"R4\": [({\"CA3\"}, \"CA1\"), ({\"CA3\"}, \"DG\"), ({\"CA3\"}, \"ANT\"), ({\"CA3\"}, \"CA3\")],\n    \"R5\": [({\"CA3\", \"ANT\"}, \"ANT\"), ({\"ANT\"}, \"DG\"), ({\"ANT\"}, \"CA1\"), ({\"ANT\"}, \"CA3\")],\n    \"R6\": [({\"ANT\"}, \"CA1\"), ({\"CA1\", \"CA3\"}, \"ANT\"), ({\"CA3\"}, \"DG\"), ({\"CA3\"}, \"CA3\")],\n    \"R7\": [({\"ANT\"}, \"DG\"), ({\"ANT\"}, \"ANT\"), ({\"ANT\"}, \"CA1\"), ({\"ANT\"}, \"CA3\")],\n}\nRATS = sorted(S2)\n\nrows = []\nfor c in clips:\n    r = {\"rat\": c[\"rat\"], \"index\": c[\"index\"], \"group\": c[\"group\"], \"kind\": c[\"kind\"], \"site\": c[\"site\"],\n         \"clip\": c[\"clip\"], \"small\": \"small\" in c[\"clip\"], \"n_trains\": len(c[\"trains\"])}\n    for v in y.SZ_VARIANTS:\n        s = c[\"seizures\"][v]\n        r[f\"dur_{v[0]:g}_{v[1]:g}\"] = (s[\"end\"] - s[\"onset\"]) if s else np.nan\n    s = c[\"seizures\"][MAIN]\n    r[\"onset\"] = s[\"onset\"] if s else np.nan\n    r[\"end\"] = s[\"end\"] if s else np.nan\n    r[\"by_train\"] = bool(s and s[\"by_train\"])\n    r[\"latency\"] = (c[\"trains\"][0][0] - s[\"onset\"]) if (s and c[\"trains\"]) else np.nan\n    r[\"stimulated\"] = bool(s and any(t1 > s[\"onset\"] - 1 and t0 < s[\"end\"] + 1 for t0, t1 in c[\"trains\"]))\n    rows.append(r)\nsz = pd.DataFrame(rows)\nsz[\"dur\"] = sz[f\"dur_{MAIN[0]:g}_{MAIN[1]:g}\"]\nsz[\"target\"] = [(r, s) in S2_TARGETS if k == \"stim\" else False for r, s, k in zip(sz.rat, sz.site, sz.kind)]\nsz[\"condition\"] = np.where(sz.kind == \"baseline\", \"baseline\", np.where(sz.target, \"target\", \"non-target\"))\nDUR_COLS = [f\"dur_{a:g}_{b:g}\" for a, b in y.SZ_VARIANTS]\nprint(\"seizure clips:\", len(sz), \"; seizure found (main thresholds):\", int(sz.dur.notna().sum()))\n\n# %% sanity-files\nmeta = pd.DataFrame([{\"rat\": f[\"rat\"], \"index\": f[\"index\"], \"group\": f[\"group\"], \"session_id\": f[\"session_id\"],\n                      \"start\": f[\"session_start_time\"][:10], \"clips\": len(f[\"clips\"]),\n                      \"first_clip_date\": min(y.clip_date(c[\"name\"])[0] for c in f[\"clips\"]),\n                      \"last_clip_date\": max(y.clip_date(c[\"name\"])[0] for c in f[\"clips\"]),\n                      \"MB\": round(f[\"size\"] / 1e6)} for f in files]).sort_values([\"rat\", \"index\"])\nprint(\"Files per rat:\", meta.groupby(\"rat\").size().to_dict())\nprint(\"Groups per rat (baseline, stim):\", {r: (int((g.group.str.startswith(\"base\")).sum()), int((~g.group.str.startswith(\"base\")).sum()))\n                                         for r, g in meta.groupby(\"rat\")})\nprint(meta.to_string(index=False))\nf0 = files[0]\nprint(\"\\nOne file's contents besides the clips (all files checked below):\")\nfor k in [\"top_level\", \"intervals\", \"processing\", \"analysis\", \"stimulus\", \"electrode_labels\", \"electrode_locations\",\n          \"electrode_group_names\", \"subject\", \"session_description\"]:\n    print(f\"  {k}: {f0[k]}\")\nsame = {k: len({str(f[k]) for f in files}) for k in [\"intervals\", \"processing\", \"analysis\", \"stimulus\",\n                                                       \"electrode_labels\", \"electrode_locations\", \"session_description\"]}\nprint(\"Distinct values over the 56 files:\", same)\nprint(\"Subjects:\", sorted({(f[\"subject\"][\"subject_id\"], f[\"subject\"][\"sex\"], f[\"subject\"][\"age\"], f[\"subject\"][\"weight\"]) for f in files}))\ncl = pd.DataFrame([dict(c, rat=f[\"rat\"], group=f[\"group\"]) for f in files for c in f[\"clips\"]])\nprint(\"\\nClip shapes:\", cl[\"shape\"].astype(str).value_counts().to_dict(), \"; dtypes:\", cl.dtype.value_counts().to_dict(),\n      \"; units:\", cl.unit.value_counts().to_dict(), \"; conversion:\", cl.conversion.unique().tolist(),\n      \"; rate (Hz):\", cl.rate.unique().tolist(), \"; starting_time:\", cl.starting_time.unique().tolist())\nprint(\"Clips per group: min\", int(meta.clips.min()), \"median\", float(meta.clips.median()), \"max\", int(meta.clips.max()),\n      \"; groups with fewer than 6 clips (Methods C: no less than 6 seizures per group):\",\n      meta[meta.clips < 6][[\"rat\", \"group\", \"clips\"]].values.tolist())\nprint(\"Clip name suffixes:\", cl.name.str.extract(r\"ictal\\d+(-\\w+)?$\")[0].fillna(\"(none)\").value_counts().to_dict())\n\n# %% sanity-values\nvals = pd.DataFrame([{\"rat\": c[\"rat\"], \"group\": c[\"group\"], \"clip\": c[\"clip\"], \"nan\": c[\"n_nan\"],\n                      **{f\"min_{ch}\": c[\"min\"][i] for i, ch in enumerate(y.CHANNELS)},\n                      **{f\"max_{ch}\": c[\"max\"][i] for i, ch in enumerate(y.CHANNELS)},\n                      **{f\"sd_{ch}\": c[\"sd\"][i] for i, ch in enumerate(y.CHANNELS)}} for c in clips])\nprint(\"NaN samples:\", int(vals.nan.sum()))\nprint(\"Range over all clips (microvolts):\")\nprint(vals[[c for c in vals if c[:3] in (\"min\", \"max\")]].agg([\"min\", \"median\", \"max\"]).round(0).to_string())\nprint(\"SD per channel (microvolts), median over each rat's clips:\")\nprint(vals.groupby(\"rat\")[[f\"sd_{ch}\" for ch in y.CHANNELS]].median().round(1).to_string())\nmd5 = pd.Series([c[\"md5\"] for c in clips])\nprint(\"\\nIdentical clips (same MD5 of all samples):\", int(md5.duplicated().sum()))\n# clips whose names (date and seizure number) occur in two groups of a rat\ncl[\"key\"] = cl.rat + \":\" + cl.name.str.replace(\"-small\", \"\").str.replace(\"-large\", \"\")\ndups = cl[cl.key.duplicated(keep=False)].sort_values(\"key\")\nprint(\"Clip names found in two groups of the same rat:\", len(dups) // 2)\nenv = {(c[\"group\"], c[\"rat\"], c[\"clip\"]): c[\"ll_env\"] for c in clips}\n\n\ndef env_corr(a, b):\n    a = (a - a.mean()) / a.std(); b = (b - b.mean()) / b.std(); n = len(a)\n    cc = np.fft.irfft(np.fft.rfft(a, 2 * n) * np.conj(np.fft.rfft(b, 2 * n))) / n\n    return cc.max()\n\n\npairs = []\nfor k, g in dups.groupby(\"key\"):\n    (_, a), (_, b) = g.iterrows()\n    pairs.append({\"rat\": a.rat, \"name\": a[\"name\"], \"group_a\": a.group, \"group_b\": b.group,\n                  \"envelope_r\": round(env_corr(env[(a.group, a.rat, a[\"name\"])], env[(b.group, b.rat, b[\"name\"])]), 3)})\nprint(pd.DataFrame(pairs).to_string(index=False))\nallr = []\nkeys = list(env)\nfor i in range(len(keys)):\n    for j in range(i + 1, len(keys)):\n        if keys[i][1] == keys[j][1]:\n            allr.append(env_corr(env[keys[i]], env[keys[j]]))\nprint(f\"Largest envelope correlation over all {len(allr)} pairs of clips of the same rat: {max(allr):.3f}; \"\n      f\"99th percentile {np.percentile(allr, 99):.3f}\")\n\n# %% sanity-trains\ntr = pd.DataFrame([{\"rat\": c[\"rat\"], \"group\": c[\"group\"], \"kind\": c[\"kind\"], \"clip\": c[\"clip\"], \"start\": t0, \"end\": t1}\n                   for c in clips for t0, t1 in c[\"trains\"]])\ntr[\"length\"] = tr.end - tr.start\ntr[\"gap_to_next\"] = tr.groupby([\"rat\", \"group\", \"clip\"]).start.shift(-1) - tr.end\nprint(\"Detected stimulation trains:\", len(tr), \"; in baseline groups:\", int((tr.kind == \"baseline\").sum()))\nprint(\"Train length (s) by group kind:\")\nprint(tr.groupby(\"kind\").length.describe().round(2).to_string())\nprint(\"Pause between trains (s):\", tr.gap_to_next.describe().round(2).to_dict())\nprint(\"\\nClips with at least one train, by group kind:\", sz.groupby(\"kind\").apply(lambda g: f\"{(g.n_trains > 0).sum()} of {len(g)}\").to_dict())\nprint(\"Stimulation-group clips without a train:\", sz[(sz.kind == \"stim\") & (sz.n_trains == 0)][[\"rat\", \"group\", \"clip\"]].values.tolist())\nprint(\"Baseline-group clips with trains:\")\nprint(sz[(sz.kind == \"baseline\") & (sz.n_trains > 0)][[\"rat\", \"group\", \"clip\", \"n_trains\", \"onset\", \"latency\"]].round(1).to_string(index=False))\nprint(tr[tr.kind == \"baseline\"].round(2).to_string(index=False))\n\n# %% sanity-onset\nprint(\"Seizure found per clip, by threshold pair (high, low):\",\n      {c: int(sz[c].notna().sum()) for c in DUR_COLS}, \"of\", len(sz))\nst = sz[(sz.kind == \"stim\") & sz.latency.notna()]\nprint(f\"\\nStimulation-group seizures with trains: {len(st)}. First train minus detected onset (s):\")\nprint(st.latency.describe().round(2).to_string())\nprint(\"Negative (train before onset):\", int((st.latency < 0).sum()), \"; over 15 s:\", int((st.latency > 15).sum()),\n      \"; seizure chosen as the run that holds the first train:\", int(st.by_train.sum()))\nprint(\"By rat (median latency, s):\", st.groupby(\"rat\").latency.median().round(1).to_dict())\n# Contrast: line length envelope around the first train in stimulation clips, and around the same\n# clip times in baseline clips. The closed-loop detector starts a train on seizure onset, so the\n# envelope must rise before the train in stimulation clips.\nrel = np.arange(-20, 21, 5)\ncen = (np.arange(0, 600000 - y.LL_WIN, y.LL_STEP) + y.LL_WIN / 2) / y.FS\nprof_stim = []\nfor c in clips:\n    if c[\"kind\"] == \"stim\" and c[\"trains\"]:\n        t = c[\"trains\"][0][0]\n        prof_stim.append([np.interp(t + d, cen, c[\"ll_env\"]) for d in rel])\nprint(\"\\nMedian line-length score (max over channels, x median) relative to the first train, stimulation clips:\")\nprint(pd.Series(np.median(prof_stim, 0), index=[f\"{d:+d}s\" for d in rel]).round(2).to_string())\nbase_rand = []\nrng = np.random.default_rng(0)\nfor c in clips:\n    if c[\"kind\"] == \"baseline\":\n        t = rng.uniform(30, 570)\n        base_rand.append([np.interp(t + d, cen, c[\"ll_env\"]) for d in rel])\nprint(\"Same profile at a random time in each baseline clip:\")\nprint(pd.Series(np.median(base_rand, 0), index=[f\"{d:+d}s\" for d in rel]).round(2).to_string())\nprint(\"\\nSeizure duration (s), main thresholds, by condition:\")\nprint(sz.groupby(\"condition\").dur.describe().round(1).to_string())\nprint(\"Seizure onset in the clip (s):\", sz.onset.describe().round(0).to_dict())\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/cells_code.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > dev.py <<'EOF'
-import sys,re,pickle,io,contextlib,time
-sys.path.insert(0,'entries/yang-2025')
-src=open(sys.argv[1]).read()
-cells=re.split(r'^# %% ',src,flags=re.M)[1:]
-want=sys.argv[2].split(',') if len(sys.argv)>2 else None
-ns={}
-for c in cells:
-    name,body=c.split('\n',1)
-    if name.strip()=='load':
-        body=body.replace("files, clips = y.load_all(workers=3)","files, clips = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-        body="import pickle\n"+body
-    if want and name.strip() not in want and name.strip() not in ('load','tables') and not name.startswith('def'):
-        try: exec(compile(body,name,'exec'),ns) if name.startswith('lib') else None
-        except Exception as e: print('ERR',name,e)
-        continue
-    print(f'===== {name}'); t=time.time()
-    exec(compile(body,name,'exec'),ns)
-    print(f'----- {time.time()-t:.1f}s')
-EOF
-. env/bin/activate && python dev.py cells_code.py 2>&1 | head -300
-```
-
-```
-===== load
-dandiset 001212 version 0.241023.0931: 56 files, 519 clips, loaded and reduced in 0.0 min
------ 1.1s
-===== tables
-seizure clips: 519 ; seizure found (main thresholds): 517
------ 0.0s
-===== sanity-files
-Files per rat: {'R1': 8, 'R2': 8, 'R3': 8, 'R4': 8, 'R5': 8, 'R6': 8, 'R7': 8}
-Groups per rat (baseline, stim): {'R1': (4, 4), 'R2': (4, 4), 'R3': (4, 4), 'R4': (4, 4), 'R5': (4, 4), 'R6': (4, 4), 'R7': (4, 4)}
-rat  index    group       session_id      start  clips first_clip_date last_clip_date  MB
- R1      0    base0    RatR1_00base0 2023-06-16      9   (2023, 6, 16)  (2023, 6, 29)  59
- R1      1 CA1-stim RatR1_01CA1_stim 2023-07-08     11    (2023, 7, 8)  (2023, 7, 20)  74
- R1      2    base1    RatR1_02base1 2023-07-16     10   (2023, 7, 16)  (2023, 7, 21)  69
- R1      3 CA3-stim RatR1_03CA3_stim 2023-08-16      7   (2023, 8, 16)  (2023, 8, 27)  50
- R1      4    base2    RatR1_04base2 2023-08-29      5   (2023, 8, 29)   (2023, 9, 5)  35
- R1      5 ANT-stim RatR1_05ANT_stim 2023-09-03      6    (2023, 9, 3)  (2023, 9, 12)  40
- R1      6    base3    RatR1_06base3 2023-09-15     11   (2023, 9, 15)  (2023, 9, 20)  70
- R1      7  DG-stim  RatR1_07DG_stim 2023-09-21     13   (2023, 9, 20)  (2023, 9, 22)  91
- R2      0    base0    RatR2_00base0 2023-06-21      8   (2023, 6, 21)   (2023, 7, 3)  54
- R2      1  DG-stim  RatR2_01DG_stim 2023-07-05      7    (2023, 7, 5)  (2023, 7, 10)  48
-[... 196 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; cd $TMPDIR && . env/bin/activate && pip list 2>/dev/null | grep -i -E "posthoc|statsmodels"
-```
-
-```
-Tue Nov 10 00:03:41 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/cells_code.py <<'EOF'
-
-# %% gc-setup
-# cf_w vectors of the baseline seizures (Methods B and C), per reading of the sign and the order criterion
-base_clips = [c for c in clips if c["kind"] == "baseline" and "gc_bic" in c]
-print("Baseline seizures with a GC matrix:", len(base_clips), "of", int((sz.kind == "baseline").sum()),
-      "; dropped (no seizure found, or fewer than 5 s after onset in the clip):",
-      int((sz.kind == "baseline").sum()) - len(base_clips))
-orders = pd.Series([p for c in base_clips for p in c["orders_bic"]])
-print("VAR model order by BIC (per window):", orders.describe().round(1).to_dict(),
-      "; at the cap of", y.GC_MAX_ORDER, ":", int((orders == y.GC_MAX_ORDER).sum()))
-orders_a = pd.Series([p for c in base_clips for p in c["orders_aic"]])
-print("VAR model order by AIC (per window):", orders_a.describe().round(1).to_dict(),
-      "; at the cap:", int((orders_a == y.GC_MAX_ORDER).sum()))
-gcm = np.array([c["gc_bic"] for c in base_clips])
-print("GC values (BIC order), off-diagonal, range:", float(gcm[:, ~np.eye(4, dtype=bool)].min().round(4)), "to",
-      float(gcm[:, ~np.eye(4, dtype=bool)].max().round(4)), "; median", float(np.median(gcm[:, ~np.eye(4, dtype=bool)]).round(4)))
-SIGNS = ["out_minus_in", "in_minus_out"]
-ORDERS = ["gc_bic", "gc_aic"]
-cf = {(s, o): {} for s in SIGNS for o in ORDERS}
-for c in base_clips:
-    for s in SIGNS:
-        for o in ORDERS:
-            cf[(s, o)].setdefault((c["rat"], c["index"]), []).append(y.cfw(c[o], s))
-cf = {k: {g: np.array(v) for g, v in d.items()} for k, d in cf.items()}
-small_flag = {(c["rat"], c["index"]): [] for c in base_clips}
-for c in base_clips:
-    small_flag[(c["rat"], c["index"])].append("small" in c["clip"])
-
-# %% claim-tables1
-TS1 = {"R1": (0.72, 0.30, -0.11, 0.55), "R2": (0.47, 0.57, 0.09, 0.56), "R3": (0.77, 0.19, 0.59, 0.34),
-       "R4": (0.81, 0.46, 0.79, 0.46), "R5": (0.74, 0.34, 0.71, 0.28), "R6": (0.61, 0.34, 0.36, 0.47),
-       "R7": (0.81, 0.36, 0.71, 0.41)}  # Table S1, as the claims file gives it: intra mean, SD, inter mean, SD
-
-
-def r_pairs(groups, pairing, self_pairs):
-    """Intra- and inter-group Pearson r between the cf_w vectors of a rat's baseline seizures."""
-    vecs = np.vstack([groups[g] for g in sorted(groups)])
-    lab = np.concatenate([[g] * len(groups[g]) for g in sorted(groups)])
-    R = np.corrcoef(vecs)
-    n = len(vecs)
-    intra, inter = [], []
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                if self_pairs:
-                    intra.append(1.0)
-                continue
-            if pairing == "once" and j < i:
-                continue
-            (intra if lab[i] == lab[j] else inter).append(R[i, j])
-    return np.array(intra), np.array(inter)
-
-
-res = []
-for o in ORDERS:
-    for pairing in ["once", "twice"]:
-        for self_pairs in [False, True]:
-            for rat in RATS:
-                groups = {g[1]: v for g, v in cf[("out_minus_in", o)].items() if g[0] == rat}
-                a, b = r_pairs(groups, pairing, self_pairs)
-                p = stats.mannwhitneyu(a, b, alternative="two-sided").pvalue
-                ti, si, te, se = TS1[rat]
-                res.append({"order": o, "pairs": pairing, "self": self_pairs, "rat": rat, "n_intra": len(a), "n_inter": len(b),
-                            "intra_r": a.mean(), "intra_sd": a.std(ddof=1), "inter_r": b.mean(), "inter_sd": b.std(ddof=1),
-                            "p_MW": p, "intra_ok": abs(a.mean() - ti) <= si, "inter_ok": abs(b.mean() - te) <= se,
-                            "paper_intra": ti, "paper_inter": te})
-t1 = pd.DataFrame(res)
-t1["holds"] = (t1.intra_r > t1.inter_r) & (t1.p_MW < 0.05)
-print("The cf_w sign does not change Pearson r (r(-a,-b) = r(a,b)), so one sign is shown.")
-print(t1[(t1.order == "gc_bic") & (t1.pairs == "once") & (~t1.self)].round(3).to_string(index=False))
-summ = t1.groupby(["order", "pairs", "self"]).agg(rats_holding=("holds", "sum"), means_within_tol=("intra_ok", "sum"))
-summ["means_within_tol"] += t1.groupby(["order", "pairs", "self"]).inter_ok.sum()
-print("\nPer reading: rats where intra > inter with MW p < 0.05 (of 7), and means within the Table S1 SD (of 14):")
-print(summ.to_string())
-# variant: without clips named -small
-res2 = []
-for rat in RATS:
-    groups = {g[1]: v[~np.array(small_flag[g])] for g, v in cf[("out_minus_in", "gc_bic")].items() if g[0] == rat}
-    a, b = r_pairs(groups, "once", False)
-    res2.append({"rat": rat, "intra_r": a.mean(), "inter_r": b.mean(), "p_MW": stats.mannwhitneyu(a, b).pvalue})
-print("\nVariant without '-small' clips (BIC, pairs once, no self-pairs):")
-print(pd.DataFrame(res2).round(4).to_string(index=False))
-
-# %% claim-fig2
-print("R1: mean cf_w per node in each baseline group, and the node with the highest mean")
-fig2 = []
-for s in SIGNS:
-    for o in ORDERS:
-        for gi, want in zip([0, 2, 4, 6], ["ANT", "ANT", "CA3", "DG"]):
-            v = cf[(s, o)][("R1", gi)]
-            fig2.append({"sign": s, "order": o, "group": f"base{gi // 2}", "n": len(v),
-                         **{ch: v.mean(0)[i] for i, ch in enumerate(y.CHANNELS)},
-                         "top": y.CHANNELS[int(np.argmax(v.mean(0)))], "paper": want})
-fig2 = pd.DataFrame(fig2)
-fig2["match"] = fig2.top == fig2.paper
-print(fig2.round(4).to_string(index=False))
-print("\nMatches of 4, per reading:", fig2.groupby(["sign", "order"]).match.sum().to_dict())
-# consistency within groups: mean Pearson r of R1 cf_w vectors within each group
-for gi in [0, 2, 4, 6]:
-    v = cf[("out_minus_in", "gc_bic")][("R1", gi)]
-    R = np.corrcoef(v)
-    print(f"R1 base{gi // 2}: {len(v)} seizures, mean within-group r {R[np.triu_indices(len(v), 1)].mean():.2f}")
-print("Figure 2A shows 9, 9, 7 and 9 seizures; here", [len(cf[("out_minus_in", "gc_bic")][("R1", g)]) for g in [0, 2, 4, 6]])
-
-# %% claim-figs2
-def computed_targets(s, o, reading):
-    out = {}
-    for (rat, gi), v in cf[(s, o)].items():
-        out[(rat, gi)] = y.targets_top(v) if reading == "a" else y.targets_test(v)
-    return out
-
-
-stim_groups = sz[sz.kind == "stim"].groupby(["rat", "index"]).site.first()
-rows = []
-for s in SIGNS:
-    for o in ORDERS:
-        for reading in ["a", "b"]:
-            T = computed_targets(s, o, reading)
-            nb = 0
-            ntar = 0
-            lab_ok = 0
-            for rat in RATS:
-                for k in range(4):
-                    paper_set, paper_site = S2[rat][k]
-                    got = T.get((rat, 2 * k), set())
-                    ok = (got == paper_set) or (reading == "a" and len(got & paper_set) == 1 and len(got) == 1)
-                    nb += ok
-                    site = stim_groups[(rat, 2 * k + 1)]
-                    is_t = site in got
-                    ntar += is_t
-                    lab_ok += is_t == ((rat, site) in S2_TARGETS)
-            rows.append({"sign": s, "order": o, "reading": reading, "baseline_groups_matching": nb,
-                         "target_groups": ntar, "non_target_groups": 28 - ntar, "labels_agreeing": lab_ok})
-s2 = pd.DataFrame(rows)
-print("Of 28 baseline groups, those whose computed target set matches Figure S2; target and non-target counts of the")
-print("28 stimulation groups from the computed targets, and how many labels agree with Figure S2:")
-print(s2.to_string(index=False))
-best = s2.sort_values(["baseline_groups_matching", "labels_agreeing"], ascending=False).iloc[0]
-print("\nBest reading:", best.to_dict())
-T = computed_targets(best.sign, best.order, best.reading)
-tab = []
-for rat in RATS:
-    for k in range(4):
-        tab.append({"rat": rat, "baseline": f"base{k}", "computed": ",".join(sorted(T.get((rat, 2 * k), set()))) or "-",
-                    "figure_S2": ",".join(sorted(S2[rat][k][0])), "next_site_dataset": stim_groups[(rat, 2 * k + 1)],
-                    "next_site_S2": S2[rat][k][1]})
-tab = pd.DataFrame(tab)
-print(tab.to_string(index=False))
-print("\nGroups where the dataset's stimulation order differs from Figure S2:",
-      tab[tab.next_site_dataset != tab.next_site_S2][["rat", "baseline", "next_site_dataset", "next_site_S2"]].values.tolist())
-EOF
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py gc-setup,claim-tables1,claim-fig2,claim-figs2 2>&1 | grep -v "^=====\|^-----"
-```
-
-```
-dandiset 001212 version 0.241023.0931: 56 files, 519 clips, loaded and reduced in 0.0 min
-seizure clips: 519 ; seizure found (main thresholds): 517
-Baseline seizures with a GC matrix: 267 of 267 ; dropped (no seizure found, or fewer than 5 s after onset in the clip): 0
-VAR model order by BIC (per window): {'count': 2403.0, 'mean': 7.9, 'std': 4.3, 'min': 1.0, '25%': 3.0, '50%': 11.0, '75%': 12.0, 'max': 16.0} ; at the cap of 20 : 0
-VAR model order by AIC (per window): {'count': 2403.0, 'mean': 13.4, 'std': 4.7, 'min': 2.0, '25%': 11.0, '50%': 13.0, '75%': 17.0, 'max': 20.0} ; at the cap: 422
-GC values (BIC order), off-diagonal, range: 0.0018 to 0.4886 ; median 0.0355
-The cf_w sign does not change Pearson r (r(-a,-b) = r(a,b)), so one sign is shown.
- order pairs  self rat  n_intra  n_inter  intra_r  intra_sd  inter_r  inter_sd  p_MW  intra_ok  inter_ok  paper_intra  paper_inter  holds
-gc_bic  once False  R1      146      449    0.445     0.492    0.173     0.547 0.000      True      True         0.72        -0.11   True
-gc_bic  once False  R2      231      672    0.180     0.601   -0.025     0.623 0.000      True      True         0.47         0.09   True
-gc_bic  once False  R3      173      568    0.578     0.460    0.388     0.519 0.000     False      True         0.77         0.59   True
-gc_bic  once False  R4      211      692    0.154     0.656    0.208     0.647 0.243     False     False         0.81         0.79  False
-gc_bic  once False  R5      117      379    0.534     0.467    0.324     0.505 0.000      True     False         0.74         0.71   True
-gc_bic  once False  R6      149      481    0.700     0.319    0.588     0.327 0.000      True      True         0.61         0.36   True
-gc_bic  once False  R7      189      552    0.534     0.469    0.514     0.424 0.151      True      True         0.81         0.71  False
-
-Per reading: rats where intra > inter with MW p < 0.05 (of 7), and means within the Table S1 SD (of 14):
-                    rats_holdin
-[... 89 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/cells_code.py <<'EOF'
-
-# %% dur-setup
-def dunn(values, groups, adjust):
-    """Dunn's test after Kruskal-Wallis (tie-corrected), all pairs; Bonferroni when adjust."""
-    v = np.asarray(values); g = np.asarray(groups)
-    ranks = stats.rankdata(v)
-    N = len(v)
-    _, t = np.unique(v, return_counts=True)
-    tie = 1 - (t ** 3 - t).sum() / (N ** 3 - N)
-    labs = sorted(set(g))
-    out = {}
-    m = len(labs) * (len(labs) - 1) / 2
-    for i in range(len(labs)):
-        for j in range(i + 1, len(labs)):
-            a, b = g == labs[i], g == labs[j]
-            se = np.sqrt(tie * N * (N + 1) / 12 * (1 / a.sum() + 1 / b.sum()))
-            z = (ranks[a].mean() - ranks[b].mean()) / se
-            p = 2 * stats.norm.sf(abs(z))
-            out[(labs[i], labs[j])] = min(1.0, p * m) if adjust else p
-    return out
-
-
-NORMS = ["relative", "difference", "zscore"]
-
-
-def normalized(df, col="dur", stim_only=False, drop_base_trains=False):
-    """Per-seizure normalized durations of the stimulation groups, each against the baseline group
-    just before it (Results B: "Each baseline group served as a reference for subsequent
-    stimulation groups")."""
-    out = []
-    for (rat, gi), g in df[df.kind == "stim"].groupby(["rat", "index"]):
-        base = df[(df.rat == rat) & (df.index == gi - 1)]
-        if drop_base_trains:
-            base = base[base.n_trains == 0]
-        b = base[col].dropna()
-        g = g[g[col].notna()]
-        if stim_only:
-            g = g[g.stimulated]
-        for _, r in g.iterrows():
-            out.append({"rat": rat, "index": gi, "site": r.site, "target": r.target, "clip": r.clip, "dur": r[col],
-                        "relative": r[col] / b.mean() - 1, "difference": r[col] - b.mean(),
-                        "zscore": (r[col] - b.mean()) / b.std(ddof=1), "base_mean": b.mean(), "base_n": len(b),
-                        "base_durs": b.values})
-    return pd.DataFrame(out)
-
-
-VARIANTS = {"main": dict(col="dur"), "stimulated only": dict(col="dur", stim_only=True),
-            "baseline clips with trains left out": dict(col="dur", drop_base_trains=True),
-            "thresholds (2, 1.5)": dict(col="dur_2_1.5"), "thresholds (4, 2.5)": dict(col="dur_4_2.5")}
-ND = {k: normalized(sz, **v) for k, v in VARIANTS.items()}
-nd = ND["main"]
-grp = nd.groupby(["rat", "site"]).agg(target=("target", "first"), n=("dur", "size"), dur=("dur", "mean"),
-                                      base_mean=("base_mean", "first"), base_n=("base_n", "first"),
-                                      relative=("relative", "mean"), sem=("relative", "sem"),
-                                      difference=("difference", "mean"), zscore=("zscore", "mean")).reset_index()
-print("Per stimulation group (main thresholds, all seizures): mean duration (s), baseline mean, and mean normalized duration")
-print(grp.round(3).to_string(index=False))
-
-# %% claim-fig3a-target
-rows = []
-for name, d in ND.items():
-    g = d[d.target].groupby(["rat", "site"]).relative.mean()
-    rows.append({"variant": name, "target_groups": len(g), "below_zero": int((g < 0).sum()),
-                 **{f"{r}-{s}": round(v, 3) for (r, s), v in g.items()}})
-print("Mean relative normalized duration of each target group (the sign is the same under all three")
-print("normalization readings, as each subtracts the baseline mean):")
-print(pd.DataFrame(rows).to_string(index=False))
-print("Figure 3A, read from the bars: R1 DG -0.10, R2 DG -0.37, R2 CA1 -0.09, R3 CA3 -0.23, R4 CA3 -0.14, R5 ANT -0.33, R6 CA3 -0.21, R7 ANT -0.13")
-for rat in RATS:
-    print(rat, "seizures per target group:", nd[nd.target & (nd.rat == rat)].groupby("site").size().to_dict())
-
-# %% claim-fig3a-nontarget-lengthen
-rows = []
-for name, d in ND.items():
-    g = d[~d.target].groupby(["rat", "site"]).relative.mean()
-    rows.append({"variant": name, "non_target_groups": len(g), "positive": int((g > 0).sum()),
-                 "which": ", ".join(f"{r} {s}" for (r, s), v in g.items() if v > 0)})
-print(pd.DataFrame(rows).to_string(index=False))
-print("Figure 3A, read from the bars, positive: R1 CA3 and ANT, R2 CA3, R3 DG and ANT, R4 DG and ANT, R5 CA1, R6 DG, R7 DG (10 of 20)")
-
-# %% claim-fig3a-sites
-PAPER_PAIRS = {"R2": [("DG", "CA3"), ("CA3", "ANT")], "R3": [("DG", "CA1"), ("DG", "CA3"), ("CA3", "ANT")],
-               "R4": [("DG", "CA1"), ("DG", "CA3")], "R5": [("CA1", "CA3"), ("CA1", "ANT")],
-               "R7": [("DG", "CA3"), ("DG", "ANT")]}
-rows, detail = [], []
-for name in ["main", "stimulated only"]:
-    d = ND[name]
-    for norm in NORMS:
-        for adjust in [True, False]:
-            hit, r1r6 = 0, 0
-            for rat in RATS:
-                dr = d[d.rat == rat]
-                kw = stats.kruskal(*[g[norm].values for _, g in dr.groupby("site")]).pvalue
-                pw = dunn(dr[norm].values, dr.site.values, adjust)
-                sig = {tuple(sorted(k)) for k, p in pw.items() if p < 0.05}
-                if rat in PAPER_PAIRS:
-                    hit += sum(tuple(sorted(p)) in sig for p in PAPER_PAIRS[rat])
-                else:
-                    r1r6 += len(sig)
-                if name == "main" and adjust:
-                    detail.append({"norm": norm, "rat": rat, "KW_p": kw,
-                                   "significant_pairs": ", ".join("-".join(k) for k in sorted(sig)) or "none",
-                                   "paper_pairs": ", ".join("-".join(p) for p in PAPER_PAIRS.get(rat, [])) or "none"})
-            rows.append({"seizures": name, "norm": norm, "Dunn": "Bonferroni" if adjust else "unadjusted",
-                         "paper_pairs_found_of_11": hit, "pairs_in_R1_R6": r1r6})
-print(pd.DataFrame(rows).to_string(index=False))
-print("\nPer rat (all seizures, Dunn with Bonferroni):")
-print(pd.DataFrame(detail).round(4).to_string(index=False))
-
-# %% claim-fig3a-total
-rows = []
-for name, d in ND.items():
-    for norm in NORMS:
-        t, n = d[d.target][norm], d[~d.target][norm]
-        rows.append({"variant": name, "norm": norm, "unit": "seizures", "n_target": len(t), "n_non_target": len(n),
-                     "target_mean": t.mean(), "target_sem": t.sem(), "non_target_mean": n.mean(), "non_target_sem": n.sem(),
-                     "p_MW": stats.mannwhitneyu(t, n).pvalue})
-        gm = d.groupby(["rat", "site"]).agg(v=(norm, "mean"), target=("target", "first"))
-        t, n = gm[gm.target].v, gm[~gm.target].v
-        rows.append({"variant": name, "norm": norm, "unit": "groups", "n_target": len(t), "n_non_target": len(n),
-                     "target_mean": t.mean(), "target_sem": t.sem(), "non_target_mean": n.mean(), "non_target_sem": n.sem(),
-                     "p_MW": stats.mannwhitneyu(t, n).pvalue})
-tot = pd.DataFrame(rows)
-tot["target_ok"] = (tot.target_mean - -0.26).abs() <= 0.03
-tot["non_target_ok"] = (tot.non_target_mean - 0.038).abs() <= 0.03
-print("Paper: target -0.26 +- 0.03, non-target 0.038 +- 0.03, Mann-Whitney p < 0.001")
-print(tot.round(4).to_string(index=False))
-
-# %% claim-fig3a-some-nontarget
-NAMED = [("R2", "ANT"), ("R3", "CA1"), ("R4", "CA1"), ("R5", "CA3"), ("R7", "CA3")]
-rows = []
-for name in ["main", "stimulated only"]:
-    d = ND[name]
-    for (rat, site), g in d[~d.target].groupby(["rat", "site"]):
-        b = g.base_durs.iloc[0]
-        tmean = d[d.target & (d.rat == rat)].groupby("site").relative.mean().min()
-        rows.append({"seizures": name, "group": f"{rat} {site}", "named": (rat, site) in NAMED, "n": len(g),
-                     "relative_mean": g.relative.mean(), "target_mean_same_rat": tmean,
-                     "less_effective_than_target": g.relative.mean() > tmean,
-                     "p_MW_vs_baseline": stats.mannwhitneyu(g.dur, b, alternative="less").pvalue,
-                     "p_wilcoxon_vs_0": stats.wilcoxon(g.relative, alternative="less").pvalue,
-                     "p_t_vs_0": stats.ttest_1samp(g.relative, 0, alternative="less").pvalue})
-sn = pd.DataFrame(rows)
-for t in ["p_MW_vs_baseline", "p_wilcoxon_vs_0", "p_t_vs_0"]:
-    sn[t.replace("p_", "sig_")] = sn[t] < 0.05
-print("One-sided tests (shorter than baseline). For R2 the target mean is that of the DG target, the more effective.")
-print(sn.round(4).to_string(index=False))
-for name in ["main", "stimulated only"]:
-    s_ = sn[(sn.seizures == name) & sn.named]
-    print(f"\n{name}: named groups significantly shorter (of 5):",
-          {t: int(s_[t].sum()) for t in ["sig_MW_vs_baseline", "sig_wilcoxon_vs_0", "sig_t_vs_0"]},
-          "; less effective than the rat's target:", int(s_.less_effective_than_target.sum()))
-    o_ = sn[(sn.seizures == name) & ~sn.named]
-    print("  other non-target groups significant by any test:",
-          o_[o_.sig_MW_vs_baseline | o_.sig_wilcoxon_vs_0 | o_.sig_t_vs_0].group.tolist())
-
-# %% claim-fig3b
-rows = []
-for name in ["main", "stimulated only"]:
-    d = ND[name]
-    for norm in NORMS:
-        for site in y.CHANNELS:
-            t = d[d.target & (d.site == site)][norm]
-            n = d[~d.target & (d.site == site)][norm]
-            rows.append({"seizures": name, "norm": norm, "site": site, "n_target": len(t), "n_non_target": len(n),
-                         "target_mean": t.mean(), "non_target_mean": n.mean(),
-                         "p_MW": stats.mannwhitneyu(t, n).pvalue, "p_t": stats.ttest_ind(t, n).pvalue})
-f3b = pd.DataFrame(rows)
-f3b["holds"] = (f3b.target_mean < f3b.non_target_mean) & (f3b.p_MW < 0.05)
-print(f3b.round(4).to_string(index=False))
-print("\nPer reading, of DG, CA3 and ANT, sites with target lower at MW p < 0.05:")
-print(f3b[f3b.site != "CA1"].groupby(["seizures", "norm"]).holds.sum().to_string())
-EOF
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py dur-setup,claim-fig3a-target,claim-fig3a-nontarget-lengthen,claim-fig3a-sites,claim-fig3a-total,claim-fig3a-some-nontarget,claim-fig3b 2>&1 | grep -v "^=====\|^-----" | cut -c1-260
-```
-
-```
-dandiset 001212 version 0.241023.0931: 56 files, 519 clips, loaded and reduced in 0.0 min
-seizure clips: 519 ; seizure found (main thresholds): 517
-Per stimulation group (main thresholds, all seizures): mean duration (s), baseline mean, and mean normalized duration
-rat site  target  n    dur  base_mean  base_n  relative   sem  difference  zscore
- R1  ANT   False  6 32.458      29.75       1     0.091 0.044       2.708     NaN
- R1  CA1   False 11 30.818      31.00       1    -0.006 0.068      -0.182     NaN
- R1  CA3   False  7 30.821      32.75       1    -0.059 0.132      -1.929     NaN
- R1   DG    True 13 29.019     207.00       1    -0.860 0.009    -177.981     NaN
- R2  ANT   False 10 37.850        NaN       0       NaN   NaN         NaN     NaN
- R2  CA1    True  9 49.306        NaN       0       NaN   NaN         NaN     NaN
- R2  CA3   False  9 47.833        NaN       0       NaN   NaN         NaN     NaN
- R2   DG    True  7 57.500        NaN       0       NaN   NaN         NaN     NaN
- R3  ANT   False  7 39.571        NaN       0       NaN   NaN         NaN     NaN
- R3  CA1   False  8 12.406        NaN       0       NaN   NaN         NaN     NaN
- R3  CA3    True 13 52.885        NaN       0       NaN   NaN         NaN     NaN
- R3   DG   False  8 57.375        NaN       0       NaN   NaN         NaN     NaN
- R4  ANT   False  9 71.806        NaN       0       NaN   NaN         NaN     NaN
- R4  CA1   False 10 43.300        NaN       0       NaN   NaN         NaN     NaN
- R4  CA3    True  8 42.625        NaN       0       NaN   NaN         NaN     NaN
- R4   DG   False 10 48.350        NaN       0       NaN   NaN         NaN     NaN
-[... 187 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('cells_code.py').read()
-s=s.replace('''r = {"rat": c["rat"], "index": c["index"],''','''r = {"rat": c["rat"], "gi": c["index"],''')
-s=s.replace('''for (rat, gi), g in df[df.kind == "stim"].groupby(["rat", "index"]):
-        base = df[(df.rat == rat) & (df.index == gi - 1)]''','''for (rat, gi), g in df[df.kind == "stim"].groupby(["rat", "gi"]):
-        base = df[(df.rat == rat) & (df.gi == gi - 1)]''')
-s=s.replace('''out.append({"rat": rat, "index": gi,''','''out.append({"rat": rat, "gi": gi,''')
-s=s.replace('''stim_groups = sz[sz.kind == "stim"].groupby(["rat", "index"]).site.first()''','''stim_groups = sz[sz.kind == "stim"].groupby(["rat", "gi"]).site.first()''')
-open('cells_code.py','w').write(s)
-EOF
-grep -n '"index"' cells_code.py; . env/bin/activate && python dev.py cells_code.py dur-setup,claim-fig3a-target,claim-fig3a-nontarget-lengthen,claim-fig3a-sites,claim-fig3a-total,claim-fig3a-some-nontarget,claim-fig3b 2>&1 | grep -v "^=====\|^-----" | cut -c1-260
-```
-
-```
-40:    r = {"rat": c["rat"], "gi": c["index"], "group": c["group"], "kind": c["kind"], "site": c["site"],
-60:meta = pd.DataFrame([{"rat": f["rat"], "index": f["index"], "group": f["group"], "session_id": f["session_id"],
-64:                      "MB": round(f["size"] / 1e6)} for f in files]).sort_values(["rat", "index"])
-196:            cf[(s, o)].setdefault((c["rat"], c["index"]), []).append(y.cfw(c[o], s))
-198:small_flag = {(c["rat"], c["index"]): [] for c in base_clips}
-200:    small_flag[(c["rat"], c["index"])].append("small" in c["clip"])
-dandiset 001212 version 0.241023.0931: 56 files, 519 clips, loaded and reduced in 0.0 min
-seizure clips: 519 ; seizure found (main thresholds): 517
-Per stimulation group (main thresholds, all seizures): mean duration (s), baseline mean, and mean normalized duration
-rat site  target  n    dur  base_mean  base_n  relative   sem  difference  zscore
- R1  ANT   False  6 32.458     33.400       5    -0.028 0.040      -0.942  -0.130
- R1  CA1   False 11 30.818     53.778       9    -0.427 0.039     -22.960  -0.397
- R1  CA3   False  7 30.821     34.175      10    -0.098 0.126      -3.354  -0.350
- R1   DG    True 13 29.019     28.705      11     0.011 0.061       0.315   0.061
- R2  ANT   False 10 37.850     51.906       8    -0.271 0.094     -14.056  -0.924
- R2  CA1    True  9 49.306     45.156      16     0.092 0.088       4.149   0.213
- R2  CA3   False  9 47.833     42.864      11     0.116 0.125       4.970   0.355
- R2   DG    True  7 57.500     48.812       8     0.178 0.119       8.688   0.381
- R3  ANT   False  7 39.571     37.750      11     0.048 0.112       1.821   0.132
- R3  CA1   False  8 12.406     39.219       8    -0.684 0.084     -26.812  -4.271
-[... 193 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('cells_code.py').read()
-s=s.replace('''        tmean = d[d.target & (d.rat == rat)].groupby("site").relative.mean().min()''','''        tg = d[d.target & (d.rat == rat)]
-        tmean = (tg[tg.site == "DG"] if rat == "R2" else tg).relative.mean()''')
-open('cells_code.py','w').write(s)
-EOF
-cat >> $TMPDIR/cells_code.py <<'EOF'
-
-# %% psd-setup
-BAND_NAMES = list(y.BANDS)
-prow = []
-for c in clips:
-    if "psd_pre" not in c:
-        continue
-    cond = "baseline" if c["kind"] == "baseline" else ("target" if (c["rat"], c["site"]) in S2_TARGETS else "non-target")
-    for key in c["psd_pre"]:
-        pre, post = c["psd_pre"][key], c["psd_post"][key]
-        for ch in range(4):
-            for b, band in enumerate(BAND_NAMES):
-                prow.append({"rat": c["rat"], "group": c["group"], "clip": c["clip"], "condition": cond,
-                             "stim_channel": c["site"] == y.CHANNELS[ch], "channel": y.CHANNELS[ch],
-                             "nperseg": key[0], "total": key[1], "band": band, "pre": pre[ch, b], "post": post[ch, b]})
-psd = pd.DataFrame(prow)
-psd["rel"] = (psd.post - psd.pre) / psd.pre
-psd["log2"] = np.log2(psd.post / psd.pre)
-psd["diff"] = psd.post - psd.pre
-n_with = psd.drop_duplicates(["clip", "group", "rat"]).groupby("condition").size()
-n_all = sz.groupby("condition").size()
-print("Seizures with both PSD windows:", n_with.to_dict(), "of", n_all.to_dict())
-pw = [c["psd_windows"] for c in clips if c["kind"] == "stim" and c.get("psd_windows")]
-pre_len = np.array([w[0][1] - w[0][0] for w in pw])
-print("Stimulation-group pre window (onset to first train), s:", pd.Series(pre_len).describe().round(2).to_dict(),
-      "; shorter than 0.5 s (dropped):", int((pre_len < 0.5).sum()), "; shorter than 1 s (Welch segment shortened):",
-      int((pre_len < 1).sum()))
-print("PSD ratio ranges (pre):", psd.groupby("band").pre.agg(["min", "median", "max"]).round(4).to_dict("index"))
-
-# %% claim-fig4b
-def band_tests(d, measure, adjust):
-    out = {}
-    for band in BAND_NAMES:
-        x = d[d.band == band]
-        groups = {k: g[measure].replace([np.inf, -np.inf], np.nan).dropna().values for k, g in x.groupby("condition")}
-        kw = stats.kruskal(*groups.values()).pvalue
-        vals = np.concatenate(list(groups.values()))
-        labs = np.concatenate([[k] * len(v) for k, v in groups.items()])
-        pwd = dunn(vals, labs, adjust)
-        g = lambda a, b: pwd.get((a, b), pwd.get((b, a)))
-        out[band] = {"KW_p": kw, "target_vs_baseline_p": g("target", "baseline"), "target_vs_nontarget_p": g("target", "non-target"),
-                     **{f"mean_{k}": np.mean(v) for k, v in groups.items()}, **{f"median_{k}": np.median(v) for k, v in groups.items()}}
-    return out
-
-
-READINGS_BANDS = {"(i) theta, alpha up, gamma down": {"theta": 1, "alpha": 1, "gamma": -1},
-                  "(ii) alpha, beta up, gamma down": {"alpha": 1, "beta": 1, "gamma": -1}}
-rows, store = [], {}
-for nps in y.PSD_NPERSEG:
-    for total in y.PSD_TOTALS:
-        for chans in ["all", "stimulated"]:
-            d = psd[(psd.nperseg == nps) & (psd.total == total)]
-            if chans == "stimulated":
-                d = d[d.stim_channel | (d.condition == "baseline")]
-            for measure in ["rel", "log2", "diff"]:
-                for adjust in [True, False]:
-                    bt = band_tests(d, measure, adjust)
-                    store[(nps, total, chans, measure, adjust)] = bt
-                    for rname, want in READINGS_BANDS.items():
-                        ok = 0
-                        for band, sign in want.items():
-                            r = bt[band]
-                            direction = np.sign(r["median_target"] - r["median_baseline"]) == sign and \
-                                np.sign(r["median_target"] - r["median_non-target"]) == sign
-                            ok += bool(direction and r["target_vs_baseline_p"] < 0.05 and r["target_vs_nontarget_p"] < 0.05)
-                        alpha_gamma = all(
-                            np.sign(bt[b]["median_target"] - bt[b]["median_baseline"]) == s and
-                            np.sign(bt[b]["median_target"] - bt[b]["median_non-target"]) == s and
-                            bt[b]["target_vs_baseline_p"] < 0.05 and bt[b]["target_vs_nontarget_p"] < 0.05
-                            for b, s in [("alpha", 1), ("gamma", -1)])
-                        rows.append({"nperseg": nps, "total": total, "channels": chans, "measure": measure,
-                                     "Dunn": "Bonf" if adjust else "unadj", "bands": rname, "bands_holding_of_3": ok,
-                                     "alpha_and_gamma": alpha_gamma})
-f4 = pd.DataFrame(rows)
-print("Per reading: bands (of the 3 named) where target differs from both sham and non-target in the named direction")
-print("(medians, Dunn p < 0.05), and whether alpha and gamma both hold:")
-print(f4.groupby(["bands"]).bands_holding_of_3.value_counts().to_string())
-print("Readings where alpha and gamma both hold:", int(f4.alpha_and_gamma.sum()), "of", len(f4))
-print(f4.sort_values("bands_holding_of_3", ascending=False).head(12).to_string(index=False))
-print("\nMain reading shown in full (1 s segments, total 0.5-120 Hz, all channels, relative change, Dunn with Bonferroni):")
-print(pd.DataFrame(store[(1000, "0.5-120", "all", "rel", True)]).T.round(4).to_string())
-print("\nThe same with log2(post/pre):")
-print(pd.DataFrame(store[(1000, "0.5-120", "all", "log2", True)]).T.round(4).to_string())
-print("\nBy rat, median relative change of the alpha and gamma ratio (1 s, 0.5-120 Hz, all channels):")
-d = psd[(psd.nperseg == 1000) & (psd.total == "0.5-120") & psd.band.isin(["alpha", "gamma"])]
-print(d.groupby(["band", "rat", "condition"]).rel.median().unstack().round(3).to_string())
-
-# %% claim-fig4b-other
-rows = []
-for key, bt in store.items():
-    if not key[4]:
-        continue
-    for band in ["delta", "high_gamma", "beta", "theta"]:
-        rows.append({"nperseg": key[0], "total": key[1], "channels": key[2], "measure": key[3], "band": band,
-                     "KW_p": bt[band]["KW_p"], "median_baseline": bt[band]["median_baseline"],
-                     "median_target": bt[band]["median_target"], "median_non_target": bt[band]["median_non-target"]})
-f4o = pd.DataFrame(rows)
-print("Kruskal-Wallis across sham (baseline), target and non-target, per band and reading:")
-print(f4o.pivot_table(index=["nperseg", "total", "channels", "measure"], columns="band", values="KW_p").round(4).to_string())
-print("\nMain reading (1 s, 0.5-120 Hz, all channels, relative change):")
-print(f4o[(f4o.nperseg == 1000) & (f4o.total == "0.5-120") & (f4o.channels == "all") & (f4o.measure == "rel")].round(4).to_string(index=False))
-EOF
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py dur-setup,psd-setup,claim-fig4b,claim-fig4b-other 2>&1 | grep -v "^=====\|^-----" | tail -120 | cut -c1-250
-```
-
-```
-R1   DG    True 13 29.019     28.705      11     0.011 0.061       0.315   0.061
- R2  ANT   False 10 37.850     51.906       8    -0.271 0.094     -14.056  -0.924
- R2  CA1    True  9 49.306     45.156      16     0.092 0.088       4.149   0.213
- R2  CA3   False  9 47.833     42.864      11     0.116 0.125       4.970   0.355
- R2   DG    True  7 57.500     48.812       8     0.178 0.119       8.688   0.381
- R3  ANT   False  7 39.571     37.750      11     0.048 0.112       1.821   0.132
- R3  CA1   False  8 12.406     39.219       8    -0.684 0.084     -26.812  -4.271
- R3  CA3    True 13 52.885     55.250      10    -0.043 0.047      -2.365  -0.313
- R3   DG   False  8 57.375     35.125      10     0.633 0.168      22.250   1.731
- R4  ANT   False  9 71.806     53.568      11     0.340 0.102      18.237   1.192
- R4  CA1   False 10 43.300     38.875      10     0.114 0.097       4.425   0.469
- R4  CA3    True  8 42.625     40.275      10     0.058 0.104       2.350   0.140
- R4   DG   False 10 48.350     31.562      12     0.532 0.085      16.788   1.245
- R5  ANT    True 10 64.150     57.472       9     0.116 0.100       6.678   0.457
- R5  CA1   False  8 55.031     51.125       6     0.076 0.072       3.906   0.629
- R5  CA3   False  8 61.188     53.679       7     0.140 0.224       7.509   0.432
- R5   DG   False 11 59.295     62.575      10    -0.052 0.086      -3.280  -0.259
- R6  ANT   False  7 45.464     31.545      11     0.441 0.356      13.919   3.069
- R6  CA1   False  8 64.656     60.250       7     0.073 0.131       4.406   0.256
- R6  CA3    True 12 44.625     60.062       8    -0.257 0.076     -15.438  -0.943
-[... 101 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; cat >> $TMPDIR/cells_code.py <<'EOF'
-
-# %% claim-fig5b
-# IIS rate after the seizure end, per seizure and channel, in the stimulation groups
-irow = []
-for c in clips:
-    if c["kind"] != "stim" or "iis_post" not in c:
-        continue
-    span_post = c["iis_span"][1]
-    tgt = (c["rat"], c["site"]) in S2_TARGETS
-    for ch in range(4):
-        post = c["iis_post"][ch]
-        pre = c["iis_pre"][ch]
-        irow.append({"rat": c["rat"], "group": c["group"], "clip": c["clip"], "channel": y.CHANNELS[ch], "target": tgt,
-                     "post_span": span_post, "rate_15_45": ((post >= 15) & (post < 45)).sum() / 30 if span_post >= 45 else np.nan,
-                     "rate_pre": len(pre) / -c["iis_span"][0], "post": post})
-iis = pd.DataFrame(irow)
-n_stim = int((sz.kind == "stim").sum())
-print("Stimulation-group seizures with IIS detected (at least 30 s before onset in the clip):",
-      iis.drop_duplicates(["rat", "group", "clip"]).shape[0], "of", n_stim,
-      "; with the full 15-45 s after the end in the clip:", iis[iis.rate_15_45.notna()].drop_duplicates(["rat", "group", "clip"]).shape[0])
-print("Time after the seizure end available in the clip (s):", iis.drop_duplicates(["rat", "group", "clip"]).post_span.describe().round(1).to_dict())
-print("IIS rate (per s) in the 180 s before onset, per seizure and channel:", iis.rate_pre.describe().round(3).to_dict())
-d = iis[iis.rate_15_45.notna()]
-t, n = d[d.target].rate_15_45, d[~d.target].rate_15_45
-print(f"\nReading (a): per seizure-channel mean rate over 15-45 s after the end. Target {t.mean():.3f} +- {t.sem():.3f} "
-      f"(n {len(t)}), non-target {n.mean():.3f} +- {n.sem():.3f} (n {len(n)}) per s; Mann-Whitney p = {stats.mannwhitneyu(t, n).pvalue:.3g}")
-ds = d.groupby(["rat", "group", "clip", "target"]).rate_15_45.mean().reset_index()
-t2, n2 = ds[ds.target].rate_15_45, ds[~ds.target].rate_15_45
-print(f"Variant, per seizure (channels averaged): target {t2.mean():.3f}, non-target {n2.mean():.3f}; MW p = {stats.mannwhitneyu(t2, n2).pvalue:.3g}")
-for bw in [1, 5]:
-    edges = np.arange(0, 180 + bw, bw)
-    curves = {}
-    for tg in [True, False]:
-        sub = iis[(iis.target == tg)]
-        # rate per bin averaged over the seizure-channels whose clip covers the bin
-        counts = np.zeros(len(edges) - 1); cover = np.zeros(len(edges) - 1)
-        for _, r in sub.iterrows():
-            h, _ = np.histogram(r.post, edges)
-            ok = edges[1:] <= r.post_span
-            counts += np.where(ok, h, 0); cover += ok
-        curves[tg] = counts / np.maximum(cover, 1) / bw
-    sel = (edges[:-1] >= 15) & (edges[1:] <= 45)
-    tt = stats.ttest_rel(curves[True][sel], curves[False][sel])
-    print(f"Reading (b), {bw} s bins: mean rate 15-45 s target {curves[True][sel].mean():.3f}, non-target {curves[False][sel].mean():.3f} per s; "
-          f"paired t-test over {sel.sum()} bins t = {tt.statistic:.2f}, p = {tt.pvalue:.3g}")
-print("\nBy rat, reading (a) means (per s):")
-print(d.groupby(["rat", "target"]).rate_15_45.mean().unstack().round(3).to_string())
-print("\nBaseline-threshold variant is not run: the interictal segments of reading (b) are not in the dataset.")
-
-# %% hfo-setup
-hrow = []
-for c in clips:
-    if "hfo_counts" not in c or not c.get("psd_windows"):
-        continue
-    (a0, a1), (b0, b1) = c["psd_windows"]
-    if a1 - a0 < 0.5:
-        continue
-    cond = "baseline" if c["kind"] == "baseline" else ("target" if (c["rat"], c["site"]) in S2_TARGETS else "non-target")
-    for (band, pct), cnt in c["hfo_counts"].items():
-        for ch in range(4):
-            hrow.append({"rat": c["rat"], "group": c["group"], "clip": c["clip"], "condition": cond, "band": band, "pct": pct,
-                         "channel": y.CHANNELS[ch], "stim_channel": c["site"] == y.CHANNELS[ch],
-                         "pre_rate": cnt[ch, 0] / (a1 - a0), "post_rate": cnt[ch, 1] / (b1 - b0)})
-hfo = pd.DataFrame(hrow)
-print("Seizures with HFO counts:", hfo.drop_duplicates(["rat", "group", "clip"]).groupby("condition").size().to_dict())
-print("HFO rates (events/s) in the pre window, by band and threshold percentile:")
-print(hfo.groupby(["band", "pct"]).pre_rate.describe().round(2).to_string())
-
-
-def hfo_norm(band, pct, chans):
-    d = hfo[(hfo.band == band) & (hfo.pct == pct)]
-    if chans == "stimulated":
-        d = d[d.stim_channel | (d.condition == "baseline")]
-    # per seizure: rates summed over the channels used, then post / pre - 1 (Figure 6 legend: ictal data
-    # normalized to pre-stimulation data)
-    s = d.groupby(["rat", "group", "clip", "condition"])[["pre_rate", "post_rate"]].sum().reset_index()
-    s["norm"] = np.where(s.pre_rate > 0, s.post_rate / s.pre_rate - 1, np.nan)
-    return s
-
-
-def hfo_tests(s):
-    out = {"n_dropped_pre_zero": int(s.norm.isna().sum())}
-    s = s.dropna(subset=["norm"])
-    per_rat = s.groupby(["rat", "condition"]).norm.mean().unstack()
-    for k in ["baseline", "target", "non-target"]:
-        out[f"mean_{k}"] = s[s.condition == k].norm.mean()
-        out[f"sem_{k}"] = s[s.condition == k].norm.sem()
-    for a, b in [("target", "non-target"), ("target", "baseline")]:
-        pr = per_rat[[a, b]].dropna()
-        out[f"paired_{a}_vs_{b}_p"] = stats.ttest_rel(pr[a], pr[b]).pvalue
-        out[f"paired_{a}_vs_{b}_diff"] = (pr[a] - pr[b]).mean()
-        out[f"unpaired_{a}_vs_{b}_p"] = stats.ttest_ind(s[s.condition == a].norm, s[s.condition == b].norm).pvalue
-    return out, per_rat
-
-
-# %% claim-fig6e
-rows = []
-for pct in y.HFO_PCT:
-    for chans in ["all", "stimulated"]:
-        o, pr = hfo_tests(hfo_norm("ripple", pct, chans))
-        rows.append({"pct": pct, "channels": chans, **o})
-f6e = pd.DataFrame(rows)
-print("Ictal ripple rate, post / pre - 1, per seizure. Paired t-test by rat (reading a) and unpaired across seizures (b):")
-print(f6e.round(4).T.to_string())
-o, pr = hfo_tests(hfo_norm("ripple", 97.5, "all"))
-print("\nPer rat means (97.5th percentile, all channels):")
-print(pr.round(3).to_string())
-
-# %% claim-fig6f
-rows = []
-for pct in y.HFO_PCT:
-    for chans in ["all", "stimulated"]:
-        o, pr = hfo_tests(hfo_norm("fast_ripple", pct, chans))
-        rows.append({"pct": pct, "channels": chans, **o})
-f6f = pd.DataFrame(rows)
-print("Ictal fast ripple rate, post / pre - 1, per seizure:")
-print(f6f.round(4).T.to_string())
-o, pr = hfo_tests(hfo_norm("fast_ripple", 97.5, "all"))
-print("\nPer rat means (97.5th percentile, all channels):")
-print(pr.round(3).to_string())
-EOF
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py claim-fig5b,hfo-setup,claim-fig6e,claim-fig6f 2>&1 | grep -v "^=====\|^-----" | tail -100 | cut -c1-250
-```
-
-```
-Tue Nov 10 00:06:06 UTC 2026
-dandiset 001212 version 0.241023.0931: 56 files, 519 clips, loaded and reduced in 0.0 min
-seizure clips: 519 ; seizure found (main thresholds): 517
-Stimulation-group seizures with IIS detected (at least 30 s before onset in the clip): 249 of 252 ; with the full 15-45 s after the end in the clip: 249
-Time after the seizure end available in the clip (s): {'count': 249.0, 'mean': 179.9, 'std': 2.1, 'min': 147.2, '25%': 180.0, '50%': 180.0, '75%': 180.0, 'max': 180.0}
-IIS rate (per s) in the 180 s before onset, per seizure and channel: {'count': 996.0, 'mean': 0.208, 'std': 0.155, 'min': 0.0, '25%': 0.083, '50%': 0.178, '75%': 0.29, 'max': 1.033}
-
-Reading (a): per seizure-channel mean rate over 15-45 s after the end. Target 0.178 +- 0.020 (n 340), non-target 0.286 +- 0.023 (n 656) per s; Mann-Whitney p = 0.00525
-Variant, per seizure (channels averaged): target 0.178, non-target 0.286; MW p = 0.0325
-Reading (b), 1 s bins: mean rate 15-45 s target 0.178, non-target 0.286 per s; paired t-test over 30 bins t = -8.94, p = 7.8e-10
-Reading (b), 5 s bins: mean rate 15-45 s target 0.178, non-target 0.286 per s; paired t-test over 6 bins t = -4.30, p = 0.00768
-
-By rat, reading (a) means (per s):
-target  False  True 
-rat                 
-R1      0.247  0.133
-R2      0.145  0.118
-R3      0.106  0.232
-R4      0.107  0.145
-R5      0.172  0.188
-[... 69 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 150,400p attempts/fouke-2025-01.yaml | grep -v "^    " | head -80; grep -n "findings:" -A 30 attempts/fouke-2025-01.yaml | head -50; cat entries/fouke-2025/README.md | head -30; ls schemas/ 2>/dev/null
+cd  sed -n 150,400p attempts/fouke-2025-01.yaml | grep -v "^    " | head -80; ls schemas;
 ```
 
 ```
@@ -2278,585 +191,2350 @@ outcome: not_reproduced
   output: claim:fig1c-continuous-vs-bouts
   notes: The median-to-mean ratio of instantaneous speed is 0.306 in ZF (25 fish, 0.244 to 0.580)
   deviations:
-[... 125 more lines not kept]
+[... 64 more lines not kept]
+```
+
+**Agent**
+
+Now the dataset.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/001212/ | python -m json.tool | head -40; curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/" | python -m json.tool | grep -E '"version"|"status"|"modified"|"size"|asset'
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/0.241023.0931/assets/?page_size=100" | python -c "
+import json,sys; d=json.load(sys.stdin); print(d['count'])
+for a in d['results']: print(a['path'], a['size'], a['asset_id'])"; curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/0.241023.0931/" | python -m json.tool | head -120
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+curl -s "https://api.dandiarchive.org/api/dandisets/001212/versions/0.241023.0931/" | python -c "
+import json,sys; d=json.load(sys.stdin); print(d['description']); print(json.dumps(d.get('assetsSummary'),indent=1)); print(d.get('relatedResource')); print(d.get('wasGeneratedBy'))"
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd  which python; python -c "import pynwb, remfile, h5py; print(pynwb.__version__)"; cat > $TMPDIR/probe.py <<'EOF'
+import remfile, h5py, requests, sys
+aid = sys.argv[1]
+url = requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/", allow_redirects=True).url
+f = h5py.File(remfile.File(url), 'r')
+def show(name, obj):
+    if isinstance(obj, h5py.Dataset):
+        v = ''
+        if obj.size < 20: v = obj[()]
+        print(name, obj.shape, obj.dtype, dict(obj.attrs) if len(obj.attrs)<8 else list(obj.attrs), v)
+    else:
+        print(name+'/', {k:v for k,v in obj.attrs.items() if k not in ('namespace','object_id')})
+f.visititems(show)
+EOF
+python $TMPDIR/probe.py b014d56d-798d-4814-b3f1-744addd72fcd 2>&1 | head -120
+```
+
+```
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import pynwb, remfile, h5py; print(pynwb.__version__)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'pynwb'
+Traceback (most recent call last):
+  File "/tmp/claude-1001/probe.py", line 1, in <module>
+    import remfile, h5py, requests, sys
+ModuleNotFoundError: No module named 'remfile'
 ```
 
 **Agent calls Bash**
 
 ```bash
-python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'))
-print(json.dumps(s['required']));print(list(s['properties']))
-o=s['properties']['outcomes']['items'];print(json.dumps(o.get('required')),list(o['properties']))
-print(json.dumps(o['properties'].get('measured'))[:400])
-f=s['properties']['findings']['items'];print(json.dumps(f)[:800])
-print(json.dumps(s['properties']['provenance'])[:1500])
-print(json.dumps(s['properties']['datasets'])[:600])
+cd $TMPDIR && uv venv -q dev && . dev/bin/activate && uv pip install -q pynwb remfile h5py requests numpy scipy pandas statsmodels matplotlib scikit-learn 2>&1 | tail -2; python $TMPDIR/probe.py b014d56d-798d-4814-b3f1-744addd72fcd 2>&1 | head -150
+```
+
+```
+acquisition/ {}
+acquisition/R1_2023_7_16-ictal1/ {'comments': 'no comments', 'description': 'Raw acquisition at 02base1 stage', 'neurodata_type': 'ElectricalSeries'}
+acquisition/R1_2023_7_16-ictal1/data (600000, 4) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'microvolts'} 
+acquisition/R1_2023_7_16-ictal1/electrodes (4,) int64 {'description': 'all electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTableRegion', 'object_id': '24ceda16-c914-450e-b170-8db00bca791e', 'table': <HDF5 object reference>} [0 1 2 3]
+acquisition/R1_2023_7_16-ictal1/starting_time () float64 {'rate': np.float64(1000.0), 'unit': 'seconds'} 0.0
+acquisition/R1_2023_7_21-ictal1/ {'comments': 'no comments', 'description': 'Raw acquisition at 02base1 stage', 'neurodata_type': 'ElectricalSeries'}
+acquisition/R1_2023_7_21-ictal1/data (600000, 4) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'microvolts'} 
+acquisition/R1_2023_7_21-ictal1/electrodes (4,) int64 {'description': 'all electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTableRegion', 'object_id': '8fdbe5b6-41b9-446c-94fb-4183bc69f40a', 'table': <HDF5 object reference>} [0 1 2 3]
+acquisition/R1_2023_7_21-ictal1/starting_time () float64 {'rate': np.float64(1000.0), 'unit': 'seconds'} 0.0
+acquisition/R1_2023_7_21-ictal2/ {'comments': 'no comments', 'description': 'Raw acquisition at 02base1 stage', 'neurodata_type': 'ElectricalSeries'}
+acquisition/R1_2023_7_21-ictal2/data (600000, 4) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'microvolts'} 
+acquisition/R1_2023_7_21-ictal2/electrodes (4,) int64 {'description': 'all electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTableRegion', 'object_id': '525b2219-2c0d-4b05-8e91-6e00b3e2668c', 'table': <HDF5 object reference>} [0 1 2 3]
+acquisition/R1_2023_7_21-ictal2/starting_tim
+[... 71 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  wc -c paper/*.txt; date -u
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1109-tnsre.2025.3614867.txt"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1000,1087p paper/10.1109-tnsre.2025.3614867.txt
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1109-tnsre.2025.3614867.supp-fig-S2.png"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && cat > survey.py <<'EOF'
+import remfile, h5py, requests, json, time
+from concurrent.futures import ThreadPoolExecutor
+V="0.241023.0931"
+r=requests.get(f"https://api.dandiarchive.org/api/dandisets/001212/versions/{V}/assets/?page_size=100").json()['results']
+def one(a):
+    url=requests.head(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/",allow_redirects=True).url
+    f=h5py.File(remfile.File(url),'r')
+    out={'path':a['path'],'start':f['session_start_time'][()][0].decode(),'sid':f['general/session_id'][()].decode(),
+         'series':[]}
+    for k,v in f['acquisition'].items():
+        out['series'].append([k,list(v['data'].shape),float(v['starting_time'][()]),float(v['starting_time'].attrs['rate']),v.attrs['description'] if isinstance(v.attrs['description'],str) else v.attrs['description'].decode(), str(v['data'].dtype), v['data'].chunks])
+    out['groups']=[x.decode() for x in f['general/extracellular_ephys/electrodes/group_name'][()]]
+    out['other']=[k for k in ('intervals','processing','analysis','stimulus/presentation') if len(f[k])]
+    return out
+t=time.time()
+with ThreadPoolExecutor(8) as ex: res=list(ex.map(one,r))
+json.dump(res,open('survey.json','w'),indent=0)
+print(time.time()-t)
+EOF
+python survey.py
+```
+
+```
+48.93242001533508
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python -c "
+import json,collections
+res=json.load(open('survey.json'))
+res.sort(key=lambda x:x['path'])
+for r in res:
+    s=r['series']; shapes=collections.Counter(tuple(x[1]) for x in s); descs=set(x[4] for x in s); st=set(x[2] for x in s); rate=set(x[3] for x in s)
+    dates=sorted(set(x[0].rsplit('-',1)[0] for x in s))
+    print(r['path'].split('/')[1].replace('_ecephys.nwb',''), r['start'][:10], len(s), dict(shapes), descs, st, rate, r['groups']==['R_DG','R_CA1','R_CA3','R_ANT'], r['other'], s[0][5], s[0][6])
+    print('   ', dates, [x[0].rsplit('-',1)[1] for x in s][:3])
 "
 ```
 
 ```
-["schema_version", "id", "datasets", "paper", "date", "provenance", "outcomes"]
-['schema_version', 'id', 'datasets', 'missing_datasets', 'paper', 'date', 'entry', 'deprecated', 'provenance', 'outcomes', 'verifications', 'findings', 'reconciliation', 'inputs']
-["claim", "outcome"] ['claim', 'outcome', 'blocked_by', 'notes', 'notebook', 'output', 'measured', 'deviations', 'assumed', 'proposed']
-{"description": "The values obtained, for claims with expected values: one number, or one per expected value, in the same order.", "oneOf": [{"type": "number"}, {"type": "array", "minItems": 1, "items": {"type": "number"}}]}
-{"type": "object", "additionalProperties": false, "required": ["kind", "statement"], "properties": {"kind": {"enum": ["metadata_error", "data_missing", "identifier_missing", "metadata_insufficient", "selection_undocumented", "methods_unavailable", "format_error", "code_mismatch", "paper_inconsistency", "other"]}, "statement": {"type": "string", "minLength": 1}, "found": {"description": "How the finding was found. Unset: by the attempt itself. `on_prompt`: by the reconcile step of a repeat attempt, which checked a finding of the earlier attempt that this one, made blind, did not report (docs/protocol.md, \"Repeat attempts\").", "enum": ["on_prompt"]}}}
-{"type": "object", "additionalProperties": false, "required": ["kind", "accountable"], "properties": {"kind": {"enum": ["agent", "person"]}, "accountable": {"description": "The person or organisation responsible for this attempt.", "type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string"}, "orcid": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"}, "ror": {"type": "string"}}}, "agent": {"description": "Required when kind is agent.", "type": "object", "additionalProperties": false, "required": ["harness", "model", "protocol"], "properties": {"harness": {"type": "string"}, "model": {"type": "string"}, "protocol": {"description": "V
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py > dev_out.txt 2>&1; grep -n "=====" dev_out.txt | head -40; sed -n '/===== claim-fig3a-some/,/===== claim-fig3b/p' dev_out.txt | tail -8
-```
-
-```
-1:===== load
-4:===== tables
-7:===== sanity-files
-86:===== sanity-values
-125:===== sanity-trains
-172:===== sanity-onset
-216:===== gc-setup
-222:===== claim-tables1
-255:===== claim-fig2
-282:===== claim-figs2
-328:===== dur-setup
-360:===== claim-fig3a-target
-378:===== claim-fig3a-nontarget-lengthen
-387:===== claim-fig3a-sites
-426:===== claim-fig3a-total
-460:===== claim-fig3a-some-nontarget
-510:===== claim-fig3b
-546:===== psd-setup
-551:===== claim-fig4b
-611:===== claim-fig4b-other
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && sed -n 216,330p dev_out.txt | cut -c1-200
-```
-
-```
-===== gc-setup
-Baseline seizures with a GC matrix: 267 of 267 ; dropped (no seizure found, or fewer than 5 s after onset in the clip): 0
-VAR model order by BIC (per window): {'count': 2403.0, 'mean': 7.9, 'std': 4.3, 'min': 1.0, '25%': 3.0, '50%': 11.0, '75%': 12.0, 'max': 16.0} ; at the cap of 20 : 0
-VAR model order by AIC (per window): {'count': 2403.0, 'mean': 13.4, 'std': 4.7, 'min': 2.0, '25%': 11.0, '50%': 13.0, '75%': 17.0, 'max': 20.0} ; at the cap: 422
-GC values (BIC order), off-diagonal, range: 0.0018 to 0.4886 ; median 0.0355
------ 0.0s
-===== claim-tables1
-The cf_w sign does not change Pearson r (r(-a,-b) = r(a,b)), so one sign is shown.
- order pairs  self rat  n_intra  n_inter  intra_r  intra_sd  inter_r  inter_sd  p_MW  intra_ok  inter_ok  paper_intra  paper_inter  holds
-gc_bic  once False  R1      146      449    0.445     0.492    0.173     0.547 0.000      True      True         0.72        -0.11   True
-gc_bic  once False  R2      231      672    0.180     0.601   -0.025     0.623 0.000      True      True         0.47         0.09   True
-gc_bic  once False  R3      173      568    0.578     0.460    0.388     0.519 0.000     False      True         0.77         0.59   True
-gc_bic  once False  R4      211      692    0.154     0.656    0.208     0.647 0.243     False     False         0.81         0.79  False
-gc_bic  once False  R5      117      379    0.534     0.467    0.324     0.505 0.000      True     False         0.74         0.71   True
-gc_bic  once False  R6      149      481    0.700     0.319    0.588     0.327 0.000      True      True         0.61         0.36   True
-gc_bic  once False  R7      189      552    0.534     0.469    0.514     0.424 0.151      True      True         0.81         0.71  False
-
-Per reading: rats where intra > inter with MW p < 0.05 (of 7), and means within the Table S1 SD (of 14):
-                    rats_holding  means_within_tol
-order  pairs self                                 
+sub-RatR1_ses-RatR1-00base0 2023-06-16 9 {(600000, 4): 9} {'Raw acquisition at 00base0 stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_6_16', 'R1_2023_6_18', 'R1_2023_6_21', 'R1_2023_6_22', 'R1_2023_6_24', 'R1_2023_6_25', 'R1_2023_6_29'] ['ictal1', 'ictal2', 'ictal1']
+sub-RatR1_ses-RatR1-01CA1-stim 2023-07-08 11 {(600000, 4): 11} {'Raw acquisition at 01CA1_stim stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_7_10', 'R1_2023_7_19', 'R1_2023_7_20', 'R1_2023_7_8'] ['ictal1', 'ictal1', 'ictal2']
+sub-RatR1_ses-RatR1-02base1 2023-07-16 10 {(600000, 4): 10} {'Raw acquisition at 02base1 stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_7_16', 'R1_2023_7_21'] ['ictal1', 'ictal1', 'ictal2']
+sub-RatR1_ses-RatR1-03CA3-stim 2023-08-16 7 {(600000, 4): 7} {'Raw acquisition at 03CA3_stim stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_8_16-ictal1', 'R1_2023_8_19', 'R1_2023_8_23', 'R1_2023_8_24', 'R1_2023_8_25', 'R1_2023_8_27'] ['small', 'ictal1', 'ictal1']
+sub-RatR1_ses-RatR1-04base2 2023-08-29 5 {(600000, 4): 5} {'Raw acquisition at 04base2 stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_8_29', 'R1_2023_8_30', 'R1_2023_9_1', 'R1_2023_9_2', 'R1_2023_9_5'] ['ictal1', 'ictal1', 'ictal1']
+sub-RatR1_ses-RatR1-05ANT-stim 2023-09-03 6 {(600000, 4): 6} {'Raw acquisition at 05ANT_stim stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_9_10', 'R1_2023_9_12', 'R1_2023_9_3', 'R1_2023_9_4', 'R1_2023_9_6', 'R1_2023_9_8'] ['ictal1', 'ictal1', 'ictal1']
+sub-RatR1_ses-RatR1-06base3 2023-09-15 11 {(600000, 4): 11} {'Raw acquisition at 06base3 stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_9_15', 'R1_2023_9_16', 'R1_2023_9_20'] ['ictal1', 'ictal2', 'ictal3']
+sub-RatR1_ses-RatR1-07DG-stim 2023-09-21 13 {(600000, 4): 13} {'Raw acquisition at 07DG_stim stage'} {0.0} {1000.0} True [] float64 [600000, 1]
+    ['R1_2023_9_20', 'R1_2023_9_21', 'R1_2023_9_22'] ['ictal1', 'ictal2', 'ictal3']
+sub-
 [... 96 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('cells_code.py').read()
-s=s.replace('''print(t1[(t1.order == "gc_bic") & (t1.pairs == "once") & (~t1.self)].round(3).to_string(index=False))''','''print("Reading: BIC order, each pair once, self-pairs excluded")
-print(t1[(t1.order == "gc_bic") & (t1.pairs == "once") & (~t1.self)].round(3).to_string(index=False))
-print("\\nReading: BIC order, each pair once, self-pairs (r = 1) included in the intra-group set")
-print(t1[(t1.order == "gc_bic") & (t1.pairs == "once") & (t1.self)].round(3).to_string(index=False))''')
-open('cells_code.py','w').write(s)
+cd $TMPDIR && . dev/bin/activate && python -c "
+import json
+res=json.load(open('survey.json'))
+for r in res:
+    for s in r['series']:
+        if 'small' in s[0] or s[0].count('-')>1: print(r['sid'], s[0])
+" | head -40; python - <<'EOF'
+import remfile,h5py,requests,time,numpy as np,resource
+url=requests.head("https://api.dandiarchive.org/api/assets/b014d56d-798d-4814-b3f1-744addd72fcd/download/",allow_redirects=True).url
+t=time.time()
+f=h5py.File(remfile.File(url),'r')
+a=f['acquisition']
+for k in list(a)[:3]:
+    d=a[k]['data'][:]
+    print(k, d.shape, time.time()-t, d.min(0), d.max(0), d.std(0))
+    np.save(f'/tmp/claude-1001/{k}.npy', d)
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e3)
+print(a['R1_2023_7_16-ictal1']['data'].compression, a['R1_2023_7_16-ictal1']['data'].compression_opts)
 EOF
-echo ok
 ```
 
 ```
-ok
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && sed -n 328,470p dev_out.txt | cut -c1-220 | sed -n 1,10p; sed -n '/===== claim-fig3a-total/,/===== claim-fig3a-some/p' dev_out.txt | head -12 | cut -c1-230; sed -n '/===== claim-fig3a-sites/,/===== claim-fig3a-total/p' dev_out.txt | head -16
-```
-
-```
-===== dur-setup
-Per stimulation group (main thresholds, all seizures): mean duration (s), baseline mean, and mean normalized duration
-rat site  target  n    dur  base_mean  base_n  relative   sem  difference  zscore
- R1  ANT   False  6 32.458     33.400       5    -0.028 0.040      -0.942  -0.130
- R1  CA1   False 11 30.818     53.778       9    -0.427 0.039     -22.960  -0.397
- R1  CA3   False  7 30.821     34.175      10    -0.098 0.126      -3.354  -0.350
- R1   DG    True 13 29.019     28.705      11     0.011 0.061       0.315   0.061
- R2  ANT   False 10 37.850     51.906       8    -0.271 0.094     -14.056  -0.924
- R2  CA1    True  9 49.306     45.156      16     0.092 0.088       4.149   0.213
- R2  CA3   False  9 47.833     42.864      11     0.116 0.125       4.970   0.355
-===== claim-fig3a-total
-Paper: target -0.26 +- 0.03, non-target 0.038 +- 0.03, Mann-Whitney p < 0.001
-                            variant       norm     unit  n_target  n_non_target  target_mean  target_sem  non_target_mean  non_target_sem   p_MW  target_ok  non_target_ok
-                               main   relative seizures        85           165      -0.0368      0.0330           0.0030          0.0382 0.9338      False          False
-                               main   relative   groups         8            20      -0.0126      0.0581           0.0063          0.0732 0.9405      False          False
-                               main difference seizures        85           165      -1.6557      1.5552          -0.9191          1.6217 0.8046      False          False
-                               main difference   groups         8            20      -0.5353      2.8645          -0.7265          3.0821 0.9801      False          False
-                               main     zscore seizures        85           165      -0.1839      0.1234          -0.0197          0.1714 0.7216      False          False
-                               main     zscore   groups         8            20   
-[... 20 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nbbuild.py",
- "content": "import re, sys, nbformat\nsrc = open('/tmp/claude-1001/cells_code.py').read()\ncode = {}\nfor c in re.split(r'^# %% ', src, flags=re.M)[1:]:\n    name, body = c.split('\\n', 1)\n    code[name.strip()] = body.strip('\\n')\nmd = {}\nfor c in re.split(r'^<<< ', open('/tmp/claude-1001/cells_md.txt').read(), flags=re.M)[1:]:\n    name, body = c.split('\\n', 1)\n    md[name.strip()] = body.strip('\\n')\norder = [\n    (\"md\", \"header\"), (\"code\", \"load\", []), (\"code\", \"tables\", []),\n    (\"md\", \"datacheck\"), (\"code\", \"sanity-files\", [\"sanity\"]), (\"md\", \"after-files\"),\n    (\"code\", \"sanity-values\", [\"sanity\"]), (\"md\", \"after-values\"),\n    (\"code\", \"sanity-trains\", [\"sanity\"]), (\"md\", \"after-trains\"),\n    (\"code\", \"sanity-onset\", [\"sanity\"]), (\"md\", \"after-onset\"),\n    (\"md\", \"gc\"), (\"code\", \"gc-setup\", []),\n    (\"md\", \"q-tables1\"), (\"code\", \"claim-tables1\", [\"claim:tables1-network-stable-short-term\"]), (\"md\", \"r-tables1\"),\n    (\"md\", \"q-fig2\"), (\"code\", \"claim-fig2\", [\"claim:fig2-r1-target-shifts\"]), (\"md\", \"r-fig2\"),\n    (\"md\", \"q-figs2\"), (\"code\", \"claim-figs2\", [\"claim:figs2-target-assignment\"]), (\"md\", \"r-figs2\"),\n    (\"md\", \"dur\"), (\"code\", \"dur-setup\", []),\n    (\"md\", \"q-fig3a-target\"), (\"code\", \"claim-fig3a-target\", [\"claim:fig3a-target-reduces-each-rat\"]), (\"md\", \"r-fig3a-target\"),\n    (\"md\", \"q-fig3a-lengthen\"), (\"code\", \"claim-fig3a-nontarget-lengthen\", [\"claim:fig3a-nontarget-can-lengthen\"]), (\"md\", \"r-fig3a-lengthen\"),\n    (\"md\", \"q-fig3a-sites\"), (\"code\", \"claim-fig3a-sites\", [\"claim:fig3a-per-rat-site-differences\"]), (\"md\", \"r-fig3a-sites\"),\n    (\"md\", \"q-fig3a-total\"), (\"code\", \"claim-fig3a-total\", [\"claim:fig3a-target-vs-nontarget-total\"]), (\"md\", \"r-fig3a-total\"),\n    (\"md\", \"q-fig3a-some\"), (\"code\", \"claim-fig3a-some-nontarget\", [\"claim:fig3a-some-nontarget-shorten\"]), (\"md\", \"r-fig3a-some\"),\n    (\"md\", \"q-fig3b\"), (\"code\", \"claim-fig3b\", [\"claim:fig3b-same-site-target-vs-nontarget\"]), (\"md\", \"r-fig3b\"),\n    (\"md\", \"psd\"), (\"code\", \"psd-setup\", []),\n    (\"md\", \"q-fig4b\"), (\"code\", \"claim-fig4b\", [\"claim:fig4b-psd-target-bands\"]), (\"md\", \"r-fig4b\"),\n    (\"md\", \"q-fig4b-other\"), (\"code\", \"claim-fig4b-other\", [\"claim:fig4b-psd-other-bands-unchanged\"]), (\"md\", \"r-fig4b-other\"),\n    (\"md\", \"q-fig5b\"), (\"code\", \"claim-fig5b\", [\"claim:fig5b-iis-post-seizure\"]), (\"md\", \"r-fig5b\"),\n    (\"md\", \"hfo\"), (\"code\", \"hfo-setup\", []),\n    (\"md\", \"q-fig6e\"), (\"code\", \"claim-fig6e\", [\"claim:fig6e-ictal-ripples-no-difference\"]), (\"md\", \"r-fig6e\"),\n    (\"md\", \"q-fig6f\"), (\"code\", \"claim-fig6f\", [\"claim:fig6f-ictal-fast-ripples-reduced\"]), (\"md\", \"r-fig6f\"),\n    (\"md\", \"summary\"), (\"code\", \"runtime\", []),\n]\ncode[\"runtime\"] = 'print(f\"Notebook run time: {(time.time() - started) / 60:.1f} min\")'\nnb = nbformat.v4.new_notebook()\nnb.metadata = {\"kernelspec\": {\"display_name\": \"Python 3\", \"language\": \"python\", \"name\": \"python3\"}}\nfor item in order:\n    if item[0] == \"md\":\n        nb.cells.append(nbformat.v4.new_markdown_cell(md[item[1]]))\n    else:\n        c = nbformat.v4.new_code_cell(code[item[1]])\n        if item[2]:\n            c.metadata[\"tags\"] = item[2]\n        nb.cells.append(c)\nunused = set(md) - {i[1] for i in order if i[0] == \"md\"}\nassert not unused, unused\nnbformat.write(nb, sys.argv[1])\nprint(\"cells:\", len(nb.cells))\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/nbbuild.py (file state is current in your context — no need to Read it back)
+RatR1_03CA3_stim R1_2023_8_16-ictal1-small
+RatR2_06base3 R2_2023_8_13-ictal1-small
+RatR4_02base1 R4_2023_9-11-ictal1
+RatR4_02base1 R4_2023_9-11-ictal2
+RatR4_02base1 R4_2023_9-11-ictal3
+RatR4_02base1 R4_2023_9-11-ictal4
+RatR4_02base1 R4_2023_9-11-ictal5
+RatR4_02base1 R4_2023_9-11-ictal6
+RatR4_02base1 R4_2023_9-11-ictal7
+RatR4_02base1 R4_2023_9-11-ictal8
+RatR4_02base1 R4_2023_9-12-ictal1
+RatR4_02base1 R4_2023_9-12-ictal2
+RatR4_02base1 R4_2023_9-12-ictal3
+RatR4_02base1 R4_2023_9-12-ictal4
+RatR4_04base2 R4_2023_9-15-ictal1
+RatR4_04base2 R4_2023_9-16-ictal1
+RatR4_04base2 R4_2023_9-16-ictal2
+RatR4_04base2 R4_2023_9-16-ictal3
+RatR4_04base2 R4_2023_9-16-ictal4
+RatR4_04base2 R4_2023_9-16-ictal5
+[... 26 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-date -u
-```
-
-```
-Tue Nov 10 00:07:46 UTC 2026
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/cells_md.txt",
- "content": "<<< header\n# Reproducing Yang et al. (2025) from dandiset 001212\n\nPaper. Yang Y, Ni H, Sun Y, Xing Y, Wang C, Zhang J, Zhu J, Xu K (2025). Individualized target\nselection of closed-loop electrical stimulation for the treatment of spontaneous temporal lobe\nepilepsy. IEEE Transactions on Neural Systems and Rehabilitation Engineering 33:4008-4016,\n[doi:10.1109/TNSRE.2025.3614867](https://doi.org/10.1109/TNSRE.2025.3614867). The claims file\n(`claims/yang-2025.yaml`) was written from the version of record (open access) and its supplement\n(Figures S1 to S3, Table S1).\n\nDandiset. [DANDI:001212](https://dandiarchive.org/dandiset/001212/0.241023.0931), version\n0.241023.0931 (doi:10.48324/dandi.001212/0.241023.0931). The paper cites no DANDI version (it has\nno data availability statement), and the dandiset has a single published version, the most recent,\nso it is pinned. The draft has the same 56 assets and size. The files are streamed from the\narchive; nothing is downloaded to disk.\n\nWhat the dandiset holds. One NWB file per rat (R1 to R7) and group (4 baseline, 4 stimulation, in\nthe order 00 to 07); each file holds one 600 s clip per seizure, 4 channels (DG, CA1, CA3, ANT) at\n1 kHz in microvolts. There are no seizure onset or end times, no stimulation times, no interictal\nrecordings and no recording durations. So the seizure onset and end are marked here from the LFP\nby a stated rule (an assumption; the paper gives none), the stimulation trains are found from the\nartefact they leave in the recording, and the claims on interictal data, seizure frequency and\nseizure duration proportion are blocked.\n\n| Claim | Tested here |\n|---|---|\n| tables1-network-stable-short-term | tested |\n| fig2-r1-target-shifts | tested |\n| figs2-target-assignment | tested |\n| fig3a-target-reduces-each-rat | tested |\n| fig3a-nontarget-can-lengthen | tested |\n| fig3a-per-rat-site-differences | tested |\n| fig3a-target-vs-nontarget-total | tested |\n| fig3a-some-nontarget-shorten | tested |\n| fig3b-same-site-target-vs-nontarget | tested |\n| seizure-duration-proportion | blocked, data missing (no recording time) |\n| fig3c-frequency-no-difference | blocked, data missing (no recording time) |\n| fig4b-psd-target-bands | tested |\n| fig4b-psd-other-bands-unchanged | tested |\n| fig5b-iis-post-seizure | tested |\n| fig5c-interictal-iis-no-difference | blocked, data missing (no interictal recordings) |\n| fig5d-iis-seizure-correlation | blocked, data missing (no interictal recordings, no recording time) |\n| fig6cd-interictal-hfo-no-difference | blocked, data missing (no interictal recordings) |\n| fig6e-ictal-ripples-no-difference | tested |\n| fig6f-ictal-fast-ripples-reduced | tested |\n\nThe helper module `yang2025.py` streams each file and reduces each clip, as it is read, to what\nthe claims use (stimulation trains, seizure onset and end, the GC matrix at onset, PSD ratios,\ninterictal spike times, HFO counts); its docstrings say where each parameter comes from. Files are\nprocessed three at a time; each worker holds one clip (about 20 MB) at a time.\n<<< datacheck\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n<<< after-files\nThe dandiset holds 7 rats with 4 baseline and 4 stimulation groups each, as its description and\nMethods C say, and the stimulated site is in each stimulation group's file name. Every file holds\nonly the clips and the electrodes table: no intervals, processing, analysis or stimulus data, so no\nseizure times, stimulation times or recording durations. The electrodes table is the same in all\nfiles (DG, CA1, CA3, ANT, in that order); the coordinates match Methods A except the ANT depth\n(DV -5.6 mm here, -6.0 mm in the paper). All subjects are given as P2M and 300-350 g in every\nsession, though the sessions span up to four months per rat (Methods A: 7-9 weeks and 250-300 g at\nthe start). Two groups hold fewer than the 6 seizures Methods C states (R1 base2, 5; R7 CA3-stim,\n4). Twenty clips are named `-small` and two `-large`, which nothing in the dandiset explains; they\nare kept, with a variant without them where it matters. The dates in the clip names do not always\nfollow the group order: R3's CA1-stim group (07) holds clips dated 18 to 20 October, within the\ndates of its DG-stim group (05) and before its base3 group (06), and R5's base0 runs from 8\nSeptember to 25 October.\n<<< after-values\nThe values are finite, in microvolts, and clipped near +-6390 uV (the amplifier's range) in some\nclips. No two clips are identical. Sixteen clip names (date and seizure number) occur in two groups\nof the same rat, but their contents differ: the correlation of their line-length envelopes (0.24\nto 0.85, at the best lag) is below the 99th percentile over all pairs of clips of the same rat, so\nthese are different seizures under one name, not one recording deposited twice. Each clip is\ncounted once. Units are not followed across sessions; the channels are the same electrodes in all\nfiles of a rat by the electrodes table, which is an assumption the analysis shares with the paper.\n<<< after-trains\nStimulation trains are found from their artefact (`yang2025.find_trains`). In the stimulation\ngroups, 250 of 252 clips carry trains; they last 5 s (median) and the pause between trains is\n5.5 s (median), as Methods C states (5 s trains, 5 s pause). The two stimulation clips without a\ntrain are in R7's CA3 group, where the artefact is weakest. This confirms that the clips of the\nstimulation groups are stimulated seizures and gives each one its stimulation times.\n\nEleven baseline clips also carry trains. In R1 base2 (8/29 ictal1, 8/30 ictal1), R4 base0 (9/6\nictal1 to 3), R5 base0 (10/25 ictal1) and R6 base1 (9/17 ictal1), they are 4.5 to 5 s trains,\n3 to 5 s after the detected onset in several, like those of the stimulation groups: these baseline\nseizures were stimulated. The single trains of 2 s (R3 9/11 ictal7, R6 9/12 ictal9), the 7.5 s one\n(R6 9/12 ictal3) and the irregular ones of R7 9/3 ictal1 (2 to 10.5 s, before the seizure) may be\nother artefacts. The groups are analysed as deposited, with a variant that leaves out every\nbaseline clip with a train.\n<<< after-onset\nThe onset and end rule (assumption, `yang2025.detect_seizure`) finds a seizure in 517 of 519 clips\nat the main thresholds. In the stimulation groups the first train follows the detected onset by a\nmedian 6.5 s (25th to 75th percentile 2.9 to 15.6 s); in 10 of 248 the train comes first, and the\nmedian is 3 to 7 s in R1, R2, R3, R6 and R7 and 15 to 17 s in R4 and R5. The line-length score is\n1.8 times its median 5 s before the first train and 1.3 to 1.5 times 10 to 20 s before it, while at\nrandom times in baseline clips it stays at 1.1 to 1.2; the 0 and +5 s points include the train\nartefact. The closed-loop detector starts stimulation on seizure onset (Methods C), so this\ncontrast shows that the clips' clock, the trains and the seizures agree, and that the detected\nonsets fall a few seconds before the detector's, more so in R4 and R5. Detected durations are 6 to\n207 s, median 41 to 45 s in each condition.\n<<< gc\n## Granger causality at seizure onset\n\nFor each baseline seizure, conditional GC between the 4 channels over the first 5 s after onset,\nin 9 windows of 1 s with 0.5 s overlap (Methods B), from VAR models fitted by OLS (the MVGC\ntoolbox's time-domain estimator, reimplemented in `yang2025.conditional_gc`). The model order is\nchosen per window by BIC, with AIC as a variant, up to 20. cf_w is computed with both signs; as it\nis linear in the GC matrix, the two window-combination readings of the claims file give the same\nvalue.\n<<< q-tables1\n### tables1-network-stable-short-term\n\n> In every rat the cf_w vectors of seizure onset correlate more strongly between seizures of the\n> same baseline group than between seizures of different baseline groups (Pearson r, intra-group\n> against inter-group, Mann-Whitney).\n\nCriterion: under one reading, intra-group r above inter-group r with Mann-Whitney p < 0.05 in all\n7 rats, and at least 10 of the 14 means within the Table S1 SDs. Readings: (a) each pair once or\n(b) twice; self-pairs (c) excluded or (d) included; BIC or AIC order.\n<<< r-tables1\n**Result: reproduced under reading (d).** With self-pairs included (each pair once, BIC order),\nintra-group r exceeds inter-group r with p < 0.05 in all 7 rats, and 11 of the 14 means lie within\nthe Table S1 SDs. With self-pairs excluded, R4 (0.154 against 0.208, p = 0.24) and R7 (0.534\nagainst 0.514, p = 0.15) do not hold, so 5 of 7 rats hold and 10 of 14 means are within\ntolerance. The intra-group means are lower than Table S1's in every rat but R6 (for example R1\n0.445 against 0.72 with self-pairs excluded). Leaving out the `-small` clips changes no rat's\nresult. The outcome rests on the onset rule, which is an assumption.\n<<< q-fig2\n### fig2-r1-target-shifts\n\n> In rat R1 the node with the highest cf_w at seizure onset changes across the four baseline\n> groups (ANT, ANT, CA3, DG), while the cf_w pattern is consistent within each group.\n\nCriterion: under one reading, the node with the highest mean cf_w in each of R1's baseline groups is\nthe one named; partially reproduced when three of four match.\n<<< r-fig2\n**Result: partially reproduced.** With cf_w as out-strength minus in-strength and AIC order, the\ntop nodes are CA1, ANT, CA3, DG: 3 of the 4 named (base0 gives CA1 where the paper has ANT). With\nBIC order 2 of 4 match, and with the other sign none. The top node does change across groups, and\nthe mean within-group r of the cf_w vectors is 0.26 to 0.66. R1's groups hold 9, 10, 5 and 11\nseizures, where Figure 2A shows 9, 9, 7 and 9.\n<<< q-figs2\n### figs2-target-assignment\n\n> Across the 7 rats, the targets computed from each baseline group's seizures, compared with the\n> site stimulated in the next group, give 8 target and 20 non-target stimulation groups as Figure\n> S2 shows.\n\nCriterion: reproduced when, under one reading, at least 24 of the 28 baseline groups give the\nFigure S2 target set and all 28 target and non-target labels agree; partially reproduced when at\nleast 18 baseline groups match. Readings: cf_w sign, order criterion, and (a) the node with the\nlargest mean or (b) the nodes significantly high (Kruskal-Wallis, then Mann-Whitney against the top\nnode). The site stimulated next and the group order are the dataset's.\n<<< r-figs2\n**Result: partially reproduced.** Under reading (a), cf_w as out minus in and AIC order, 20 of the 28\nbaseline groups give the Figure S2 target (16 with BIC order); the labels give 9 target and 19\nnon-target groups, 21 of the 28 labels agreeing with Figure S2. Reading (b) matches 6 groups, and\nthe other sign 0 or 1, so the data support cf_w as causal outflow (out minus in), as Figure 2 and\nthe Discussion describe it, against the wording of Methods B. The misses are mostly in R5 (CA3\ncomputed for the 3 groups where Figure S2 has ANT) and R6. The dataset's stimulation order differs\nfrom Figure S2 in R5 (dataset CA1, ANT, DG, CA3; Figure S2 ANT, DG, CA1, CA3) and R6 (dataset ANT,\nDG, CA1, CA3; Figure S2 CA1, ANT, DG, CA3), so in these rats the baseline group before a site is not\nthe one Figure S2 pairs it with. Later claims use the Figure S2 labels, as the criterion says.\n<<< dur\n## Seizure duration\n\nDurations are the detected end minus onset (assumption). Each stimulation group's seizures are\nnormalized to the baseline group just before it in the dataset's order (Results B), under the three\nreadings of the claims file: relative change (duration over the baseline mean, minus 1),\ndifference from the baseline mean (s), and z-score against the baseline seizures. Target groups are\nthose of Figure S2 (R1 DG, R2 DG and CA1, R3 CA3, R4 CA3, R5 ANT, R6 CA3, R7 ANT). Every claim is\nshown also for the seizures that received a train (stimulated only), without the baseline clips that\ncarry trains, and at the other two threshold pairs of the onset rule.\n<<< q-fig3a-target\n### fig3a-target-reduces-each-rat\n\n> In each of the 7 rats, stimulation of the target site reduced normalized seizure duration below\n> the preceding baseline.\n\nCriterion: reproduced when the mean normalized duration is below zero in all 8 target groups;\npartially reproduced in 6 or 7.\n<<< r-fig3a-target\n**Result: not reproduced.** Three of the 8 target groups are below their baseline (R3 CA3 -0.043,\nR6 CA3 -0.257, R7 ANT -0.256); R1 DG (+0.011), R2 DG (+0.178), R2 CA1 (+0.092), R4 CA3 (+0.058)\nand R5 ANT (+0.116) are above. The count is 3 under every seizure set, 2 with thresholds (2, 1.5)\nand 4 with (4, 2.5), short of the 6 the partial outcome needs.\n<<< q-fig3a-lengthen\n### fig3a-nontarget-can-lengthen\n\n> Stimulation of some non-target sites increased seizure duration above the preceding baseline.\n\nCriterion: reproduced when at least 5 of the 20 non-target groups have a positive mean normalized\nduration; not reproduced when fewer than 2 do.\n<<< r-fig3a-lengthen\n**Result: reproduced.** Eleven of the 20 non-target groups have a positive mean normalized duration\n(9 to 12 under the variants). Five of them are among the ten Figure 3A shows as positive (R2 CA3,\nR3 DG and ANT, R4 DG and ANT, R5 CA1 are; R1 CA3 and ANT, R6 DG and R7 DG are not), and R4 CA1, R5\nCA3, R6 ANT, R6 CA1 and R7 CA1 are positive here and not in the figure.\n<<< q-fig3a-sites\n### fig3a-per-rat-site-differences\n\n> Within rats R2, R3, R4, R5 and R7 the four stimulation sites differ in normalized seizure duration\n> (Kruskal-Wallis), while in R1 and R6 no pair of sites differs.\n\nCriterion: Kruskal-Wallis per rat, then Dunn's test, (a) Bonferroni-adjusted or (b) unadjusted.\nReproduced when at least 8 of the 11 significant pairs of Figure 3A are significant and R1 and R6\nhave none; partially reproduced when at least 5 are.\n<<< r-fig3a-sites\n**Result: partially reproduced.** At most 5 of the 11 pairs of Figure 3A are significant (relative\nchange or difference, unadjusted Dunn), and under these readings R1 and R6 have 4 to 6 significant\npairs, where the paper has none. With Bonferroni adjustment 2 or 3 of 11 are found. The\nKruskal-Wallis test is significant in R1, R2, R3 and R4 (relative change) and not in R5 (p = 0.68),\nR6 (0.12) or R7 (0.62). The criterion's partial outcome needs only 5 of the 11 pairs, which the\nbest reading reaches; the R1 and R6 part of the claim does not hold under any reading but the\nz-score with adjustment, which finds 2 of the 11.\n<<< q-fig3a-total\n### fig3a-target-vs-nontarget-total\n\n> Pooled over rats, target-site stimulation shortened normalized seizure duration (-0.26 +- 0.03)\n> significantly more than non-target stimulation (0.038 +- 0.03).\n\nCriterion: both means within tolerance and Mann-Whitney p < 0.001 with target lower; partially\nreproduced when target is lower with p < 0.05.\n<<< r-fig3a-total\n**Result: not reproduced.** Pooled over seizures, the relative change is -0.037 +- 0.033 for target\nand +0.003 +- 0.038 for non-target stimulation (Mann-Whitney p = 0.93); over groups, -0.013 against\n+0.006 (p = 0.94). No reading or variant gives p < 0.05 (smallest p = 0.096, difference from\nbaseline at thresholds (2, 1.5), with target the longer), and the target mean is never near -0.26.\n<<< q-fig3a-some\n### fig3a-some-nontarget-shorten\n\n> Five non-target stimulations (R2 ANT, R3 CA1, R4 CA1, R5 CA3, R7 CA3) also significantly\n> shortened seizure duration, but less than the target site of the same rat.\n\nCriterion: readings of \"significantly shortened\", (a) Mann-Whitney against the preceding baseline,\n(b) Wilcoxon of normalized durations against 0, (c) one-sample t-test; reproduced when at least 4 of\nthe 5 are significantly shorter and in at least 4 of the 5 rats the named group's mean is above that\nof the target group (for R2, DG); partially reproduced when 3 of each hold.\n<<< r-fig3a-some\n**Result: partially reproduced.** Under the t-test reading 3 of the 5 named groups are significantly\nshorter than baseline (R2 ANT, R3 CA1, R7 CA3; 2 under the other two tests), and 3 of the 5 are less\neffective than the rat's target (R4 CA1, R5 CA3, R7 CA3), which meets the partial outcome. Only R7\nCA3 does both; R2 ANT (-0.271 against the DG target's +0.178) and R3 CA1 (-0.684 against -0.043)\nshorten seizures more than the target. R1 CA1, R6 DG and R7 DG, which the paper does not name, are\nalso significantly shorter.\n<<< q-fig3b\n### fig3b-same-site-target-vs-nontarget\n\n> For the same site, stimulation as a target shortened normalized seizure duration more than\n> stimulation of that site as a non-target, significantly for DG, CA3 and ANT but not CA1.\n\nCriterion: per site, Mann-Whitney of target against non-target seizures pooled over rats (unpaired\nt-test as a variant); reproduced when DG, CA3 and ANT each show target lower with p < 0.05;\npartially reproduced for two of the three.\n<<< r-fig3b\n**Result: not reproduced.** No site shows target lower with p < 0.05 under any normalization or\nseizure set. With relative change, target is lower at CA3 (-0.096 against +0.026, p = 0.51) and ANT\n(-0.094 against +0.093, p = 0.19), and higher at DG (+0.069 against +0.083 is lower by 0.014,\np = 0.63). At CA1, the part of the claim that expects no difference, p = 0.079.\n<<< psd\n## PSD ratio\n\nWelch PSD band ratios (Methods D) in the pre and post windows: for stimulation groups, onset to the\nfirst train, and the 5 s after the first train ends (assumption); for baseline groups, 0 to 5 s and\n10 to 15 s after onset. Readings of the claims file: change measure (relative, log2 ratio,\ndifference), 1 s or 0.5 s Hann segments with 50% overlap, total 0.5-120 Hz or 0-500 Hz, all\nchannels or the stimulated channel (baseline seizures keep all channels), and Dunn's post hoc test\nadjusted or not. The unit is the seizure-channel pair.\n<<< q-fig4b\n### fig4b-psd-target-bands\n\n> After target stimulation the change in PSD ratio was larger in low bands (alpha, and theta or\n> beta) and more negative in gamma than after sham (baseline) or non-target stimulation.\n\nCriterion: reproduced when, under one reading of the method and one of the bands, target differs\nfrom both sham and non-target in the named direction with p < 0.05 in all three bands; partially\nreproduced when alpha and gamma hold.\n<<< r-fig4b\n**Result: not reproduced.** No reading of the 96 has alpha and gamma both holding, and at most 2 of\nthe 3 named bands hold (beta and one other, difference measure, total 0-500 Hz, stimulated channel,\nunadjusted). In the main reading (1 s segments, 0.5-120 Hz, all channels, relative change), the\nalpha ratio rises after target stimulation (median +0.52) more than after non-target (+0.19,\np = 0.008) but not more than after sham (+0.58, p = 0.50), and the gamma ratio falls after target\n(-0.20) about as much as after sham (-0.19, p = 1.0), more than after non-target (-0.10,\np = 0.006). Theta falls after target stimulation (-0.21).\n<<< q-fig4b-other\n### fig4b-psd-other-bands-unchanged\n\n> In the other bands (delta and high gamma, and whichever of theta and beta is not named as changed)\n> the change in PSD ratio did not differ between conditions.\n\nCriterion: a claim of absence, Kruskal-Wallis across sham, target and non-target at p < 0.05; delta\nand high gamma judged in every reading, beta under reading (i) and theta under (ii). As\nfig4b-psd-target-bands was decided by neither band reading, both are shown.\n<<< r-fig4b-other\n**Result: not reproduced.** In the main reading the Kruskal-Wallis test is significant for delta\n(p < 0.0001; medians sham -0.17, target -0.52, non-target -0.34), high gamma (p = 0.0002), beta\n(p < 0.0001) and theta (p < 0.0001), so the claim fails under both band readings. Delta and high\ngamma differ under every PSD reading but delta with the stimulated channel and total 0.5-120 Hz\n(p = 0.07 to 0.23).\n<<< q-fig5b\n### fig5b-iis-post-seizure\n\n> The IIS rate 15 s to 45 s after seizures was lower after target stimulation than after non-target\n> stimulation.\n\nCriterion: IIS as Methods F on all channels, threshold from the 180 s before onset; readings (a)\nMann-Whitney of per seizure-channel mean rates over 15 to 45 s, (b) paired t-test across time bins\nof 15 to 45 s (1 s or 5 s bins), target curve against non-target curve. Reproduced when, under one\nreading, target is lower with p < 0.001; partially reproduced with p < 0.05.\n<<< r-fig5b\n**Result: reproduced under reading (b).** Over 15 to 45 s after the seizure end the IIS rate is 0.178\nper s after target and 0.286 per s after non-target stimulation. Across 1 s bins the paired t-test\ngives p = 7.8e-10 (5 s bins, p = 0.0077); per seizure-channel, Mann-Whitney p = 0.0053, and per\nseizure p = 0.033. The difference is not consistent across rats: target is lower in R1, R2, R6 and\nR7 and higher in R3, R4 and R5, and R7's non-target rate (1.12 per s) is far above the others. The\noutcome rests on the onset and end rule and on the 180 s pre-seizure baseline, as the interictal\nsegments of the other baseline reading are not in the dataset.\n<<< hfo\n## HFOs during seizures\n\nRipples (80-250 Hz) and fast ripples (250-490 Hz) counted by a line-length detector (assumption;\nthe HFO App's settings are not given), threshold the 97.5th or 99th percentile of the channel's\nline length over the clip, in the PSD windows; per seizure, the rates summed over the channels used\n(all, or the stimulated one), normalized as post / pre - 1 (Figure 6 legend). Seizures with no event\nin the pre window have no normalized value and are dropped (counts printed). Pairing (a) by rat,\neach condition's mean per rat, paired t-test; (b) unpaired t-test across seizures. No manual review.\n<<< q-fig6e\n### fig6e-ictal-ripples-no-difference\n\n> During seizures, ripple rates normalized to pre-stimulation did not differ between target and\n> non-target stimulation.\n\nCriterion: a claim of absence, the paired t-test at p < 0.05 under pairing (a).\n<<< r-fig6e\n**Result: reproduced.** Under the paired reading the target and non-target means do not differ\n(97.5th percentile, all channels: 5.72 against 7.46, p = 0.73; the other three detector and channel\nreadings, p = 0.09 to 0.95). The normalized rates are large and positive in every condition\n(baseline 4.09), far from the -0.16 and -0.04 read from Figure 6E: this detector counts many more\nripples later in the seizure than at onset, so the test has little to say about the paper's\nmeasure. The unpaired test with the stimulated channel only gives p = 0.020 (target lower).\n<<< q-fig6f\n### fig6f-ictal-fast-ripples-reduced\n\n> During seizures, target stimulation reduced the fast ripple rate, normalized to pre-stimulation,\n> compared with baseline and with non-target stimulation.\n\nCriterion: reproduced when, under one pairing reading, the target mean is below both others with\np < 0.05 for each comparison; partially reproduced when one comparison holds.\n<<< r-fig6f\n**Result: not reproduced.** The target mean is above both others in the main reading (15.9 against\nbaseline 6.0 and non-target 4.6; paired p = 0.29 and 0.30), and no reading has target below both\nwith p < 0.05. With the stimulated channel at the 97.5th percentile the target mean (5.09) is below\nnon-target (8.81) and baseline (6.04), with paired p = 0.19 and 0.38.\n<<< summary\n## Summary\n\n| Claim | Outcome |\n|---|---|\n| tables1-network-stable-short-term | reproduced (with self-pairs included), assumed |\n| fig2-r1-target-shifts | partially reproduced, assumed |\n| figs2-target-assignment | partially reproduced, assumed |\n| fig3a-target-reduces-each-rat | not reproduced, assumed |\n| fig3a-nontarget-can-lengthen | reproduced, assumed |\n| fig3a-per-rat-site-differences | partially reproduced, assumed |\n| fig3a-target-vs-nontarget-total | not reproduced, assumed |\n| fig3a-some-nontarget-shorten | partially reproduced, assumed |\n| fig3b-same-site-target-vs-nontarget | not reproduced, assumed |\n| seizure-duration-proportion | blocked, data missing |\n| fig3c-frequency-no-difference | blocked, data missing |\n| fig4b-psd-target-bands | not reproduced, assumed |\n| fig4b-psd-other-bands-unchanged | not reproduced, assumed |\n| fig5b-iis-post-seizure | reproduced (time-bin reading), assumed |\n| fig5c-interictal-iis-no-difference | blocked, data missing |\n| fig5d-iis-seizure-correlation | blocked, data missing |\n| fig6cd-interictal-hfo-no-difference | blocked, data missing |\n| fig6e-ictal-ripples-no-difference | reproduced, assumed |\n| fig6f-ictal-fast-ripples-reduced | not reproduced, assumed |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning\nand the differences from the paper's method.\n\nHow the analysis differs from the paper's. The dandiset holds no seizure onset or end times, so\nthey are marked here by a line-length rule; every tested outcome rests on it. The stimulation times\nare found from the artefact. The PSD post window is read as the 5 s after the first train ends. HFOs\nare counted by an automatic line-length detector whose settings are this attempt's, with no manual\nreview. GC is a numpy reimplementation of the MVGC time-domain estimator. The normalization\nformula, the unit of analysis, the post hoc test and the pairing of the paired t-tests are not given\nby the paper; every reading the claims file names is shown.\n\nWhat was found about the dataset. It holds the ictal clips of all 7 rats and 56 groups, but no\nseizure or stimulation times, no interictal recordings and no recording durations, which blocks 5\nclaims and leaves every other one resting on an assumed onset rule. Eleven baseline clips carry\nstimulation trains, at least seven of them like those of the stimulation groups (R1 base2, R4 base0,\nR5 base0, R6 base1). Sixteen clip names occur in two groups of the same rat with different\ncontents, and some groups' clip dates fall outside their place in the group order. The stimulation\norder of R5 and R6 differs from Figure S2. Two groups hold fewer than 6 seizures. The `-small` and\n`-large` clip names are unexplained, the subject age and weight are the same in all sessions, and\nthe ANT depth differs from the paper's.\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/cells_md.txt (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('cells_md.txt').read()
-rep=[("""(-0.094 against +0.093, p = 0.19), and higher at DG (+0.069 against +0.083 is lower by 0.014,
-p = 0.63). At CA1""","""(-0.094 against +0.093, p = 0.19) and DG (+0.069 against +0.083, p = 0.63), none significantly.
-At CA1"""),
-("""reproduced.** Eleven of the 20 non-target groups have a positive mean normalized duration
-(9 to 12 under the variants). Five of them""","""reproduced.** Eleven of the 20 non-target groups have a positive mean normalized duration
-(9 to 12 under the variants). Six of them"""),
-("""(p < 0.0001), so the claim fails under both band readings. Delta and high
-gamma differ under every PSD reading but delta with the stimulated channel and total 0.5-120 Hz
-(p = 0.07 to 0.23).""","""(p < 0.0001), so the claim fails under both band readings. High gamma differs under every PSD
-reading, and delta under every one but the stimulated channel with total 0.5-120 Hz (p = 0.07 to
-0.23)."""),
-("""the other sign 0 or 1, so the data support cf_w as causal outflow (out minus in), as Figure 2 and
-the Discussion describe it, against the wording of Methods B. The misses are mostly in R5 (CA3
-computed for the 3 groups where Figure S2 has ANT) and R6.""","""the other sign 0 or 1, so the data support cf_w as causal outflow (out minus in), as Figure 2 and
-the Discussion describe it, against the wording of Methods B. The misses are R1 base0, R2 base0,
-all four R5 groups (CA3 or CA1 computed where Figure S2 has ANT) and two R6 groups."""),
-("""(9/6
-ictal1 to 3), R5 base0 (10/25 ictal1) and R6 base1 (9/17 ictal1), they are 4.5 to 5 s trains,
-3 to 5 s after the detected onset in several, like those of the stimulation groups""","""(9/6
-ictal1 to 3), R5 base0 (10/25 ictal1) and R6 base1 (9/17 ictal1), they are 4.25 to 6 s trains,
-3.6 to 4.9 s after the detected onset in three of them, like those of the stimulation groups"""),
-("""the irregular ones of R7 9/3 ictal1""","""the irregular ones of R7 2024/1/3 ictal1"""),
-("""the
-median is 3 to 7 s in R1, R2, R3, R6 and R7 and 15 to 17 s in R4 and R5.""","""the
-median is 2.9 to 7.1 s in R1, R2, R3, R6 and R7 and 15 to 17 s in R4 and R5."""),
-("""tolerance. The intra-group means are lower than Table S1's in every rat but R6 (for example R1
-0.445 against 0.72 with self-pairs excluded).""","""tolerance. With self-pairs excluded, the intra-group means are lower than Table S1's in every rat
-but R6 (for example R1 0.445 against 0.72)."""),
-]
-for a,b in rep:
-    assert a in s, a[:60]
-    s=s.replace(a,b)
-open('cells_md.txt','w').write(s)
-s=open('cells_code.py').read()
-a='''                        rows.append({"nperseg": nps, "total": total, "channels": chans, "measure": measure,
-                                     "Dunn": "Bonf" if adjust else "unadj", "bands": rname, "bands_holding_of_3": ok,'''
-assert a in s
-s=s.replace('''                        ok = 0
-                        for band, sign in want.items():''','''                        ok, which = 0, []
-                        for band, sign in want.items():''')
-s=s.replace('''                            ok += bool(direction and r["target_vs_baseline_p"] < 0.05 and r["target_vs_nontarget_p"] < 0.05)''','''                            hold = bool(direction and r["target_vs_baseline_p"] < 0.05 and r["target_vs_nontarget_p"] < 0.05)
-                            ok += hold
-                            which += [band] if hold else []''')
-s=s.replace(a,a.replace('"bands_holding_of_3": ok,','"bands_holding_of_3": ok, "which": ",".join(which),'))
-open('cells_code.py','w').write(s)
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+fig,ax=plt.subplots(3,1,figsize=(16,10))
+for i,k in enumerate(['R1_2023_7_16-ictal1','R1_2023_7_21-ictal1','R1_2023_7_21-ictal2']):
+    d=np.load(f'/tmp/claude-1001/{k}.npy')
+    t=np.arange(len(d))/1000
+    for c in range(4): ax[i].plot(t[::10], d[::10,c]+c*1500, lw=.3)
+    ax[i].set_title(k)
+plt.savefig('ep.png',dpi=80)
 EOF
-. env/bin/activate && python dev.py cells_code.py claim-fig4b 2>&1 | sed -n '/Readings where/,/Main reading/p'
 ```
 
 ```
 Shell cwd was reset to
 ```
 
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/ep.png"
+}
+```
+
+Result: no output.
+
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py claim-fig4b 2>&1 | grep -A16 "Readings where"
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import remfile,h5py,requests,numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+url=requests.head("https://api.dandiarchive.org/api/assets/64bdfe35-9029-448d-ac44-4e184a237496/download/",allow_redirects=True).url  # R1 DG stim
+f=h5py.File(remfile.File(url),'r'); a=f['acquisition']; ks=list(a)
+print(ks)
+fig,ax=plt.subplots(4,1,figsize=(16,13))
+for i,k in enumerate(ks[:4]):
+    d=a[k]['data'][:]; np.save(f'/tmp/claude-1001/{k}.npy', d)
+    t=np.arange(len(d))/1000
+    for c in range(4): ax[i].plot(t[::5], d[::5,c]+c*1500, lw=.3)
+    ax[i].set_title(k)
+plt.savefig('stim.png',dpi=80)
+EOF
+```
+
+```
+['R1_2023_9_20-ictal1', 'R1_2023_9_20-ictal2', 'R1_2023_9_20-ictal3', 'R1_2023_9_21-ictal1', 'R1_2023_9_21-ictal2', 'R1_2023_9_21-ictal3', 'R1_2023_9_21-ictal4', 'R1_2023_9_21-ictal5', 'R1_2023_9_21-ictal6', 'R1_2023_9_21-ictal7', 'R1_2023_9_21-ictal8', 'R1_2023_9_21-ictal9', 'R1_2023_9_22-ictal1']
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/stim.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+from scipy.signal import spectrogram
+d=np.load('/tmp/claude-1001/R1_2023_9_20-ictal1.npy')
+fig,ax=plt.subplots(3,1,figsize=(16,12))
+s=slice(280000,320000); t=np.arange(280000,320000)/1000
+for c in range(4): ax[0].plot(t, d[s,c]+c*1500, lw=.3)
+s2=slice(293000,295000); t2=np.arange(293000,295000)/1000
+for c in range(4): ax[1].plot(t2, d[s2,c]+c*800, lw=.5)
+f,tt,S=spectrogram(d[s,0],fs=1000,nperseg=256,noverlap=192)
+ax[2].pcolormesh(tt+280,f,np.log(S),shading='auto')
+plt.savefig('zoom.png',dpi=70)
+# look for runs of identical / zero values
+for c in range(4):
+    x=d[:,c]; dd=np.diff(x)==0
+    print(c, dd.sum(), np.unique(np.round(np.diff(np.sort(np.unique(x)))[:5],4)))
+EOF
+```
+
+```
+0 1252 [0.195 1.365 4.68  5.265 8.58 ]
+1 1158 [ 0.78   2.73   5.46  48.36  50.505]
+2 1112 [ 10.92   40.95   60.255 249.015 367.185]
+3 1161 [ 5.07   7.215  8.58  16.575 19.89 ]
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/zoom.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import numpy as np
+from scipy.signal import welch
+d=np.load('/tmp/claude-1001/R1_2023_9_20-ictal1.npy')
+f,P1=welch(d[287500:291500].T,fs=1000,nperseg=1000)
+f,P0=welch(d[280000:285000].T,fs=1000,nperseg=1000)
+f,P2=welch(d[305000:310000].T,fs=1000,nperseg=1000)
+r=np.log10(P1/P2).mean(0)
+idx=np.argsort(r)[::-1][:25]
+print(sorted(zip(f[idx],np.round(r[idx],2))))
+EOF
+```
+
+```
+[(np.float64(77.0), np.float64(1.5)), (np.float64(78.0), np.float64(1.44)), (np.float64(131.0), np.float64(1.56)), (np.float64(132.0), np.float64(1.96)), (np.float64(133.0), np.float64(1.25)), (np.float64(186.0), np.float64(1.15)), (np.float64(208.0), np.float64(1.35)), (np.float64(209.0), np.float64(2.18)), (np.float64(210.0), np.float64(1.93)), (np.float64(263.0), np.float64(2.5)), (np.float64(264.0), np.float64(2.62)), (np.float64(265.0), np.float64(1.31)), (np.float64(318.0), np.float64(1.41)), (np.float64(340.0), np.float64(2.21)), (np.float64(341.0), np.float64(2.89)), (np.float64(342.0), np.float64(2.3)), (np.float64(394.0), np.float64(1.94)), (np.float64(395.0), np.float64(3.07)), (np.float64(396.0), np.float64(3.03)), (np.float64(397.0), np.float64(1.62)), (np.float64(418.0), np.float64(1.3)), (np.float64(419.0), np.float64(1.41)), (np.float64(472.0), np.float64(3.1)), (np.float64(473.0), np.float64(3.41)), (np.float64(474.0), np.float64(2.45))]
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; df -h $TMPDIR | tail -1; nproc; free -g | head -2
+```
+
+```
+Fri Nov 27 00:21:54 UTC 2026
+/dev/root       145G   60G   86G  41% /tmp/claude-1001
+4
+               total        used        free      shared  buff/cache   available
+Mem:              15           1          11           0           3          14
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "entries/yang-2025/yang.py",
+ "content": "\"\"\"Loading and measures for dandiset 001212 (Yang et al. 2025, doi:10.1109/tnsre.2025.3614867).\n\nThe dandiset holds, for each of 7 rats (R1 to R7), 8 NWB files: four baseline groups (`00base0`,\n`02base1`, `04base2`, `06base3`) and four stimulation groups (`01<site>-stim`, ...), in the\norder of the file names. Each file holds one ElectricalSeries per seizure, 600 s of 4-channel LFP\n(DG, CA1, CA3, ANT, in microvolts) at 1 kHz, named `<rat>_<date>-ictal<k>`. The files carry no\nseizure times, no stimulation times and no interictal recordings, so seizure onset and end and the\nstimulation trains are found here from the LFP.\n\nWhere each parameter comes from:\n\n- Sampling rate 1 kHz, channel order DG, CA1, CA3, ANT: the files (and Methods A).\n- Stimulation: 130 Hz biphasic pulses in 5 s trains with 5 s pauses (Methods C). The trains are\n  found from the comb of the pulse frequency and its aliases; this is a method of this attempt\n  (the files have no stimulation times), checked in the notebook against the 5 s train length.\n- Seizure onset and end: the paper gives no rule (claims file, opening comment, reading (b)).\n  Assumption: line length in 1 s windows with 0.5 s steps on each channel, scaled by the channel's\n  median over the 600 s; the seizure is the longest run in which the mean scaled line length over\n  the four channels is above `SZ_THRESH`, with runs less than `SZ_GAP` s apart merged and\n  stimulation trains bridged. The thresholds are a choice; the notebook shows other values.\n- GC: conditional time-domain Granger causality between the 4 channels (MVGC, Methods B, ref. 37),\n  from VAR models fitted by OLS, model order by BIC up to `GC_MAXORDER` (MVGC's own selection,\n  claims file, a standard choice), over the first 5 s after onset in 1 s windows with 0.5 s\n  overlap (9 windows, Methods B). cf_w is computed per window and averaged; as cf_w is linear in\n  the GC matrix, averaging the matrices first gives the same value (claims file readings (a) and\n  (b) of combining coincide).\n- PSD: Welch, bands of Methods D; window lengths a standard choice (claims file).\n- IIS: Methods F rules (200 ms minimum interval keeping the larger peak, width at most 100 ms,\n  |height| above mean + 5 SD of a baseline stretch); width at half prominence is a standard\n  choice (claims file).\n- HFO: short line length detector (Methods E, refs 50 and 51); parameters are listed with\n  `hfo_rate` and are the HFO App's defaults as far as the paper allows (claims file).\n\"\"\"\n\nimport hashlib\nimport re\n\nimport h5py\nimport numpy as np\nimport remfile\nimport requests\nfrom scipy import signal\n\nDANDISET = \"001212\"\nVERSION = \"0.241023.0931\"\nAPI = \"https://api.dandiarchive.org/api\"\nFS = 1000.0\nCHANNELS = [\"DG\", \"CA1\", \"CA3\", \"ANT\"]\nBANDS = {\"delta\": (0.5, 4), \"theta\": (4, 8), \"alpha\": (8, 12), \"beta\": (12, 30),\n         \"gamma\": (30, 90), \"high_gamma\": (90, 120)}\n\n# seizure detection (assumption, see module docstring)\nSZ_WIN = 1.0\nSZ_STEP = 0.5\nSZ_THRESH = 2.0\nSZ_GAP = 5.0\nSZ_MINDUR = 5.0\n# GC (standard choice)\nGC_MAXORDER = 20\nGC_DOWNSAMPLE = 1\n\n\ndef list_assets():\n    \"\"\"All assets of the pinned version, with rat, group index, group kind and site.\"\"\"\n    url = f\"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=200\"\n    out = []\n    for a in requests.get(url, timeout=60).json()[\"results\"]:\n        m = re.search(r\"ses-Rat(R\\d)-(\\d\\d)(base\\d|[A-Z0-9]+-stim)\", a[\"path\"])\n        rat, idx, name = m.group(1), int(m.group(2)), m.group(3)\n        kind = \"baseline\" if name.startswith(\"base\") else \"stim\"\n        site = name.replace(\"-stim\", \"\") if kind == \"stim\" else None\n        out.append(dict(path=a[\"path\"], asset_id=a[\"asset_id\"], size=a[\"size\"], rat=rat,\n                        index=idx, kind=kind, site=site, group=f\"{rat}-{idx:02d}\"))\n    return sorted(out, key=lambda x: (x[\"rat\"], x[\"index\"]))\n\n\ndef s3_url(asset_id):\n    return requests.head(f\"{API}/assets/{asset_id}/download/\", allow_redirects=True,\n                         timeout=60).url\n\n\ndef open_asset(asset_id):\n    return h5py.File(remfile.File(s3_url(asset_id)), \"r\")\n\n\ndef iter_epochs(asset):\n    \"\"\"Yield (name, data, attrs) for each seizure epoch of an asset, streamed one at a time.\"\"\"\n    with open_asset(asset[\"asset_id\"]) as f:\n        for name, es in f[\"acquisition\"].items():\n            d = es[\"data\"][:]\n            attrs = dict(rate=float(es[\"starting_time\"].attrs[\"rate\"]),\n                         start=float(es[\"starting_time\"][()]),\n                         unit=es[\"data\"].attrs[\"unit\"],\n                         description=es.attrs[\"description\"])\n            yield name, d, attrs\n\n\ndef epoch_date(name):\n    m = re.match(r\"R\\d_(\\d{4})_(\\d+)[_-](\\d+)\", name)\n    return f\"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}\"\n\n\ndef md5(a):\n    return hashlib.md5(np.ascontiguousarray(a).tobytes()).hexdigest()\n\n\n# ---------------------------------------------------------------- stimulation trains\ndef _alias(f):\n    f = f % FS\n    return FS - f if f > FS / 2 else f\n\n\ndef stim_score(x, win=0.5, step=0.25, f0_grid=np.arange(125.0, 136.01, 0.5)):\n    \"\"\"Comb score per window: mean log power at the aliased harmonics of the pulse rate over the\n    median log power of 60-490 Hz, best over the pulse-rate grid, averaged over channels.\n    Returns times (window centres, s), score, and the best pulse rate over the epoch.\"\"\"\n    n = int(win * FS)\n    f, t, S = signal.spectrogram(x.T, fs=FS, nperseg=n, noverlap=n - int(step * FS),\n                                 detrend=\"constant\")\n    L = np.log10(S + 1e-12).mean(0)  # mean over channels: (freq, time)\n    band = (f >= 60) & (f <= 490)\n    med = np.median(L[band], 0)\n    best, best_f0 = None, None\n    for f0 in f0_grid:\n        idx = sorted({int(np.argmin(np.abs(f - _alias(k * f0)))) for k in range(1, 8)})\n        sc = L[idx].mean(0) - med\n        if best is None or np.percentile(sc, 99) > np.percentile(best, 99):\n            best, best_f0 = sc, f0\n    return t, best, best_f0\n\n\ndef find_trains(x, thresh=1.0, min_len=2.0):\n    \"\"\"Stimulation trains as (start, end) in s: runs of comb score above `thresh` lasting at least\n    `min_len` s (trains are 5 s, Methods C).\"\"\"\n    t, sc, f0 = stim_score(x)\n    on = sc > thresh\n    runs = _runs(on)\n    step = t[1] - t[0]\n    out = []\n    for a, b in runs:\n        s, e = t[a] - step, t[b - 1] + step\n        if e - s >= min_len:\n            out.append((float(s), float(e)))\n    return out, f0\n\n\ndef _runs(mask):\n    m = np.concatenate([[False], mask, [False]]).astype(int)\n    d = np.diff(m)\n    return list(zip(np.where(d == 1)[0], np.where(d == -1)[0]))\n\n\n# ---------------------------------------------------------------- seizure onset and end\ndef line_length(x, win=SZ_WIN, step=SZ_STEP):\n    \"\"\"Line length per window and channel; times are window starts (s).\"\"\"\n    n, s = int(win * FS), int(step * FS)\n    dx = np.abs(np.diff(x, axis=0))\n    c = np.concatenate([np.zeros((1, x.shape[1])), np.cumsum(dx, 0)])\n    starts = np.arange(0, x.shape[0] - n, s)\n    ll = c[starts + n - 1] - c[starts]\n    return starts / FS, ll\n\n\ndef detect_seizure(x, trains=(), thresh=SZ_THRESH, gap=SZ_GAP, mindur=SZ_MINDUR):\n    \"\"\"Onset and end (s) of the seizure in a 600 s epoch: the longest run of windows whose mean\n    over channels of line length / channel median exceeds `thresh`, runs closer than `gap` s\n    merged. Windows overlapping a stimulation train are neither ictal nor interictal: they are\n    bridged when ictal windows lie on both sides. Returns (onset, end) or (nan, nan).\"\"\"\n    t, ll = line_length(x)\n    z = (ll / np.median(ll, 0)).mean(1)\n    intrain = np.zeros(len(t), bool)\n    for s, e in trains:\n        intrain |= (t + SZ_WIN > s) & (t < e)\n    on = (z > thresh) & ~intrain\n    runs = [(t[a], t[b - 1] + SZ_WIN) for a, b in _runs(on)]\n    # merge runs: gaps shorter than `gap`, not counting train time inside the gap\n    merged = []\n    for s, e in runs:\n        if merged:\n            ps, pe = merged[-1]\n            g = s - pe\n            for ts, te in trains:\n                g -= max(0.0, min(te, s) - max(ts, pe))\n            if g < gap:\n                merged[-1] = (ps, e)\n                continue\n        merged.append((s, e))\n    merged = [r for r in merged if r[1] - r[0] >= mindur]\n    if not merged:\n        return np.nan, np.nan\n    # the seizure is the run with the largest summed excess line length\n    def mass(r):\n        k = (t >= r[0]) & (t + SZ_WIN <= r[1]) & ~intrain\n        return np.sum(np.clip(z[k] - thresh, 0, None))\n    s, e = max(merged, key=mass)\n    return float(s), float(e)\n\n\n# ---------------------------------------------------------------- Granger causality\ndef _lagmat(x, p):\n    \"\"\"Rows t = p..T-1, columns lag 1..p of each variable.\"\"\"\n    T, n = x.shape\n    return np.hstack([x[p - k:T - k] for k in range(1, p + 1)])\n\n\ndef var_bic_order(x, maxorder=GC_MAXORDER):\n    T, n = x.shape\n    best, bo = np.inf, 1\n    for p in range(1, maxorder + 1):\n        X = _lagmat(x[maxorder - p:], p)  # same sample for every order\n        Y = x[maxorder:]\n        X = np.hstack([np.ones((len(X), 1)), X])\n        B, *_ = np.linalg.lstsq(X, Y, rcond=None)\n        E = Y - X @ B\n        S = E.T @ E / len(Y)\n        bic = np.linalg.slogdet(S)[1] + np.log(len(Y)) * p * n * n / len(Y)\n        if bic < best:\n            best, bo = bic, p\n    return bo\n\n\ndef cond_gc(x, p):\n    \"\"\"Conditional time-domain GC matrix F[i, j] = GC from j to i (MVGC convention: row target,\n    column source), from full and reduced OLS VAR(p) fits.\"\"\"\n    T, n = x.shape\n    x = x - x.mean(0)\n    Y = x[p:]\n    L = _lagmat(x, p)  # columns: lag k var v at (k-1)*n + v\n    F = np.zeros((n, n))\n    Bf, *_ = np.linalg.lstsq(L, Y, rcond=None)\n    Ef = Y - L @ Bf\n    vf = (Ef ** 2).mean(0)\n    for j in range(n):\n        keep = [c for c in range(L.shape[1]) if c % n != j]\n        Lr = L[:, keep]\n        Br, *_ = np.linalg.lstsq(Lr, Y, rcond=None)\n        vr = ((Y - Lr @ Br) ** 2).mean(0)\n        for i in range(n):\n            if i != j:\n                F[i, j] = np.log(vr[i] / vf[i])\n    return F\n\n\ndef cfw_onset(x, onset, order=None, win=1.0, step=0.5, dur=5.0, ds=GC_DOWNSAMPLE):\n    \"\"\"cf_w per node over the first `dur` s after onset (9 windows of 1 s, 0.5 s step, Methods B).\n    Returns (out-strength minus in-strength averaged over windows, mean GC matrix, order).\n    Reading (b) of the claims file (in minus out) is the negative of the first value.\"\"\"\n    i0 = int(round(onset * FS))\n    seg = x[i0:i0 + int(dur * FS)]\n    if ds > 1:\n        seg = signal.decimate(seg, ds, axis=0, zero_phase=True)\n    fs = FS / ds\n    n, s = int(win * fs), int(step * fs)\n    wins = [seg[k:k + n] for k in range(0, len(seg) - n + 1, s)]\n    if order is None:\n        order = int(np.median([var_bic_order(w - w.mean(0)) for w in wins]))\n    Fs = np.array([cond_gc(w, order) for w in wins])\n    G = Fs.mean(0)\n    cf = np.array([F.sum(0) - F.sum(1) for F in Fs]).mean(0)  # out (column sums) - in (row sums)\n    return cf, G, order\n\n\n# ---------------------------------------------------------------- PSD ratio\ndef psd_ratio(seg, total=(0.5, 120.0), nperseg=1000):\n    \"\"\"Band PSD sums over the total PSD sum (Methods D), per channel: dict band -> array(4).\"\"\"\n    nps = min(nperseg, len(seg))\n    f, P = signal.welch(seg.T, fs=FS, nperseg=nps, noverlap=nps // 2, window=\"hann\")\n    tot = P[:, (f >= total[0]) & (f <= total[1])].sum(1)\n    out = {}\n    for b, (lo, hi) in BANDS.items():\n        k = (f >= lo) & (f < hi) if b != \"high_gamma\" else (f >= lo) & (f <= hi)\n        out[b] = P[:, k].sum(1) / tot\n    return out\n\n\n# ---------------------------------------------------------------- interictal spikes\ndef detect_iis(x, mu, sd, k=5.0, min_dist=0.2, max_width=0.1):\n    \"\"\"IIS times (s) on one channel by the rules of Methods F: positive or negative peaks with\n    |height| above mean + k SD of a baseline (mu, sd computed on |x - mean|? no: on x), at least\n    200 ms apart (the smaller removed), width at half prominence at most 100 ms.\"\"\"\n    y = x - mu\n    thr = k * sd\n    peaks = []\n    for sgn in (1, -1):\n        p, pr = signal.find_peaks(sgn * y, height=thr, width=(None, max_width * FS),\n                                  rel_height=0.5)\n        peaks += [(i, abs(y[i])) for i in p]\n    peaks.sort()\n    kept = []\n    for i, h in peaks:\n        if kept and i - kept[-1][0] < min_dist * FS:\n            if h > kept[-1][1]:\n                kept[-1] = (i, h)\n            continue\n        kept.append((i, h))\n    return np.array([i for i, _ in kept]) / FS\n\n\n# ---------------------------------------------------------------- HFO (short line length)\ndef hfo_events(x, band, win=0.005, thresh_sd=3.0, min_dur=0.006, merge=0.01):\n    \"\"\"HFO candidates on one channel by the short line length detector (Methods E, refs 50, 51;\n    Gardner et al. 2007): band-pass `band`, line length in `win` s windows sliding by one sample,\n    events where it exceeds mean + `thresh_sd` SD of the segment for at least `min_dur` s, events\n    closer than `merge` s merged. Returns event start times (s). Parameters are a choice (the paper\n    gives none); the notebook shows other thresholds.\"\"\"\n    hi = min(band[1], 0.49 * FS)\n    sos = signal.butter(4, [band[0], hi], btype=\"band\", fs=FS, output=\"sos\")\n    y = signal.sosfiltfilt(sos, x)\n    n = max(2, int(win * FS))\n    dl = np.abs(np.diff(y))\n    ll = np.convolve(dl, np.ones(n), mode=\"same\")\n    thr = ll.mean() + thresh_sd * ll.std()\n    runs = _runs(ll > thr)\n    ev = []\n    for a, b in runs:\n        if (b - a) / FS >= min_dur:\n            if ev and (a / FS - ev[-1][1]) < merge:\n                ev[-1] = (ev[-1][0], b / FS)\n            else:\n                ev.append((a / FS, b / FS))\n    return np.array([e[0] for e in ev])\n"
+}
+```
+
+```
+File created successfully at: entries/yang-2025/yang.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && cd entries/yang-2025 && python - <<'EOF'
+import numpy as np, glob, time
+import yang
+for fn in sorted(glob.glob('/tmp/claude-1001/R1_*.npy')):
+    d=np.load(fn); t=time.time()
+    tr,f0=yang.find_trains(d)
+    sz=yang.detect_seizure(d,tr)
+    print(fn.split('/')[-1], f0, [(round(a,1),round(b,1)) for a,b in tr], sz, round(time.time()-t,2))
+EOF
+```
+
+```
+R1_2023_7_16-ictal1.npy 130.0 [] (307.0, 328.0) 0.11
+R1_2023_7_21-ictal1.npy 125.0 [] (367.0, 382.0) 0.11
+R1_2023_7_21-ictal2.npy 125.0 [] (484.0, 494.0) 0.1
+R1_2023_9_20-ictal1.npy 132.0 [(286.8, 292.2), (297.0, 302.5)] (nan, nan) 0.1
+R1_2023_9_20-ictal2.npy 132.0 [(305.0, 310.2), (315.2, 320.5)] (nan, nan) 0.1
+R1_2023_9_20-ictal3.npy 132.0 [(317.5, 323.0), (327.8, 333.2), (338.5, 344.0)] (nan, nan) 0.11
+R1_2023_9_21-ictal1.npy 132.0 [(352.2, 357.5), (362.8, 368.2), (373.5, 379.0)] (nan, nan) 0.1
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import numpy as np, glob, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+import yang
+fns=sorted(glob.glob('/tmp/claude-1001/R1_*.npy'))
+fig,ax=plt.subplots(len(fns),1,figsize=(16,20))
+for a,fn in zip(ax,fns):
+    d=np.load(fn); tr,_=yang.find_trains(d)
+    t,ll=yang.line_length(d); z=ll/np.median(ll,0)
+    for c in range(4): a.plot(t,z[:,c],lw=.6,label=yang.CHANNELS[c])
+    a.plot(t,z.mean(1),'k',lw=1)
+    for s,e in tr: a.axvspan(s,e,color='y',alpha=.3)
+    a.axhline(2); a.set_ylim(0,8); a.set_xlim(200,550); a.set_title(fn.split('/')[-1])
+ax[0].legend()
+plt.tight_layout(); plt.savefig('/tmp/claude-1001/ll.png',dpi=60)
+EOF
 ```
 
 ```
 (Bash completed with no output)
 ```
 
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/ll.png"
+}
+```
+
+Result: no output.
+
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py claim-fig4b 2>&1 | tail -40
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import re
+s=open('yang.py').read()
+s=s.replace("""    z = (ll / np.median(ll, 0)).mean(1)
+    intrain""","""    z = (ll / np.median(ll, 0)).max(1)
+    intrain""")
+s=s.replace("""def detect_seizure(x, trains=(), thresh=SZ_THRESH, gap=SZ_GAP, mindur=SZ_MINDUR):""","""def detect_seizure(x, trains=(), thresh=SZ_THRESH, gap=SZ_GAP, mindur=SZ_MINDUR,
+                   include_last_train=False):""")
+s=s.replace("""    s, e = max(merged, key=mass)
+    return float(s), float(e)""","""    s, e = max(merged, key=mass)
+    if include_last_train:
+        # a train that starts within `gap` s after the last ictal window is counted as ictal
+        for ts, te in trains:
+            if e - SZ_WIN <= ts <= e + gap:
+                e = max(e, te)
+    return float(s), float(e)""")
+s=s.replace("over the 600 s; the seizure is the longest run in which the mean scaled line length over\n  the four channels","over the 600 s; the seizure is the longest run in which the largest scaled line length of\n  the four channels")
+s=s.replace("""    \"\"\"Onset and end (s) of the seizure in a 600 s epoch: the longest run of windows whose mean
+    over channels of line length / channel median exceeds `thresh`""","""    \"\"\"Onset and end (s) of the seizure in a 600 s epoch: the run of windows whose largest
+    over channels of line length / channel median exceeds `thresh`""")
+open('yang.py','w').write(s)
+EOF
+grep -n "max(1)\|include_last" yang.py
 ```
 
 ```
-===== load
-dandiset 001212 version 0.241023.0931: 56 files, 519 clips, loaded and reduced in 0.0 min
------ 1.1s
-===== tables
-seizure clips: 519 ; seizure found (main thresholds): 517
------ 0.0s
-===== claim-fig4b
+165:                   include_last_train=False):
+171:    z = (ll / np.median(ll, 0)).max(1)
+197:    if include_last_train:
+```
+
+**Agent**
+
+Now a broader test across rats, with plots.
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt, time
+import yang
+A=yang.list_assets()
+sel=[a for a in A if a['rat'] in ('R2','R3','R5','R7') and a['index'] in (2,3)]
+rows=[]
+t0=time.time()
+for a in sel:
+    for i,(name,d,att) in enumerate(yang.iter_epochs(a)):
+        if i>=2: break
+        tr,f0=yang.find_trains(d)
+        on,en=yang.detect_seizure(d,tr)
+        t,ll=yang.line_length(d); z=(ll/np.median(ll,0))
+        rows.append((a['group'],a['kind'],a['site'],name,f0,tr,on,en,t,z,d[::4]))
+        print(a['group'],a['site'],name,f0,[(round(s),round(e)) for s,e in tr],on,en)
+print(time.time()-t0)
+fig,ax=plt.subplots(len(rows),1,figsize=(16,3*len(rows)))
+for a,r in zip(ax,rows):
+    g,k,site,name,f0,tr,on,en,t,z,dd=r
+    tt=np.arange(len(dd))*4/1000
+    for c in range(4): a.plot(tt,dd[:,c]/np.std(dd[:,c])/4+c*3,lw=.3)
+    a.plot(t,z.max(1)+12,'k',lw=.8); a.axhline(14,color='b',lw=.5)
+    for s,e in tr: a.axvspan(s,e,color='y',alpha=.3)
+    if on==on: a.axvline(on,color='r'); a.axvline(en,color='r')
+    a.set_title(f'{g} {site} {name}'); a.set_ylim(-3,22)
+plt.tight_layout(); plt.savefig('/tmp/claude-1001/multi.png',dpi=50)
+EOF
+```
+
+```
+R2-02 None R2_2023_7_11-ictal1 130.0 [] 286.5 345.0
+R2-02 None R2_2023_7_11-ictal2 130.0 [] 319.0 357.0
+R2-03 ANT R2_2023_7_18-ictal1 125.5 [(301, 307), (312, 317), (322, 328)] 289.0 322.0
+R2-03 ANT R2_2023_7_18-ictal2 125.5 [(302, 307), (312, 318)] 462.5 525.0
+R3-02 None R3_2023_9_11-ictal1 125.0 [] 304.5 318.0
+R3-02 None R3_2023_9_11-ictal10 130.0 [] 332.0 377.5
+R3-03 ANT R3_2023_9_23-ictal1 126.0 [(267, 273), (280, 286), (298, 303), (308, 314), (318, 324)] 295.5 318.0
+R3-03 ANT R3_2023_9_23-ictal2 126.0 [(272, 277), (284, 290), (300, 306), (311, 316)] 298.5 311.0
+R5-02 None R5_2023_11_10-ictal1 125.0 [] 318.0 327.0
+R5-02 None R5_2023_11_10-ictal2 125.0 [] 286.0 293.0
+R5-03 ANT R5_2023_11_16-ictal1 125.0 [(383, 385), (387, 389), (390, 392), (401, 403), (403, 405)] 289.0 311.0
+R5-03 ANT R5_2023_11_16-ictal2 125.0 [] 267.5 299.5
+R7-02 None R7_2023_11_20-ictal1 125.0 [] 267.5 333.0
+R7-02 None R7_2023_11_21-ictal1 125.0 [] 315.5 363.0
+R7-03 ANT R7_2023_11_27-ictal1 125.0 [] 314.5 370.5
+R7-03 ANT R7_2023_11_27-ictal10-small 125.0 [] 296.0 323.0
+16.675885677337646
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/multi.png"
+}
+```
+
+Result: no output.
+
+## Prompt
+
+[Image: original 800x2400, displayed at 667x2000. Multiply coordinates by 1.20 to map to original image.]
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+from scipy import signal
+import yang
+A=yang.list_assets()
+a=[x for x in A if x['group']=='R5-03'][0]
+for i,(name,d,att) in enumerate(yang.iter_epochs(a)):
+    if i==1: break
+np.save('/tmp/claude-1001/r5ant.npy',d)
+fig,ax=plt.subplots(3,1,figsize=(16,12))
+s=slice(255000,315000); t=np.arange(255000,315000)/1000
+for c in range(4): ax[0].plot(t,d[s,c]+c*1500,lw=.3)
+s2=slice(272000,272400)
+for c in range(4): ax[1].plot(np.arange(272000,272400)/1000,d[s2,c]+c*800,lw=.6)
+f,tt,S=signal.spectrogram(d[s,3],fs=1000,nperseg=256,noverlap=192)
+ax[2].pcolormesh(tt+255,f,np.log(S),shading='auto')
+plt.savefig('/tmp/claude-1001/r5.png',dpi=60)
+f,P1=signal.welch(d[268000:272000].T,fs=1000,nperseg=1000); f,P2=signal.welch(d[240000:250000].T,fs=1000,nperseg=1000)
+r=np.log10(P1/P2).mean(0); idx=np.argsort(r)[::-1][:20]; print(sorted(zip(f[idx],np.round(r[idx],2))))
+EOF
+```
+
+```
+[(np.float64(137.0), np.float64(2.02)), (np.float64(138.0), np.float64(2.19)), (np.float64(174.0), np.float64(2.32)), (np.float64(175.0), np.float64(2.15)), (np.float64(238.0), np.float64(2.26)), (np.float64(239.0), np.float64(2.08)), (np.float64(274.0), np.float64(2.57)), (np.float64(275.0), np.float64(3.43)), (np.float64(276.0), np.float64(3.08)), (np.float64(311.0), np.float64(2.89)), (np.float64(312.0), np.float64(3.47)), (np.float64(313.0), np.float64(2.84)), (np.float64(375.0), np.float64(1.87)), (np.float64(376.0), np.float64(2.51)), (np.float64(377.0), np.float64(2.11)), (np.float64(412.0), np.float64(3.47)), (np.float64(413.0), np.float64(3.9)), (np.float64(414.0), np.float64(2.95)), (np.float64(486.0), np.float64(2.38)), (np.float64(487.0), np.float64(2.29))]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+s=s.replace("f0_grid=np.arange(125.0, 136.01, 0.5)","f0_grid=np.arange(120.0, 145.01, 0.25)")
+s=s.replace("for k in range(1, 8)})","for k in range(1, 12)})")
+open('yang.py','w').write(s)
+EOF
+python - <<'EOF'
+import numpy as np, yang, time
+d=np.load('/tmp/claude-1001/r5ant.npy'); t=time.time()
+print(yang.find_trains(d), time.time()-t)
+for fn in ['R1_2023_9_20-ictal1','R1_2023_7_21-ictal1']:
+    print(yang.find_trains(np.load(f'/tmp/claude-1001/{fn}.npy')))
+EOF
+```
+
+```
+([(256.75, 261.75), (268.25, 273.0)], np.float64(137.5)) 0.11005926132202148
+([(287.0, 292.25), (297.25, 302.5)], np.float64(131.75))
+([], np.float64(125.0))
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/r5.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+old=s[s.index("def stim_score"):s.index("def find_trains")]
+new='''def stim_score(x, win=0.5, step=0.25, f0_grid=np.arange(120.0, 145.01, 0.25)):
+    """Comb score per window: mean log power at the aliased harmonics (1 to 11) of the pulse
+    rate minus the median log power of 60-490 Hz, on each channel; the best pulse rate is chosen
+    over the epoch, and the score is the largest over channels. Returns window centres (s), the
+    score, the pulse rate, and the score per channel (channels x windows)."""
+    n = int(win * FS)
+    f, t, S = signal.spectrogram(x.T, fs=FS, nperseg=n, noverlap=n - int(step * FS),
+                                 detrend="constant")
+    L = np.log10(S + 1e-12)  # (channel, freq, time)
+    band = (f >= 60) & (f <= 490)
+    med = np.median(L[:, band], 1)
+    best, best_f0, best_v = None, None, -np.inf
+    for f0 in f0_grid:
+        idx = sorted({int(np.argmin(np.abs(f - _alias(k * f0)))) for k in range(1, 12)})
+        sc = L[:, idx].mean(1) - med
+        v = np.percentile(sc.max(0), 99)
+        if v > best_v:
+            best, best_f0, best_v = sc, f0, v
+    return t, best.max(0), best_f0, best
+
+
+'''
+s=s.replace(old,new)
+s=s.replace("""    t, sc, f0 = stim_score(x)
+    on = sc > thresh""","""    t, sc, f0, _ = stim_score(x)
+    on = sc > thresh""")
+open('yang.py','w').write(s)
+EOF
+python - <<'EOF'
+import numpy as np, yang, glob
+d=np.load('/tmp/claude-1001/r5ant.npy')
+print(yang.find_trains(d))
+for fn in sorted(glob.glob('/tmp/claude-1001/R1*.npy')):
+    print(fn[-25:], yang.find_trains(np.load(fn)))
+EOF
+```
+
+```
+([(256.75, 261.75), (268.0, 273.25), (278.25, 283.0), (293.75, 298.75)], np.float64(137.5))
+1/R1_2023_7_16-ictal1.npy ([], np.float64(125.0))
+1/R1_2023_7_21-ictal1.npy ([(5.5, 7.5), (50.25, 52.25), (84.75, 87.5), (133.25, 135.25), (139.75, 142.75), (217.25, 219.5), (244.25, 246.75), (247.0, 249.0), (253.25, 255.25), (293.25, 295.75), (320.25, 322.25)], np.float64(125.0))
+1/R1_2023_7_21-ictal2.npy ([(138.0, 140.0), (243.5, 246.25), (274.25, 276.25), (276.5, 278.5), (280.25, 282.75), (451.5, 453.5)], np.float64(125.0))
+1/R1_2023_9_20-ictal1.npy ([(287.0, 292.25), (297.25, 302.5)], np.float64(131.75))
+1/R1_2023_9_20-ictal2.npy ([(305.0, 310.25), (315.25, 320.5)], np.float64(131.75))
+1/R1_2023_9_20-ictal3.npy ([(317.5, 323.0), (327.75, 333.25), (338.5, 344.0)], np.float64(131.75))
+1/R1_2023_9_21-ictal1.npy ([(352.25, 357.5), (363.0, 368.25), (373.5, 379.0)], np.float64(131.75))
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && sed -i 's/def find_trains(x, thresh=1.0, min_len=2.0):/def find_trains(x, thresh=1.0, min_len=4.0):/' yang.py && python - <<'EOF'
+import numpy as np, yang, glob
+for fn in sorted(glob.glob('/tmp/claude-1001/R*.npy'))+['/tmp/claude-1001/r5ant.npy']:
+    tr,f0=yang.find_trains(np.load(fn)); print(fn[-25:], f0, [(s,e,round(e-s,2)) for s,e in tr])
+EOF
+```
+
+```
+1/R1_2023_7_16-ictal1.npy 125.0 []
+1/R1_2023_7_21-ictal1.npy 125.0 []
+1/R1_2023_7_21-ictal2.npy 125.0 []
+1/R1_2023_9_20-ictal1.npy 131.75 [(287.0, 292.25, 5.25), (297.25, 302.5, 5.25)]
+1/R1_2023_9_20-ictal2.npy 131.75 [(305.0, 310.25, 5.25), (315.25, 320.5, 5.25)]
+1/R1_2023_9_20-ictal3.npy 131.75 [(317.5, 323.0, 5.5), (327.75, 333.25, 5.5), (338.5, 344.0, 5.5)]
+1/R1_2023_9_21-ictal1.npy 131.75 [(352.25, 357.5, 5.25), (363.0, 368.25, 5.25), (373.5, 379.0, 5.5)]
+tmp/claude-1001/r5ant.npy 137.5 [(256.75, 261.75, 5.0), (268.0, 273.25, 5.25), (278.25, 283.0, 4.75), (293.75, 298.75, 5.0)]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+old="""    def mass(r):
+        k = (t >= r[0]) & (t + SZ_WIN <= r[1]) & ~intrain
+        return np.sum(np.clip(z[k] - thresh, 0, None))"""
+new="""    def mass(r):
+        # summed excess line length; a window inside a train counts as one unit of excess
+        k = (t >= r[0]) & (t + SZ_WIN <= r[1])
+        return np.sum(np.clip(z[k & ~intrain] - thresh, 0, None)) + np.sum(k & intrain)"""
+assert old in s
+s=s.replace(old,new)
+s=s.replace("""    # the seizure is the run with the largest summed excess line length""","""    # the seizure is the run with the largest summed excess line length (trains included)""")
+open('yang.py','w').write(s)
+EOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import numpy as np, yang, time
+d=np.load('/tmp/claude-1001/R1_2023_7_16-ictal1.npy')
+on,en=yang.detect_seizure(d)
+print(on,en)
+t=time.time(); cf,G,p=yang.cfw_onset(d,on); print(cf,p,time.time()-t)
+t=time.time(); cf2,G2,p2=yang.cfw_onset(d,on,ds=4); print(cf2,p2,time.time()-t)
+t=time.time(); cf3,G3,p3=yang.cfw_onset(d,on,order=10); print(cf3,p3,time.time()-t)
+EOF
+```
+
+```
+296.5 336.0
+[ 0.01472669 -0.02546305 -0.02449037  0.03522673] 2 0.26369571685791016
+[ 0.06308251 -0.05675501 -0.06866112  0.06233362] 4 0.10960173606872559
+[ 0.03621178 -0.03293489 -0.03370364  0.03042674] 10 0.03414440155029297
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && cat >> yang.py <<'EOF'
+
+
+# ---------------------------------------------------------------- one pass over an epoch
+SZ_THRESH_VARIANTS = (1.5, 2.0, 3.0)
+IIS_SPAN = 180.0  # s before onset and after end (Results D, Figure 5B)
+RIPPLE = (80.0, 250.0)
+FAST_RIPPLE = (250.0, 500.0)  # filtered to just below the 500 Hz Nyquist limit (claims file)
+
+
+def psd_windows(kind, onset, trains):
+    """Pre and post windows of Methods D. Stimulation groups: pre from onset to the start of the
+    first train, post the 5 s after the first train. Baseline groups: pre 0 to 5 s after onset,
+    post 10 to 15 s after onset. Returns ((a, b), (c, d)) in s, or None."""
+    if kind == "baseline":
+        return (onset, onset + 5.0), (onset + 10.0, onset + 15.0)
+    later = [tr for tr in trains if tr[0] >= onset - 1.0]
+    if not later:
+        return None
+    s, e = later[0]
+    return (onset, s), (e, e + 5.0)
+
+
+def epoch_features(d, kind, gc=True):
+    """Everything the notebook needs from one 600 s epoch, computed in one pass, so that each
+    epoch is streamed once. `d` is samples x 4 channels (DG, CA1, CA3, ANT)."""
+    out = {"md5": md5(d), "md5_ch": [md5(d[:, c]) for c in range(4)],
+           "std": d.std(0), "min": d.min(0), "max": d.max(0)}
+    trains, f0 = find_trains(d)
+    out["trains"] = trains
+    out["pulse_rate"] = f0
+    if trains:
+        t, _, _, per = stim_score(d)
+        k = np.zeros(len(t), bool)
+        for s, e in trains:
+            k |= (t >= s) & (t <= e)
+        out["artifact_by_channel"] = per[:, k].mean(1)
+    else:
+        out["artifact_by_channel"] = np.full(4, np.nan)
+    for th in SZ_THRESH_VARIANTS:
+        out[f"sz_{th}"] = detect_seizure(d, trains, thresh=th)
+    out["sz_lasttrain"] = detect_seizure(d, trains, include_last_train=True)
+    onset, end = out[f"sz_{SZ_THRESH}"]
+    out["onset"], out["end"] = onset, end
+    if not np.isfinite(onset):
+        return out
+    # trains relative to the seizure (clock check)
+    out["trains_in_seizure"] = [bool(s < end + 1 and e > onset - 1) for s, e in trains]
+    # GC at onset
+    if gc and onset * FS + 5000 <= len(d):
+        out["cfw"], out["gc"], out["gc_order"] = cfw_onset(d, onset)
+        out["cfw_ds4"], _, out["gc_order_ds4"] = cfw_onset(d, onset, ds=4)
+    # PSD ratio pre and post
+    w = psd_windows(kind, onset, trains)
+    out["psd_windows"] = w
+    if w is not None and w[0][1] - w[0][0] >= 0.5 and w[1][1] * FS <= len(d):
+        for lab, (a, b) in zip(("pre", "post"), w):
+            seg = d[int(a * FS):int(b * FS)]
+            for nps in (1000, 500):
+                out[f"psd_{lab}_{nps}"] = psd_ratio(seg, nperseg=nps)
+            out[f"psd_{lab}_{1000}_total500"] = psd_ratio(seg, total=(0.0, 500.0))
+    # IIS 180 s before onset and after end, 1 s bins, per channel
+    pre_a = max(0.0, onset - IIS_SPAN)
+    ref = d[int(pre_a * FS):int(onset * FS)]
+    if len(ref) > 10 * FS:
+        mask = np.zeros(len(d), bool)
+        for s, e in trains:
+            mask[int(s * FS):int(e * FS)] = True
+        nb = int(IIS_SPAN)
+        pre_counts = np.full((4, nb), np.nan)
+        post_counts = np.full((4, nb), np.nan)
+        for c in range(4):
+            mu, sd = ref[:, c].mean(), ref[:, c].std()
+            ts = detect_iis(d[:, c], mu, sd)
+            ts = ts[~mask[(ts * FS).astype(int)]]
+            for arr, origin, sign in ((pre_counts, onset, -1), (post_counts, end, 1)):
+                rel = (ts - origin) * sign
+                h = np.histogram(rel, bins=np.arange(0, nb + 1))[0].astype(float)
+                # bins outside the epoch are missing
+                for b in range(nb):
+                    tb = origin + sign * (b + 0.5)
+                    if tb < 0 or tb > len(d) / FS:
+                        h[b] = np.nan
+                arr[c] = h
+        out["iis_pre"], out["iis_post"] = pre_counts, post_counts  # pre: bin 0 is just before onset
+        out["iis_thr"] = [ref[:, c].std() * 5 for c in range(4)]
+    # ictal HFO in the PSD windows, threshold from the 180 s before onset
+    if w is not None and len(ref) > 10 * FS and w[1][1] * FS <= len(d):
+        for nm, band in (("ripple", RIPPLE), ("fr", FAST_RIPPLE)):
+            for th in (3.0, 5.0):
+                rates = {}
+                for lab, (a, b) in zip(("pre", "post"), w):
+                    r = []
+                    for c in range(4):
+                        r.append(hfo_rate(d[:, c], band, (a, b), (pre_a, onset), th))
+                    rates[lab] = np.array(r)
+                out[f"hfo_{nm}_{th}"] = rates
+    return out
+
+
+def hfo_rate(x, band, window, ref_window, thresh_sd, win=0.005, min_dur=0.006, merge=0.01):
+    """Rate (events/s) of short line length HFO detections inside `window` (s), the threshold
+    being mean + `thresh_sd` SD of the short line length over `ref_window` (s). Filtering is done
+    on the stretch from the start of the reference to the end of the window plus 1 s."""
+    a0 = int(max(0, min(ref_window[0], window[0]) - 1) * FS)
+    b0 = int(min(len(x) / FS, max(ref_window[1], window[1]) + 1) * FS)
+    hi = min(band[1], 0.49 * FS)
+    sos = signal.butter(4, [band[0], hi], btype="band", fs=FS, output="sos")
+    y = signal.sosfiltfilt(sos, x[a0:b0])
+    n = max(2, int(win * FS))
+    ll = np.convolve(np.abs(np.diff(y, prepend=y[0])), np.ones(n), mode="same")
+    tt = (np.arange(len(y)) + a0) / FS
+    r = (tt >= ref_window[0]) & (tt < ref_window[1])
+    thr = ll[r].mean() + thresh_sd * ll[r].std()
+    k = (tt >= window[0]) & (tt < window[1])
+    runs = _runs(ll[k] > thr)
+    ev = []
+    for a, b in runs:
+        if (b - a) / FS >= min_dur:
+            if ev and (a - ev[-1][1]) / FS < merge:
+                ev[-1] = (ev[-1][0], b)
+            else:
+                ev.append((a, b))
+    return len(ev) / (window[1] - window[0])
+EOF
+python - <<'EOF'
+import numpy as np, yang, time
+for fn,k in [('R1_2023_7_16-ictal1','baseline'),('R1_2023_9_20-ictal1','stim')]:
+    d=np.load(f'/tmp/claude-1001/{fn}.npy'); t=time.time()
+    o=yang.epoch_features(d,k)
+    print(fn, time.time()-t)
+    for kk,v in o.items():
+        if kk.startswith('iis'): v=np.nansum(v,1) if isinstance(v,np.ndarray) else v
+        print('  ',kk, v if not isinstance(v,dict) else {a:np.round(b,3) for a,b in v.items()})
+EOF
+```
+
+```
+R1_2023_7_16-ictal1 0.9404382705688477
+   md5 b1f6142959a4ff9bb679cf6a1d86470f
+   md5_ch ['7f23d235e99dc7977c9ff94485e11fca', 'ce9483c75cdbf7b3b85508d0d2c2cc76', '41bc1c5e4261eed295678bb8934578ac', 'b56bd0db359c22fd7c7e9b580929edb2']
+   std [ 41.89941359  44.80468944 113.84326443  44.90100883]
+   min [ -901.68   -902.265 -2928.51   -880.23 ]
+   max [3678.87  2437.305 3033.615 1066.455]
+   trains []
+   pulse_rate 125.0
+   artifact_by_channel [nan nan nan nan]
+   sz_1.5 (294.5, 340.0)
+   sz_2.0 (296.5, 336.0)
+   sz_3.0 (307.0, 328.0)
+   sz_lasttrain (296.5, 336.0)
+   onset 296.5
+   end 336.0
+   trains_in_seizure []
+   cfw [ 0.01472669 -0.02546305 -0.02449037  0.03522673]
+   gc [[0.         0.00644384 0.00301988 0.01760374]
+ [0.03169202 0.         0.00373065 0.01134708]
+ [0.00367067 0.00624623 0.         0.02678149]
+[... 46 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import numpy as np, yang
+d=np.load('/tmp/claude-1001/R1_2023_9_20-ictal1.npy')
+tr,_=yang.find_trains(d)
+t,ll=yang.line_length(d); z=(ll/np.median(ll,0)).max(1)
+k=(t>275)&(t<315)
+for a,b in zip(t[k],z[k]): print(a, round(b,2), end=' | ')
+EOF
+```
+
+```
+275.5 0.93 | 276.0 0.86 | 276.5 0.87 | 277.0 0.96 | 277.5 0.98 | 278.0 0.95 | 278.5 1.13 | 279.0 1.35 | 279.5 1.3 | 280.0 1.32 | 280.5 1.43 | 281.0 1.58 | 281.5 1.67 | 282.0 1.58 | 282.5 1.52 | 283.0 1.51 | 283.5 1.42 | 284.0 1.42 | 284.5 1.38 | 285.0 1.24 | 285.5 1.51 | 286.0 1.92 | 286.5 5.14 | 287.0 9.21 | 287.5 9.63 | 288.0 9.8 | 288.5 9.86 | 289.0 9.79 | 289.5 9.79 | 290.0 9.83 | 290.5 9.93 | 291.0 9.9 | 291.5 5.39 | 292.0 1.45 | 292.5 1.48 | 293.0 1.46 | 293.5 1.35 | 294.0 1.25 | 294.5 1.21 | 295.0 1.24 | 295.5 1.25 | 296.0 1.41 | 296.5 3.1 | 297.0 7.23 | 297.5 9.94 | 298.0 10.32 | 298.5 10.97 | 299.0 11.38 | 299.5 11.28 | 300.0 11.15 | 300.5 10.87 | 301.0 10.56 | 301.5 8.73 | 302.0 4.85 | 302.5 3.17 | 303.0 3.17 | 303.5 2.91 | 304.0 2.84 | 304.5 2.71 | 305.0 2.53 | 305.5 2.29 | 306.0 2.11 | 306.5 2.11 | 307.0 2.12 | 307.5 2.24 | 308.0 2.38 | 308.5 2.3 | 309.0 2.28 | 309.5 2.08 | 310.0 1.86 | 310.5 2.07 | 311.0 1.75 | 311.5 1.26 | 312.0 1.07 | 312.5 1.2 | 313.0 1.17 | 313.5 1.0 | 314.0 1.0 | 314.5 1.84 |
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+a=s.index("def detect_seizure"); b=s.index("# ---------------------------------------------------------------- Granger")
+new='''def detect_seizure(x, trains=(), thresh=SZ_THRESH, gap=SZ_GAP, mindur=SZ_MINDUR,
+                   last_train=True):
+    """Onset and end (s) of the seizure in a 600 s epoch, from z = the largest over channels of
+    line length / channel median (1 s windows, 0.5 s steps).
+
+    Core windows are those with z above `thresh`, and, in stimulation groups, the windows of a
+    stimulation train (the closed-loop detector fired, Methods C; the artifact hides the LFP).
+    Core runs less than `gap` s apart are merged, and the run with the largest summed excess
+    (a train window counting one unit) is the seizure. Its boundaries are then extended outwards
+    while z stays above 1 + (thresh - 1) / 2 (hysteresis). When the run ends with a train after
+    which z is low, the seizure ends at the end of that train if `last_train` (default), or at the
+    last non-train window above threshold otherwise. Returns (onset, end) or (nan, nan)."""
+    t, ll = line_length(x)
+    z = (ll / np.median(ll, 0)).max(1)
+    intrain = np.zeros(len(t), bool)
+    for s, e in trains:
+        intrain |= (t + SZ_WIN > s) & (t < e)
+    core = (z > thresh) | intrain
+    runs = [[a, b] for a, b in _runs(core)]  # window indices [a, b)
+    step = t[1] - t[0]
+    merged = []
+    for a, b in runs:
+        if merged and (t[a] - (t[merged[-1][1] - 1] + SZ_WIN)) < gap:
+            merged[-1][1] = b
+        else:
+            merged.append([a, b])
+    if not merged:
+        return np.nan, np.nan
+
+    def mass(r):
+        k = np.zeros(len(t), bool)
+        k[r[0]:r[1]] = True
+        return np.sum(np.clip(z[k & ~intrain] - thresh, 0, None)) + np.sum(k & intrain)
+
+    a, b = max(merged, key=mass)
+    if not last_train:
+        # drop trailing train windows not followed by ictal activity
+        while b - 1 > a and intrain[b - 1]:
+            b -= 1
+        while b - 1 > a and not (z[b - 1] > thresh) and not intrain[b - 1]:
+            b -= 1
+    lower = 1 + (thresh - 1) / 2
+    while a > 0 and z[a - 1] > lower and not intrain[a - 1]:
+        a -= 1
+    while b < len(t) and z[b] > lower and not intrain[b]:
+        b += 1
+    onset, end = float(t[a]), float(t[b - 1] + SZ_WIN)
+    if end - onset < mindur:
+        return np.nan, np.nan
+    return onset, end
+
+
+'''
+s=s[:a]+new+s[b:]
+s=s.replace('out["sz_lasttrain"] = detect_seizure(d, trains, include_last_train=True)','out["sz_notrainend"] = detect_seizure(d, trains, last_train=False)')
+s=s.replace("""- Seizure onset and end: the paper gives no rule (claims file, opening comment, reading (b)).
+  Assumption: line length in 1 s windows with 0.5 s steps on each channel, scaled by the channel's
+  median over the 600 s; the seizure is the longest run in which the largest scaled line length of
+  the four channels is above `SZ_THRESH`, with runs less than `SZ_GAP` s apart merged and
+  stimulation trains bridged. The thresholds are a choice; the notebook shows other values.""","""- Seizure onset and end: the paper gives no rule (claims file, opening comment, reading (b)).
+  Assumption: line length in 1 s windows with 0.5 s steps on each channel, scaled by the channel's
+  median over the 600 s; the seizure is the run in which the largest scaled line length of the
+  four channels is above `SZ_THRESH` (or a stimulation train is on), runs less than `SZ_GAP` s
+  apart merged, extended while it stays above a lower threshold (see `detect_seizure`). The
+  thresholds are a choice; the notebook shows other values.""")
+open('yang.py','w').write(s)
+EOF
+python - <<'EOF'
+import numpy as np, yang, glob
+for fn in sorted(glob.glob('/tmp/claude-1001/R*.npy'))+['/tmp/claude-1001/r5ant.npy']:
+    d=np.load(fn); tr,f0=yang.find_trains(d)
+    print(fn[-25:], [yang.detect_seizure(d,tr,thresh=th) for th in (1.5,2,3)], yang.detect_seizure(d,tr,last_train=False))
+EOF
+```
+
+```
+1/R1_2023_7_16-ictal1.npy [(294.5, 340.0), (294.5, 336.5), (299.0, 329.5)] (294.5, 336.5)
+1/R1_2023_7_21-ictal1.npy [(362.0, 382.5), (363.0, 382.5), (363.5, 382.5)] (363.0, 382.5)
+1/R1_2023_7_21-ictal2.npy [(473.5, 497.5), (480.0, 497.5), (481.0, 497.5)] (480.0, 497.5)
+1/R1_2023_9_20-ictal1.npy [(279.0, 316.0), (285.5, 312.0), (286.5, 310.5)] (285.5, 312.0)
+1/R1_2023_9_20-ictal2.npy [(293.5, 326.0), (299.0, 326.0), (304.5, 324.0)] (299.0, 326.0)
+1/R1_2023_9_20-ictal3.npy [(306.0, 346.5), (317.0, 345.0), (317.0, 344.5)] (317.0, 338.5)
+1/R1_2023_9_21-ictal1.npy [(351.0, 381.5), (351.5, 379.5), (351.5, 379.5)] (351.5, 373.5)
+tmp/claude-1001/r5ant.npy [(256.0, 303.0), (265.5, 299.5), (267.5, 285.0)] (265.5, 293.5)
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import numpy as np, yang
+d=np.load('/tmp/claude-1001/r5ant.npy'); tr,_=yang.find_trains(d); print(tr)
+t,ll=yang.line_length(d); z=(ll/np.median(ll,0)).max(1)
+k=(t>250)&(t<305)
+print([(a,round(b,1)) for a,b in zip(t[k],z[k])])
+EOF
+```
+
+```
+[(256.75, 261.75), (268.0, 273.25), (278.25, 283.0), (293.75, 298.75)]
+[(np.float64(250.5), np.float64(1.1)), (np.float64(251.0), np.float64(1.1)), (np.float64(251.5), np.float64(1.0)), (np.float64(252.0), np.float64(1.0)), (np.float64(252.5), np.float64(1.1)), (np.float64(253.0), np.float64(1.1)), (np.float64(253.5), np.float64(1.0)), (np.float64(254.0), np.float64(1.3)), (np.float64(254.5), np.float64(1.4)), (np.float64(255.0), np.float64(1.2)), (np.float64(255.5), np.float64(1.2)), (np.float64(256.0), np.float64(1.3)), (np.float64(256.5), np.float64(4.4)), (np.float64(257.0), np.float64(7.1)), (np.float64(257.5), np.float64(7.2)), (np.float64(258.0), np.float64(7.1)), (np.float64(258.5), np.float64(7.1)), (np.float64(259.0), np.float64(7.0)), (np.float64(259.5), np.float64(7.1)), (np.float64(260.0), np.float64(7.2)), (np.float64(260.5), np.float64(7.0)), (np.float64(261.0), np.float64(5.1)), (np.float64(261.5), np.float64(2.2)), (np.float64(262.0), np.float64(1.2)), (np.float64(262.5), np.float64(1.2)), (np.float64(263.0), np.float64(1.2)), (np.float64(263.5), np.float64(1.2)), (np.float64(264.0), np.float64(1.2)), (np.float64(264.5), np.float64(1.2)), (np.float64(265.0), np.float64(1.4)), (np.float64(265.5), np.float64(1.6)), (np.float64(266.0), np.float64(1.7)), (np.float64(266.5), np.float64(1.7)), (np.float64(267.0), np.float64(1.8)), (np.float64(267.5), np.float64(3.1)), (np.float64(268.0), np.float64(5.9)), (np.float64(268.5), np.float64(7.1)), (np.float64(269.0), np.float64(7.1)), (np.float64(269.5), np.float64(7.0)), (np.float64(270.0), np.float64(7.0)), (np.float64(270.5), np.float64(7.0)), (np.float64(271.0), np.float64(6.9)), (np.float64(271.5), np.float64(6.9)), (np.float64(272.0), np.float64(6.6)), (np.float64(272.5), np.float64(3.7)), (np.float64(273.0), np.float64(1.3)), (np.float64(273.5), np.float64(1.4)), (np.float64(274.0), np.float64(1.4)), (np.float64(274.5), np.float64(1.3)), (np.float64(275.0), np.float64(1.4)), (np.float64(275.5), np.float
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && sed -i 's/^SZ_GAP = 5.0/SZ_GAP = 7.0  # trains are 5 s with 5 s pauses (Methods C), so runs between trains are about 6 s apart/' yang.py && python - <<'EOF'
+import numpy as np, yang, glob
+for fn in sorted(glob.glob('/tmp/claude-1001/R*.npy'))+['/tmp/claude-1001/r5ant.npy']:
+    d=np.load(fn); tr,f0=yang.find_trains(d)
+    print(fn[-25:], [yang.detect_seizure(d,tr,thresh=th) for th in (1.5,2,3)], yang.detect_seizure(d,tr,last_train=False))
+EOF
+```
+
+```
+1/R1_2023_7_16-ictal1.npy [(294.5, 340.0), (294.5, 336.5), (299.0, 329.5)] (294.5, 336.5)
+1/R1_2023_7_21-ictal1.npy [(362.0, 382.5), (363.0, 382.5), (363.5, 382.5)] (363.0, 382.5)
+1/R1_2023_7_21-ictal2.npy [(473.5, 497.5), (480.0, 497.5), (481.0, 497.5)] (480.0, 497.5)
+1/R1_2023_9_20-ictal1.npy [(279.0, 316.0), (285.5, 312.0), (286.5, 310.5)] (285.5, 312.0)
+1/R1_2023_9_20-ictal2.npy [(293.5, 326.0), (299.0, 326.0), (304.5, 324.0)] (299.0, 326.0)
+1/R1_2023_9_20-ictal3.npy [(306.0, 346.5), (317.0, 345.0), (317.0, 344.5)] (317.0, 338.5)
+1/R1_2023_9_21-ictal1.npy [(351.0, 381.5), (351.5, 379.5), (351.5, 379.5)] (351.5, 373.5)
+tmp/claude-1001/r5ant.npy [(256.0, 303.0), (256.0, 299.5), (256.0, 285.0)] (256.0, 293.5)
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && cat >> yang.py <<'EOF'
+
+
+def process_asset(asset):
+    """Stream every epoch of one asset and return one record per epoch (see `epoch_features`)."""
+    import os
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    rows = []
+    for name, d, attrs in iter_epochs(asset):
+        r = epoch_features(d, asset["kind"], gc=(asset["kind"] == "baseline"))
+        r.update(rat=asset["rat"], group=asset["group"], index=asset["index"],
+                 kind=asset["kind"], site=asset["site"], epoch=name, date=epoch_date(name),
+                 n_samples=d.shape[0], n_channels=d.shape[1], rate=attrs["rate"],
+                 start=attrs["start"], unit=attrs["unit"], description=attrs["description"])
+        rows.append(r)
+    return rows
+
+
+def process_all(assets, workers=4):
+    """All assets, `workers` files at a time in separate processes (each holds one 19 MB epoch
+    at a time)."""
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(workers) as ex:
+        res = list(ex.map(process_asset, assets))
+    return [r for rows in res for r in rows]
+EOF
+cat > $TMPDIR/runall.py <<'EOF'
+import sys, time, pickle, resource
+sys.path.insert(0,'entries/yang-2025')
+import yang
+A=yang.list_assets()
+if len(sys.argv)>1: A=[a for a in A if a['rat'] in sys.argv[1].split(',')]
+t=time.time(); rows=yang.process_all(A)
+print(len(rows), time.time()-t, resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss/1e3)
+pickle.dump(rows,open('/tmp/claude-1001/rows.pkl','wb'))
+EOF
+OMP_NUM_THREADS=1 python $TMPDIR/runall.py R1
+```
+
+```
+72 27.669168710708618 347.068
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && OMP_NUM_THREADS=1 python $TMPDIR/runall.py; date -u
+```
+
+```
+519 173.09316682815552 383.092
+Fri Nov 27 00:29:50 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import pickle, pandas as pd, numpy as np, collections
+rows=pickle.load(open('/tmp/claude-1001/rows.pkl','rb'))
+df=pd.DataFrame(rows)
+print(df.groupby(['rat','kind']).size().unstack())
+# duplicates
+c=collections.Counter(df.md5); print('dup full', [(k,v) for k,v in c.items() if v>1])
+chs=collections.defaultdict(list)
+for i,r in df.iterrows():
+    for ch,m in enumerate(r.md5_ch): chs[m].append((r.group,r.epoch,ch))
+print('dup channels', [v for v in chs.values() if len(v)>1][:20])
+df['ntr']=df.trains.apply(len)
+print(df.groupby(['kind'])['ntr'].describe())
+print(df[df.kind=='stim'].groupby('group').agg(n=('ntr','size'),with_tr=('ntr',lambda x:(x>0).sum()),site=('site','first'),f0=('pulse_rate','median')))
+print('baseline with trains', df[(df.kind=='baseline')&(df.ntr>0)][['group','epoch','trains']])
+print('no seizure', df[df.onset.isna()][['group','epoch']])
+df['dur']=df.end-df.onset
+print(df.groupby(['kind'])['dur'].describe())
+EOF
+```
+
+```
+kind  baseline  stim
+rat                 
+R1          35    37
+R2          43    35
+R3          39    36
+R4          43    37
+R5          32    37
+R6          36    34
+R7          39    36
+dup full []
+dup channels []
+          count      mean       std  min  25%  50%  75%  max
+kind                                                        
+baseline  267.0  0.082397  0.451344  0.0  0.0  0.0  0.0  4.0
+stim      252.0  1.892857  1.464190  0.0  0.0  2.0  3.0  6.0
+        n  with_tr site       f0
+group                           
+R1-01  11       10  CA1  131.750
+R1-03   7        4  CA3  131.750
+R1-05   6        6  ANT  131.750
+[... 61 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && cat > $TMPDIR/plotep.py <<'EOF'
+import sys, numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+sys.path.insert(0,'entries/yang-2025')
+import yang
+from scipy import signal
+A={a['group']:a for a in yang.list_assets()}
+req=[x.split(':') for x in sys.argv[2:]]
+fig,ax=plt.subplots(len(req)*2,1,figsize=(16,5*len(req)))
+for j,(g,ep) in enumerate(req):
+    for name,d,_ in yang.iter_epochs(A[g]):
+        if name==ep: break
+    tr,f0=yang.find_trains(d); on,en=yang.detect_seizure(d,tr)
+    t,ll=yang.line_length(d); z=(ll/np.median(ll,0))
+    a=ax[2*j]; tt=np.arange(0,len(d),4)/1000
+    for c in range(4): a.plot(tt,d[::4,c]/np.std(d[:,c])/4+c*3,lw=.3)
+    a.plot(t,z.max(1)+12,'k',lw=.8); a.axhline(14,color='b',lw=.5)
+    for s,e in tr: a.axvspan(s,e,color='y',alpha=.3)
+    if on==on: a.axvline(on,color='r'); a.axvline(en,color='r')
+    a.set_title(f'{g} {A[g]["site"]} {ep} f0={f0} sz={on},{en}'); a.set_ylim(-3,22)
+    f,ts,S=signal.spectrogram(d[:,0],fs=1000,nperseg=500,noverlap=250)
+    ax[2*j+1].pcolormesh(ts,f,np.log(S+1e-9),shading='auto')
+plt.tight_layout(); plt.savefig(sys.argv[1],dpi=45)
+EOF
+python $TMPDIR/plotep.py /tmp/claude-1001/q1.png R7-03:R7_2023_11_27-ictal1 R3-07:R3_2023_10_18-ictal1 R6-00:R6_2023_8_21-ictal1 R4-00:R4_2023_9_5-ictal1
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/q1.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+old='''def line_length(x, win=SZ_WIN, step=SZ_STEP):
+    """Line length per window and channel; times are window starts (s)."""
+    n, s = int(win * FS), int(step * FS)
+'''
+new='''SZ_BAND = (1.0, 45.0)  # band of the seizure line length (below the 50 Hz mains; a choice)
+
+
+def line_length(x, win=SZ_WIN, step=SZ_STEP, band=SZ_BAND):
+    """Line length per window and channel of the signal band-passed to `band` (none if None);
+    times are window starts (s)."""
+    n, s = int(win * FS), int(step * FS)
+    if band is not None:
+        sos = signal.butter(4, band, btype="band", fs=FS, output="sos")
+        x = signal.sosfiltfilt(sos, x, axis=0)
+'''
+assert old in s; s=s.replace(old,new); open('yang.py','w').write(s)
+EOF
+python $TMPDIR/plotep.py /tmp/claude-1001/q2.png R7-03:R7_2023_11_27-ictal1 R3-07:R3_2023_10_18-ictal1 R6-00:R6_2023_8_21-ictal1 R4-00:R4_2023_9_5-ictal1 R1-07:R1_2023_9_20-ictal1 R5-03:R5_2023_11_16-ictal2
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/q2.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+old="""    a, b = max(merged, key=mass)
+"""
+new="""    with_train = [r for r in merged if intrain[r[0]:r[1]].any()]
+    if with_train:
+        # the closed-loop detector fired at the seizure: take the run holding the first train
+        a, b = with_train[0]
+    else:
+        a, b = max(merged, key=mass)
+"""
+assert old in s; s=s.replace(old,new)
+s=s.replace("""    Core runs less than `gap` s apart are merged, and the run with the largest summed excess
+    (a train window counting one unit) is the seizure.""","""    Core runs less than `gap` s apart are merged. The seizure is the run holding the first train
+    when there are trains, and otherwise the run with the largest summed excess.""")
+open('yang.py','w').write(s)
+EOF
+OMP_NUM_THREADS=1 python $TMPDIR/runall.py; date -u
+```
+
+```
+519 205.87887358665466 366.3
+Fri Nov 27 00:34:22 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import pickle, pandas as pd, numpy as np
+df=pd.DataFrame(pickle.load(open('/tmp/claude-1001/rows.pkl','rb')))
+df['ntr']=df.trains.apply(len); df['dur']=df.end-df.onset
+print('no seizure', df.onset.isna().groupby(df.group).sum()[lambda x:x>0].to_dict())
+for th in (1.5,2.0,3.0):
+    print(th, df[f'sz_{th}'].apply(lambda x: np.isnan(x[0])).sum())
+b=df[(df.kind=='baseline')&(df.ntr>0)]
+for _,r in b.iterrows(): print(r.group, r.epoch, r.pulse_rate, [(round(s),round(e-s,1)) for s,e in r.trains], r.onset, r.end, np.round(r.artifact_by_channel,2))
+# stim artifact largest channel per group
+st=df[(df.kind=='stim')&(df.ntr>0)]
+st=st.assign(maxch=st.artifact_by_channel.apply(lambda a: ['DG','CA1','CA3','ANT'][int(np.nanargmax(a))]))
+print(st.groupby(['group','site']).maxch.agg(lambda x: x.value_counts().to_dict()))
+print(df.groupby(['rat','kind']).dur.median().unstack())
+# trains in seizure check
+st2=df[(df.kind=='stim')&(df.ntr>0)&df.onset.notna()]
+print('trains in seizure', sum(sum(x) for x in st2.trains_in_seizure), sum(len(x) for x in st2.trains_in_seizure))
+EOF
+```
+
+```
+no seizure {'R6-00': 1}
+1.5 0
+2.0 1
+3.0 23
+R1-04 R1_2023_8_29-ictal1 131.75 [(356, 4.5), (366, 5.2), (377, 5.2)] 350.5 387.5 [1.25 1.5  0.6  1.17]
+R1-04 R1_2023_8_30-ictal1 131.75 [(312, 5.2)] 307.0 356.5 [1.22 1.56 1.53 1.37]
+R2-04 R2_2023_7_25-ictal1 125.0 [(139, 4.0), (173, 4.0)] 138.0 143.5 [0.85 0.63 0.91 0.82]
+R2-06 R2_2023_8_11-ictal1 125.0 [(274, 4.2)] 255.0 281.0 [0.88 0.7  0.91 0.95]
+R3-06 R3_2023_10_23-ictal1 125.0 [(68, 4.2), (76, 4.0), (104, 4.2), (202, 5.8)] 68.0 81.0 [0.88 0.97 0.9  0.96]
+R3-06 R3_2023_10_23-ictal2 125.0 [(96, 4.8)] 95.0 101.0 [0.84 0.97 0.65 0.93]
+R3-06 R3_2023_10_23-ictal5 125.0 [(61, 4.0)] 48.5 65.5 [0.89 1.   0.54 0.84]
+R4-00 R4_2023_9_6-ictal3 133.25 [(324, 5.2), (334, 5.0), (346, 5.2)] 305.0 351.5 [1.12 1.11 0.84 0.7 ]
+R5-00 R5_2023_10_21-ictal1 125.0 [(515, 4.8)] 514.0 520.0 [0.79 0.89 0.97 0.94]
+R6-00 R6_2023_9_1-ictal1 125.0 [(119, 4.2), (145, 4.8), (169, 4.5)] 118.5 124.0 [0.88 0.89 0.79 0.96]
+R6-02 R6_2023_9_17-ictal1 131.5 [(292, 5.5), (303, 5.5)] 268.0 331.0 [1.47 1.48 1.08 1.12]
+group  site
+R1-01  CA1                {'CA1': 9, 'DG': 1}
+R1-03  CA3      {'CA1': 2, 'ANT': 1, 'DG': 1}
+R1-05  ANT                         {'CA1': 6}
+R1-07  DG                         {'CA1': 13}
+[... 32 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import pickle, pandas as pd, numpy as np
+from scipy import stats
+df=pd.DataFrame(pickle.load(open('/tmp/claude-1001/rows.pkl','rb')))
+b=df[(df.kind=='baseline')&df.cfw.notna()]
+print(b.gc_order.describe(), b.gc_order_ds4.describe())
+exp={'R1':(.72,-.11),'R2':(.47,.09),'R3':(.77,.59),'R4':(.81,.79),'R5':(.74,.71),'R6':(.61,.36),'R7':(.81,.71)}
+for key in ('cfw','cfw_ds4'):
+  print(key)
+  for rat,g in b.groupby('rat'):
+    V=np.vstack(g[key].values); grp=g.group.values
+    R=np.corrcoef(V); n=len(V); iu=np.triu_indices(n,1)
+    same=(grp[:,None]==grp[None,:])
+    intra=R[iu][same[iu]]; inter=R[iu][~same[iu]]
+    p=stats.mannwhitneyu(intra,inter,alternative='two-sided').pvalue
+    # top node per group
+    tops={gg:['DG','CA1','CA3','ANT'][int(np.argmax(np.mean(np.vstack(x[key].values),0)))] for gg,x in g.groupby('group')}
+    print(rat,n, round(intra.mean(),2), round(intra.std(),2), round(inter.mean(),2), round(inter.std(),2), f'{p:.2g}', exp[rat], tops)
+EOF
+```
+
+```
+Exit code 1
+count    266.000000
+mean       8.293233
+std        4.293535
+min        2.000000
+25%        3.000000
+50%       11.000000
+75%       12.000000
+max       13.000000
+Name: gc_order, dtype: float64 count    266.000000
+mean       4.067669
+std        1.680950
+min        2.000000
+25%        3.000000
+50%        4.000000
+75%        4.000000
+max       12.000000
+Name: gc_order_ds4, dtype: float64
+cfw
 Traceback (most recent call last):
-  File "/tmp/claude-1001/dev.py", line 17, in <module>
-    exec(compile(body,name,'exec'),ns)
-    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "claim-fig4b", line 22, in <module>
-NameError: name 'psd' is not defined. Did you mean: 'pd'?
-Shell cwd was reset to
+[... 12 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py dur-setup,psd-setup,claim-fig4b 2>&1 | grep -A16 "Readings where"
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import pickle, pandas as pd, numpy as np
+from scipy import stats
+df=pd.DataFrame(pickle.load(open('/tmp/claude-1001/rows.pkl','rb')))
+b=df[(df.kind=='baseline')&df.cfw.notna()]
+exp={'R1':(.72,-.11),'R2':(.47,.09),'R3':(.77,.59),'R4':(.81,.79),'R5':(.74,.71),'R6':(.61,.36),'R7':(.81,.71)}
+for key in ('cfw','cfw_ds4'):
+  print(key)
+  for rat,g in b.groupby('rat'):
+    V=np.vstack(g[key].values); grp=np.array(g.group.tolist(),dtype=object)
+    R=np.corrcoef(V); n=len(V); iu=np.triu_indices(n,1)
+    same=(grp[:,None]==grp[None,:])
+    intra=R[iu][same[iu]]; inter=R[iu][~same[iu]]
+    p=stats.mannwhitneyu(intra,inter,alternative='two-sided').pvalue
+    tops={gg[-2:]:['DG','CA1','CA3','ANT'][int(np.argmax(np.mean(np.vstack(x[key].values),0)))] for gg,x in g.groupby('group')}
+    print(rat,n, round(intra.mean(),2), round(intra.std(),2), round(inter.mean(),2), round(inter.std(),2), f'{p:.2g}', exp[rat], tops)
+EOF
 ```
 
 ```
-Readings where alpha and gamma both hold: 0 of 96
- nperseg   total   channels measure  Dunn                           bands  bands_holding_of_3      which  alpha_and_gamma
-     500   0-500 stimulated    diff unadj (ii) alpha, beta up, gamma down                   2 beta,gamma            False
-    1000   0-500 stimulated    diff unadj (ii) alpha, beta up, gamma down                   2 beta,gamma            False
-    1000   0-500        all     rel unadj (ii) alpha, beta up, gamma down                   1      gamma            False
-    1000   0-500        all     rel unadj (i) theta, alpha up, gamma down                   1      gamma            False
-    1000 0.5-120 stimulated    diff  Bonf (ii) alpha, beta up, gamma down                   1       beta            False
-    1000 0.5-120 stimulated    diff unadj (ii) alpha, beta up, gamma down                   1       beta            False
-    1000   0-500        all    log2 unadj (i) theta, alpha up, gamma down                   1      gamma            False
-    1000   0-500        all    log2 unadj (ii) alpha, beta up, gamma down                   1      gamma            False
-    1000   0-500        all    diff  Bonf (ii) alpha, beta up, gamma down                   1      gamma            False
-    1000   0-500 stimulated    diff unadj (i) theta, alpha up, gamma down                   1      gamma            False
-    1000   0-500 stimulated    diff  Bonf (i) theta, alpha up, gamma down                   1      gamma            False
-    1000   0-500 stimulated    diff  Bonf (ii) alpha, beta up, gamma down                   1      gamma            False
-
-Main reading shown in full (1 s segments, total 0.5-120 Hz, all channels, relative change, Dunn with Bonferroni):
-              KW_p  target_vs_baseline_p  target_vs_nontarget_p  mean_baseline  mean_non-target  mean_target  median_baseline  median_non-target  median_target
-Shell cwd was reset to
+cfw
+R1 35 0.63 0.35 0.22 0.53 4e-17 (0.72, -0.11) {'00': 'ANT', '02': 'ANT', '04': 'CA3', '06': 'DG'}
+R2 43 0.12 0.68 -0.04 0.59 0.00082 (0.47, 0.09) {'00': 'ANT', '02': 'ANT', '04': 'CA3', '06': 'ANT'}
+R3 39 0.58 0.39 0.49 0.41 0.0042 (0.77, 0.59) {'00': 'CA3', '02': 'CA3', '04': 'ANT', '06': 'ANT'}
+R4 43 0.46 0.66 0.47 0.66 0.88 (0.81, 0.79) {'00': 'CA3', '02': 'CA3', '04': 'CA3', '06': 'CA3'}
+R5 32 0.38 0.57 0.35 0.53 0.38 (0.74, 0.71) {'00': 'CA1', '02': 'CA3', '04': 'CA3', '06': 'CA3'}
+R6 35 0.62 0.41 0.5 0.44 0.00015 (0.61, 0.36) {'00': 'ANT', '02': 'ANT', '04': 'ANT', '06': 'ANT'}
+R7 39 0.51 0.44 0.51 0.4 0.66 (0.81, 0.71) {'00': 'ANT', '02': 'ANT', '04': 'ANT', '06': 'ANT'}
+cfw_ds4
+R1 35 0.25 0.52 -0.06 0.58 2.7e-08 (0.72, -0.11) {'00': 'ANT', '02': 'ANT', '04': 'DG', '06': 'DG'}
+R2 43 0.24 0.56 0.3 0.52 0.23 (0.47, 0.09) {'00': 'ANT', '02': 'ANT', '04': 'CA1', '06': 'ANT'}
+R3 39 0.46 0.52 0.41 0.53 0.17 (0.77, 0.59) {'00': 'CA3', '02': 'CA3', '04': 'CA3', '06': 'CA3'}
+R4 43 0.31 0.63 0.22 0.64 0.052 (0.81, 0.79) {'00': 'ANT', '02': 'CA3', '04': 'CA3', '06': 'CA3'}
+R5 32 0.37 0.52 0.35 0.52 0.61 (0.74, 0.71) {'00': 'CA1', '02': 'CA1', '04': 'CA1', '06': 'CA1'}
+R6 35 0.31 0.5 0.15 0.55 0.0019 (0.61, 0.36) {'00': 'CA1', '02': 'CA3', '04': 'CA3', '06': 'CA3'}
+R7 39 0.54 0.49 0.54 0.48 0.59 (0.81, 0.71) {'00': 'ANT', '02': 'ANT', '04': 'ANT', '06': 'ANT'}
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-s=open('cells_code.py').read()
-s=s.replace('''print("Readings where alpha and gamma both hold:", int(f4.alpha_and_gamma.sum()), "of", len(f4))''','''print("Readings where alpha and gamma both hold:", int(f4.alpha_and_gamma.sum()), "of", len(f4),
-      "; readings where each band holds:", {b: int(f4.which.str.contains(b).sum()) for b in ["theta", "alpha", "beta", "gamma"]})''')
-open('cells_code.py','w').write(s)
-m=open('cells_md.txt').read()
-a="""**Result: not reproduced.** No reading of the 96 has alpha and gamma both holding, and at most 2 of
-the 3 named bands hold (beta and one other, difference measure, total 0-500 Hz, stimulated channel,
-unadjusted)."""
-assert a in m
-m=m.replace(a,"""**Result: not reproduced.** No reading of the 96 has alpha and gamma both holding, and at most 2 of
-the 3 named bands hold (beta and gamma, under the difference measure with total 0-500 Hz, the
-stimulated channel and unadjusted Dunn). Alpha holds under no reading.""")
-open('cells_md.txt','w').write(m)
+. $TMPDIR/dev/bin/activate && cat > $TMPDIR/dur.py <<'EOF'
+import pickle, pandas as pd, numpy as np
+from scipy import stats
+df=pd.DataFrame(pickle.load(open('/tmp/claude-1001/rows.pkl','rb')))
+TARGET={('R1','DG'),('R2','DG'),('R2','CA1'),('R3','CA3'),('R4','CA3'),('R5','ANT'),('R6','CA3'),('R7','ANT')}
+def durs(df,key):
+    d=df[key].apply(lambda x:x[1]-x[0]); return d
+for key in ['sz_2.0','sz_1.5','sz_3.0','sz_notrainend']:
+    df['dur']=durs(df,key)
+    out=[]
+    for (rat,idx),g in df[df.kind=='stim'].groupby(['rat','index']):
+        base=df[(df.rat==rat)&(df['index']==idx-1)].dur.dropna()
+        site=g.site.iloc[0]; d=g.dur.dropna()
+        stimd=g[g.trains.apply(len)>0].dur.dropna()
+        out.append(dict(rat=rat,site=site,tgt=(rat,site) in TARGET,n=len(d),rel=(d/base.mean()-1).values, relstim=(stimd/base.mean()-1).values,
+            diff=(d-base.mean()).values, zs=((d-base.mean())/base.std()).values, base=base.values, d=d.values))
+    o=pd.DataFrame(out)
+    o['m']=o.rel.apply(np.mean); o['mstim']=o.relstim.apply(lambda x: np.mean(x) if len(x) else np.nan)
+    print(key); print(o[['rat','site','tgt','n','m','mstim']].round(2).to_string())
+    T=np.concatenate(o[o.tgt].rel.values); N=np.concatenate(o[~o.tgt].rel.values)
+    print(' pooled target %.3f±%.3f nontarget %.3f±%.3f p=%.2g'%(T.mean(),stats.sem(T),N.mean(),stats.sem(N),stats.mannwhitneyu(T,N).pvalue))
+    Tg=o[o.tgt].m; Ng=o[~o.tgt].m; print(' groups', Tg.mean().round(3), Ng.mean().round(3), stats.mannwhitneyu(Tg,Ng).pvalue)
 EOF
-python dev.py cells_code.py dur-setup,psd-setup,claim-fig4b 2>&1 | grep "each band holds"
+python $TMPDIR/dur.py
 ```
 
 ```
-Readings where alpha and gamma both hold: 0 of 96 ; readings where each band holds: {'theta': 0, 'alpha': 0, 'beta': 6, 'gamma': 22}
-Shell cwd was reset to
+/tmp/claude-1001/dev/lib/python3.13/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/tmp/claude-1001/dev/lib/python3.13/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+sz_2.0
+   rat site    tgt   n     m  mstim
+0   R1  CA1  False  11 -0.02   0.01
+1   R1  CA3  False   7 -0.06   0.05
+2   R1  ANT  False   6  0.07   0.07
+3   R1   DG   True  13  0.10   0.10
+4   R2   DG   True   7  0.07   0.07
+5   R2  ANT  False  10 -0.25  -0.25
+6   R2  CA1   True   9  0.16   0.16
+7   R2  CA3  False   9  0.32   0.32
+8   R3  CA3   True  13 -0.03  -0.01
+9   R3  ANT  False   7  0.13   0.13
+10  R3   DG  False   8  0.59   0.57
+11  R3  CA1  False   8 -0.45    NaN
+12  R4  CA1  False  10  0.06   0.11
+13  R4   DG  False  10  0.52   0.46
+[... 112 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python nbbuild.py entries/yang-2025/reproduce_yang_2025.ipynb && cd entries/yang-2025 && cat > requirements.in <<'EOF'
-h5py
-matplotlib
-numpy
-pandas
-remfile
-scipy
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+old="""        out["cfw_ds4"], _, out["gc_order_ds4"] = cfw_onset(d, onset, ds=4)
+"""
+new="""        out["cfw_ds4"], _, out["gc_order_ds4"] = cfw_onset(d, onset, ds=4)
+        for th in SZ_THRESH_VARIANTS:
+            o2 = out[f"sz_{th}"][0]
+            if th != SZ_THRESH and np.isfinite(o2) and o2 * FS + 5000 <= len(d):
+                out[f"cfw_{th}"] = cfw_onset(d, o2)[0]
+"""
+assert old in s; s=s.replace(old,new); open('yang.py','w').write(s)
 EOF
-cat > entry.yaml <<'EOF'
-schema_version: 1
-name: yang-2025
-type: reproduction
-title: Individualized closed-loop stimulation targets in epileptic rats (Yang et al. 2025)
-description: Tests the findings of Yang, Ni, Sun, Xing, Wang, Zhang, Zhu and Xu (2025) on dandiset
-  001212, which holds the ictal LFP clips of 7 pilocarpine-treated rats over 4 baseline and 4
-  closed-loop stimulation groups each. It recomputes the Granger causality targets at seizure
-  onset, compares seizure duration, PSD band ratios, post-ictal spikes and ictal HFOs between
-  target and non-target stimulation, with seizure onset and end marked by a stated rule as the
-  dandiset holds none. The interictal recordings and recording durations are not in the dandiset.
-license: Apache-2.0
-notebooks:
-- path: reproduce_yang_2025.ipynb
-  title: Reproducing Yang et al. (2025) from dandiset 001212
-  runtime_minutes: 12
-helpers:
-- yang2025.py
-related:
-- id: dandi:001212/0.241023.0931
-  relation: uses_data
-- id: doi:10.1109/tnsre.2025.3614867
-  relation: reproduces
-EOF
-grep -n "matplotlib" reproduce_yang_2025.ipynb yang2025.py | head -3; date -u
+OMP_NUM_THREADS=1 python $TMPDIR/runall.py; date -u
 ```
 
 ```
-Traceback (most recent call last):
-  File "/tmp/claude-1001/nbbuild.py", line 1, in <module>
-    import re, sys, nbformat
-ModuleNotFoundError: No module named 'nbformat'
-grep: reproduce_yang_2025.ipynb: No such file or directory
-grep: yang2025.py: No such file or directory
-Tue Nov 10 00:10:25 UTC 2026
-Shell cwd was reset to
+519 248.79473042488098 365.096
+Fri Nov 27 00:39:36 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-python $TMPDIR/nbbuild.py entries/yang-2025/reproduce_yang_2025.ipynb && cd entries/yang-2025 && printf 'h5py\nnumpy\npandas\nremfile\nscipy\n' > requirements.in && cat > entry.yaml <<'EOF'
-schema_version: 1
-name: yang-2025
-type: reproduction
-title: Individualized closed-loop stimulation targets in epileptic rats (Yang et al. 2025)
-description: Tests the findings of Yang, Ni, Sun, Xing, Wang, Zhang, Zhu and Xu (2025) on dandiset
-  001212, which holds the ictal LFP clips of 7 pilocarpine-treated rats over 4 baseline and 4
-  closed-loop stimulation groups each. It recomputes the Granger causality targets at seizure
-  onset, and compares seizure duration, PSD band ratios, post-ictal spikes and ictal HFOs between
-  target and non-target stimulation, with seizure onset and end marked by a stated rule as the
-  dandiset holds none. The interictal recordings and recording durations are not in the dandiset.
-license: Apache-2.0
-notebooks:
-- path: reproduce_yang_2025.ipynb
-  title: Reproducing Yang et al. (2025) from dandiset 001212
-  runtime_minutes: 12
-helpers:
-- yang2025.py
-related:
-- id: dandi:001212/0.241023.0931
-  relation: uses_data
-- id: doi:10.1109/tnsre.2025.3614867
-  relation: reproduces
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+import pickle, pandas as pd, numpy as np
+from scipy import stats
+df=pd.DataFrame(pickle.load(open('/tmp/claude-1001/rows.pkl','rb')))
+st=df[(df.kind=='stim')&(df.trains.apply(len)>0)&df.onset.notna()]
+lat=st.apply(lambda r: r.trains[0][0]-r.onset,axis=1); print('latency', lat.describe())
+# PSD
+TARGET={('R1','DG'),('R2','DG'),('R2','CA1'),('R3','CA3'),('R4','CA3'),('R5','ANT'),('R6','CA3'),('R7','ANT')}
+def cond(r): return 'sham' if r.kind=='baseline' else ('target' if (r.rat,r.site) in TARGET else 'nontarget')
+df['cond']=df.apply(cond,axis=1)
+p=df[df.psd_pre_1000.notna()]
+print(p.cond.value_counts())
+for band in ['delta','theta','alpha','beta','gamma','high_gamma']:
+    res={}
+    for c,g in p.groupby('cond'):
+        pre=np.concatenate([x[band] for x in g.psd_pre_1000]); post=np.concatenate([x[band] for x in g.psd_post_1000])
+        res[c]=(post-pre)/pre
+    h=stats.kruskal(*res.values())
+    print(band, {k:(round(np.mean(v),3),round(np.median(v),3)) for k,v in res.items()}, f'{h.pvalue:.2g}')
+# IIS post
+i=df[df.iis_post.notna()]
+for c,g in i.groupby('cond'):
+    post=np.vstack([x for x in g.iis_post]); pre=np.vstack([x for x in g.iis_pre])
+    print(c, post.shape, np.nanmean(post[:,15:45]), np.nanmean(pre[:,:]), np.nanmean(post[:,150:]))
+# HFO
+for nm in ['hfo_ripple_3.0','hfo_fr_3.0']:
+    h=df[df[nm].notna()]
+    for c,g in h.groupby('cond'):
+        pre=np.concatenate([x['pre'] for x in g[nm]]); post=np.concatenate([x['post'] for x in g[nm]])
+        print(nm,c,len(pre), pre.mean().round(2), post.mean().round(2), np.nanmean((post-pre)/pre))
 EOF
-ls; cd ../.. && python tools/entry.py lock entries/yang-2025 2>&1 | tail -3 && python tools/entry.py check entries/yang-2025 2>&1 | tail -20
 ```
 
 ```
-cells: 64
+<stdin>:29: RuntimeWarning: divide by zero encountered in divide
+<stdin>:29: RuntimeWarning: invalid value encountered in divide
+latency count    172.000000
+mean      12.920058
+std        8.161595
+min        0.500000
+25%        5.250000
+50%       12.750000
+75%       17.562500
+max       40.500000
+dtype: float64
+cond
+sham         266
+nontarget    106
+target        66
+Name: count, dtype: int64
+delta {'nontarget': (np.float64(0.216), np.float64(-0.537)), 'sham': (np.float64(1.891), np.float64(-0.315)), 'target': (np.float64(-0.285), np.float64(-0.793))} 4.8e-21
+theta {'nontarget': (np.float64(0.485), np.float64(-0.338)), 'sham': (np.float64(2.186), np.float64(-0.032)), 'target': (np.float64(-0.028), np.float64(-0.449))} 2.3e-13
+alpha {'nontarget': (np.float64(1.719), np.float64(0.355)), 'sham': (np.float64(2.606), np.float64(0.582)), 'target': (np.float64(1.147), np.float64(0.441))} 0.093
+beta {'nontarget': (np.float64(0.503), np.float64(0.2)), 'sham': (np.float64(0.669), np.float64(0.188)), 'target': (np.float64(0.466), np.float64(0.332))} 0.068
+[... 11 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; ls tools; sed -n 1,60p tools/entry.py | head -80
+```
+
+```
+Fri Nov 27 00:40:13 UTC 2026
 __pycache__
-entry.yaml
-reproduce_yang_2025.ipynb
-requirements.in
-yang2025.py
-wrote yang-2025/requirements.lock.txt (Python 3.13, with hashes)
-error: entries/yang-2025/entry.yaml: (top level): Additional properties are not allowed ('python' was unexpected)
-1 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-cat entries/yang-2025/entry.yaml | tail -5; rm -rf entries/yang-2025/__pycache__; git diff --stat; git status --short | head
-```
-
-```
-related:
-- id: dandi:001212/0.241023.0931
-  relation: uses_data
-- id: doi:10.1109/tnsre.2025.3614867
-  relation: reproduces
- tools/build_site.py                 | 248 ++++++++++++++++++++++++++++++++++--
- tools/entry.py                      | 112 +++++++++++++++-
- tools/get_papers.sh                 |  19 ++-
- tools/notify.py                     |   5 +-
- tools/paper_records.py              |   3 +
- tools/runner/chain.sh               |   7 +-
- tools/runner/cutover_paper_first.py |  12 +-
- tools/site_assets/app.css           |  31 +++++
- tools/site_assets/list.js           |  33 ++++-
- 9 files changed, 443 insertions(+), 27 deletions(-)
- M tools/build_site.py
- M tools/entry.py
- M tools/get_papers.sh
- M tools/notify.py
- M tools/paper_records.py
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n '"python"\|\["python"\]\|python:' tools/entry.py | head; grep -n "python" schemas/entry.schema.json | head; cat entries/yang-2025/entry.yaml | head -3; grep -rn "^python" entries/*/entry.yaml | head -3
-```
-
-```
-199:        if entry.get("python") and locked_for and locked_for.group(1) != str(entry["python"]):
-378:    if entry.get("python"):
-379:        return str(entry["python"])
-389:    """Write `python: "<version>"` into entry.yaml, replacing the field or adding it after `license`."""
-392:    line = f'python: "{version}"'
-393:    if re.search(r"^python:.*$", text, re.M):
-394:        text = re.sub(r"^python:.*$", line, text, count=1, flags=re.M)
-467:    python = venv / "bin" / "python"
-501:        {"entry": entry["name"], "python": python_of(entry_dir), "results": results}, indent=1) + "\n")
-559:                                         "upgrade-python: the version to move to")
-schema_version: 1
-name: yang-2025
-type: reproduction
-entries/yang-2025/entry.yaml:12:python: "3.13"
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i '/^python: "3.13"$/d' entries/yang-2025/entry.yaml && python tools/entry.py check entries/yang-2025 2>&1 | tail -20
-```
-
-```
-0 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; time python tools/entry.py all entries/yang-2025 2>&1 | tail -15; date -u
-```
-
-```
-Tue Nov 10 00:10:56 UTC 2026
-Installed kernelspec registry-yang-2025 in executed/yang-2025/.venv/share/jupyter/kernels/registry-yang-2025
-0 error(s)
-pass  reproduce_yang_2025.ipynb  (661 s)
-
-real	11m7.717s
-user	36m13.116s
-sys	0m19.847s
-Tue Nov 10 00:22:03 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-ls executed/yang-2025/; python - <<'EOF' > $TMPDIR/exec_out.txt
-import nbformat
-nb=nbformat.read('executed/yang-2025/reproduce_yang_2025.ipynb',4)
-for c in nb.cells:
-    if c.cell_type=='code':
-        print('=====', c.metadata.get('tags'))
-        for o in c.outputs:
-            if o.output_type=='stream': print(o.text, end='')
-            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-            elif 'text/plain' in o.get('data',{}): print(o['data']['text/plain'])
-EOF
-grep -c ERROR $TMPDIR/exec_out.txt; diff <(grep -v "=====\|-----\|loaded and reduced\|run time" $TMPDIR/exec_out.txt) <(python - <<'EOF'
-import subprocess
-EOF
-true) > /dev/null; cd $TMPDIR && . env/bin/activate && python dev.py cells_code.py > dev_out2.txt 2>&1; diff <(grep -v "^=====\|^-----\|loaded and reduced\|run time" exec_out.txt) <(grep -v "^=====\|^-----\|loaded and reduced" dev_out2.txt) | head -30
-```
-
-```
-reproduce_yang_2025.ipynb
-result.json
-0
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && grep -A9 "self-pairs (r = 1) included" exec_out.txt
-```
-
-```
-Reading: BIC order, each pair once, self-pairs (r = 1) included in the intra-group set
- order pairs  self rat  n_intra  n_inter  intra_r  intra_sd  inter_r  inter_sd  p_MW  intra_ok  inter_ok  paper_intra  paper_inter  holds
-gc_bic  once  True  R1      181      449    0.553     0.493    0.173     0.547 0.000      True      True         0.72        -0.11   True
-gc_bic  once  True  R2      274      672    0.309     0.627   -0.025     0.623 0.000      True      True         0.47         0.09   True
-gc_bic  once  True  R3      212      568    0.656     0.447    0.388     0.519 0.000      True      True         0.77         0.59   True
-gc_bic  once  True  R4      254      692    0.297     0.677    0.208     0.647 0.003     False     False         0.81         0.79   True
-gc_bic  once  True  R5      149      379    0.634     0.456    0.324     0.505 0.000      True     False         0.74         0.71   True
-gc_bic  once  True  R6      185      481    0.758     0.310    0.588     0.327 0.000      True      True         0.61         0.36   True
-gc_bic  once  True  R7      228      552    0.613     0.462    0.514     0.424 0.000      True      True         0.81         0.71   True
-Shell cwd was reset to
+agent_run.py
+archive_transcripts.sh
+archives
+author_notes.py
+authors.py
+backfill_summaries.py
+blind.sh
+build_dryad_targets.py
+build_figshare_targets.py
+build_openneuro_targets.py
+build_osf_targets.py
+build_reuse_targets.py
+build_site.py
+build_sparc_targets.py
+build_targets.py
+build_zenodo_targets.py
+changed_entries.py
+claims_check.py
+[... 88 more lines not kept]
 ```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "attempts/yang-2025-01.yaml",
- "content": "schema_version: 3\nid: yang-2025-01\ndatasets:\n- archive: dandi\n  id: \"001212\"\n  version: 0.241023.0931\n  doi: 10.48324/dandi.001212/0.241023.0931\n  relation: primary\npaper: doi:10.1109/tnsre.2025.3614867\ndate: 2026-11-09\nentry: yang-2025\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-14\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/catalystneuro/encore/actions/runs/42720022544\noutcomes:\n- claim: tables1-network-stable-short-term\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:tables1-network-stable-short-term\n  measured:\n  - 0.553\n  - 0.173\n  - 0.309\n  - -0.025\n  - 0.656\n  - 0.388\n  - 0.297\n  - 0.208\n  - 0.634\n  - 0.324\n  - 0.758\n  - 0.588\n  - 0.613\n  - 0.514\n  notes: Under reading (d) of the criterion (self-pairs included in the intra-group set), each\n    pair once and BIC model order, intra-group r exceeds inter-group r with Mann-Whitney p < 0.05\n    in all 7 rats (R4 p = 0.003, the others p < 0.001) and 11 of the 14 means lie within the Table\n    S1 SDs (R4 intra 0.297 against 0.81, R4 inter 0.208 against 0.79 and R5 inter 0.324 against\n    0.71 do not). The measured values are this reading's intra and inter means, R1 to R7. With\n    self-pairs excluded (reading c), 5 of 7 rats hold (R4 0.154 against 0.208, p = 0.24; R7 0.534\n    against 0.514, p = 0.15) and 10 of 14 means are within tolerance; with each pair counted twice\n    and self-pairs excluded, 6 of 7. Including self-pairs adds values of 1 to the intra-group set,\n    which favours the claim; the claims file names it as a reading the paper allows. The cf_w sign\n    does not change Pearson r. Without the clips named -small the result per rat is unchanged.\n  deviations:\n  - Seizure onset is marked by a line-length rule (yang2025.detect_seizure), as the dandiset\n    holds no onset times and the paper gives no rule for marking them; an assumption on which this\n    outcome rests.\n  - Conditional GC is computed by a numpy reimplementation of the MVGC time-domain estimator (OLS\n    VAR fits, log ratio of residual variances), with the model order chosen per window by BIC up\n    to 20 (AIC as a variant); the paper used the MATLAB toolbox and states no order.\n  - The readings of the criterion (pairs once or twice, self-pairs excluded or included) were all\n    run; the claim holds under self-pairs included only.\n- claim: fig2-r1-target-shifts\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig2-r1-target-shifts\n  notes: With cf_w as out-strength minus in-strength and AIC order, R1's top nodes in baseline\n    groups 0 to 3 are CA1, ANT, CA3 and DG, 3 of the 4 named (ANT, ANT, CA3, DG). With BIC order\n    they are CA1, ANT, ANT, DG (2 of 4), and with cf_w as in minus out none match. The mean\n    within-group r of the cf_w vectors is 0.26, 0.36, 0.29 and 0.66. R1's groups hold 9, 10, 5 and\n    11 seizures (Figure 2A 9, 9, 7, 9).\n  deviations:\n  - Seizure onset marked by the line-length rule (assumption), and GC as in\n    tables1-network-stable-short-term.\n  - The sign of cf_w is not settled by Methods B, which says in-degree minus out-degree while\n    Figure 2 and the Discussion describe causal outflow; both were run and only out minus in\n    matches.\n- claim: figs2-target-assignment\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:figs2-target-assignment\n  measured:\n  - 9\n  - 19\n  notes: Under reading (a) (the node with the largest mean cf_w), cf_w as out minus in and AIC order,\n    20 of the 28 baseline groups give the Figure S2 target (BIC order 16); the misses are R1 base0,\n    R2 base0, all four R5 groups (CA3 or CA1 computed where Figure S2 has ANT) and two R6 groups.\n    With the dataset's group order, the computed targets give 9 target and 19 non-target\n    stimulation groups, 21 of the 28 labels agreeing with Figure S2. Reading (b) (significance\n    test) matches 6 groups, and cf_w as in minus out matches 0 or 1, so the data support cf_w as\n    causal outflow. The dataset's stimulation order differs from Figure S2 in R5 and R6 (see\n    findings), so the baseline group before a site is not always the one Figure S2 pairs it with.\n  deviations:\n  - Seizure onset marked by the line-length rule (assumption), GC as in\n    tables1-network-stable-short-term.\n  - The test behind \"significantly high\" cf_w is not given (Methods B, C); both readings of the\n    claims file were run.\n- claim: fig3a-target-reduces-each-rat\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-target-reduces-each-rat\n  notes: Three of the 8 target groups have a mean normalized duration below their preceding\n    baseline (R3 CA3 -0.043, R6 CA3 -0.257, R7 ANT -0.256, relative change); R1 DG +0.011, R2 DG\n    +0.178, R2 CA1 +0.092, R4 CA3 +0.058 and R5 ANT +0.116 are above. The sign is the same under all\n    three normalization readings. The count is 3 with stimulated seizures only and without baseline\n    clips that carry trains, 2 with onset thresholds (2, 1.5) and 4 with (4, 2.5).\n  deviations:\n  - Seizure duration is the detected end minus the detected onset of a line-length rule\n    (yang2025.detect_seizure), an assumption; the dandiset holds no seizure times and the paper\n    gives no rule.\n  - Normalization to the baseline group just before each stimulation group in the dataset's order\n    (Results B, paragraph 1), under the claims file's three formula readings.\n- claim: fig3a-nontarget-can-lengthen\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-nontarget-can-lengthen\n  notes: Eleven of the 20 non-target groups have a positive mean normalized duration (R2 CA3, R3\n    ANT and DG, R4 ANT, CA1 and DG, R5 CA1 and CA3, R6 ANT and CA1, R7 CA1); 9 to 12 under the\n    variants. Six of them are among the ten Figure 3A shows as positive.\n  deviations:\n  - Seizure duration from the line-length onset and end rule (assumption), normalized as in\n    fig3a-target-reduces-each-rat.\n- claim: fig3a-per-rat-site-differences\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-per-rat-site-differences\n  notes: At most 5 of the 11 pairs of Figure 3A are significant (relative change or difference,\n    unadjusted Dunn), which meets the criterion's partial outcome; with Bonferroni adjustment 2 or\n    3. Under the readings that find 5, R1 and R6 have 4 to 6 significant pairs, where the paper\n    shows none; only the z-score with adjustment leaves R1 and R6 without pairs, and it finds 2 of\n    the 11. Kruskal-Wallis (relative change) is significant in R1 (p = 0.0005), R2 (0.021), R3\n    (0.0001) and R4 (0.012), and not in R5 (0.68), R6 (0.12) or R7 (0.62).\n  deviations:\n  - Seizure duration from the line-length onset and end rule (assumption).\n  - The post hoc test is not named in the paper; Dunn's test adjusted and unadjusted were run, as\n    the criterion names.\n- claim: fig3a-target-vs-nontarget-total\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-target-vs-nontarget-total\n  measured:\n  - -0.037\n  - 0.003\n  notes: Pooled over seizures, the relative normalized duration is -0.037 +- 0.033 for target (85\n    seizures) and 0.003 +- 0.038 for non-target stimulation (165), Mann-Whitney p = 0.93; over\n    groups -0.013 against 0.006, p = 0.94. No normalization, unit, seizure set or threshold variant\n    gives p < 0.05 (smallest 0.096, with target the longer).\n  deviations:\n  - Seizure duration from the line-length onset and end rule (assumption).\n- claim: fig3a-some-nontarget-shorten\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-some-nontarget-shorten\n  notes: Under the one-sample t-test reading, 3 of the 5 named groups are significantly shorter\n    than baseline (R2 ANT p = 0.009, R3 CA1 p < 0.0001, R7 CA3 p = 0.002; 2 of 5 under Mann-Whitney\n    against the baseline durations and under Wilcoxon), and 3 of the 5 are less effective than the\n    rat's target (R4 CA1, R5 CA3, R7 CA3). This meets the partial outcome, but only R7 CA3 does\n    both; R2 ANT (-0.271, against the DG target's +0.178) and R3 CA1 (-0.684, against -0.043)\n    shorten seizures more than the target. R1 CA1, R6 DG and R7 DG are also significantly shorter.\n  deviations:\n  - Seizure duration from the line-length onset and end rule (assumption).\n  - The test for \"significantly shortened\" is not given; the three readings of the criterion\n    were run.\n- claim: fig3b-same-site-target-vs-nontarget\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3b-same-site-target-vs-nontarget\n  notes: No site shows target lower with Mann-Whitney p < 0.05 under any normalization or seizure\n    set. With relative change, target against non-target is -0.096 against 0.026 at CA3 (p =\n    0.51), -0.094 against 0.093 at ANT (p = 0.19) and 0.069 against 0.083 at DG (p = 0.63). At CA1,\n    where the claim expects no difference, 0.092 against -0.152, p = 0.079. The t-test variant is\n    not significant either.\n  deviations:\n  - Seizure duration from the line-length onset and end rule (assumption).\n- claim: seizure-duration-proportion\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The proportion is seizure time over recording time (Results B). The dandiset holds only\n    600 s clips around seizures, with no recording durations or times of day, and the paper's\n    recordings are not public elsewhere, so the denominator cannot be computed.\n- claim: fig3c-frequency-no-difference\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Seizure frequency is seizures per hour of recording (Results B). The dandiset holds no\n    recording durations, and its clips per group (4 to 16) are not shown to be every seizure\n    recorded; the dates in the clip names do not give the hours recorded.\n- claim: fig4b-psd-target-bands\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig4b-psd-target-bands\n  notes: Of the 96 readings (change measure, Welch segment, total range, channels, post hoc\n    adjustment, and the two band readings), none has alpha and gamma both holding; alpha holds\n    under none, gamma under 22, beta under 6, theta under none. In the main reading (1 s segments,\n    0.5-120 Hz, all channels, relative change) the alpha ratio rises after target stimulation\n    (median 0.52) more than after non-target (0.19, Dunn p = 0.008) but not more than after sham\n    (0.58, p = 0.50), and the gamma ratio falls after target (-0.20) as after sham (-0.19, p = 1.0)\n    and more than after non-target (-0.10, p = 0.006).\n  deviations:\n  - Seizure onset from the line-length rule (assumption), and stimulation times from the\n    artefact, as the dandiset holds neither.\n  - The post-stimulation window \"5s after the first stimulation train\" (Methods D) is read as the\n    5 s from the end of the first train (assumption; it is the pause before the next detection,\n    free of artefact).\n- claim: fig4b-psd-other-bands-unchanged\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig4b-psd-other-bands-unchanged\n  notes: In the main reading Kruskal-Wallis across sham, target and non-target is significant for\n    delta (p < 0.0001; medians -0.17, -0.52 and -0.34), high gamma (p = 0.0002), beta and theta (p\n    < 0.0001), so the claim of absence fails under both band readings. High gamma differs under\n    every PSD reading, and delta under every one but the stimulated channel with total 0.5-120 Hz\n    (p = 0.07 to 0.23).\n  deviations:\n  - As for fig4b-psd-target-bands.\n- claim: fig5b-iis-post-seizure\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig5b-iis-post-seizure\n  notes: Over 15 to 45 s after the seizure end the IIS rate is 0.178 per s after target and 0.286\n    per s after non-target stimulation. Under reading (b), the paired t-test across 1 s bins gives\n    p = 7.8e-10 (5 s bins p = 0.0077); under reading (a), Mann-Whitney of seizure-channel rates\n    gives p = 0.0053, and per seizure p = 0.033. Target is lower in R1, R2, R6 and R7 and higher in\n    R3, R4 and R5; R7's non-target rate (1.12 per s) is far above the others.\n  deviations:\n  - Seizure onset and end from the line-length rule (assumption).\n  - The 5 SD threshold uses the 180 s before onset (reading a); the interictal segments of\n    reading (b) are not in the dataset. Peak width is measured at half prominence on the raw LFP.\n- claim: fig5c-interictal-iis-no-difference\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The claim uses 30 min interictal segments at least one hour from seizures (Methods F). The\n    dandiset holds only 600 s clips around seizures, and the recordings are not public elsewhere.\n- claim: fig5d-iis-seizure-correlation\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs interictal IIS rates and seizure frequency; the dandiset holds neither interictal\n    recordings nor recording durations.\n- claim: fig6cd-interictal-hfo-no-difference\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Interictal HFOs are counted in six 30 min interictal segments per day (Methods E); the\n    dandiset holds no interictal recordings.\n- claim: fig6e-ictal-ripples-no-difference\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig6e-ictal-ripples-no-difference\n  notes: Under pairing (a), by rat, the paired t-test finds no difference between target and\n    non-target (97.5th percentile threshold, all channels, 5.72 against 7.46, p = 0.73; the other\n    three readings p = 0.09 to 0.95). The normalized ripple rates are large and positive in every\n    condition (baseline 4.09), unlike the -0.16 and -0.04 of Figure 6E; this detector finds many\n    more ripples later in the seizure than at its onset, so the test bears weakly on the paper's\n    measure. Seizures with no ripple in the pre window are dropped (93 to 290 by reading). The\n    unpaired test with the stimulated channel gives p = 0.020, target lower.\n  deviations:\n  - HFOs are counted by an automatic line-length detector with settings chosen here (band-pass,\n    20 ms windows for ripples, threshold the 97.5th or 99th percentile of the clip, at least 4\n    cycles), as the HFO App's settings are not given; no manual review (Methods E).\n  - Pre and post windows are those of the PSD (Methods D), as the claims file says, with seizure\n    onset from the line-length rule and trains from the artefact (assumptions).\n- claim: fig6f-ictal-fast-ripples-reduced\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig6f-ictal-fast-ripples-reduced\n  notes: In the main reading the normalized fast ripple rate is 15.9 for target, 6.0 for baseline\n    and 4.6 for non-target stimulation (paired p = 0.29 against baseline and 0.30 against\n    non-target). No reading has the target mean below both others with p < 0.05; with the\n    stimulated channel at the 97.5th percentile target is lowest (5.09 against 8.81 and 6.04) with\n    paired p = 0.19 and 0.38.\n  deviations:\n  - As for fig6e-ictal-ripples-no-difference, with fast ripples band-passed at 250-490 Hz and 8 ms\n    windows.\nfindings:\n- kind: data_missing\n  statement: The dandiset holds only 600 s ictal clips. It has no seizure onset or end times, no\n    stimulation times, no interictal recordings and no recording durations, although the paper\n    analyses 30 min interictal segments (IIS, HFO) and seizures per hour of recording. Five claims\n    cannot be tested, and every seizure-based measure needs an onset and end rule the paper does not\n    give.\n- kind: metadata_error\n  statement: Baseline groups hold stimulated seizures. Eleven baseline clips carry stimulation\n    artefact; in R1 base2 (2023-8-29 ictal1, 8-30 ictal1), R4 base0 (9-6 ictal1 to 3), R5 base0\n    (10-25 ictal1) and R6 base1 (9-17 ictal1) they are 4.25 to 6 s trains with 5 s pauses, like\n    those of the stimulation groups. Two clips of R7's CA3 stimulation group carry no train.\n- kind: metadata_error\n  statement: Sixteen clip names (date and seizure number) occur in two groups of the same rat with\n    different contents, for example R1_2023_9_20-ictal1 to 3 in both R1 base3 and R1 DG-stim, and\n    R3_2023_10_18-ictal1 and 10_20-ictal1 and 2 in both R3 DG-stim and CA1-stim. Some groups' clip\n    dates fall outside their place in the order; R3's CA1-stim group (07) is dated 18 to 20\n    October, before its base3 group (06, from 22 October), and R5's base0 runs from 8 September to\n    25 October.\n- kind: other\n  statement: The stimulation order of R5 and R6 in the dandiset (R5 CA1, ANT, DG, CA3; R6 ANT, DG,\n    CA1, CA3) differs from the order in the paper's Figure S2 (R5 ANT, DG, CA1, CA3; R6 CA1, ANT,\n    DG, CA3). The other five rats agree.\n- kind: selection_undocumented\n  statement: How the 600 s clips were chosen, and whether each group holds every seizure recorded,\n    is not documented. Two groups hold fewer than the 6 seizures Methods C states (R1 base2 5, R7\n    CA3-stim 4). Twenty clips are named -small and two -large, with no explanation.\n- kind: metadata_error\n  statement: The electrodes table gives the ANT depth as DV -5.6 mm, where the paper gives -6.0\n    mm. Every session gives the subject's age as P2M and weight as 300-350 g, though a rat's\n    sessions span up to four months.\n- kind: methods_unavailable\n  statement: Questions for the paper's authors. (1) How were seizure onset and end marked offline\n    for seizure duration, the GC window and the PSD, IIS and HFO windows? This attempt used a line\n    length rule; the detected onset precedes the first train by a median 6.5 s. (2) Is cf_w out-\n    minus in-strength (Figure 2, Discussion) or in- minus out-strength (Methods B)? Only the former\n    recovers the Figure S2 targets here (20 of 28 groups against 0 or 1). (3) What VAR model order\n    and test for \"significantly high\" cf_w were used? (4) How was seizure duration normalized\n    (relative change, difference, z-score), and was the unit the seizure or the group? (5) Which\n    post hoc test follows the Kruskal-Wallis tests of Figures 3A and 4B, and what are the PSD change\n    measure, Welch segment and total range? (6) Is the post-stimulation window the 5 s after the\n    first train ends? (7) What settings of the HFO App's short line length detector were used? (8)\n    What does the pairing of the Figure 6 paired t-tests pair, given independent groups?\n"
+ "file_path": "/tmp/claude-1001/nb.py",
+ "content": "# %% md\n# Reproducing Yang et al. (2025) from dandiset 001212\n\n**Paper.** Yang, Ni, Sun, Xing, Wang, Zhang, Zhu and Xu (2025), \"Individualized Target Selection of\nClosed-Loop Electrical Stimulation for the Treatment of Spontaneous Temporal Lobe Epilepsy\", IEEE\nTrans. Neural Syst. Rehabil. Eng. 33:4008-4016, doi:10.1109/tnsre.2025.3614867.\n\n**Dataset.** DANDI:001212, version `0.241023.0931` (doi:10.48324/dandi.001212/0.241023.0931),\nstreamed from the archive. The paper cites no version of the dandiset. This is the only published\nversion, and it is the most recent; the draft has the same 56 assets and size, so no other version\ncould match the claims file's description better.\n\n**Claims.** `claims/yang-2025.yaml`, written from the version of record and its supplement (Figures\nS1 to S3, Table S1), checked by a second reader. The claims file decides what is tested; method\ndetails it leaves open are taken from the paper, cited where used, and the readings it names are\nall run.\n\n**What the dandiset holds.** For each of the 7 rats, 8 NWB files (4 baseline and 4 stimulation\ngroups); each file holds one 600 s, 4-channel (DG, CA1, CA3, ANT) LFP epoch per seizure at 1 kHz.\nThere are no seizure times, no stimulation times, no interictal recordings and no recording\ndurations. Seizure onset and end and the stimulation trains are therefore found from the LFP here\n(an assumption, stated below), and the claims that need interictal data or recording time are\nblocked.\n\n| Claim | Tested or blocked |\n|---|---|\n| tables1-network-stable-short-term | tested |\n| fig2-r1-target-shifts | tested |\n| figs2-target-assignment | tested |\n| fig3a-target-reduces-each-rat | tested |\n| fig3a-nontarget-can-lengthen | tested |\n| fig3a-per-rat-site-differences | tested |\n| fig3a-target-vs-nontarget-total | tested |\n| fig3a-some-nontarget-shorten | tested |\n| fig3b-same-site-target-vs-nontarget | tested |\n| seizure-duration-proportion | blocked: data missing (no recording time) |\n| fig3c-frequency-no-difference | blocked: data missing (no recording time) |\n| fig4b-psd-target-bands | tested |\n| fig4b-psd-other-bands-unchanged | tested |\n| fig5b-iis-post-seizure | tested |\n| fig5c-interictal-iis-no-difference | blocked: data missing (no interictal segments) |\n| fig5d-iis-seizure-correlation | blocked: data missing (no interictal segments, no recording time) |\n| fig6cd-interictal-hfo-no-difference | blocked: data missing (no interictal segments) |\n| fig6e-ictal-ripples-no-difference | tested |\n| fig6f-ictal-fast-ripples-reduced | tested |\n\n# %%\nimport os\nos.environ.setdefault(\"OMP_NUM_THREADS\", \"1\")\nos.environ.setdefault(\"OPENBLAS_NUM_THREADS\", \"1\")\nimport time\nimport itertools\nimport resource\nimport numpy as np\nimport pandas as pd\nfrom scipy import stats\nimport matplotlib.pyplot as plt\nimport yang\n\npd.set_option(\"display.width\", 160)\npd.set_option(\"display.max_columns\", 30)\npd.set_option(\"display.max_rows\", 200)\nCH = yang.CHANNELS\nprint(\"dandiset\", yang.DANDISET, \"version\", yang.VERSION)\n\n# %% md\n## Loading\n\nEvery epoch of every file is streamed once, and everything the claims need is computed from it as\nit is read (`yang.epoch_features`): seizure onset and end, stimulation trains, cf_w at onset, PSD\nratios, interictal spike counts around the seizure and ictal HFO rates. Four files are read at a\ntime, each in its own process.\n\n# %%\nassets = yang.list_assets()\nt0 = time.time()\nrows = yang.process_all(assets, workers=4)\nprint(f\"{len(assets)} files, {len(rows)} epochs, {time.time() - t0:.0f} s; peak memory of a worker \"\n      f\"{resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / 1e6:.2f} GB\")\ndf = pd.DataFrame(rows)\ndf[\"ntrains\"] = df.trains.apply(len)\nfor th in yang.SZ_THRESH_VARIANTS:\n    df[f\"dur_{th}\"] = df[f\"sz_{th}\"].apply(lambda x: x[1] - x[0])\ndf[\"dur_notrainend\"] = df[\"sz_notrainend\"].apply(lambda x: x[1] - x[0])\ndf[\"dur\"] = df[f\"dur_{yang.SZ_THRESH}\"]\n\n# %% md\n## Data check\n\n# %% tags=[\"sanity\"]\nad = pd.DataFrame(assets)\nprint(\"files per rat and kind:\")\nprint(ad.groupby([\"rat\", \"kind\"]).size().unstack())\nprint(\"\\nepochs per rat and kind:\")\nprint(df.groupby([\"rat\", \"kind\"]).size().unstack())\nprint(\"\\nepoch shapes:\", df.groupby([\"n_samples\", \"n_channels\"]).size().to_dict(),\n      \"| rate (Hz):\", df.rate.unique(), \"| starting_time:\", df.start.unique(), \"| unit:\", df.unit.unique())\nprint(\"LFP range over all epochs and channels (microvolts): min %.0f, max %.0f; per-epoch SD median %.1f \"\n      \"(range %.1f to %.1f)\" % (np.min(np.vstack(df[\"min\"])), np.max(np.vstack(df[\"max\"])),\n                                np.median(np.vstack(df[\"std\"])), np.min(np.vstack(df[\"std\"])),\n                                np.max(np.vstack(df[\"std\"]))))\nprint(\"each series' description names its own file's group:\",\n      all(r.description.split(\" at \")[1].split(\" \")[0].replace(\"_\", \"-\") ==\n          ad.set_index(\"group\").loc[r.group, \"path\"].split(f\"ses-Rat{r.rat}-\")[1].split(\"_ecephys\")[0]\n          for r in df.itertuples()))\n\n# %% md\n### Duplicates\n\nEach epoch's data, and each channel separately, is hashed (MD5 of the float64 values).\n\n# %% tags=[\"sanity\"]\ndup = df.md5.value_counts()\nprint(\"epochs whose full data occur more than once:\", int((dup > 1).sum()))\nchash = pd.Series([h for hs in df.md5_ch for h in hs]).value_counts()\nprint(\"channel traces that occur more than once:\", int((chash > 1).sum()))\n# epochs dated the same day in two groups of one rat\ndd = df.groupby([\"rat\", \"date\"]).group.nunique()\nprint(\"rat-days with epochs in two groups:\", dd[dd > 1].index.tolist())\n\n# %% md\n### Group order: file names, epoch dates and Figure S2\n\nThe file names number the groups 00 to 07 (baseline, stimulation, alternating). The epoch names\ncarry dates. Figure S2 gives the order of the stimulated sites.\n\n# %% tags=[\"sanity\"]\nFIGS2_ORDER = {  # stimulated site of stimulation groups 1 to 4, Figure S2 (claims file)\n    \"R1\": [\"CA1\", \"CA3\", \"ANT\", \"DG\"], \"R2\": [\"DG\", \"ANT\", \"CA1\", \"CA3\"],\n    \"R3\": [\"CA3\", \"ANT\", \"DG\", \"CA1\"], \"R4\": [\"CA1\", \"DG\", \"ANT\", \"CA3\"],\n    \"R5\": [\"ANT\", \"DG\", \"CA1\", \"CA3\"], \"R6\": [\"CA1\", \"ANT\", \"DG\", \"CA3\"],\n    \"R7\": [\"DG\", \"ANT\", \"CA1\", \"CA3\"]}\nFIGS2_TARGETS = {  # computed target(s) of baseline groups 0 to 3, Figure S2\n    \"R1\": [{\"ANT\"}, {\"ANT\"}, {\"CA3\"}, {\"DG\"}], \"R2\": [{\"DG\", \"CA1\"}, {\"CA1\"}, {\"CA1\"}, {\"ANT\"}],\n    \"R3\": [{\"CA3\"}, {\"CA3\"}, {\"ANT\"}, {\"CA3\", \"ANT\"}], \"R4\": [{\"CA3\"}] * 4,\n    \"R5\": [{\"CA3\", \"ANT\"}, {\"ANT\"}, {\"ANT\"}, {\"ANT\"}],\n    \"R6\": [{\"ANT\"}, {\"CA1\", \"CA3\"}, {\"CA3\"}, {\"CA3\"}], \"R7\": [{\"ANT\"}] * 4}\nTARGET = {(\"R1\", \"DG\"), (\"R2\", \"DG\"), (\"R2\", \"CA1\"), (\"R3\", \"CA3\"), (\"R4\", \"CA3\"), (\"R5\", \"ANT\"),\n          (\"R6\", \"CA3\"), (\"R7\", \"ANT\")}  # target stimulation groups, Figure S2 / Figure 3A boxes\nspan = df.groupby(\"group\").agg(rat=(\"rat\", \"first\"), kind=(\"kind\", \"first\"), site=(\"site\", \"first\"),\n                               n=(\"epoch\", \"size\"), first=(\"date\", \"min\"), last=(\"date\", \"max\"),\n                               days=(\"date\", \"nunique\"))\nprint(span.to_string())\nfor rat in sorted(FIGS2_ORDER):\n    ds = ad[(ad.rat == rat) & (ad.kind == \"stim\")].sort_values(\"index\").site.tolist()\n    print(rat, \"dandiset order\", ds, \"| Figure S2 order\", FIGS2_ORDER[rat],\n          \"| same\" if ds == FIGS2_ORDER[rat] else \"| DIFFERENT\")\n\n# %% md\n### Stimulation trains and the clock check\n\nThe files carry no stimulation times. Trains of 130 Hz pulses appear as a comb of aliased lines in\nthe 1 kHz LFP; they are detected per 0.5 s window (`yang.find_trains`, at least 4 s long). Methods\nC gives 5 s trains with 5 s pauses, which the detected trains are checked against. As the LFP is\nthe only data stream, the clock check asks whether the trains, which the closed-loop detector\ntriggers at seizures, fall inside the seizures found from the LFP, against the same with the\nseizure times shifted.\n\n# %% tags=[\"sanity\"]\nst = df[df.kind == \"stim\"]\nprint(\"stimulation groups: epochs with at least one train, of all epochs\")\nprint(st.groupby(\"group\").agg(site=(\"site\", \"first\"), epochs=(\"epoch\", \"size\"),\n                              with_trains=(\"ntrains\", lambda x: int((x > 0).sum())),\n                              pulse_rate_hz=(\"pulse_rate\", \"median\")).T.to_string())\nlens = np.array([e - s for tr in st.trains for s, e in tr])\nprint(f\"\\ntrain length: n = {len(lens)}, median {np.median(lens):.2f} s, 5th to 95th percentile \"\n      f\"{np.percentile(lens, 5):.2f} to {np.percentile(lens, 95):.2f} s\")\ngaps = np.array([tr[i + 1][0] - tr[i][1] for tr in st.trains for i in range(len(tr) - 1)])\nprint(f\"pause between consecutive trains: median {np.median(gaps):.2f} s, 25th to 75th percentile \"\n      f\"{np.percentile(gaps, 25):.2f} to {np.percentile(gaps, 75):.2f} s\")\nbt = df[(df.kind == \"baseline\") & (df.ntrains > 0)]\nprint(f\"\\nbaseline epochs with detected trains: {len(bt)} of {int((df.kind == 'baseline').sum())}\")\nprint(bt[[\"group\", \"epoch\", \"pulse_rate\", \"trains\"]].to_string())\n\n\ndef frac_in(shift):\n    k = n = 0\n    for r in st[(st.ntrains > 0) & st.onset.notna()].itertuples():\n        for s, e in r.trains:\n            n += 1\n            k += (s < r.end + shift + 1) and (e > r.onset + shift - 1)\n    return k / n\n\n\nprint(\"\\nfraction of trains overlapping the seizure found from the LFP, by shift of the seizure times:\")\nprint({sh: round(frac_in(sh), 3) for sh in (-120, -60, -30, 0, 30, 60, 120)})\nlat = st[(st.ntrains > 0) & st.onset.notna()].apply(lambda r: r.trains[0][0] - r.onset, axis=1)\nprint(f\"first train minus seizure onset: median {lat.median():.1f} s, 25th to 75th percentile \"\n      f\"{lat.quantile(.25):.1f} to {lat.quantile(.75):.1f} s, range {lat.min():.1f} to {lat.max():.1f}\")\n\n# %% md\n### Seizure onset and end\n\nThe dandiset gives no seizure times, and the paper gives no rule for marking them (claims file,\nopening comment, reading (b)). The assumption here (`yang.detect_seizure`): the largest over\nchannels of the 1-45 Hz line length in 1 s windows, divided by the channel's median over the epoch,\nabove 2 (with stimulation trains counted as ictal, runs merged across gaps under 7 s, and\nboundaries extended while it stays above 1.5). The thresholds 1.5 and 3, and ending a seizure at\nthe last ictal window before a final train, are shown as variants in every duration claim.\n\n# %% tags=[\"sanity\"]\nfor th in yang.SZ_THRESH_VARIANTS:\n    c = f\"dur_{th}\"\n    print(f\"threshold {th}: seizures found in {int(df[c].notna().sum())} of {len(df)} epochs; duration \"\n          f\"median {df[c].median():.1f} s, range {df[c].min():.1f} to {df[c].max():.1f} s\")\nprint(\"epochs without a seizure at the main threshold:\", df[df.dur.isna()][[\"group\", \"epoch\"]].values.tolist())\nprint(\"\\nmedian duration (s) by rat and kind, main threshold:\")\nprint(df.groupby([\"rat\", \"kind\"]).dur.median().unstack().round(1))\nonsets = df.onset.dropna()\nprint(f\"\\nonset within the 600 s epoch: median {onsets.median():.1f} s, range {onsets.min():.1f} to \"\n      f\"{onsets.max():.1f} s\")\n\n# %%\nfig, axs = plt.subplots(1, 2, figsize=(11, 3.5))\naxs[0].hist(df.dur.dropna(), bins=40)\naxs[0].set_xlabel(\"seizure duration (s), main threshold\")\naxs[0].set_ylabel(\"epochs\")\naxs[1].hist(lat, bins=30)\naxs[1].set_xlabel(\"first train minus onset (s)\")\nplt.tight_layout()\nplt.show()\nprint(f\"all {int(df.dur.notna().sum())} durations ({df.dur.min():.1f} to {df.dur.max():.1f} s) and \"\n      f\"all {len(lat)} latencies ({lat.min():.1f} to {lat.max():.1f} s) are inside the axes\")\n\n# %% md\n## Network claims\n\ncf_w over the first 5 s after onset, 9 windows of 1 s with 0.5 s overlap (Methods B), from\nconditional GC with BIC model order at 1 kHz (main) and, as a variant, after decimation to 250 Hz.\nReading (a) of the claims file's sign (out-strength minus in-strength) is `cfw`; reading (b) is its\nnegative. The two readings of combining windows coincide (cf_w is linear in the GC matrix).\n\n# %%\nbase = df[(df.kind == \"baseline\") & df.cfw.notna()].copy()\nprint(\"baseline seizures with cf_w:\", len(base), \"of\", int((df.kind == \"baseline\").sum()))\nprint(\"VAR order (BIC, 1 kHz): median\", base.gc_order.median(), \"range\", base.gc_order.min(), \"to\",\n      base.gc_order.max(), \"| at 250 Hz: median\", base.gc_order_ds4.median())\nGC_VARIANTS = {\"1 kHz\": \"cfw\", \"250 Hz\": \"cfw_ds4\", \"1 kHz, onset threshold 1.5\": \"cfw_1.5\",\n               \"1 kHz, onset threshold 3\": \"cfw_3.0\"}\n\n\ndef pair_sets(V, grp, twice=False, self_pairs=False):\n    R = np.corrcoef(V)\n    n = len(V)\n    same = grp[:, None] == grp[None, :]\n    if twice:\n        m = ~np.eye(n, dtype=bool)\n    else:\n        m = np.triu(np.ones((n, n), bool), 1)\n    intra = R[m & same]\n    inter = R[m & ~same]\n    if self_pairs:\n        intra = np.concatenate([intra, np.ones(n)])\n    return intra, inter\n\n\n# %% md\n### tables1-network-stable-short-term\n\n> In every rat the cf_w vectors of seizure onset correlate more strongly between seizures of the\n> same baseline group than between seizures of different baseline groups (Pearson r, intra-group\n> against inter-group, Mann-Whitney).\n\nCriterion: reproduced when, under one reading, intra > inter with Mann-Whitney p < 0.05 in all 7\nrats and at least 10 of the 14 means lie within tolerance (Table S1 SDs); partially reproduced when\ndirection and significance hold in at least 5 rats. Readings: pairs once (a) or twice (b); self\npairs excluded (c) or included (d); and the GC variants.\n\n# %% tags=[\"claim:tables1-network-stable-short-term\"]\nTABLE_S1 = {\"R1\": (.72, .30, -.11, .55), \"R2\": (.47, .57, .09, .56), \"R3\": (.77, .19, .59, .34),\n            \"R4\": (.81, .46, .79, .46), \"R5\": (.74, .34, .71, .28), \"R6\": (.61, .34, .36, .47),\n            \"R7\": (.81, .36, .71, .41)}\nres = []\nfor gname, col in GC_VARIANTS.items():\n    for twice, selfp in itertools.product((False, True), (False, True)):\n        for rat, g in base[base[col].notna()].groupby(\"rat\"):\n            V = np.vstack(g[col].values)\n            grp = np.array(g.group.tolist(), dtype=object)\n            intra, inter = pair_sets(V, grp, twice, selfp)\n            p = stats.mannwhitneyu(intra, inter, alternative=\"two-sided\").pvalue\n            e = TABLE_S1[rat]\n            res.append(dict(gc=gname, pairs=\"twice\" if twice else \"once\", self=\"incl\" if selfp else \"excl\",\n                            rat=rat, n=len(V), intra=intra.mean(), intra_sd=intra.std(),\n                            inter=inter.mean(), inter_sd=inter.std(), p=p,\n                            ok=(intra.mean() > inter.mean()) and p < 0.05,\n                            in_tol=int(abs(intra.mean() - e[0]) <= e[1]) + int(abs(inter.mean() - e[2]) <= e[3])))\nt1 = pd.DataFrame(res)\nprint(t1[(t1.gc == \"1 kHz\") & (t1.pairs == \"once\") & (t1.self == \"excl\")].round(3).to_string())\nsumm = t1.groupby([\"gc\", \"pairs\", \"self\"]).agg(rats_significant=(\"ok\", \"sum\"), means_in_tol=(\"in_tol\", \"sum\"))\nprint(\"\\nby reading (7 rats, 14 means):\")\nprint(summ.to_string())\nprint(\"\\nrats significant under each reading, listed:\")\nprint(t1[t1.ok].groupby([\"gc\", \"pairs\", \"self\"]).rat.apply(lambda x: \",\".join(x)).to_string())\n\n# %% md\n**Result: placeholder**\n\n### fig2-r1-target-shifts\n\n> In rat R1 the node with the highest cf_w at seizure onset changes across the four baseline groups\n> (ANT, ANT, CA3, DG), while the cf_w pattern is consistent within each group.\n\nCriterion: reproduced when, under one reading, the node with the highest mean cf_w in each of R1's\nfour baseline groups is the one named; partially when three of the four match.\n\n# %% tags=[\"claim:fig2-r1-target-shifts\"]\nr1 = base[base.rat == \"R1\"]\nnamed = [\"ANT\", \"ANT\", \"CA3\", \"DG\"]\nfor gname, col in GC_VARIANTS.items():\n    for sign, lab in ((1, \"out - in\"), (-1, \"in - out\")):\n        tops, means = [], []\n        for gg, g in r1[r1[col].notna()].groupby(\"group\"):\n            m = sign * np.vstack(g[col].values).mean(0)\n            tops.append(CH[int(np.argmax(m))])\n            means.append(np.round(m, 3))\n        print(f\"{gname:28s} {lab}: top nodes {tops}, {sum(a == b for a, b in zip(tops, named))} of 4 match\")\nprint(\"\\nmean cf_w (out - in, 1 kHz) per R1 baseline group, nodes\", CH)\nfor gg, g in r1.groupby(\"group\"):\n    V = np.vstack(g.cfw.values)\n    print(gg, \"n =\", len(V), np.round(V.mean(0), 4), \"| seizures whose top node is the group's top:\",\n          int((np.argmax(V, 1) == np.argmax(V.mean(0))).sum()))\nfig, ax = plt.subplots(figsize=(10, 2.5))\nV = np.vstack(r1.cfw.values).T\nim = ax.imshow(V, aspect=\"auto\", cmap=\"RdBu_r\", vmin=-np.abs(V).max(), vmax=np.abs(V).max())\nax.set_yticks(range(4), CH)\nb = np.cumsum(r1.groupby(\"group\").size().values)[:-1]\nfor x in b:\n    ax.axvline(x - .5, color=\"k\")\nplt.colorbar(im, label=\"cf_w (out - in)\")\nax.set_xlabel(\"R1 baseline seizures, groups 0 to 3\")\nplt.show()\nprint(f\"cf_w range shown: {V.min():.3f} to {V.max():.3f}\")\n\n# %% md\n**Result: placeholder**\n\n### figs2-target-assignment\n\n> Across the 7 rats, the targets computed from each baseline group's seizures, compared with the\n> site stimulated in the next group, give 8 target and 20 non-target stimulation groups as Figure\n> S2 shows.\n\nCriterion: reproduced when, under one reading, at least 24 of the 28 baseline groups give the\nFigure S2 target set and the labels of all 28 stimulation groups agree with Figure S2; partially\nwhen at least 18 baseline groups match. Readings of \"significantly high\": (a) the node with the\nlargest mean cf_w; (b) nodes whose cf_w is significantly above that of each other node\n(Kruskal-Wallis, then pairwise Mann-Whitney, p < 0.05). The next group is the next file of the\ndandiset.\n\n# %% tags=[\"claim:figs2-target-assignment\"]\ndef targets_b(V, alpha=0.05):\n    if stats.kruskal(*V.T).pvalue >= alpha:\n        return set()\n    out = set()\n    for i in range(4):\n        if all(V[:, i].mean() > V[:, j].mean() and\n               stats.mannwhitneyu(V[:, i], V[:, j], alternative=\"greater\").pvalue < alpha\n               for j in range(4) if j != i):\n            out.add(CH[i])\n    return out\n\n\nrows_s2 = []\nfor gname, col in GC_VARIANTS.items():\n    for sign, lab in ((1, \"out-in\"), (-1, \"in-out\")):\n        for rat in sorted(FIGS2_TARGETS):\n            for bi in range(4):\n                g = base[(base.rat == rat) & (base[\"index\"] == 2 * bi) & base[col].notna()]\n                V = sign * np.vstack(g[col].values)\n                ta = {CH[int(np.argmax(V.mean(0)))]}\n                tb = targets_b(V)\n                fs2 = FIGS2_TARGETS[rat][bi]\n                nxt = ad[(ad.rat == rat) & (ad[\"index\"] == 2 * bi + 1)].site.iloc[0]\n                rows_s2.append(dict(gc=gname, sign=lab, rat=rat, baseline=bi, figS2=\",\".join(sorted(fs2)),\n                                    top=\",\".join(ta), sig=\",\".join(sorted(tb)),\n                                    match_a=bool(ta <= fs2), match_b=(tb == fs2), next_site=nxt,\n                                    label_a=nxt in ta, label_b=nxt in tb,\n                                    label_figS2=(rat, nxt) in TARGET))\ns2 = pd.DataFrame(rows_s2)\nmain = s2[(s2.gc == \"1 kHz\") & (s2.sign == \"out-in\")]\nprint(main.drop(columns=[\"gc\", \"sign\"]).to_string())\nprint(\"\\nby reading: baseline groups matching Figure S2 (of 28), stimulation groups labelled target \"\n      \"(Figure S2 gives 8), labels agreeing with Figure S2 (of 28)\")\nprint(s2.groupby([\"gc\", \"sign\"]).apply(lambda x: pd.Series(dict(\n    match_a=int(x.match_a.sum()), match_b=int(x.match_b.sum()),\n    targets_a=int(x.label_a.sum()), targets_b=int(x.label_b.sum()),\n    labels_agree_a=int((x.label_a == x.label_figS2).sum()),\n    labels_agree_b=int((x.label_b == x.label_figS2).sum())))).to_string())\nprint(\"\\nFigure S2 labels applied to the dandiset's group order give\", sum((r, s) in TARGET for r, s in\n      ad[ad.kind == \"stim\"][[\"rat\", \"site\"]].values), \"target groups by site; Figure S2's targets applied \"\n      \"to the dandiset's order (target when the next file's site is in the preceding baseline's \"\n      \"Figure S2 set):\", int(main.apply(lambda r: r.next_site in set(r.figS2.split(\",\")), axis=1).sum()))\n\n# %% md\n**Result: placeholder**\n\n## Seizure duration claims\n\nNormalized duration of each seizure of a stimulation group against the preceding baseline group\n(the previous file of the dandiset): (a) relative change, duration / baseline mean - 1 (main);\n(b) difference from the baseline mean in s; (c) z-score against the baseline seizures. Target and\nnon-target labels are those of Figure S2 by rat and site, as the claims file says. Seizure sets: (a)\nall seizures of the group (main); (b) only those with a detected stimulation train. Detector\nvariants: thresholds 1.5 and 3, and ending at the last ictal window before a final train. A further\nvariant takes the preceding baseline from Figure S2's order, which differs from the dandiset's for\nR5 and R6.\n\n# %%\ndef norm_table(dcol=\"dur\", seizures=\"all\", base_order=\"dandiset\"):\n    out = []\n    for r in ad[ad.kind == \"stim\"].itertuples():\n        g = df[(df.group == r.group)]\n        if seizures == \"stimulated\":\n            g = g[g.ntrains > 0]\n        d = g[dcol].dropna().values\n        bi = r.index - 1\n        if base_order == \"figS2\":\n            bi = 2 * FIGS2_ORDER[r.rat].index(r.site)\n        b = df[(df.rat == r.rat) & (df[\"index\"] == bi)][dcol].dropna().values\n        out.append(dict(rat=r.rat, site=r.site, group=r.group, target=(r.rat, r.site) in TARGET,\n                        n=len(d), base_n=len(b), base_mean=b.mean(),\n                        rel=d / b.mean() - 1, diff=d - b.mean(), z=(d - b.mean()) / b.std(ddof=1),\n                        d=d, b=b))\n    t = pd.DataFrame(out)\n    for k in (\"rel\", \"diff\", \"z\"):\n        t[k + \"_mean\"] = t[k].apply(lambda x: np.mean(x) if len(x) else np.nan)\n    return t\n\n\nVARIANTS = {\"main\": dict(), \"threshold 1.5\": dict(dcol=\"dur_1.5\"), \"threshold 3\": dict(dcol=\"dur_3.0\"),\n            \"end before final train\": dict(dcol=\"dur_notrainend\"),\n            \"stimulated seizures only\": dict(seizures=\"stimulated\"),\n            \"baseline in Figure S2 order\": dict(base_order=\"figS2\")}\nNT = {k: norm_table(**v) for k, v in VARIANTS.items()}\nprint(NT[\"main\"][[\"group\", \"site\", \"target\", \"n\", \"base_n\", \"base_mean\", \"rel_mean\", \"diff_mean\", \"z_mean\"]]\n      .round(3).to_string())\n\n# %% md\n### fig3a-target-reduces-each-rat\n\n> In each of the 7 rats, stimulation of the target site reduced normalized seizure duration below\n> the preceding baseline.\n\nCriterion: reproduced when, under one reading, the mean normalized duration is below zero in all 8\ntarget groups; partially in 6 or 7. The three normalizations have the same sign by construction,\nso the readings that can differ are the seizure set and the detector.\n\n# %% tags=[\"claim:fig3a-target-reduces-each-rat\"]\nFIG3A = {(\"R1\", \"DG\"): -.10, (\"R2\", \"DG\"): -.37, (\"R2\", \"CA1\"): -.09, (\"R3\", \"CA3\"): -.23,\n         (\"R4\", \"CA3\"): -.14, (\"R5\", \"ANT\"): -.33, (\"R6\", \"CA3\"): -.21, (\"R7\", \"ANT\"): -.13}\ntab = []\nfor k, t in NT.items():\n    tt = t[t.target].set_index([\"rat\", \"site\"])\n    row = {f\"{a} {b}\": round(tt.loc[(a, b), \"rel_mean\"], 3) for a, b in FIG3A}\n    row[\"below zero (of 8)\"] = int((tt.rel_mean < 0).sum())\n    tab.append(pd.Series(row, name=k))\nprint(pd.DataFrame(tab).T.to_string())\nprint(\"\\nFigure 3A, read from the bars (not judged):\", {f\"{a} {b}\": v for (a, b), v in FIG3A.items()})\n\n# %% md\n**Result: placeholder**\n\n### fig3a-nontarget-can-lengthen\n\n> Stimulation of some non-target sites increased seizure duration above the preceding baseline.\n\nCriterion: reproduced when, under one reading, at least 5 of the 20 non-target groups have a positive\nmean normalized duration; not reproduced when fewer than 2 do.\n\n# %% tags=[\"claim:fig3a-nontarget-can-lengthen\"]\nfor k, t in NT.items():\n    nt = t[~t.target]\n    pos = nt[nt.rel_mean > 0]\n    print(f\"{k:28s}: {len(pos)} of {nt.rel_mean.notna().sum()} non-target groups positive: \"\n          + \", \".join(f\"{r.rat} {r.site} ({r.rel_mean:+.2f})\" for r in pos.itertuples()))\nprint(\"Figure 3A shows positive bars for R1 CA3 and ANT, R2 CA3, R3 DG and ANT, R4 DG and ANT, R5 CA1, \"\n      \"R6 DG, R7 DG\")\n\n# %% md\n**Result: placeholder**\n\n### fig3a-per-rat-site-differences\n\n> Within rats R2, R3, R4, R5 and R7 the four stimulation sites differ in normalized seizure duration\n> (Kruskal-Wallis), while in R1 and R6 no pair of sites differs.\n\nCriterion: per rat, Kruskal-Wallis across the four stimulation groups, then Dunn's test, (a)\nBonferroni-adjusted or (b) unadjusted. Reproduced when at least 8 of the 11 listed pairs are\nsignificant and R1 and R6 have none; partially when at least 5 are.\n\n# %% tags=[\"claim:fig3a-per-rat-site-differences\"]\ndef dunn(samples):\n    \"\"\"Dunn's test after Kruskal-Wallis, with the tie correction; two-sided p per pair.\"\"\"\n    allv = np.concatenate(samples)\n    ranks = stats.rankdata(allv)\n    N = len(allv)\n    _, cnt = np.unique(allv, return_counts=True)\n    tie = np.sum(cnt ** 3 - cnt) / (12 * (N - 1))\n    idx = np.cumsum([0] + [len(s) for s in samples])\n    mr = [ranks[idx[i]:idx[i + 1]].mean() for i in range(len(samples))]\n    out = {}\n    for i, j in itertools.combinations(range(len(samples)), 2):\n        se = np.sqrt((N * (N + 1) / 12 - tie) * (1 / len(samples[i]) + 1 / len(samples[j])))\n        out[(i, j)] = 2 * stats.norm.sf(abs(mr[i] - mr[j]) / se)\n    return out\n\n\nLISTED = {(\"R2\", \"DG\", \"CA3\"), (\"R2\", \"CA3\", \"ANT\"), (\"R3\", \"DG\", \"CA1\"), (\"R3\", \"DG\", \"CA3\"),\n          (\"R3\", \"CA3\", \"ANT\"), (\"R4\", \"DG\", \"CA1\"), (\"R4\", \"DG\", \"CA3\"), (\"R5\", \"CA1\", \"CA3\"),\n          (\"R5\", \"CA1\", \"ANT\"), (\"R7\", \"DG\", \"CA3\"), (\"R7\", \"DG\", \"ANT\")}\nsummary = []\nfor k, t in NT.items():\n    lines = []\n    sig_listed = {\"bonferroni\": 0, \"unadjusted\": 0}\n    other = {\"bonferroni\": [], \"unadjusted\": []}\n    for rat, g in t.groupby(\"rat\"):\n        g = g[g.n > 0]\n        samples = [x for x in g.rel]\n        sites = g.site.tolist()\n        kw = stats.kruskal(*samples).pvalue\n        pd_ = dunn(samples)\n        for (i, j), p in pd_.items():\n            pair = (rat,) + tuple(sorted((sites[i], sites[j]), key=[\"DG\", \"CA1\", \"CA3\", \"ANT\"].index))\n            for adj, pp in ((\"bonferroni\", min(1, p * len(pd_))), (\"unadjusted\", p)):\n                if pp < 0.05:\n                    if pair in LISTED:\n                        sig_listed[adj] += 1\n                    else:\n                        other[adj].append(f\"{pair[0]} {pair[1]}-{pair[2]}\")\n            if k == \"main\":\n                lines.append(f\"{rat} {sites[i]:>3s}-{sites[j]:<3s} Dunn p = {p:.3g} (Bonferroni {min(1, p * 6):.3g})\"\n                             f\"{'  listed' if pair in LISTED else ''}\")\n        if k == \"main\":\n            lines.append(f\"{rat} Kruskal-Wallis p = {kw:.3g}, n = {[len(s) for s in samples]}\")\n    if k == \"main\":\n        print(\"\\n\".join(lines))\n    for adj in (\"bonferroni\", \"unadjusted\"):\n        summary.append(dict(variant=k, posthoc=adj, listed_significant=sig_listed[adj],\n                            other_significant=\", \".join(other[adj])))\nprint()\nprint(pd.DataFrame(summary).to_string())\n\n# %% md\n**Result: placeholder**\n\n### fig3a-target-vs-nontarget-total\n\n> Pooled over rats, target-site stimulation shortened normalized seizure duration (-0.26 +- 0.03)\n> significantly more than non-target stimulation (0.038 +- 0.03).\n\nCriterion: reproduced when, under one reading, both means are within tolerance (0.03) and\nMann-Whitney p < 0.001 with target lower; partially when target is lower with p < 0.05 but a mean is\noutside tolerance or p is between 0.001 and 0.05. Units: (a) seizures pooled; (b) stimulation groups.\n\n# %% tags=[\"claim:fig3a-target-vs-nontarget-total\"]\nout = []\nfor k, t in NT.items():\n    for norm in (\"rel\", \"diff\", \"z\"):\n        T = np.concatenate(t[t.target][norm].values)\n        N = np.concatenate(t[~t.target][norm].values)\n        p = stats.mannwhitneyu(T, N, alternative=\"two-sided\").pvalue\n        Tg, Ng = t[t.target][norm + \"_mean\"].dropna(), t[~t.target][norm + \"_mean\"].dropna()\n        pg = stats.mannwhitneyu(Tg, Ng, alternative=\"two-sided\").pvalue\n        out.append(dict(variant=k, norm=norm, target=T.mean(), target_sem=stats.sem(T), nontarget=N.mean(),\n                        nontarget_sem=stats.sem(N), n_t=len(T), n_n=len(N), p_seizures=p,\n                        groups_target=Tg.mean(), groups_nontarget=Ng.mean(), p_groups=pg))\ntot = pd.DataFrame(out)\ntot[\"both_in_tol\"] = (abs(tot.target + .26) <= .03) & (abs(tot.nontarget - .038) <= .03)\nprint(tot.round(4).to_string())\n\n# %% md\n**Result: placeholder**\n\n### fig3a-some-nontarget-shorten\n\n> Five non-target stimulations (R2 ANT, R3 CA1, R4 CA1, R5 CA3, R7 CA3) also significantly\n> shortened seizure duration, but less than the target site of the same rat.\n\nCriterion: readings (a) Mann-Whitney of the group's durations against the preceding baseline's;\n(b) Wilcoxon signed-rank of normalized durations against zero; (c) one-sample t-test against zero.\nReproduced when, under one reading, at least 4 of the 5 named groups are significantly shorter and\nin at least 4 of the 5 rats the named group's mean is above the target group's (R2: DG target);\npartially when 3 of each hold.\n\n# %% tags=[\"claim:fig3a-some-nontarget-shorten\"]\nNAMED = [(\"R2\", \"ANT\"), (\"R3\", \"CA1\"), (\"R4\", \"CA1\"), (\"R5\", \"CA3\"), (\"R7\", \"CA3\")]\nRAT_TARGET = {\"R2\": \"DG\", \"R3\": \"CA3\", \"R4\": \"CA3\", \"R5\": \"ANT\", \"R7\": \"ANT\"}\nsumm = []\nfor k, t in NT.items():\n    ti = t.set_index([\"rat\", \"site\"])\n    rows_ = []\n    for rat, site in NAMED:\n        r = ti.loc[(rat, site)]\n        if r.n < 2:\n            rows_.append(dict(group=f\"{rat} {site}\", n=r.n))\n            continue\n        pa = stats.mannwhitneyu(r.d, r.b, alternative=\"less\").pvalue\n        pb = stats.wilcoxon(r.rel, alternative=\"less\").pvalue\n        pc = stats.ttest_1samp(r.rel, 0, alternative=\"less\").pvalue\n        tm = ti.loc[(rat, RAT_TARGET[rat]), \"rel_mean\"]\n        rows_.append(dict(group=f\"{rat} {site}\", n=r.n, mean=r.rel_mean, p_a=pa, p_b=pb, p_c=pc,\n                          target_mean=tm, less_effective=r.rel_mean > tm))\n    x = pd.DataFrame(rows_)\n    if k == \"main\":\n        print(x.round(4).to_string())\n    summ.append(dict(variant=k, sig_a=int((x.p_a < .05).sum()), sig_b=int((x.p_b < .05).sum()),\n                     sig_c=int((x.p_c < .05).sum()), less_effective_than_target=int(x.less_effective.sum())))\nprint()\nprint(pd.DataFrame(summ).to_string())\nothers = []\nt = NT[\"main\"]\nfor r in t[~t.target].itertuples():\n    if (r.rat, r.site) not in NAMED and r.n >= 2:\n        if stats.mannwhitneyu(r.d, r.b, alternative=\"less\").pvalue < .05:\n            others.append(f\"{r.rat} {r.site}\")\nprint(\"other non-target groups significantly shorter than baseline by reading (a), main:\", others)\n\n# %% md\n**Result: placeholder**\n\n### fig3b-same-site-target-vs-nontarget\n\n> For the same site, stimulation as a target shortened normalized seizure duration more than\n> stimulation of that site as a non-target, significantly for DG, CA3 and ANT but not CA1.\n\nCriterion: per site, per-seizure normalized durations of target groups against non-target groups\npooled over rats, Mann-Whitney (unpaired t-test as a variant). Reproduced when, under one\nnormalization reading, DG, CA3 and ANT each show target lower with p < 0.05; partially for two.\n\n# %% tags=[\"claim:fig3b-same-site-target-vs-nontarget\"]\nout = []\nfor k, t in NT.items():\n    for norm in (\"rel\", \"diff\", \"z\"):\n        for site in (\"DG\", \"CA1\", \"CA3\", \"ANT\"):\n            g = t[t.site == site]\n            T = np.concatenate(g[g.target][norm].values)\n            N = np.concatenate(g[~g.target][norm].values)\n            out.append(dict(variant=k, norm=norm, site=site, target=T.mean(), nontarget=N.mean(),\n                            n_t=len(T), n_n=len(N),\n                            p_mw=stats.mannwhitneyu(T, N, alternative=\"two-sided\").pvalue,\n                            p_t=stats.ttest_ind(T, N).pvalue))\nf3b = pd.DataFrame(out)\nf3b[\"target_lower_sig\"] = (f3b.target < f3b.nontarget) & (f3b.p_mw < 0.05)\nprint(f3b[f3b.variant == \"main\"].round(4).to_string())\nprint()\nprint(f3b.groupby([\"variant\", \"norm\"]).apply(\n    lambda x: \",\".join(x[x.target_lower_sig & x.site.isin([\"DG\", \"CA3\", \"ANT\"])].site)).to_string())\n\n# %% md\n**Result: placeholder**\n\n## PSD claims\n\nPSD ratio per band and channel in the pre and post windows of Methods D (stimulation groups: onset\nto the first train, then the 5 s after the first train; baseline: 0-5 s and 10-15 s after onset).\nStimulation seizures without a train after onset have no window and are left out. Conditions:\nsham (baseline seizures), target and non-target. Readings: change measure (a) (post - pre) / pre,\n(b) log2(post / pre), (c) post - pre; Welch segments 1 s or 0.5 s; total range 0.5-120 Hz or\n0-500 Hz; channels all four (a), or the stimulated channel only for stimulation groups (b);\npost hoc Dunn Bonferroni or unadjusted. Unit: seizure-channel pairs.\n\n# %%\nBANDS = list(yang.BANDS)\npsd = df[df.psd_pre_1000.notna()].copy()\npsd[\"cond\"] = psd.apply(lambda r: \"sham\" if r.kind == \"baseline\" else\n                        (\"target\" if (r.rat, r.site) in TARGET else \"nontarget\"), axis=1)\nprint(\"seizures with PSD windows:\", psd.groupby(\"cond\").size().to_dict())\nprint(\"by rat:\", psd.groupby([\"rat\", \"cond\"]).size().unstack().fillna(0).astype(int).to_dict())\n\n\ndef psd_change(band, measure, nps, total, channels):\n    key_pre = f\"psd_pre_{nps}\" + (\"_total500\" if total == \"0-500\" else \"\")\n    key_post = f\"psd_post_{nps}\" + (\"_total500\" if total == \"0-500\" else \"\")\n    out = {}\n    for c, g in psd.groupby(\"cond\"):\n        vals = []\n        for r in g.itertuples():\n            pre, post = getattr(r, key_pre)[band], getattr(r, key_post)[band]\n            chs = range(4) if (channels == \"all\" or c == \"sham\") else [CH.index(r.site)]\n            for ch in chs:\n                a, b = pre[ch], post[ch]\n                vals.append((b - a) / a if measure == \"rel\" else np.log2(b / a) if measure == \"log2\" else b - a)\n        out[c] = np.array(vals)\n    return out\n\n\nREAD = list(itertools.product((\"rel\", \"log2\", \"diff\"), (1000, 500), (\"0.5-120\", \"0-500\"), (\"all\", \"stimulated\")))\nREAD = [r for r in READ if not (r[1] == 500 and r[2] == \"0-500\")]  # 0-500 Hz total computed with 1 s segments\nprow = []\nfor measure, nps, total, chans in READ:\n    for band in BANDS:\n        x = psd_change(band, measure, nps, total, chans)\n        S, Tt, Nn = x[\"sham\"], x[\"target\"], x[\"nontarget\"]\n        kw = stats.kruskal(S, Tt, Nn).pvalue\n        dn = dunn([Tt, S, Nn])\n        prow.append(dict(measure=measure, nperseg=nps, total=total, channels=chans, band=band,\n                         sham=np.mean(S), target=np.mean(Tt), nontarget=np.mean(Nn),\n                         sham_med=np.median(S), target_med=np.median(Tt), nontarget_med=np.median(Nn),\n                         kw_p=kw, p_t_vs_sham=dn[(0, 1)], p_t_vs_nt=dn[(0, 2)],\n                         n=(len(S), len(Tt), len(Nn))))\nP = pd.DataFrame(prow)\nprint(P[(P.measure == \"rel\") & (P.nperseg == 1000) & (P.total == \"0.5-120\") & (P.channels == \"all\")]\n      .round(4).to_string())\n\n# %%\nfig, ax = plt.subplots(figsize=(9, 3.5))\nm = P[(P.measure == \"log2\") & (P.nperseg == 1000) & (P.total == \"0.5-120\") & (P.channels == \"all\")]\nfor i, c in enumerate((\"sham\", \"target\", \"nontarget\")):\n    ax.bar(np.arange(6) + i * .27, m[c], width=.27, label=c)\nax.set_xticks(np.arange(6) + .27, BANDS)\nax.set_ylabel(\"mean log2(post / pre) PSD ratio\")\nax.legend()\nplt.show()\nprint(\"plotted means range\", round(m[[\"sham\", \"target\", \"nontarget\"]].min().min(), 3), \"to\",\n      round(m[[\"sham\", \"target\", \"nontarget\"]].max().max(), 3))\n\n# %% md\n### fig4b-psd-target-bands\n\n> After target stimulation the change in PSD ratio was larger in low bands (alpha, and theta or\n> beta) and more negative in gamma than after sham (baseline) or non-target stimulation.\n\nCriterion: reproduced when, under one reading of the method and one of the bands ((i) alpha and\ntheta up, gamma down; (ii) alpha and beta up, gamma down), target differs from both sham and\nnon-target in the named direction with p < 0.05 (Kruskal-Wallis, then the post hoc test) in all\nthree bands; partially when alpha and gamma hold.\n\n# %% tags=[\"claim:fig4b-psd-target-bands\"]\ndef holds(r, up, adj):\n    k = 3 if adj == \"bonferroni\" else 1\n    if r.kw_p >= 0.05:\n        return False\n    if up:\n        d = r.target > r.sham and r.target > r.nontarget\n    else:\n        d = r.target < r.sham and r.target < r.nontarget\n    # direction judged on medians as well as means, as the test is rank based\n    if up:\n        d = d and r.target_med > r.sham_med and r.target_med > r.nontarget_med\n    else:\n        d = d and r.target_med < r.sham_med and r.target_med < r.nontarget_med\n    return d and min(1, r.p_t_vs_sham * k) < 0.05 and min(1, r.p_t_vs_nt * k) < 0.05\n\n\nev = []\nfor (measure, nps, total, chans), g in P.groupby([\"measure\", \"nperseg\", \"total\", \"channels\"]):\n    gb = g.set_index(\"band\")\n    for adj in (\"bonferroni\", \"unadjusted\"):\n        h = {b: holds(gb.loc[b], b != \"gamma\", adj) for b in (\"theta\", \"alpha\", \"beta\", \"gamma\")}\n        ev.append(dict(measure=measure, nperseg=nps, total=total, channels=chans, posthoc=adj, **h,\n                       reading_i=h[\"theta\"] and h[\"alpha\"] and h[\"gamma\"],\n                       reading_ii=h[\"beta\"] and h[\"alpha\"] and h[\"gamma\"],\n                       alpha_and_gamma=h[\"alpha\"] and h[\"gamma\"]))\nE = pd.DataFrame(ev)\nprint(E.to_string())\nprint(\"\\nreadings where all three bands hold:\", int((E.reading_i | E.reading_ii).sum()), \"of\", len(E),\n      \"| alpha and gamma hold:\", int(E.alpha_and_gamma.sum()))\nprint(\"\\nalpha and gamma per reading (KW p, target vs sham p, target vs non-target p, Dunn unadjusted):\")\nprint(P[P.band.isin([\"alpha\", \"gamma\", \"theta\", \"beta\"])][[\"measure\", \"nperseg\", \"total\", \"channels\", \"band\",\n      \"sham_med\", \"target_med\", \"nontarget_med\", \"kw_p\", \"p_t_vs_sham\", \"p_t_vs_nt\"]].round(4).to_string())\n\n# %% md\n**Result: placeholder**\n\n### fig4b-psd-other-bands-unchanged\n\n> In the other bands (delta and high gamma, and whichever of theta and beta is not named as\n> changed) the change in PSD ratio did not differ between conditions.\n\nCriterion: a claim of absence, judged on Kruskal-Wallis across sham, target and non-target at\np < 0.05. Delta and high gamma are judged in every reading; beta under band reading (i) and theta\nunder (ii). fig4b-psd-target-bands was decided by neither band reading, so both are shown, under the\nmain method reading ((a) relative change, 1 s segments, 0.5-120 Hz, all channels).\n\n# %% tags=[\"claim:fig4b-psd-other-bands-unchanged\"]\nmm = P[(P.measure == \"rel\") & (P.nperseg == 1000) & (P.total == \"0.5-120\") & (P.channels == \"all\")].set_index(\"band\")\nfor b in (\"delta\", \"high_gamma\", \"beta\", \"theta\"):\n    r = mm.loc[b]\n    print(f\"{b:10s} KW p = {r.kw_p:.3g}; mean change sham {r.sham:+.3f}, target {r.target:+.3f}, \"\n          f\"non-target {r.nontarget:+.3f}; medians {r.sham_med:+.3f}, {r.target_med:+.3f}, {r.nontarget_med:+.3f}\")\nprint(\"\\nKW p for delta and high gamma under every method reading:\")\nprint(P[P.band.isin([\"delta\", \"high_gamma\"])].pivot_table(index=[\"measure\", \"nperseg\", \"total\", \"channels\"],\n      columns=\"band\", values=\"kw_p\").to_string())\n# effect size: epsilon squared of the KW test\nfor b in (\"delta\", \"high_gamma\", \"beta\", \"theta\"):\n    x = psd_change(b, \"rel\", 1000, \"0.5-120\", \"all\")\n    H = stats.kruskal(*x.values()).statistic\n    n = sum(len(v) for v in x.values())\n    print(f\"{b}: KW H = {H:.1f}, epsilon squared = {H / (n - 1):.3f}\")\n\n# %% md\n**Result: placeholder**\n\n## fig5b-iis-post-seizure\n\n> The IIS rate 15 s to 45 s after seizures was lower after target stimulation than after\n> non-target stimulation.\n\nCriterion: IIS detected as in Methods F on all channels in the 180 s before onset and after the\nend, rate per second. Baseline for the 5 SD threshold: (a) the 180 s pre-seizure stretch (the\ninterictal segments of reading (b) are not in the dandiset). Tests: (a) Mann-Whitney of per\nseizure-channel mean rates over 15-45 s; (b) paired t-test across time bins of 15-45 s (1 s or\n5 s bins), target curve against non-target curve. Reproduced when target is lower with p < 0.001;\npartially with p < 0.05. Bins after the end of the 600 s epoch are missing and left out; times\ninside a stimulation train are not searched.\n\n# %% tags=[\"claim:fig5b-iis-post-seizure\"]\nii = df[df.iis_post.notna()].copy()\nii[\"cond\"] = ii.apply(lambda r: \"sham\" if r.kind == \"baseline\" else\n                      (\"target\" if (r.rat, r.site) in TARGET else \"nontarget\"), axis=1)\ncurves = {}\nwin_rate = {}\nfor c, g in ii.groupby(\"cond\"):\n    post = np.vstack(list(g.iis_post))  # seizure-channel x 180 bins of 1 s\n    pre = np.vstack(list(g.iis_pre))\n    curves[c] = (np.nanmean(pre, 0)[::-1], np.nanmean(post, 0))\n    win_rate[c] = np.nanmean(post[:, 15:45], 1)\n    print(f\"{c:9s}: {len(g)} seizures, {post.shape[0]} seizure-channels; rate 15-45 s after end \"\n          f\"{np.nanmean(win_rate[c]):.3f} /s (SEM {stats.sem(win_rate[c], nan_policy='omit'):.3f}); \"\n          f\"180 s before onset {np.nanmean(pre):.3f} /s; missing bins in 15-45 s: {int(np.isnan(post[:, 15:45]).sum())}\")\nT, N = win_rate[\"target\"], win_rate[\"nontarget\"]\nT, N = T[~np.isnan(T)], N[~np.isnan(N)]\nprint(f\"\\n(a) Mann-Whitney target vs non-target, seizure-channels: p = {stats.mannwhitneyu(T, N).pvalue:.3g} \"\n      f\"(target {T.mean():.3f}, non-target {N.mean():.3f} /s, difference {T.mean() - N.mean():+.3f})\")\nfor bw in (1, 5):\n    ct = curves[\"target\"][1][15:45].reshape(-1, bw).mean(1)\n    cn = curves[\"nontarget\"][1][15:45].reshape(-1, bw).mean(1)\n    print(f\"(b) paired t-test over {len(ct)} bins of {bw} s: p = {stats.ttest_rel(ct, cn).pvalue:.3g}, \"\n          f\"mean difference {np.mean(ct - cn):+.3f} /s\")\n# per seizure (mean over channels), and per rat\nsegs = {c: g.apply(lambda r: np.nanmean(r.iis_post[:, 15:45]), axis=1) for c, g in ii.groupby(\"cond\")}\nprint(f\"per seizure (channel mean): target {segs['target'].mean():.3f}, non-target {segs['nontarget'].mean():.3f}, \"\n      f\"Mann-Whitney p = {stats.mannwhitneyu(segs['target'].dropna(), segs['nontarget'].dropna()).pvalue:.3g}\")\nii[\"w\"] = ii.apply(lambda r: np.nanmean(r.iis_post[:, 15:45]), axis=1)\nprint(\"\\nper rat, mean rate 15-45 s (/s):\")\nprint(ii.groupby([\"rat\", \"cond\"]).w.mean().unstack().round(3).to_string())\nfig, ax = plt.subplots(figsize=(9, 3))\nfor c, (pre, post) in curves.items():\n    ax.plot(np.arange(-180, 0) + .5, pre, lw=.8, label=c)\n    ax.plot(np.arange(0, 180) + .5, post, lw=.8, color=ax.lines[-1].get_color())\nax.axvspan(15, 45, color=\"0.9\")\nax.set_xlabel(\"s before onset (left) and after end (right), the seizure itself removed\")\nax.set_ylabel(\"IIS rate (/s)\")\nax.legend()\nplt.show()\nprint(\"curve range:\", round(min(np.nanmin(v) for p in curves.values() for v in p), 3), \"to\",\n      round(max(np.nanmax(v) for p in curves.values() for v in p), 3))\n\n# %% md\n**Result: placeholder**\n\n## Ictal HFO claims\n\nRipple (80-250 Hz) and fast ripple (250 to just below 500 Hz) detections by short line length in\nthe PSD windows (pre and post the first train; baseline 0-5 s and 10-15 s after onset), the\nthreshold being mean + 3 SD (main) or 5 SD of the short line length over the 180 s before onset.\nNo manual review (it cannot be repeated). Normalized to pre-stimulation as relative change of the\nrate. Pairing: (a) by rat, the target groups' mean against the mean of the non-target groups (and\nof the baseline groups); (b) unpaired t-test over groups. Channels: (a) all four; (b) the stimulated\nchannel (all four for baseline). The group value is the group's mean post rate over its mean pre\nrate, minus 1, so that windows with no pre event do not divide by zero.\n\n# %%\nhf = df[df[\"hfo_ripple_3.0\"].notna()].copy()\nhf[\"cond\"] = hf.apply(lambda r: \"baseline\" if r.kind == \"baseline\" else\n                      (\"target\" if (r.rat, r.site) in TARGET else \"nontarget\"), axis=1)\nprint(\"seizures with HFO windows:\", hf.groupby(\"cond\").size().to_dict())\n\n\ndef hfo_groups(nm, th, chans):\n    out = []\n    for gname, g in hf.groupby(\"group\"):\n        r0 = g.iloc[0]\n        chs = list(range(4)) if (chans == \"all\" or r0.kind == \"baseline\") else [CH.index(r0.site)]\n        pre = np.concatenate([x[\"pre\"][chs] for x in g[f\"hfo_{nm}_{th}\"]])\n        post = np.concatenate([x[\"post\"][chs] for x in g[f\"hfo_{nm}_{th}\"]])\n        out.append(dict(group=gname, rat=r0.rat, cond=r0.cond, n=len(g), pre=pre.mean(), post=post.mean(),\n                        change=post.mean() / pre.mean() - 1 if pre.mean() > 0 else np.nan))\n    return pd.DataFrame(out)\n\n\ndef hfo_tests(nm, th, chans):\n    G = hfo_groups(nm, th, chans)\n    per_rat = G.groupby([\"rat\", \"cond\"]).change.mean().unstack()\n    res = dict(band=nm, thresh=th, channels=chans)\n    for c in (\"target\", \"nontarget\", \"baseline\"):\n        res[c] = G[G.cond == c].change.mean()\n    for other in (\"nontarget\", \"baseline\"):\n        pr = per_rat[[\"target\", other]].dropna()\n        res[f\"paired_p_vs_{other}\"] = stats.ttest_rel(pr.target, pr[other]).pvalue if len(pr) > 1 else np.nan\n        res[f\"n_rats_vs_{other}\"] = len(pr)\n        a, b = G[G.cond == \"target\"].change.dropna(), G[G.cond == other].change.dropna()\n        res[f\"unpaired_p_vs_{other}\"] = stats.ttest_ind(a, b).pvalue\n    return res, G, per_rat\n\n\nH = pd.DataFrame([hfo_tests(nm, th, ch)[0] for nm in (\"ripple\", \"fr\") for th in (3.0, 5.0)\n                  for ch in (\"all\", \"stimulated\")])\nprint(H.round(4).to_string())\n\n# %% md\n### fig6e-ictal-ripples-no-difference\n\n> During seizures, ripple rates normalized to pre-stimulation did not differ between target and\n> non-target stimulation.\n\nCriterion: a claim of absence, the paired t-test at p < 0.05, target against non-target; reproduced\nwhen not significant under pairing (a); not reproduced when it is.\n\n# %% tags=[\"claim:fig6e-ictal-ripples-no-difference\"]\nres, G, per_rat = hfo_tests(\"ripple\", 3.0, \"all\")\nprint(\"main reading (3 SD, all channels), per rat:\")\nprint(per_rat.round(3).to_string())\nprint(f\"\\npaired t-test by rat, target vs non-target: p = {res['paired_p_vs_nontarget']:.3g} over \"\n      f\"{res['n_rats_vs_nontarget']} rats; target {res['target']:+.3f}, non-target {res['nontarget']:+.3f} \"\n      f\"(difference {res['target'] - res['nontarget']:+.3f}); unpaired over groups p = {res['unpaired_p_vs_nontarget']:.3g}\")\nprint(\"groups without a value (no pre event or no window):\", G[G.change.isna()].group.tolist())\nprint(\"Figure 6E (read from the plot, not judged): target about -0.16, non-target about -0.04\")\n\n# %% md\n**Result: placeholder**\n\n### fig6f-ictal-fast-ripples-reduced\n\n> During seizures, target stimulation reduced the fast ripple rate, normalized to pre-stimulation,\n> compared with baseline and with non-target stimulation.\n\nCriterion: reproduced when, under one pairing reading, the target mean is below both others with\np < 0.05 for each comparison; partially when one comparison holds.\n\n# %% tags=[\"claim:fig6f-ictal-fast-ripples-reduced\"]\nres, G, per_rat = hfo_tests(\"fr\", 3.0, \"all\")\nprint(\"main reading (3 SD, all channels), per rat:\")\nprint(per_rat.round(3).to_string())\nfor other in (\"baseline\", \"nontarget\"):\n    print(f\"target vs {other}: target {res['target']:+.3f}, {other} {res[other]:+.3f}; paired by rat p = \"\n          f\"{res[f'paired_p_vs_{other}']:.3g} ({res[f'n_rats_vs_{other}']} rats); unpaired p = \"\n          f\"{res[f'unpaired_p_vs_{other}']:.3g}\")\nfr = H[H.band == \"fr\"].copy()\nfr[\"below_both\"] = (fr.target < fr.baseline) & (fr.target < fr.nontarget)\nprint(\"\\nall fast ripple readings:\")\nprint(fr.round(4).to_string())\nprint(\"Figure 6F (read from the plot, not judged): target about -0.25, baseline about 0.2, non-target about 0.1\")\n\n# %% md\n**Result: placeholder**\n\n## Summary\n"
 }
 ```
 
 ```
-File created successfully at: attempts/yang-2025-01.yaml (file state is current in your context — no need to Read it back)
+File created successfully at: /tmp/claude-1001/nb.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && cat > $TMPDIR/devrun.py <<'EOF'
+import re, sys, matplotlib; matplotlib.use('Agg')
+src=open('/tmp/claude-1001/nb.py').read()
+src=src.replace("rows = yang.process_all(assets, workers=4)","import pickle; rows = pickle.load(open('/tmp/claude-1001/rows.pkl','rb'))")
+cells=re.split(r'^# %%.*$', src, flags=re.M)
+heads=re.findall(r'^# %%.*$', src, flags=re.M)
+g={}
+start=sys.argv[1] if len(sys.argv)>1 else None
+for h,c in zip(heads,cells[1:]):
+    if h.startswith('# %% md'): continue
+    exec(compile(c,'cell','exec'),g)
+EOF
+cd entries/yang-2025 && python $TMPDIR/devrun.py 2>&1 | grep -v Warning | head -400
+```
+
+```
+Traceback (most recent call last):
+  File "/tmp/claude-1001/devrun.py", line 10, in <module>
+    exec(compile(c,'cell','exec'),g)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cell", line 12, in <module>
+ModuleNotFoundError: No module named 'yang'
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && cd entries/yang-2025 && PYTHONPATH=. python $TMPDIR/devrun.py 2>&1 | grep -v Warning > $TMPDIR/out1.txt; wc -l $TMPDIR/out1.txt; head -150 $TMPDIR/out1.txt
+```
+
+```
+645 /tmp/claude-1001/out1.txt
+dandiset 001212 version 0.241023.0931
+56 files, 519 epochs, 0 s; peak memory of a worker 0.17 GB
+files per rat and kind:
+kind  baseline  stim
+rat                 
+R1           4     4
+R2           4     4
+R3           4     4
+R4           4     4
+R5           4     4
+R6           4     4
+R7           4     4
+
+epochs per rat and kind:
+kind  baseline  stim
+rat                 
+R1          35    37
+R2          43    35
+R3          39    36
+[... 131 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 150,420p $TMPDIR/out1.txt
+```
+
+```
+4  1 kHz  once  excl  R5  32  0.377     0.573  0.355     0.525  0.378  False       0
+5  1 kHz  once  excl  R6  35  0.624     0.414  0.496     0.442  0.000   True       2
+6  1 kHz  once  excl  R7  39  0.513     0.436  0.513     0.400  0.662  False       2
+
+by reading (7 rats, 14 means):
+                                       rats_significant  means_in_tol
+gc                         pairs self                                
+1 kHz                      once  excl                 4            11
+                                 incl                 7            13
+                           twice excl                 4            11
+                                 incl                 7            13
+1 kHz, onset threshold 1.5 once  excl                 6            14
+                                 incl                 7            14
+                           twice excl                 6            14
+                                 incl                 7            14
+1 kHz, onset threshold 3   once  excl                 6            10
+                                 incl                 7            12
+                           twice excl                 6            10
+                                 incl                 7            11
+250 Hz                     once  excl                 2             8
+[... 251 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 420,645p $TMPDIR/out1.txt
+```
+
+```
+rel     CA3
+                             z       CA3
+threshold 1.5                diff       
+                             rel        
+                             z          
+threshold 3                  diff       
+                             rel        
+                             z          
+seizures with PSD windows: {'nontarget': 106, 'sham': 266, 'target': 66}
+by rat: {'nontarget': {'R1': 20, 'R2': 19, 'R3': 11, 'R4': 20, 'R5': 18, 'R6': 17, 'R7': 1}, 'sham': {'R1': 35, 'R2': 43, 'R3': 39, 'R4': 43, 'R5': 32, 'R6': 35, 'R7': 39}, 'target': {'R1': 13, 'R2': 16, 'R3': 12, 'R4': 7, 'R5': 9, 'R6': 8, 'R7': 1}}
+  measure  nperseg    total channels        band    sham  target  nontarget  sham_med  target_med  nontarget_med    kw_p  p_t_vs_sham  p_t_vs_nt                 n
+0     rel     1000  0.5-120      all       delta  1.8910 -0.2846     0.2157   -0.3154     -0.7932        -0.5368  0.0000       0.0000     0.0000  (1064, 264, 424)
+1     rel     1000  0.5-120      all       theta  2.1859 -0.0283     0.4851   -0.0317     -0.4495        -0.3378  0.0000       0.0000     0.0298  (1064, 264, 424)
+2     rel     1000  0.5-120      all       alpha  2.6065  1.1469     1.7189    0.5817      0.4409         0.3549  0.0928       0.1742     0.7959  (1064, 264, 424)
+3     rel     1000  0.5-120      all        beta  0.6689  0.4663     0.5030    0.1877      0.3322         0.2001  0.0682       0.0346     0.0306  (1064, 264, 424)
+4     rel     1000  0.5-120      all       gamma -0.0745 -0.1650    -0.0958   -0.1697     -0.2417        -0.2382  0.0446       0.0196     0.3115  (1064, 264, 424)
+5     rel     1000  0.5-120      all  high_gamma  0.5091  0.1843     0.3872   -0.1385     -0.3281        -0.1828  0.0087       0.0022     0.0609  (1064, 264, 424)
+plotted means range -2.331 to 0.738
+   measure  nperseg    total    channels     posthoc  theta  alpha   beta  gamma  reading_i  reading_ii  alpha_and_gamma
+0     diff      500  0.5-120         all  bonferroni  False  False   True  Fals
+[... 206 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+s=open('yang.py').read()
+old="""                out[f"hfo_{nm}_{th}"] = rates
+"""
+new="""                out[f"hfo_{nm}_{th}"] = rates
+                # threshold from the seizure's own two windows pooled (a variant)
+                rates = {}
+                for lab, (a, b) in zip(("pre", "post"), w):
+                    rates[lab] = np.array([hfo_rate(d[:, c], band, (a, b), w, th) for c in range(4)])
+                out[f"hfo_{nm}_{th}_self"] = rates
+"""
+assert old in s; s=s.replace(old,new)
+old="""def hfo_rate(x, band, window, ref_window, thresh_sd, win=0.005, min_dur=0.006, merge=0.01):
+    \"\"\"Rate (events/s) of short line length HFO detections inside `window` (s), the threshold
+    being mean + `thresh_sd` SD of the short line length over `ref_window` (s). Filtering is done
+    on the stretch from the start of the reference to the end of the window plus 1 s.\"\"\"
+    a0 = int(max(0, min(ref_window[0], window[0]) - 1) * FS)
+    b0 = int(min(len(x) / FS, max(ref_window[1], window[1]) + 1) * FS)"""
+new="""def hfo_rate(x, band, window, ref_window, thresh_sd, win=0.005, min_dur=0.006, merge=0.01):
+    \"\"\"Rate (events/s) of short line length HFO detections inside `window` (s), the threshold
+    being mean + `thresh_sd` SD of the short line length over `ref_window` (s), or over the union
+    of the windows in `ref_window` when it is a pair of windows. Filtering is done on the stretch
+    from the start of the reference to its end, padded by 1 s.\"\"\"
+    refs = list(ref_window) if isinstance(ref_window[0], (tuple, list)) else [ref_window]
+    a0 = int(max(0, min([r[0] for r in refs] + [window[0]]) - 1) * FS)
+    b0 = int(min(len(x) / FS, max([r[1] for r in refs] + [window[1]]) + 1) * FS)"""
+assert old in s; s=s.replace(old,new)
+old="""    r = (tt >= ref_window[0]) & (tt < ref_window[1])
+"""
+new="""    r = np.zeros(len(tt), bool)
+    for ra, rb in refs:
+        r |= (tt >= ra) & (tt < rb)
+"""
+assert old in s; s=s.replace(old,new)
+old="""    out = {"md5": md5(d), "md5_ch": [md5(d[:, c]) for c in range(4)],"""
+new="""    out = {"md5": md5(d), "md5_ch": [md5(d[:, c]) for c in range(4)],
+           "n_at_extreme": int(np.sum(np.abs(d) >= np.abs(d).max() - 1e-9)),"""
+assert old in s; s=s.replace(old,new)
+open('yang.py','w').write(s)
+EOF
+OMP_NUM_THREADS=1 python $TMPDIR/runall.py; date -u
+```
+
+```
+519 259.15676045417786 365.284
+Fri Nov 27 00:48:03 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+p='/tmp/claude-1001/nb.py'; s=open(p).read()
+rep=[
+("""                              pulse_rate_hz=("pulse_rate", "median")).T.to_string())""",
+"""                              ).T.to_string())
+print("pulse rate (Hz) per group, median over epochs with trains:",
+      st[st.ntrains > 0].groupby("group").pulse_rate.median().to_dict())"""),
+("""print("each series' description""","""amax = np.maximum(np.abs(np.vstack(df["min"])), np.abs(np.vstack(df["max"]))).max(1)
+print(f"epochs reaching |LFP| = {amax.max():.0f} microvolts (the largest value, likely the amplifier's "
+      f"limit): {int((amax >= amax.max() - 1e-6).sum())} of {len(df)}; samples at that value in those epochs: "
+      f"{int(df.n_at_extreme[amax >= amax.max() - 1e-6].sum())}")
+print("each series' description"""),
+("""def hfo_groups(nm, th, chans):""","""def hfo_groups(nm, th, chans, ref=""):"""),
+("""        pre = np.concatenate([x["pre"][chs] for x in g[f"hfo_{nm}_{th}"]])
+        post = np.concatenate([x["post"][chs] for x in g[f"hfo_{nm}_{th}"]])""","""        pre = np.concatenate([x["pre"][chs] for x in g[f"hfo_{nm}_{th}{ref}"]])
+        post = np.concatenate([x["post"][chs] for x in g[f"hfo_{nm}_{th}{ref}"]])"""),
+("""def hfo_tests(nm, th, chans):
+    G = hfo_groups(nm, th, chans)
+    per_rat = G.groupby(["rat", "cond"]).change.mean().unstack()
+    res = dict(band=nm, thresh=th, channels=chans)""","""def hfo_tests(nm, th, chans, ref=""):
+    G = hfo_groups(nm, th, chans, ref)
+    per_rat = G.groupby(["rat", "cond"]).change.mean().unstack()
+    res = dict(band=nm, thresh=th, channels=chans, reference="pre-seizure 180 s" if ref == "" else "own windows")"""),
+("""H = pd.DataFrame([hfo_tests(nm, th, ch)[0] for nm in ("ripple", "fr") for th in (3.0, 5.0)
+                  for ch in ("all", "stimulated")])""","""H = pd.DataFrame([hfo_tests(nm, th, ch, ref)[0] for nm in ("ripple", "fr") for th in (3.0, 5.0)
+                  for ch in ("all", "stimulated") for ref in ("", "_self")])"""),
+("""threshold being mean + 3 SD (main) or 5 SD of the short line length over the 180 s before onset.""","""threshold being mean + 3 SD (main) or 5 SD of the short line length over the 180 s before onset
+(main), or over the seizure's own two windows pooled (a variant: with the pre-seizure reference
+nearly every ictal window is above threshold)."""),
+]
+for a,b in rep:
+    assert a in s, a[:50]; s=s.replace(a,b)
+open(p,'w').write(s)
+EOF
+cd entries/yang-2025 && PYTHONPATH=. python $TMPDIR/devrun.py 2>&1 | grep -v Warning > $TMPDIR/out2.txt; grep -n "extreme\|pulse rate" $TMPDIR/out2.txt; sed -n '/seizures with HFO/,$p' $TMPDIR/out2.txt
+```
+
+```
+104:pulse rate (Hz) per group, median over epochs with trains: {'R1-01': 131.75, 'R1-03': 131.75, 'R1-05': 131.75, 'R1-07': 131.75, 'R2-01': 124.75, 'R2-03': 124.75, 'R2-05': 124.75, 'R2-07': 124.75, 'R3-01': 126.25, 'R3-03': 126.25, 'R3-05': 131.75, 'R4-01': 133.25, 'R4-03': 133.25, 'R4-05': 133.25, 'R4-07': 133.25, 'R5-01': 137.5, 'R5-03': 137.5, 'R5-05': 137.75, 'R5-07': 137.75, 'R6-01': 131.5, 'R6-03': 131.25, 'R6-05': 131.5, 'R6-07': 131.25, 'R7-01': 136.25, 'R7-03': 136.25}
+seizures with HFO windows: {'baseline': 266, 'nontarget': 106, 'target': 66}
+      band  thresh    channels          reference   target  nontarget  baseline  paired_p_vs_nontarget  n_rats_vs_nontarget  unpaired_p_vs_nontarget  paired_p_vs_baseline  n_rats_vs_baseline  unpaired_p_vs_baseline
+0   ripple     3.0         all  pre-seizure 180 s   2.2881     3.4754    4.3073                 0.2607                    7                   0.4540                0.4213                   7                  0.7155
+1   ripple     3.0         all        own windows   5.4755    26.3248    7.3217                 0.2721                    6                   0.3949                0.4462                   7                  0.7085
+2   ripple     3.0  stimulated  pre-seizure 180 s   2.9181     7.1511    4.3073                 0.1115                    7                   0.2463                0.3999                   7                  0.8041
+3   ripple     3.0  stimulated        own windows   5.0879    45.1585    7.3217                 0.2815                    6                   0.2621                0.2666                   7                  0.6706
+4   ripple     5.0         all  pre-seizure 180 s   3.4727     7.8241    3.0924                 0.0906                    7                   0.2961                0.8533                   7                  0.8250
+5   ripple     5.0         all        own windows  11.4324    11.3769    4.4156                 0.9274                    6                   0.9918
+[... 48 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n "reaching" $TMPDIR/out2.txt; grep -n "description names" $TMPDIR/out2.txt
+```
+
+```
+29:epochs reaching |LFP| = 6390 microvolts (the largest value, likely the amplifier's limit): 3 of 519; samples at that value in those epochs: 4
+30:each series' description names its own file's group: True
+```
+
+**Agent calls Bash**
+
+```bash
+grep -c "Result: placeholder" /tmp/claude-1001/nb.py
+```
+
+```
+14
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+p='/tmp/claude-1001/nb.py'; s=open(p).read()
+R=[
+"""**Result: reproduced, under reading (d) of the criterion (self pairs included).** With 1 kHz GC
+and each pair once, intra-group r exceeds inter-group r with Mann-Whitney p < 0.05 in all 7 rats
+and 13 of 14 means are within the Table S1 SDs. The reading matters: with self pairs excluded the
+test holds in 4 rats at the main onset (R1, R2, R3, R6; 11 of 14 means within tolerance), and in 6
+rats with the onset thresholds 1.5 or 3. Reading (d) adds an r of 1 per seizure to the intra-group
+set. The outcome also rests on the seizure onsets found from the LFP (an assumption).""",
+"""**Result: reproduced.** With cf_w as out-strength minus in-strength (1 kHz GC), the top nodes of
+R1's four baseline groups are ANT, ANT, CA3, DG, as named. The top node of single seizures agrees
+with its group's top in 9 of 9, 8 of 10, 4 of 5 and 6 of 11 seizures. At 250 Hz three of four
+match, with onset threshold 3 four, with threshold 1.5 two; with the sign as worded (in minus out)
+none. The outcome rests on the onset assumption.""",
+"""**Result: partially reproduced.** Under reading (a), the top node, with 1 kHz GC and cf_w as
+out minus in, 18 of 28 baseline groups give the Figure S2 target set (R1, R3, R4 and R7 all four;
+R2 one; R5 none; R6 one), and the labels of 20 of 28 stimulation groups agree with Figure S2 (8
+groups are labelled target, as in the paper, but not the same 8). At 250 Hz 18 groups match and
+24 labels agree. Reading (b), significance, matches 11 or 12 groups at most. The dandiset's order
+of stimulated sites differs from Figure S2's for R5 and R6.""",
+"""**Result: not reproduced.** The mean normalized duration is below zero in 3 of the 8 target
+groups (R3 CA3 -0.03, R6 CA3 -0.18, R7 ANT -0.21) with the main detector, and in at most 4 of 8
+under any variant (thresholds 1.5 and 3, ending before a final train, stimulated seizures only,
+baseline in Figure S2 order). The durations rest on the onset and end assumption.""",
+"""**Result: reproduced.** 13 of the 20 non-target groups have a positive mean normalized
+duration with the main detector, and 10 to 14 under the variants; the criterion asks for 5.""",
+"""**Result: partially reproduced.** With the main detector, 5 of the 11 listed pairs are
+significant by Dunn's test, adjusted or not (R2 ANT-CA3, R3 DG-CA3, R3 DG-CA1, R4 DG-CA1, R4
+DG-CA3); none in R5 and R7 (Kruskal-Wallis p 0.66 and 0.33). R1 has no significant pair, but R6 has
+one (DG-ANT, Bonferroni p 0.021), against the claim. Variants give 2 to 6 listed pairs.""",
+"""**Result: not reproduced.** Pooled over seizures, target -0.020 +- 0.028 and non-target
+0.087 +- 0.034 (relative change), Mann-Whitney p = 0.085: target is lower but not significantly,
+and the target mean is far outside -0.26 +- 0.03. No variant gives p < 0.05 (smallest 0.055), and
+over groups p is 0.10 or more.""",
+"""**Result: not reproduced.** With the main detector, 2 of the 5 named groups are significantly
+shorter than baseline by readings (a) and (b) (R2 ANT, R7 CA3 by (a); R2 ANT, R3 CA1 by (b)), and 3
+by (c); the named group's mean is above the target group's in 2 of 5 rats (R4, R5). No variant
+reaches 3 and 3.""",
+"""**Result: not reproduced.** Only ANT shows target lower with p < 0.05 (relative change, main:
+-0.11 against 0.12, p = 0.025); DG (p = 0.51) and CA3 (p = 0.12) do not, and in DG the target
+mean is higher. Other normalizations and variants give at most one of the three sites.""",
+"""**Result: not reproduced.** In none of the 36 method readings do the three bands hold, nor
+alpha and gamma together. With relative change, 1 s segments, 0.5-120 Hz and all channels, theta
+falls after target stimulation (median -0.45, against -0.03 sham and -0.34 non-target), alpha
+does not differ (Kruskal-Wallis p = 0.093), beta rises without significance (p = 0.068), and
+gamma differs (p = 0.045) with target below sham (Dunn p = 0.020) but not below non-target
+(p = 0.31). The stimulation windows rest on the trains found here; R7 contributes one target
+and one non-target seizure.""",
+"""**Result: not reproduced.** Delta differs between conditions under every method reading
+(main Kruskal-Wallis p = 4.8e-21, epsilon squared 0.053) and high gamma under the main reading
+(p = 0.0087, epsilon squared 0.005). Beta, judged under band reading (i), does not differ
+(p = 0.068); theta, judged under (ii), does (p = 2.3e-13).""",
+"""**Result: reproduced.** The IIS rate 15-45 s after the seizure is 0.142 /s after target and
+0.210 /s after non-target stimulation. By reading (b), the paired t-test over 30 bins of 1 s,
+p = 2.1e-09; over 6 bins of 5 s p = 0.0024; by reading (a), Mann-Whitney over seizure-channels,
+p = 0.0032, which alone would be partial. Target is lower than non-target in 5 of 7 rats (not R3
+and R4). Reading (b) treats time bins as independent samples. The outcome rests on the seizure end
+found from the LFP and on the pre-seizure stretch as the threshold baseline.""",
+"""**Result: reproduced.** The paired t-test by rat does not find a difference in normalized ictal
+ripple rate between target and non-target stimulation (main reading p = 0.26, 7 rats; target
++2.29, non-target +3.48). One of the 8 method readings is significant (5 SD, stimulated channel,
+pre-seizure reference: p = 0.019, target lower). Ripple rates rise from the pre to the post
+window in every condition, unlike Figure 6E.""",
+"""**Result: not reproduced.** The normalized fast ripple rate after target stimulation (+4.16) is
+not below baseline (+2.31) or non-target (+18.67) in the main reading (paired p 0.20 and 0.29),
+and the target mean is below both in none of the 8 readings.""",
+]
+for r in R:
+    s=s.replace("**Result: placeholder**", r, 1)
+assert "placeholder" not in s
+open(p,'w').write(s)
+EOF
+echo done
+```
+
+```
+done
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+p='/tmp/claude-1001/nb.py'; s=open(p).read()
+s=s.replace("and over groups p is 0.10 or more.","and over groups p is 0.097 or more.")
+s=s.replace("**Result: not reproduced.** In none of the 36 method readings","**Result: not reproduced.** In none of the 36 readings of method and post hoc test")
+s+='''
+| Claim | Outcome |
+|---|---|
+| tables1-network-stable-short-term | reproduced (under the self-pairs reading; rests on the onset assumption) |
+| fig2-r1-target-shifts | reproduced (rests on the onset assumption) |
+| figs2-target-assignment | partially reproduced (18 of 28 baseline groups) |
+| fig3a-target-reduces-each-rat | not reproduced (3 of 8 target groups below baseline) |
+| fig3a-nontarget-can-lengthen | reproduced (13 of 20) |
+| fig3a-per-rat-site-differences | partially reproduced (5 of 11 pairs) |
+| fig3a-target-vs-nontarget-total | not reproduced (-0.020 against 0.087, p = 0.085) |
+| fig3a-some-nontarget-shorten | not reproduced |
+| fig3b-same-site-target-vs-nontarget | not reproduced (ANT only) |
+| seizure-duration-proportion | blocked: data missing |
+| fig3c-frequency-no-difference | blocked: data missing |
+| fig4b-psd-target-bands | not reproduced |
+| fig4b-psd-other-bands-unchanged | not reproduced |
+| fig5b-iis-post-seizure | reproduced (rests on the seizure end assumption) |
+| fig5c-interictal-iis-no-difference | blocked: data missing |
+| fig5d-iis-seizure-correlation | blocked: data missing |
+| fig6cd-interictal-hfo-no-difference | blocked: data missing |
+| fig6e-ictal-ripples-no-difference | reproduced |
+| fig6f-ictal-fast-ripples-reduced | not reproduced |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+**How the analysis differs from the paper's.** The dandiset gives no seizure onset or end, so both
+are found here from the LFP with a line-length rule of this attempt; every duration, GC, PSD, IIS
+and HFO result rests on it, and thresholds 1.5 and 3 are shown beside the main 2. The stimulation
+times are found from the stimulation artifact. GC is conditional time-domain GC from OLS VAR fits
+written here, not the MVGC toolbox. HFOs are automatic detections without the paper's manual
+review, with a threshold of this attempt. IIS thresholds use the 180 s before each seizure, as
+the paper's interictal segments are not in the dandiset. Target labels are those of Figure S2.
+
+**What was found about the dandiset.**
+- Each file holds 600 s epochs around seizures, with no seizure times, stimulation times,
+  absolute start times or recording durations, and no interictal segments: five claims cannot be
+  tested.
+- The order of the stimulation groups differs from Figure S2 for R5 (CA1, ANT, DG, CA3 against
+  ANT, DG, CA1, CA3) and R6 (ANT, DG, CA1, CA3 against CA1, ANT, DG, CA3); the epoch dates follow
+  the dandiset's order.
+- Stimulation trains are found in most seizures of most stimulation groups, but in 1, 1, 0 and 0
+  seizures of R7's four groups and in none of R3's CA1 group (R3-07), whose epochs are dated within
+  the R3 DG group's days and before R3's last baseline group.
+- Four baseline epochs carry trains at the pulse rate of the rat's own stimulator (R1-04 twice,
+  R4-00, R6-02).
+- Epoch dates of some groups overlap those of the next group (for example R1 2023-09-20 in both
+  base3 and DG stimulation), and the date format varies (R4 uses `2023_9-11`). No epoch or channel
+  is duplicated.
+'''
+open(p,'w').write(s)
+EOF
+cat > $TMPDIR/tonb.py <<'EOF'
+import re, nbformat, sys
+src=open('/tmp/claude-1001/nb.py').read()
+parts=re.split(r'^(# %%.*)$', src, flags=re.M)
+nb=nbformat.v4.new_notebook()
+for i in range(1,len(parts),2):
+    h=parts[i]; body=parts[i+1].strip('\n')
+    if h.startswith('# %% md'):
+        nb.cells.append(nbformat.v4.new_markdown_cell(body))
+    else:
+        m=re.search(r'tags=\[(.*)\]',h)
+        tags=[t.strip().strip('"') for t in m.group(1).split(',')] if m else []
+        c=nbformat.v4.new_code_cell(body)
+        if tags: c.metadata['tags']=tags
+        nb.cells.append(c)
+nb.metadata['kernelspec']={'name':'python3','display_name':'Python 3','language':'python'}
+nbformat.write(nb, sys.argv[1])
+EOF
+python $TMPDIR/tonb.py entries/yang-2025/reproduce_yang_2025.ipynb && echo ok
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/tonb.py", line 1, in <module>
+    import re, nbformat, sys
+ModuleNotFoundError: No module named 'nbformat'
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && uv pip install -q nbformat pyyaml jsonschema && python $TMPDIR/tonb.py entries/yang-2025/reproduce_yang_2025.ipynb && echo ok
+```
+
+```
+ok
+```
+
+**Agent**
+
+Now entry.yaml, requirements.in, README.
+
+**Agent calls Bash**
+
+```bash
+cat > entry.yaml <<'EOF'
+schema_version: 1
+name: yang-2025
+type: reproduction
+title: GC-guided closed-loop stimulation in epileptic rats (Yang et al. 2025)
+description: Tests the findings of Yang, Ni, Sun, Xing, Wang, Zhang, Zhu and Xu (2025) on dandiset
+  001212, which holds 600 s four-channel LFP epochs around the seizures of 7 pilocarpine rats, in 4
+  baseline and 4 stimulation groups each. It recomputes the Granger causality targets at seizure
+  onset, compares seizure duration after target and non-target stimulation, and tests the PSD,
+  post-ictal spike and ictal HFO findings. Seizure onset and end and the stimulation trains are
+  found from the LFP, as the files carry no times. The interictal recordings and recording
+  durations are not in the dandiset.
+license: Apache-2.0
+notebooks:
+- path: reproduce_yang_2025.ipynb
+  title: Reproducing Yang et al. (2025) from dandiset 001212
+  runtime_minutes: 6
+helpers:
+- yang.py
+related:
+- id: dandi:001212/0.241023.0931
+  relation: uses_data
+- id: doi:10.1109/tnsre.2025.3614867
+  relation: reproduces
+EOF
+cat > requirements.in <<'EOF'
+h5py
+matplotlib
+numpy
+pandas
+remfile
+requests
+scipy
+EOF
+python ../../tools/entry.py lock . 2>&1 | tail -3; ls
+```
+
+```
+wrote yang-2025/requirements.lock.txt (Python 3.13, with hashes)
+__pycache__
+entry.yaml
+reproduce_yang_2025.ipynb
+requirements.in
+requirements.lock.txt
+yang.py
+```
+
+**Agent calls Bash**
+
+```bash
+cd  && rm -rf entries/yang-2025/__pycache__ && date -u && timeout 3000 python tools/entry.py all entries/yang-2025 2>&1 | tail -30; date -u
+```
+
+```
+Fri Nov 27 00:49:45 UTC 2026
+error: entries/yang-2025/entry.yaml: (top level): Additional properties are not allowed ('python' was unexpected)
+1 error(s)
+Fri Nov 27 00:49:49 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cat entries/yang-2025/entry.yaml | tail -5; grep -n "python" entries/fouke-2025/entry.yaml; grep -n "python" tools/entry.py | grep -i "yaml\|entry\[" | head
+```
+
+```
+related:
+- id: dandi:001212/0.241023.0931
+  relation: uses_data
+- id: doi:10.1109/tnsre.2025.3614867
+  relation: reproduces
+206:        if entry.get("python") and locked_for and locked_for.group(1) != str(entry["python"]):
+208:                         f"says {entry['python']}; run `tools/entry.py lock`")
+500:    """The Python version an entry runs on: its entry.yaml's `python`, else the version its lock was compiled for
+504:        return str(entry["python"])
+514:    """Write `python: "<version>"` into entry.yaml, replacing the field or adding it after `license`."""
+672:        {"entry": entry["name"], "python": python_of(entry_dir), "results": results}, indent=1) + "\n")
+```
+
+**Agent calls Bash**
+
+```bash
+head -12 entries/yang-2025/entry.yaml; grep -n '"python"' schemas/entry.schema.json; sed -n 495,530p tools/entry.py
+```
+
+```
+schema_version: 1
+name: yang-2025
+type: reproduction
+title: GC-guided closed-loop stimulation in epileptic rats (Yang et al. 2025)
+description: Tests the findings of Yang, Ni, Sun, Xing, Wang, Zhang, Zhu and Xu (2025) on dandiset
+  001212, which holds 600 s four-channel LFP epochs around the seizures of 7 pilocarpine rats, in 4
+  baseline and 4 stimulation groups each. It recomputes the Granger causality targets at seizure
+  onset, compares seizure duration after target and non-target stimulation, and tests the PSD,
+  post-ictal spike and ictal HFO findings. Seizure onset and end and the stimulation trains are
+  found from the LFP, as the files carry no times. The interictal recordings and recording
+  durations are not in the dandiset.
+license: Apache-2.0
+
+LOCK_VERSION = re.compile(r"--python-version\s+(\d+\.\d+)")
+
+
+def python_of(entry_dir: Path) -> str:
+    """The Python version an entry runs on: its entry.yaml's `python`, else the version its lock was compiled for
+    (entries from before the field), else the registry's default for new entries, PYTHON_VERSION."""
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text()) or {}
+[... 28 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n python entries/yang-2025/entry.yaml; grep -n "python" schemas/entry.schema.json | head; git -C . status 2>&1 | head -2
+```
+
+```
+13:python: "3.13"
+fatal: not a git repository (or any of the parent directories): .git
+```
+
+**Agent calls Bash**
+
+```bash
+sed -i '/^python: /d' entries/yang-2025/entry.yaml && python tools/entry.py check entries/yang-2025 2>&1 | tail -5
+```
+
+```
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+date -u && timeout 3500 python tools/entry.py all entries/yang-2025 2>&1 | tail -15; date -u
+```
+
+```
+Fri Nov 27 00:50:04 UTC 2026
+Installed kernelspec registry-yang-2025 in executed/yang-2025/.venv/share/jupyter/kernels/registry-yang-2025
+0 error(s)
+pass  reproduce_yang_2025.ipynb  (270 s)
+Fri Nov 27 00:54:42 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF' > $TMPDIR/exec_out.txt
+import nbformat
+nb=nbformat.read('executed/yang-2025/reproduce_yang_2025.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        for o in c.outputs:
+            if o.output_type=='stream' and o.name=='stdout': print(o.text, end='')
+            if o.output_type=='error': print('ERROR', o.ename, o.evalue)
+EOF
+diff <(sed 1,3d $TMPDIR/out2.txt) <(sed 1,3d $TMPDIR/exec_out.txt) | head -30; grep -c . $TMPDIR/exec_out.txt; sed -n 2,3p $TMPDIR/exec_out.txt
+```
+
+```
+635
+56 files, 519 epochs, 259 s; peak memory of a worker 0.44 GB
+files per rat and kind:
 ```
 
 **Agent calls Bash**
 
 ```bash
 python - <<'EOF'
-import yaml
-d=yaml.safe_load(open('attempts/yang-2025-01.yaml'))
-def walk(x,p=''):
-    if isinstance(x,dict):
-        for k,v in x.items(): walk(v,p+'.'+str(k))
-    elif isinstance(x,list):
-        for i,v in enumerate(x): walk(v,p+f'[{i}]')
-    elif isinstance(x,str):
-        if ': ' in x or '—' in x or 'rather' in x: print('BAD',p,x[:80])
-walk(d); print(len(d['outcomes']))
+import json
+s=json.load(open('schemas/attempt.schema.json'))
+print(s.get('required')); print(list(s['properties']))
+d=s.get('$defs',s.get('definitions',{}))
+for k,v in d.items(): print(k, v.get('required'), list(v.get('properties',{}))[:30])
 EOF
-grep -n "—\|rather\|\*\*" entries/yang-2025/yang2025.py | head; python - <<'EOF'
-import nbformat
-nb=nbformat.read('entries/yang-2025/reproduce_yang_2025.ipynb',4)
-for c in nb.cells:
-    s=c.source
-    if '—' in s or 'rather' in s: print('BAD', s[:80])
-    if c.cell_type=='markdown':
-        import re
-        for m in re.finditer(r'\*\*[^*]+\*\*', s):
-            if not m.group().startswith('**Result:'): print('BOLD', m.group())
-EOF
-python tools/entry.py check entries/yang-2025 2>&1 | tail
 ```
 
 ```
-19
-143:        P = np.log10(np.abs(np.fft.rfft(X * win, axis=1)) ** 2 + 1e-12)
+['schema_version', 'id', 'datasets', 'paper', 'date', 'provenance', 'outcomes']
+['schema_version', 'id', 'datasets', 'missing_datasets', 'paper', 'date', 'entry', 'deprecated', 'provenance', 'outcomes', 'verifications', 'findings', 'reconciliation', 'inputs']
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+import json
+s=json.load(open('schemas/attempt.schema.json'))
+o=s['properties']['outcomes']['items']; print(json.dumps(o)[:2500])
+print(json.dumps(s['properties']['findings'])[:1500])
+print(json.dumps(s['properties']['provenance'])[:1500])
+EOF
+```
+
+```
+{"type": "object", "additionalProperties": false, "required": ["claim", "outcome"], "properties": {"claim": {"description": "Claim id from the target's claims file.", "type": "string"}, "outcome": {"enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"], "description": "Describes the result, not the method: whether the effect the claim states was found. Differences in method from the paper go in `deviations`."}, "blocked_by": {"description": "Required when outcome is blocked.", "enum": ["data_missing", "metadata_insufficient", "methods_underspecified", "data_unreadable", "dataset_missing", "too_large", "not_runnable", "other"]}, "notes": {"description": "What differs, or what was missing, stated factually.", "type": "string"}, "notebook": {"description": "Path of the notebook within the entry.", "type": "string"}, "output": {"description": "Which output shows the result, e.g. a cell tag.", "type": "string"}, "measured": {"description": "The values obtained, for claims with expected values: one number, or one per expected value, in the same order.", "oneOf": [{"type": "number"}, {"type": "array", "minItems": 1, "items": {"type": "number"}}]}, "deviations": {"description": "How the test differed from the paper's method or data, e.g. one session of four, or a substituted model.", "type": "array", "items": {"type": "string", "minLength": 1}}, "assumed": {"description": "True when the outcome rests on an assumption about a method the paper leaves open: a choice the paper best supports, stated in a deviation that says what was assumed and why (docs/protocol.md, Author, step 1.6).", "type": "boolean"}, "proposed": {"description": "A change of outcome found after the last verification round, held until a further round agrees with it.", "type": "object", "additionalProperties": false, "required": ["outcome", "reason"], "properties": {"outcome": {"enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"]}, "blocked_by": {"description": "Re
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'));o=s['properties']['outcomes']['items'];print(json.dumps(o['allOf'][1:]))"
+```
+
+```
+[{"if": {"properties": {"assumed": {"const": true}}, "required": ["assumed"]}, "then": {"required": ["deviations"], "properties": {"deviations": {"minItems": 1}, "outcome": {"not": {"const": "blocked"}}}}}]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && cd entries/yang-2025 && python - <<'EOF'
+import pickle,pandas as pd,numpy as np
+from scipy import stats
+df=pd.DataFrame(pickle.load(open('/tmp/claude-1001/rows.pkl','rb')))
+b=df[(df.kind=='baseline')&df.cfw.notna()]
+out=[]
+for rat,g in b.groupby('rat'):
+    V=np.vstack(g.cfw.values); grp=np.array(g.group.tolist(),dtype=object)
+    R=np.corrcoef(V); n=len(V); same=grp[:,None]==grp[None,:]; m=np.triu(np.ones((n,n),bool),1)
+    intra=np.concatenate([R[m&same],np.ones(n)]); inter=R[m&~same]
+    print(rat, round(intra.mean(),3), round(inter.mean(),3), f'{stats.mannwhitneyu(intra,inter).pvalue:.2g}')
+    out+= [round(intra.mean(),3), round(inter.mean(),3)]
+print(out)
+EOF
+```
+
+```
+R1 0.698 0.22 7.5e-29
+R2 0.262 -0.042 1.1e-11
+R3 0.657 0.491 9.2e-11
+R4 0.555 0.47 0.00011
+R5 0.511 0.355 4.2e-06
+R6 0.7 0.496 6.2e-13
+R7 0.596 0.513 3.3e-05
+[np.float64(0.698), np.float64(0.22), np.float64(0.262), np.float64(-0.042), np.float64(0.657), np.float64(0.491), np.float64(0.555), np.float64(0.47), np.float64(0.511), np.float64(0.355), np.float64(0.7), np.float64(0.496), np.float64(0.596), np.float64(0.513)]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF'
+p='/tmp/claude-1001/nb.py'; s=open(p).read()
+a="""print(t1[(t1.gc == "1 kHz") & (t1.pairs == "once") & (t1.self == "excl")].round(3).to_string())"""
+b="""for selfp in ("excl", "incl"):
+    print(f"1 kHz, pairs once, self pairs {selfp}:")
+    print(t1[(t1.gc == "1 kHz") & (t1.pairs == "once") & (t1.self == selfp)].round(3).to_string())"""
+assert a in s; s=s.replace(a,b); open(p,'w').write(s)
+EOF
+python $TMPDIR/tonb.py reproduce_yang_2025.ipynb && cd ../.. && timeout 3500 python tools/entry.py all entries/yang-2025 2>&1 | tail -3; date -u
+```
+
+```
+Installed kernelspec registry-yang-2025 in executed/yang-2025/.venv/share/jupyter/kernels/registry-yang-2025
 0 error(s)
+pass  reproduce_yang_2025.ipynb  (269 s)
+Fri Nov 27 00:59:51 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF' | sed -n '/self pairs incl/,+9p'
+import nbformat
+nb=nbformat.read('executed/yang-2025/reproduce_yang_2025.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        for o in c.outputs:
+            if o.output_type=='stream' and o.name=='stdout': print(o.text, end='')
+EOF
+```
+
+```
+1 kHz, pairs once, self pairs incl:
+       gc pairs  self rat   n  intra  intra_sd  inter  inter_sd    p    ok  in_tol
+7   1 kHz  once  incl  R1  35  0.698     0.346  0.220     0.533  0.0  True       2
+8   1 kHz  once  incl  R2  43  0.262     0.697 -0.042     0.595  0.0  True       2
+9   1 kHz  once  incl  R3  39  0.657     0.388  0.491     0.411  0.0  True       2
+10  1 kHz  once  incl  R4  43  0.555     0.632  0.470     0.664  0.0  True       2
+11  1 kHz  once  incl  R5  32  0.511     0.569  0.355     0.525  0.0  True       1
+12  1 kHz  once  incl  R6  35  0.700     0.400  0.496     0.442  0.0  True       2
+13  1 kHz  once  incl  R7  39  0.596     0.437  0.513     0.400  0.0  True       2
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "attempts/yang-2025-02.yaml",
+ "content": "schema_version: 3\nid: yang-2025-02\ndatasets:\n- archive: dandi\n  id: \"001212\"\n  version: 0.241023.0931\n  doi: 10.48324/dandi.001212/0.241023.0931\n  relation: primary\npaper: doi:10.1109/tnsre.2025.3614867\ndate: 2026-11-27\nentry: yang-2025\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-14\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/encorescience/encore-registry/actions/runs/45915569385\noutcomes:\n- claim: tables1-network-stable-short-term\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:tables1-network-stable-short-term\n  measured: [0.698, 0.22, 0.262, -0.042, 0.657, 0.491, 0.555, 0.47, 0.511, 0.355, 0.7, 0.496, 0.596,\n    0.513]\n  notes: Reproduced under readings (a) and (d) of the criterion (each pair once, self pairs\n    included), with 1 kHz GC and the main onset. Intra-group r exceeds inter-group r with\n    Mann-Whitney p < 0.05 in all 7 rats, and 13 of 14 means lie within the Table S1 SDs (R5\n    inter-group 0.355 against 0.71 +- 0.28 does not). The outcome depends on the self-pairs reading,\n    which adds an r of 1 per seizure to the intra-group set. With self pairs excluded, the test holds\n    in 4 rats (R1, R2, R3, R6; R4, R5 and R7 have intra and inter means within 0.02 to 0.03 of each\n    other) with 11 of 14 means within tolerance, and in 6 rats with the onset thresholds 1.5 or 3\n    (14 and 10 means within tolerance). With 250 Hz GC and self pairs excluded, 2 or 3 rats.\n  deviations:\n  - Seizure onset is not in the dandiset and the paper gives no rule for it. Assumed, as reading (b)\n    of the claims file's opening comment, an onset found from the LFP (1-45 Hz line length in 1 s\n    windows, largest over channels of the ratio to the channel's median, above 2, with hysteresis\n    down to 1.5); thresholds 1.5 and 3 are shown.\n  - Conditional GC is computed here from OLS VAR fits (full and reduced regressions), not with the\n    MVGC toolbox (Methods B, ref. 37), which obtains the reduced model by spectral factorization.\n    Model order by BIC up to 20 (a standard choice named in the claims file); the median order is\n    11 at 1 kHz. Decimation to 250 Hz is shown as a variant.\n  - The two readings of combining the 9 windows are the same number, as cf_w is linear in the GC\n    matrix; the cf_w sign does not change Pearson r.\n- claim: fig2-r1-target-shifts\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig2-r1-target-shifts\n  notes: With cf_w as out-strength minus in-strength (reading (a)), 1 kHz GC and the main onset, the\n    nodes with the highest mean cf_w in R1's four baseline groups are ANT, ANT, CA3 and DG, as\n    named. The single-seizure top node agrees with its group's in 9 of 9, 8 of 10, 4 of 5 and 6 of\n    11 seizures. The groups hold 9, 10, 5 and 11 seizures (Figure 2A shows 9, 9, 7, 9). Variants give\n    3 of 4 (250 Hz), 4 of 4 (onset threshold 3) and 2 of 4 (onset threshold 1.5); with the sign as\n    worded in Methods B (in minus out), 0 of 4.\n  deviations:\n  - Seizure onset found from the LFP, as for tables1-network-stable-short-term (an assumption).\n  - GC computed here, not with MVGC, as for tables1-network-stable-short-term.\n- claim: figs2-target-assignment\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:figs2-target-assignment\n  measured: [8, 20]\n  notes: Under reading (a), the top node, with 1 kHz GC and cf_w as out minus in, 18 of 28 baseline\n    groups give the Figure S2 target set (R1, R3, R4 and R7 four of four, R2 one, R5 none, R6 one).\n    Applied to the next file's site, this labels 8 groups target and 20 non-target, but only 20 of\n    the 28 labels agree with Figure S2. At 250 Hz, 18 baseline groups match and 24 labels agree.\n    Reading (b), a node significantly above each other node, matches at most 12 groups. With the sign\n    as worded (in minus out), at most 2 match. The criterion asks for 24 groups and all 28 labels for\n    reproduced and 18 groups for partial. The dandiset's order of stimulated sites differs from\n    Figure S2's for R5 and R6 (a finding); applying Figure S2's own target sets to the dandiset's order\n    gives 9 target groups.\n  deviations:\n  - Seizure onset found from the LFP, and GC computed here, as for\n    tables1-network-stable-short-term.\n  - The next group is the next file in the dandiset; for R5 and R6 this is not the order Figure S2\n    shows.\n- claim: fig3a-target-reduces-each-rat\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-target-reduces-each-rat\n  notes: Mean normalized duration (relative change against the preceding baseline group's mean) is\n    below zero in 3 of the 8 target groups (R3 CA3 -0.026, R6 CA3 -0.182, R7 ANT -0.207); R1 DG\n    +0.100, R2 DG +0.070, R2 CA1 +0.157, R4 CA3 +0.019, R5 ANT +0.014. The three normalizations share\n    the sign. Under the variants (thresholds 1.5 and 3, ending before a final train, stimulated\n    seizures only, baseline taken in Figure S2's order) 3 or 4 of 8 are below zero.\n  deviations:\n  - Seizure onset and end found from the LFP (an assumption, as reading (b) of the claims file);\n    in stimulation groups, detected stimulation trains count as ictal and the seizure is the run\n    holding the first train. The paper's durations may come from visual marking.\n  - Target and non-target labels by rat and site from Figure S2, as the claims file says; the\n    preceding baseline is the previous file of the dandiset.\n- claim: fig3a-nontarget-can-lengthen\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-nontarget-can-lengthen\n  notes: 13 of 20 non-target groups have a positive mean normalized duration with the main detector\n    (R1 ANT, R2 CA3, R3 ANT and DG, R4 CA1, DG and ANT, R5 CA1, DG and CA3, R6 ANT and CA1, R7 DG at\n    +0.000); 10 to 14 under the variants. Of the 10 groups positive in Figure 3A, 7 are positive here\n    (R1 CA3 and R6 DG are negative here, R6 DG at -0.28).\n  deviations:\n  - Seizure onset and end found from the LFP, as for fig3a-target-reduces-each-rat.\n- claim: fig3a-per-rat-site-differences\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-per-rat-site-differences\n  notes: With the main detector, 5 of the 11 listed pairs are significant by Dunn's test, Bonferroni\n    or unadjusted (R2 ANT-CA3, R3 DG-CA3, R3 DG-CA1, R4 DG-CA1, R4 DG-CA3); R2 DG-CA3, R3 CA3-ANT and\n    all four in R5 and R7 are not (Kruskal-Wallis p 0.66 in R5, 0.33 in R7). R1 has no significant\n    pair (Kruskal-Wallis p 0.42), but R6 has one (DG-ANT, Bonferroni p 0.021; Kruskal-Wallis p 0.015),\n    against the statement. Variants give 2 to 6 listed pairs.\n  deviations:\n  - Seizure onset and end found from the LFP, as for fig3a-target-reduces-each-rat.\n- claim: fig3a-target-vs-nontarget-total\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-target-vs-nontarget-total\n  measured: [-0.0203, 0.0869]\n  notes: Pooled over seizures (85 target, 167 non-target), target -0.020 +- 0.028 and non-target\n    0.087 +- 0.034, Mann-Whitney p = 0.085; target is lower, without significance, and its mean is\n    far outside -0.26 +- 0.03 (the non-target mean is within 0.049 of 0.038, outside the 0.03\n    tolerance). Over the 28 groups p = 0.50. No normalization or detector variant gives p < 0.05\n    (smallest 0.055, stimulated seizures only) or a target mean near -0.26.\n  deviations:\n  - Seizure onset and end found from the LFP, as for fig3a-target-reduces-each-rat.\n- claim: fig3a-some-nontarget-shorten\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3a-some-nontarget-shorten\n  notes: Of the five named groups, R2 ANT (-0.25) and R7 CA3 (-0.23) are significantly shorter than\n    baseline by reading (a) (Mann-Whitney, p 0.015 and 0.028), R2 ANT and R3 CA1 (-0.45) by reading\n    (b), and R2 ANT, R3 CA1 and R7 CA3 by reading (c); R4 CA1 (+0.06) and R5 CA3 (+0.23) are longer.\n    The named group is less effective than the rat's target group in 2 of 5 rats (R4, R5); in R2, R3\n    and R7 it is more effective. No variant reaches 3 significant and 3 less effective. R6 DG is the\n    one other non-target group shorter than baseline by reading (a).\n  deviations:\n  - Seizure onset and end found from the LFP, as for fig3a-target-reduces-each-rat.\n- claim: fig3b-same-site-target-vs-nontarget\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig3b-same-site-target-vs-nontarget\n  notes: With relative change, ANT target seizures are shorter than ANT non-target ones (-0.11\n    against +0.12, Mann-Whitney p = 0.025), but DG (target +0.09 against +0.18, p = 0.51) and CA3\n    (-0.07 against +0.12, p = 0.12; t-test p = 0.037) are not significant, and CA1 is not either\n    (p = 0.18). Other normalizations and variants give at most one of DG, CA3 and ANT.\n  deviations:\n  - Seizure onset and end found from the LFP, as for fig3a-target-reduces-each-rat.\n- claim: seizure-duration-proportion\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Seizure duration proportion is seizure time over total recording time. The dandiset holds\n    only 600 s epochs around seizures, with dates and no start times, and no record of how long each\n    group was recorded; the recording time cannot be recovered. Not public elsewhere (the paper has\n    no data availability statement beyond the dandiset).\n- claim: fig3c-frequency-no-difference\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Seizures per hour need the recording time of each group, which the dandiset does not hold\n    (see seizure-duration-proportion). Whether every seizure of a group is deposited is not stated\n    either.\n- claim: fig4b-psd-target-bands\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig4b-psd-target-bands\n  notes: In none of the 36 readings (change measure, Welch segment, total range, channels, post hoc\n    adjustment) do the three bands hold under either band reading, nor alpha and gamma together. Main\n    reading (relative change, 1 s segments, 0.5-120 Hz, all channels; 266 sham, 66 target, 106\n    non-target seizures) shows theta falling after target stimulation (median -0.45, sham -0.03,\n    non-target -0.34; Kruskal-Wallis p = 2.3e-13), alpha not differing (p = 0.093), beta higher\n    without significance (p = 0.068) and gamma differing (p = 0.045) with target below sham (Dunn\n    p = 0.020) and not below non-target (p = 0.31). With the difference measure, beta is higher after\n    target stimulation than after sham and non-target (p < 0.001 and 0.006), but alpha and gamma do\n    not differ.\n  deviations:\n  - Stimulation windows from the trains found in the LFP (the files have no stimulation times);\n    stimulation seizures with no train after onset (most of R7's and all of R3 CA1's) are left out.\n  - Seizure onset found from the LFP, as for fig3a-target-reduces-each-rat.\n- claim: fig4b-psd-other-bands-unchanged\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig4b-psd-other-bands-unchanged\n  notes: fig4b-psd-target-bands was decided by neither band reading, so both are judged on the main\n    method reading. Delta differs between sham, target and non-target (Kruskal-Wallis p = 4.8e-21,\n    epsilon squared 0.053; mean change +1.89, -0.28, +0.22), and so does high gamma (p = 0.0087,\n    epsilon squared 0.005). Beta, judged under band reading (i), does not (p = 0.068); theta, judged\n    under (ii), does (p = 2.3e-13). Delta differs under every method reading (p 2.5e-3 or less).\n  deviations:\n  - As for fig4b-psd-target-bands.\n- claim: fig5b-iis-post-seizure\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig5b-iis-post-seizure\n  notes: The IIS rate 15-45 s after the seizure end is 0.142 /s after target stimulation (85\n    seizures, 340 seizure-channels) and 0.210 /s after non-target stimulation (167, 668); sham 0.198.\n    Reading (b), paired t-test over 30 bins of 1 s, p = 2.1e-09 (6 bins of 5 s, p = 0.0024); reading\n    (a), Mann-Whitney over seizure-channels, p = 0.0032, which alone would give partially reproduced;\n    per seizure, p = 0.033. Target is lower than non-target in 5 of 7 rats (higher in R3 and R4).\n    Reading (b) treats time bins of the mean curves as independent samples.\n  deviations:\n  - Seizure end found from the LFP, as for fig3a-target-reduces-each-rat.\n  - The threshold baseline is the 180 s before onset (reading (a)); the interictal segments of\n    reading (b) are not in the dandiset. Peak width is the width at half prominence (a standard\n    choice named in the claims file). Stimulation trains are not searched for spikes.\n- claim: fig5c-interictal-iis-no-difference\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The claim needs 30 min interictal segments at least an hour from seizures (Methods F). The\n    dandiset holds only 600 s epochs around seizures, with a seizure near the middle of each, so no\n    such segment exists in it.\n- claim: fig5d-iis-seizure-correlation\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs interictal IIS rates (no interictal segments in the dandiset) and seizure frequency\n    (no recording time); see fig5c-interictal-iis-no-difference and fig3c-frequency-no-difference.\n- claim: fig6cd-interictal-hfo-no-difference\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs six 30 min interictal segments per day (Methods E), which the dandiset does not hold.\n- claim: fig6e-ictal-ripples-no-difference\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig6e-ictal-ripples-no-difference\n  notes: Paired t-test by rat (reading (a)), target against non-target normalized ictal ripple rate,\n    p = 0.26 over 7 rats (target +2.29, non-target +3.48; unpaired over groups p = 0.45). In one of\n    the 8 method readings (5 SD threshold, stimulated channel, pre-seizure reference) the test is\n    significant (p = 0.019, target lower). Rates rise from the pre to the post window in every\n    condition here, while Figure 6E shows small decreases; the measure is not the paper's.\n  deviations:\n  - HFO are automatic short line length detections without the paper's manual review. The paper\n    gives no detector parameters; assumed a 5 ms window and a threshold of mean + 3 SD (5 SD shown)\n    of the short line length over the 180 s before onset, with the seizure's own windows as an\n    alternative reference. The HFO App's own defaults could not be read here (MATLAB).\n  - Windows as Methods D (claims file); stimulation windows from the detected trains, so most of\n    R7's stimulation seizures are left out.\n  - The group value is its mean post rate over its mean pre rate minus 1, so that windows without a\n    pre event do not divide by zero.\n- claim: fig6f-ictal-fast-ripples-reduced\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_yang_2025.ipynb\n  output: claim:fig6f-ictal-fast-ripples-reduced\n  notes: Main reading, normalized fast ripple rate after target stimulation +4.16, baseline +2.31,\n    non-target +18.67; paired by rat, target against baseline p = 0.20 and against non-target\n    p = 0.29. The target mean is below both others in none of the 8 method readings.\n  deviations:\n  - As for fig6e-ictal-ripples-no-difference; fast ripples band-passed 250 to 490 Hz.\nfindings:\n- kind: data_missing\n  statement: The files hold only 600 s, 4-channel LFP epochs around seizures (one ElectricalSeries\n    per seizure, starting_time 0). There are no seizure onset or end times, no stimulation times, no\n    interictal recordings and no recording durations, so seizure frequency, seizure duration\n    proportion and every interictal IIS and HFO measure of the paper cannot be computed, and seizure\n    times and stimulation trains have to be inferred from the LFP.\n- kind: metadata_insufficient\n  statement: The epoch names carry the date only (in two formats, `R1_2023_7_16` and `R4_2023_9-11`)\n    and the series start at 0 s, so the time of day and the order of seizures within a day are not\n    recorded; how the 600 s windows were cut, and what the suffix `-small` on five epochs means, is\n    not described.\n- kind: other\n  statement: The order of the stimulation groups differs from Figure S2 for two rats. In the\n    dandiset R5 is stimulated at CA1, ANT, DG, CA3 (Figure S2 ANT, DG, CA1, CA3) and R6 at ANT, DG,\n    CA1, CA3 (Figure S2 CA1, ANT, DG, CA3). The epoch dates follow the dandiset's order. This changes\n    which baseline group precedes each stimulation group in these rats.\n- kind: other\n  statement: No stimulation artifact is found in most seizures of some stimulation groups. Trains\n    are found in 1 of 12, 1 of 13, 0 of 7 and 0 of 4 seizures of R7's four stimulation groups, in 0 of\n    8 of R3's CA1 group (R3-07) and in 3 of 8 of R5's CA3 group, against most seizures of the other\n    groups. Whether stimulation was delivered in these seizures cannot be told from the files.\n- kind: metadata_error\n  statement: The epochs of R3's CA1 stimulation group (07CA1-stim) are dated 2023-10-18 to 10-20,\n    inside the dates of R3's DG stimulation group (05DG-stim, 10-18 to 10-22) and before R3's last\n    baseline group (06base3, 10-22 to 10-23), against the alternating order the paper describes; none\n    of them shows a stimulation train. Other groups share single dates with the next group (R1\n    2023-09-20, R3 09-09 and 09-25, R4 09-15 and 09-17, R7 2024-01-03).\n- kind: other\n  statement: Four baseline epochs carry 5 s trains at the pulse rate of the rat's own stimulator,\n    R1-04 (R1_2023_8_29-ictal1, three trains; R1_2023_8_30-ictal1), R4-00 (R4_2023_9_6-ictal3, three\n    trains) and R6-02 (R6_2023_9_17-ictal1, two trains), so these baseline seizures appear to have been\n    stimulated.\n- kind: methods_unavailable\n  statement: Questions for the paper's authors. (1) How were seizure onset and end marked offline,\n    and are the times available? (2) The GC settings - VAR model order, any filtering or\n    downsampling, and the test behind 'significantly high' cf_w - and whether cf_w is out minus in\n    (as Figure 2 and the Discussion imply) or in minus out (as Methods B words it). (3) The formula\n    of the normalized seizure duration. (4) The HFO App parameters (window, threshold, filter) and the\n    pre and post windows used for ictal HFOs. (5) How the 180 s IIS curves of Figure 5B were tested,\n    and which baseline set the 5 SD threshold. This attempt assumed an LFP line-length rule for (1),\n    BIC order and out minus in for (2), relative change for (3) and mean + 3 SD of the pre-seizure\n    short line length for (4).\n"
+}
+```
+
+```
+File created successfully at: attempts/yang-2025-02.yaml (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+python tools/entry.py check entries/yang-2025 2>&1 | tail -5
+```
+
+```
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd attempts && python - <<'EOF'
+p='yang-2025-02.yaml'; s=open(p).read()
+a="Of the 10 groups positive in Figure 3A, 7 are positive here\n    (R1 CA3 and R6 DG are negative here, R6 DG at -0.28)."
+assert a in s
+s=s.replace(a,"Of the 10 groups positive in Figure 3A, 8 are positive here\n    (R1 CA3 at -0.06 and R6 DG at -0.28 are negative).")
+a="""how the 600 s windows were cut, and what the suffix `-small` on five epochs means, is
+    not described."""
+assert a in s
+s=s.replace(a,"""how the 600 s windows were cut, and what the suffix `-small` on some epoch names means,
+    is not described.""")
+a="""dandiset holds only 600 s epochs around seizures, with a seizure near the middle of each, so no
+    such segment exists in it."""
+assert a in s
+s=s.replace(a,"""dandiset holds only 600 s epochs, each around a seizure (onsets 38 to 514 s into the epoch), so
+    no such segment exists in it.""")
+open(p,'w').write(s)
+EOF
+cd .. && python tools/entry.py check entries/yang-2025 | tail -1; date -u
+```
+
+```
+0 error(s)
+Fri Nov 27 01:01:22 UTC 2026
 ```
 
 **Agent calls Write**
@@ -2864,7 +2542,7 @@ python tools/entry.py check entries/yang-2025 2>&1 | tail
 ```json
 {
  "file_path": "entries/yang-2025/README.md",
- "content": "# Yang, Ni, Sun, Xing, Wang, Zhang, Zhu & Xu (2025) from dandiset 001212\n\nTests the findings of [Yang et al. (2025)](https://doi.org/10.1109/TNSRE.2025.3614867) on\n[DANDI:001212](https://dandiarchive.org/dandiset/001212/0.241023.0931), which holds 600 s ictal LFP\nclips (DG, CA1, CA3, ANT, 1 kHz) from 7 pilocarpine-treated rats, each over 4 baseline and 4\nclosed-loop stimulation groups. The dandiset holds no seizure or stimulation times, no interictal\nrecordings and no recording durations. Seizure onset and end are marked here by a stated\nline-length rule, and stimulation trains are found from their artefact, so every tested outcome\nrests on that assumption.\n\n| Claim | Outcome |\n|---|---|\n| cf_w vectors correlate more within than between baseline groups (Table S1) | Reproduced, with self-pairs included |\n| R1's top cf_w node changes across baseline groups (Figure 2) | Partially reproduced |\n| The GC targets give 8 target and 20 non-target groups (Figure S2) | Partially reproduced |\n| Target stimulation shortens seizures in every rat (Figure 3A) | Not reproduced |\n| Some non-target stimulation lengthens seizures | Reproduced |\n| Sites differ within rats R2, R3, R4, R5, R7, not R1, R6 | Partially reproduced |\n| Target -0.26 against non-target 0.038 normalized duration | Not reproduced |\n| Five named non-target sites shorten seizures, less than the target | Partially reproduced |\n| Same site, target shortens more than non-target (Figure 3B) | Not reproduced |\n| Seizure duration proportion, seizure frequency | Blocked: data missing |\n| PSD ratio, alpha and theta or beta up and gamma down after target stimulation | Not reproduced |\n| No difference in the other bands | Not reproduced |\n| Lower IIS rate 15 to 45 s after target stimulation | Reproduced |\n| Interictal IIS, IIS against seizure frequency, interictal HFOs | Blocked: data missing |\n| No difference in ictal ripples | Reproduced |\n| Target stimulation reduces ictal fast ripples | Not reproduced |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nThe Granger causality targets come back for 20 of the 28 baseline groups when cf_w is read as\ncausal outflow (out minus in strength), which settles a sign the Methods state the other way. The\ndandiset's baseline groups hold some stimulated seizures, some clip names occur in two groups, and\nthe stimulation order of two rats differs from the paper's Figure S2. The attempt record, with the\nreasons and the differences from the paper's method, is\n[`attempts/yang-2025-01.yaml`](../../attempts/yang-2025-01.yaml).\n"
+ "content": "# Yang, Ni, Sun, Xing, Wang, Zhang, Zhu & Xu (2025) from dandiset 001212\n\nTests the findings of [Yang et al. (2025)](https://doi.org/10.1109/tnsre.2025.3614867) that can be\ntested on [DANDI:001212](https://dandiarchive.org/dandiset/001212/0.241023.0931), which holds 600 s,\n4-channel LFP epochs around the seizures of 7 pilocarpine rats (DG, CA1, CA3, ANT), in 4 baseline\nand 4 closed-loop stimulation groups per rat. The files carry no seizure or stimulation times, so\nboth are found from the LFP here, and every result that uses them rests on that assumption.\n\n| Claim | Outcome |\n|---|---|\n| cf_w at onset is consistent within baseline groups, not between them (Table S1) | Reproduced (self-pairs reading) |\n| R1's top cf_w node goes ANT, ANT, CA3, DG (Figure 2) | Reproduced |\n| GC targets give 8 target and 20 non-target groups (Figure S2) | Partially reproduced |\n| Target stimulation shortened seizures in every rat | Not reproduced |\n| Some non-target stimulation lengthened seizures | Reproduced |\n| Sites differ within R2, R3, R4, R5, R7, not R1, R6 | Partially reproduced |\n| Target -0.26 against non-target 0.038 normalized duration | Not reproduced |\n| Five named non-target groups shortened seizures, less than targets | Not reproduced |\n| Same site as target shortens more, DG, CA3, ANT | Not reproduced |\n| PSD ratio after target stimulation, alpha and theta or beta up, gamma down | Not reproduced |\n| Other bands unchanged | Not reproduced |\n| Fewer IIS 15-45 s after seizures with target stimulation | Reproduced |\n| Ictal ripples do not differ | Reproduced |\n| Target stimulation reduces ictal fast ripples | Not reproduced |\n| Seizure frequency, seizure duration proportion, interictal IIS and HFO (five claims) | Blocked: data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nThe attempt record, with the reasons and the differences from the paper's method, is\n[`attempts/yang-2025-02.yaml`](../../attempts/yang-2025-02.yaml).\n\n- `reproduce_yang_2025.ipynb`: the analysis. It takes about five minutes, most of it streaming the\n  56 files once.\n- `yang.py`: loading, the stimulation-train and seizure detectors, conditional Granger causality,\n  PSD ratios, interictal spike and HFO detection, and the one-pass feature extraction. Other\n  notebooks on this dandiset can import it.\n"
 }
 ```
 
@@ -2875,105 +2553,128 @@ File created successfully at: entries/yang-2025/README.md (file state is current
 **Agent calls Bash**
 
 ```bash
-python tools/entry.py check entries/yang-2025 2>&1 | tail -5; python tools/entry.py handover entries/yang-2025 2>&1 | tail -5; ls -R executed/yang-2025/handover | head; date -u
+rm -rf entries/yang-2025/__pycache__; python tools/entry.py check entries/yang-2025 | tail -1 && python tools/entry.py handover entries/yang-2025 2>&1 | tail -5; ls executed/yang-2025/handover; date -u
 ```
 
 ```
 0 error(s)
 wrote executed/yang-2025/handover
-executed/yang-2025/handover:
 reproduce_yang_2025.ipynb
 yang-2025.yaml
-yang2025.py
-Tue Nov 10 00:24:36 UTC 2026
+yang.py
+Fri Nov 27 01:01:50 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-python -c "
-import nbformat;nb=nbformat.read('executed/yang-2025/handover/reproduce_yang_2025.ipynb',4)
-print(len(nb.cells), sum('**Result' in c.source for c in nb.cells), sum('## Summary' in c.source for c in nb.cells))"; git status --short | grep -v "^ M tools"
+cd entries/yang-2025 && python - <<'EOF'
+s=open('yang.py').read()
+a="""|height| above mean + k SD of a baseline (mu, sd computed on |x - mean|? no: on x), at least
+    200 ms apart (the smaller removed), width at half prominence at most 100 ms."""
+assert a in s
+s=s.replace(a,"""|height - mu| above k SD of a baseline stretch (mu and sd of the raw trace there), at least
+    200 ms apart (the smaller removed), width at half prominence at most 100 ms.""")
+open('yang.py','w').write(s)
+EOF
+cd ../.. && rm -rf entries/yang-2025/__pycache__ && timeout 3500 python tools/entry.py all entries/yang-2025 2>&1 | tail -2 && python tools/entry.py handover entries/yang-2025 | tail -1; rm -rf entries/yang-2025/__pycache__; ls entries/yang-2025; date -u
 ```
 
 ```
-48 0 0
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? attempts/yang-2025-01.yaml
-?? entries/yang-2025/
-?? scripts
-?? tools/build_reuse_targets.py
-?? tools/colab.py
-?? tools/journals.py
+0 error(s)
+pass  reproduce_yang_2025.ipynb  (272 s)
+wrote executed/yang-2025/handover
+README.md
+entry.yaml
+reproduce_yang_2025.ipynb
+requirements.in
+requirements.lock.txt
+yang.py
+Fri Nov 27 01:06:50 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF' > $TMPDIR/exec3.txt
+import nbformat
+nb=nbformat.read('executed/yang-2025/reproduce_yang_2025.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        for o in c.outputs:
+            if o.output_type=='stream' and o.name=='stdout': print(o.text, end='')
+            if o.output_type=='error': print('ERROR')
+EOF
+diff <(sed 1,3d $TMPDIR/exec_out.txt) <(sed 1,3d $TMPDIR/exec3.txt) | head
+```
+
+```
+142a143
+> 1 kHz, pairs once, self pairs excl:
+150a152,160
+> 1 kHz, pairs once, self pairs incl:
+>        gc pairs  self rat   n  intra  intra_sd  inter  inter_sd    p    ok  in_tol
+> 7   1 kHz  once  incl  R1  35  0.698     0.346  0.220     0.533  0.0  True       2
+> 8   1 kHz  once  incl  R2  43  0.262     0.697 -0.042     0.595  0.0  True       2
+> 9   1 kHz  once  incl  R3  39  0.657     0.388  0.491     0.411  0.0  True       2
+> 10  1 kHz  once  incl  R4  43  0.555     0.632  0.470     0.664  0.0  True       2
+> 11  1 kHz  once  incl  R5  32  0.511     0.569  0.355     0.525  0.0  True       1
 ```
 
 **Agent**
 
-I've finished steps 1 to 6 for yang-2025. `entry.py check` reports 0 errors, the clean run passed in 661 s (about 11 minutes), and the handover package is in `executed/yang-2025/handover/` with the conclusions removed. I did not verify my own work, commit or push.
+I've tested `yang-2025` on DANDI:001212 v0.241023.0931: 14 claims tested and 5 blocked. The entry is at `entries/yang-2025`, the record at `attempts/yang-2025-02.yaml`, and the handover package is built. The final clean run passed (`entry.py all`, 0 errors) and its outputs match the numbers in the conclusions.
 
-The dandiset has one published version, 0.241023.0931, which I pinned. It holds 56 files, one per rat and group, each a set of 600 s seizure clips (519 in all) at 1 kHz on 4 channels. It has no seizure onset or end times, no stimulation times, no interictal recordings and no recording durations. I therefore marked seizure onset and end with a line-length rule, which is an assumption, and found the stimulation trains from the artefact they leave in the recording. Every tested outcome rests on that onset rule and is marked `assumed: true`.
+The dandiset has no seizure or stimulation times, so this attempt finds both from the LFP. Every tested outcome except ictal ripples rests on that, and all 13 are marked as resting on an assumption. I did not come across any earlier attempt.
 
-**(1) Outcomes**
+**1. Outcomes**
 
 | Claim | Outcome |
 |---|---|
-| tables1-network-stable-short-term | reproduced (only when self-pairs, r = 1, are counted as intra-group) |
-| fig2-r1-target-shifts | partially reproduced (3 of 4) |
-| figs2-target-assignment | partially reproduced (20 of 28 baseline groups; 9 target / 19 non-target groups) |
-| fig3a-target-reduces-each-rat | not reproduced (3 of 8) |
-| fig3a-nontarget-can-lengthen | reproduced (11 of 20) |
-| fig3a-per-rat-site-differences | partially reproduced (5 of 11 pairs, but R1 and R6 also show pairs) |
-| fig3a-target-vs-nontarget-total | not reproduced (-0.037 vs 0.003, p = 0.93) |
-| fig3a-some-nontarget-shorten | partially reproduced |
-| fig3b-same-site-target-vs-nontarget | not reproduced |
-| seizure-duration-proportion, fig3c-frequency-no-difference | blocked, data_missing (no recording time) |
-| fig4b-psd-target-bands, fig4b-psd-other-bands-unchanged | not reproduced |
-| fig5b-iis-post-seizure | reproduced (time-bin reading, p = 7.8e-10; mixed across rats) |
-| fig5c-interictal-iis, fig5d-iis-seizure-correlation, fig6cd-interictal-hfo | blocked, data_missing (no interictal data) |
-| fig6e-ictal-ripples-no-difference | reproduced (p = 0.73, but my HFO detector gives values far from the paper's) |
+| tables1-network-stable-short-term | reproduced, but only when each seizure's correlation with itself (r = 1) is counted, a reading the criterion lists. Without it, 4 of 7 rats hold (6 with other onset thresholds) |
+| fig2-r1-target-shifts | reproduced (ANT, ANT, CA3, DG) |
+| figs2-target-assignment | partially reproduced: 18 of 28 baseline groups match; 20 of 28 labels agree |
+| fig3a-target-reduces-each-rat | not reproduced: 3 of 8 target groups below baseline |
+| fig3a-nontarget-can-lengthen | reproduced: 13 of 20 |
+| fig3a-per-rat-site-differences | partially reproduced: 5 of 11 pairs, and R6 has one significant pair |
+| fig3a-target-vs-nontarget-total | not reproduced: −0.020 against 0.087, p = 0.085 |
+| fig3a-some-nontarget-shorten | not reproduced |
+| fig3b-same-site-target-vs-nontarget | not reproduced (only ANT is significant) |
+| fig4b-psd-target-bands | not reproduced in all 36 readings |
+| fig4b-psd-other-bands-unchanged | not reproduced: delta p = 4.8e-21 |
+| fig5b-iis-post-seizure | reproduced: paired t-test over 1 s bins p = 2.1e-9; Mann-Whitney alone gives p = 0.0032 |
+| fig6e-ictal-ripples-no-difference | reproduced: no difference, p = 0.26 |
 | fig6f-ictal-fast-ripples-reduced | not reproduced |
+| seizure-duration-proportion, fig3c, fig5c, fig5d, fig6cd | blocked, `data_missing` |
 
-**(2) Dataset, assumptions and questions**
-- **Baseline groups hold stimulated seizures.** At least 7 baseline clips (R1 base2, R4 base0, R5 base0, R6 base1) carry 5 s stimulation trains like those of the stimulation groups.
-- **Clip names collide.** 16 clip names occur in two groups of the same rat with different contents. Some clip dates also fall outside their group's place in the order (for example, R3's CA1 group predates its base3 group).
-- **Stimulation order.** For R5 and R6 the order in the dandiset differs from the paper's Figure S2.
-- **Smaller points:** no duplicate recordings were found. Two groups hold fewer than the 6 seizures the paper states. The `-small` and `-large` clip names are not explained. The ANT depth is -5.6 mm in the files against -6.0 mm in the paper. Age and weight are the same in every session.
+**2. Dataset, assumptions, questions**
+
+- **What is in it:** 56 files and 519 epochs. Each epoch is 600 s of 4-channel LFP at 1 kHz around one seizure. There are no seizure times, stimulation times, interictal segments or recording durations, and no duplicated epochs or channels.
+- **Group order:** for R5 and R6 the order of stimulated sites differs from Figure S2, and the epoch dates follow the dandiset's order.
+- **Stimulation not visible:** 130 Hz trains are found in most stimulation seizures, but in only 1, 1, 0 and 0 seizures of R7's four groups and 0 of 8 in R3's CA1 group.
+- **R3's CA1 group dates:** its epochs fall within the DG group's days and before R3's last baseline group.
+- **Stimulation in baselines:** four baseline epochs carry trains at the rat's own pulse rate.
 - **Assumptions:**
-  - The onset rule: 1-40 Hz line length with thresholds 3 and 2, shown also at (2, 1.5) and (4, 2.5). I chose the thresholds on stimulation timing in 42 clips, before computing any claim.
-  - The post-stimulation window is the 5 s after the first train ends.
-  - HFOs are counted with detector settings I chose, since the paper's are not given.
-- **cf_w sign:** the data favour out-strength minus in-strength, against the wording of Methods B: it recovers 20 of 28 Figure S2 targets, the other sign 0 or 1.
-- **Questions for the authors:** eight, in one `methods_unavailable` finding. They cover the onset rule, the cf_w sign, the VAR order and significance test, the normalization, the post hoc tests and PSD settings, the post window, the HFO App settings and the pairing in Figure 6.
+  - Seizure onset and end come from a 1–45 Hz line-length rule (threshold 2; 1.5 and 3 shown as variants).
+  - Stimulation trains come from the artifact's spectral comb.
+  - Granger causality is computed with my own regression code rather than the MVGC toolbox, with model order chosen by BIC and cf_w taken as out minus in.
+  - Seizure duration is normalized as relative change against the preceding baseline.
+  - HFOs are automatic detections at mean + 3 SD, with no manual review.
+- **Questions for the paper's authors:** recorded as a `methods_unavailable` finding: the seizure marking rule, GC settings and cf_w sign, the normalization formula, HFO App parameters and windows, and the Figure 5B test.
 - **Questions to a reader:** none.
 
-**(3) Protocol points**
-1. `tools/entry.py lock` writes a `python: "3.13"` line into entry.yaml, but the schema rejects it, so `check` failed. I deleted the line, after which the check passed. The modified `tools/entry.py` was already uncommitted in the checkout.
-2. The protocol does not say what to do when one assumption (here, seizure onset and end) underlies every tested claim. I marked every outcome `assumed: true` and said so in the summary.
-3. "Reproduced under any reading" lets a reading that is built to favour the claim decide it (self-pairs of r = 1 in tables1). I followed the rule and flagged it in the notes.
-4. The partial clause of fig3a-per-rat-site-differences does not say whether R1 and R6 must show no pairs. I read it literally (5 of 11 pairs is enough) and recorded that R1 and R6 do show pairs.
-5. The protocol gives no guidance on tuning a detector on the data when no annotations exist. I tuned only against the stimulation timing, not the claims, and recorded it.
+**3. Protocol and tool problems**
 
-**(4) Runtime and failures**
-- About 1 h of the 5 h budget, finishing around 00:25 UTC. The entry run takes 661 s.
-- The only failure was the schema error in point 1.
-- Untracked dotfiles (`.bashrc`, `.profile`, `.idea` and others) appeared in the repository root. I did not create them and left them in place.
+1. `entry.py lock` writes `python: "3.13"` into `entry.yaml`, but the entry schema rejects that field. I removed the line; the tool then reads the version from the lock file.
+2. Readings that make a test trivially easier, such as counting r = 1 self-pairs in tables1, can decide an outcome under the "any reading" rule. I applied the rule and said so in the notes.
+3. A paired t-test over time bins (fig5b reading b) treats bins as independent. I reported it alongside the Mann-Whitney result.
+4. The protocol has no category for a dataset that disagrees with the paper when it is unclear which is wrong (the R5/R6 order). I recorded it as `other`.
+5. The provenance prompt asked for harness "Claude Code"; the example record uses "Claude Code (GitHub Actions)". I used "Claude Code", with the runner recorded separately.
 
-Files are in `entries/yang-2025/`:
-- reproduce_yang_2025.ipynb
-- yang2025.py
-- README.md
+**4. Runtime and failures**
 
-The attempt record is `attempts/yang-2025-01.yaml`.
+The notebook runs in about 4.5 minutes, with a worker peak of 0.44 GB. The whole session took about 50 minutes, ending at 01:07 UTC. The only failure was the schema error in point 3.1; nothing else failed.
 
 ## End of run
 
-86 turns, 55 minutes, $7.59 at API prices, result: success.
+96 turns, 49 minutes, $7.42 at API prices, result: success.
