@@ -21,11 +21,12 @@ Where each parameter comes from:
   ("dvdt"). Both are computed for every sweep.
 - Response windows for the brief pulse (open; claim fig4f-brief-gain-vip-cck-high names the
   readings): peak and mean from pulse onset to pulse end plus 10 ms ("w10") or 50 ms ("w50");
-  the fast response from onset to pulse end plus 2 ms (assumption, standard choice). Baseline is
-  the mean potential before the pulse.
+  the fast response from onset to pulse end plus 2 ms (assumption; 1 and 5 ms are computed too,
+  FAST_ALT_MS, and shown as readings in the notebook). Baseline is the mean potential before
+  the pulse.
 - Long-pulse fraction thresholds (Supplementary Table 1 names the features, not thresholds):
   strong depolarization = peak response >= 20 mV, high spiking = rate >= 20 Hz; command bins
-  0-50, 50-100, 100-200, 200-400, >=400 pA (assumptions, standard choices).
+  0-50, 50-100, 100-200, 200-400, >=400 pA (assumptions; the notebook varies all three).
 - Ramp post-recruitment firing rate = spikes / (end of the recorded ramp - first spike time);
   recruitment current = command at the first spike (claim fig3e-ramp-recruitment-current-order).
 - PCA: missingness filter, imputation and standardization (Methods 4; scikit-learn, Methods 7);
@@ -55,6 +56,7 @@ BRIEF_NAME = "X5SP_Search_DA_0"
 
 BASE_LO, BASE_HI, BASE_SD = -100.0, -40.0, 1.0
 FAST_MS = 2.0
+FAST_ALT_MS = (1.0, 5.0)
 BIN_EDGES = [0, 50, 100, 200, 400, np.inf]
 
 
@@ -199,6 +201,10 @@ def _brief_sweep(v, x, rate):
         r[f"peak_w{w}"] = float(seg.max() - bl)
         r[f"mean_w{w}"] = float(seg.mean() - bl)
         r[f"lat_w{w}"] = float(np.argmax(seg) / rate * 1000)
+    for fw in FAST_ALT_MS:  # other fast-response windows, shown as readings
+        seg = v[a:b + int(fw / 1000 * rate)]
+        r[f"fpeak_f{fw:g}"] = float(seg.max() - bl)
+        r[f"fmean_f{fw:g}"] = float(seg.mean() - bl)
     seg = v[a:b + int(FAST_MS / 1000 * rate)]
     r.update(fpeak=float(seg.max() - bl), fmean=float(seg.mean() - bl),
              flat=float(np.argmax(seg) / rate * 1000),
@@ -343,8 +349,14 @@ def _slope(x, y):
     return c[0], r ** 2
 
 
-def long_features(sw, spike="zero"):
-    """One row per cell from depolarizing long-pulse sweeps (Supplementary Table 1, long pulse)."""
+def long_features(sw, spike="zero", depol=20.0, high=20.0, bins=None, per_second=False):
+    """One row per cell from depolarizing long-pulse sweeps (Supplementary Table 1, long pulse).
+
+    depol (mV) and high (Hz) are the strong-depolarization and high-spiking thresholds, bins the
+    command-bin edges (BIN_EDGES by default); all are assumptions, varied in the notebook.
+    per_second: spike counts divided by the step duration (in s), so that 0.5 s and 1 s steps are
+    on one scale (a variant; the paper's feature is the count)."""
+    bins = BIN_EDGES if bins is None else bins
     rows = {}
     for ses, g in sw.groupby("session"):
         g = g[g["amp"] > 0]
@@ -354,19 +366,20 @@ def long_features(sw, spike="zero"):
         amp = g["amp"].to_numpy(float)
         fr = n / g["dur"].to_numpy(float)
         pk = g["peak"].to_numpy(float)
+        cnt = fr if per_second else n
         r = {"spiking_fraction": np.mean(n > 0), "subthreshold_fraction": np.mean(n == 0),
-             "strong_depol_fraction": np.mean(pk >= 20), "high_spiking_fraction": np.mean(fr >= 20),
+             "strong_depol_fraction": np.mean(pk >= depol), "high_spiking_fraction": np.mean(fr >= high),
              "median_fr": np.median(fr), "mean_fr": np.mean(fr), "max_fr": np.max(fr),
-             "median_spike_count": np.median(n), "max_spike_count": np.max(n),
+             "median_spike_count": np.median(cnt), "max_spike_count": np.max(cnt),
              "first_spiking_command": amp[n > 0].min() if (n > 0).any() else np.nan,
              "median_peak_response": np.median(pk),
              "median_baseline": g["base"].median(), "median_baseline_noise": g["noise"].median()}
         supra = n > 0
         r["fr_slope"] = _slope(amp[supra], fr[supra])[0] if supra.sum() >= 2 else np.nan
         r["peak_slope"] = _slope(amp, pk)[0]
-        for i in range(len(BIN_EDGES) - 1):
-            m = (amp >= BIN_EDGES[i]) & (amp < BIN_EDGES[i + 1])
-            lab = f"{BIN_EDGES[i]:g}-{BIN_EDGES[i + 1]:g}pA"
+        for i in range(len(bins) - 1):
+            m = (amp >= bins[i]) & (amp < bins[i + 1])
+            lab = f"{bins[i]:g}-{bins[i + 1]:g}pA"
             r["bin_spiking_" + lab] = np.mean(n[m] > 0) if m.any() else np.nan
             r["bin_peak_" + lab] = np.median(pk[m]) if m.any() else np.nan
             r["bin_fr_" + lab] = np.median(fr[m]) if m.any() else np.nan
@@ -399,14 +412,17 @@ RAMP_RECRUIT = ["min_recruitment_current", "median_recruitment_current", "min_fi
                 "median_first_spike_latency", "median_spike_count", "max_spike_count", "median_fr", "max_fr"]
 
 
-def brief_features(sw, win="w50", spike="zero"):
+def brief_features(sw, win="w50", spike="zero", fast=None):
+    """One row per cell from X5SP_Search_DA_0 sweeps. fast: None for the 2 ms fast-response
+    window (FAST_MS), or 1 or 5 for the other windows (FAST_ALT_MS)."""
     rows = {}
+    fpk, fmn = ("fpeak", "fmean") if fast is None else (f"fpeak_f{fast:g}", f"fmean_f{fast:g}")
     for ses, g in sw.groupby("session"):
         amp = g["amp"].to_numpy(float)
         pk = g["peak_" + win].to_numpy(float)
         mn = g["mean_" + win].to_numpy(float)
-        fp = g["fpeak"].to_numpy(float)
-        fm = g["fmean"].to_numpy(float)
+        fp = g[fpk].to_numpy(float)
+        fm = g[fmn].to_numpy(float)
         n = g["n_" + spike].to_numpy(float)
         sl = g.get("slat_" + spike, pd.Series(np.nan, index=g.index)).to_numpy(float)
         s, r2 = _slope(amp, pk)

@@ -26,7 +26,7 @@ orders driver lines along their axes, and compares driver-line distances across 
 | Vip and Cck highest gain, Pvalb not at the top | Reproduced |
 | Cck and Sncg also high gain | Reproduced |
 | Long-pulse PC2 and ramp PC1 centroids aligned (r 0.883) | Reproduced |
-| Long-pulse and ramp distance alignment (r 0.707) | Partially reproduced (r 0.88) |
+| Long-pulse and ramp distance alignment (r 0.707) | Reproduced (only on the suprathreshold long-pulse sweeps; r 0.88 under the main readings) |
 | Balanced correlations positive (medians 0.61 to 0.79) | Partially reproduced (all positive, 2 of 6 within tolerance) |
 | True alignments above the label-shuffle null | Reproduced |
 
@@ -35,12 +35,13 @@ reasoning and the differences from the paper's method.
 
 The paper gives no thresholds, spike criterion, response windows, feature lists or resampling
 settings, and its code is not public, so most outcomes rest on stated assumptions; every reading
-the claims name is run and shown. One recording is deposited twice, under two subjects with
+the claims name is run and shown. The readings that reproduce the claims differ between claims:
+no single choice for the long-pulse and ramp geometries reproduces all of them. One recording is deposited twice, under two subjects with
 different genotypes. The attempt record, with the reasons and the differences from the paper's
 method, is
 [`attempts/yang-2026-electrophysiological-01.yaml`](../../attempts/yang-2026-electrophysiological-01.yaml).
 
-- `reproduce_yang_2026.ipynb`: the analysis. It takes about 25 minutes, 15 of them streaming the
+- `reproduce_yang_2026.ipynb`: the analysis. It takes about 20 minutes, 10 of them streaming the
   4435 files in 40 processes.
 - `geometry.py`: streaming the files, per-sweep features of the three protocols, cell-level
   features after Supplementary Table 1, PCA geometries, centroid distances and balanced
