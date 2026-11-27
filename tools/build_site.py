@@ -434,10 +434,12 @@ def collect(executed: Path | None = None) -> dict:
     # Findings about the data belong to a dataset: `findings` is from here on those about this row's dataset (a record
     # is a row for each dataset it used; a finding that names its datasets is on those rows only). Those about the
     # paper are `paper_notes`, for the paper's page.
+    # A finding rated `none` is a check that passed, not a problem: the site lists problems only. The record keeps
+    # it, numbered as before (a reconciliation and a verifier name findings by number), and so do the counts above.
     for a in attempts:
         every = a["findings"]
         a["paper_notes"] = [f for f in every if f["about"] == "paper"]
-        a["findings"] = [f for f in every if f["about"] == "data"
+        a["findings"] = [f for f in every if f["about"] == "data" and f.get("severity") != "none"
                          and (not f["datasets"] or dir_of(a["key"]) in f["datasets"])]
     attempted = {a["key"] for a in attempts}
     targets = []
@@ -706,7 +708,9 @@ def reconcile(attempts: list[dict]) -> None:
                       "statement": then[f["finding"] - 1]["statement"] if f["finding"] <= len(then) else "",
                       "kind": then[f["finding"] - 1]["kind"] if f["finding"] <= len(then) else "other",
                       "about": then[f["finding"] - 1].get("about", "data") if f["finding"] <= len(then) else "data"}
-                     for f in rec["findings"] if f["status"] in ("fixed", "not_checked")],
+                     for f in rec["findings"] if f["status"] in ("fixed", "not_checked")
+                     # A check of the earlier attempt that passed was not a problem to be fixed.
+                     and not (f["finding"] <= len(then) and then[f["finding"] - 1].get("severity") == "none")],
             "outcomes": [{"claim": o["claim"], "earlier": o["earlier"], "note": squash(o["note"])}
                          for o in rec.get("outcomes") or []],
         }
