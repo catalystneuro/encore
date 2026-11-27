@@ -1,43 +1,57 @@
-dandiset: "001538"
+# Questions from attempt zhai-2025-03 (author-revise-1, 2026-11-26) about the claims file
+# claims/zhai-2025.yaml, raised by the round-1 verifier and asked under docs/protocol.md, "Hand over for
+# verification". The attempt applied the criterion as far as it can be applied and showed the
+# paper's unit as the main reading.
+dataset: DANDI:001538
 paper: doi:10.1126/sciadv.adv8224
 questions:
-- claim: fig5f-ach-off-elevated
-  asked: 2026-11-15
-  question: The criterion tests the single-pulse normalised area "one region per mouse". The paper's
-    test uses regions as its units, 13 unlesioned and 11 off-state ROIs from 3 and 5 mice, and its
-    Methods say the stated n is "the number of ROIs (in ACh sensor imaging)". Should the criterion
-    test the paper's ROIs (one value per region) in place of one value per mouse? The draft of the
-    dandiset now holds every region (13, 10 and 11), several per mouse.
-  passage: Figure 5F legend, "unlesioned control, n = 13 regions of interest (ROIs) from three mice;
-    6-OHDA, n = 10 ROIs from three mice; off-state, n = 11 ROIs from five mice"; Materials and Methods,
-    Data acquisition and statistical analysis, "The stated n indicates the number of cells (in
-    electrophysiology experiments), the number of ROIs (in ACh sensor imaging), or the number of mice
-    (in behavior tests)."
-  why: With one value per mouse the test compares 3 against 5 values, whose smallest attainable
-    two-sided P is 0.036, so any overlap between groups makes the claim fail; per region the same
-    data give P = 5.0e-05. Here both readings give P < 0.05 and the outcome does not change, but a
-    later version or a different mean per mouse could separate them. The notebook tests the
-    criterion as written and shows the per-region test as a variant.
-  answer: Changed. The paper's units for Figure 5F are regions, not mice. Its legend gives "n = 13
-    regions of interest (ROIs) from three mice" for the unlesioned group and 11 ROIs from five mice
-    for the off-state, and its Methods say "The stated n indicates ... the number of ROIs (in ACh
-    sensor imaging)". The criterion now tests one value per region (ROI) in place of one region per
-    mouse. The same unit is now stated in the criterion of fig5f-ach-off-like-6ohda, which tests the
-    same measure on 10 and 11 ROIs.
-  answered: 2026-11-15
+- claim: link-grab-rois
+  asked: 2026-11-26
+  question: The criterion matches "each mouse's vector of single-pulse areas" to "the paper's region"
+    and asks that "every mouse" (or half of the mice) match within 0.05 per treatment. The paper's
+    unit for Figure 5F is the region (ROI), and a mouse holds several regions. Should the criterion
+    match and count regions (each region's vector against the paper's regions), and is the 0.05
+    threshold meant per region?
+  passage: Figure 5 legend, "unlesioned control n = 13 regions of interest (ROIs) from three mice; 6-OHDA
+    n = 10 ROIs from three mice; off-state n = 11 ROIs from five mice"; Methods, Data acquisition and
+    statistical analysis, "The stated n indicates ... the number of ROIs (in ACh sensor imaging)". The
+    claims file's own fig5f criteria use one value per region (ROI).
+  why: Counted per region, 16 of 34 regions match within 0.05 for every treatment (47%); counted per
+    mouse (recording day), with a mouse matching when all its regions do, 1 of 11 mice match. Both are
+    under the half the criterion asks for partially reproduced, so the outcome (not reproduced) does
+    not change under either reading, but the counts reported differ.
+- claim: link-dendritic-cells
+  asked: 2026-11-26
+  question: The criterion reads the letter of a Figure 6D identifier as the cell's place in the day
+    ("a, b, c for the first, second and third cell of the day"). Should the letter be read as the
+    cell number of the file, which counts every cell recorded that day, including cells outside the
+    group?
+  passage: The Figure 6D sheet of the paper's tables (Zenodo 10.5281/zenodo.17307059, "Fig 6D") names
+    cells 02182020_b, 02182020_c and 02202020_c with no _a of the same day in the group.
+  why: With the letter as the file's cell number all 16 Figure 6D cells find their identifier (median
+    difference 5.3%); with the letter as the place among the group's cells of the day 14 of 16 do
+    (median 4.3%). The outcome (reproduced) is the same under both readings; the cells matched differ.
+- claim: link-dendritic-cells
+  asked: 2026-11-26
+  question: The criterion takes the paper's rows outside Figure 6D to follow the dandiset's order by
+    date and cell number, "an assumption checked by the somatic link, where rows follow that order".
+    The somatic link matches each cell to its best row, not by row order, and 9 paper rows there are
+    the best match of more than one cell. Should the premise be dropped, or the dendritic rows be
+    matched another way (for example to the nearest value of the group)?
+  passage: Claims file, link-dendritic-cells criterion; claims file, link-somatic-cells criterion.
+  why: Under the row-order assumption the median difference is 2.7% and 12 of 92 cells differ by more
+    than 10%; two off-state iSPNs (2016-05-23 cell 4, 2016-05-24 cell 2) look swapped. Against the
+    nearest value of the group the median is 1.7%. The outcome (reproduced) does not change, but the
+    premise the criterion states is not established.
 - claim: link-sr-cells
-  asked: 2026-11-15
-  question: The criterion compares each cell's "mean amplitude" with the paper's per-cell value. In the
-    paper's tables (Zenodo doi:10.5281/zenodo.17307059) the per-cell amplitude of Figures 2H and 4G,
-    labelled average amplitude, equals the median of that cell's event list in the Figure 2G and 4F
-    sheets for all 33 cells and the mean for none. Should the criterion compare the per-cell median
-    amplitude in place of the mean?
-  passage: Figure 2 legend, "( H and I ) Box plots showing an increase in Sr 2+ -oEPSC amplitudes (H)
-    in on-state dSPNs"; Materials and Methods, "Amplitudes of Sr 2 -oEPSCs were analyzed automatically
-    using TaroTools' Event Detection in Igor Pro 8 ... followed by visual verification." The text does
-    not say whether the per-cell value is a mean or a median; the paper's tables show it is the median.
-  why: The fraction of cells within 25% of the paper's amplitude depends on the statistic (at 5 SD, 90.9%
-    with the mean and 66.7% with the median). Here the outcome is partially reproduced under both
-    readings, as the event counts agree for only 42.4% of cells, but with a detector closer to the
-    paper's the two readings could give different outcomes. The notebook tests the mean, as the
-    criterion says, and shows the median as a variant.
+  asked: 2026-11-26
+  question: The criterion compares "the events found by lid.detect_events" with the paper's counts and
+    amplitudes. No such function is part of this paper's code or this dataset. Should the criterion
+    name the paper's method (TaroTools in Igor Pro, threshold five SD above noise, with visual
+    checking), so that any detector is a stand-in stated as an assumption?
+  passage: Methods, Data acquisition and statistical analysis (Sr2+-oEPSC events detected with TaroTools
+    in Igor Pro, 40 to 400 ms after the flash, threshold five SD above the noise, then verified by eye).
+  why: The attempt used its own stand-in detector (zhai.detect_events); with the noise SD of the raw
+    trace 21 of 33 cells are within 25% of the paper's values, with the noise SD of the smoothed trace
+    8 of 33. Both are below the 75% for reproduced, so the outcome (partially reproduced) does not
+    change, but the criterion names a function that does not exist here.

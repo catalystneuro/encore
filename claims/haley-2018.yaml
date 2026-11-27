@@ -1,0 +1,718 @@
+# Claims for Haley, Hampton & Marder (2018), "Two central pattern generators from the crab,
+# Cancer borealis, respond robustly and differentially to extreme extracellular pH", eLife
+# 7:e41877, doi:10.7554/elife.41877, tested on OSF:r7aes.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-26, protocol pilot-19 as stated in docs/protocol.md.
+#
+# Text read. paper/10.7554-elife.41877.txt, the version of record as served by Europe PMC
+# (PMC6328273, open access JATS, flattened). It holds the main text, all figure legends, the
+# legends of the figure supplements, Materials and methods, and the Data availability
+# statement. No PDF was supplied. The four statistics tables (Figure 3, 4, 7 and 8, figure
+# supplement 1) are images in the article; only their legends are in the text, so no F, t or
+# exact p-value is available, and the statistics below record only the bounds the legends
+# print (*p<0.05) and the words "significant" of the Results. The source data files of
+# Figures 2, 3, 4, 6, 7 and 8 are not in the text read.
+#
+# Code read. github.com/jesshaley/haley_hampton_marder_2018 at commit 83f5904 (8 January
+# 2019), the repository the Data availability statement names. It holds abfload.m and
+# LoadAbf.m (read .abf), spikenburst.s2s and batchImp.s2s (Spike2 scripts for manual threshold
+# spike and burst detection), readSpikeOutput.m and extracellularAnalysis.m (burst measures per
+# experiment), analyzeWaveform.m and intracellularAnalysis.m (intracellular waveforms),
+# pHCumulative.m and pHCumulativePTX.m (pooling, 10 s bins, figures, csv export),
+# statistics.R (ANOVAs and t-tests) and plotting scripts. The manual state annotations it reads
+# (stateData_STG.xlsx, stateData_CG.xlsx) are not in the repository.
+#
+# Data the paper used. Adult male Cancer borealis, 400 to 700 g, March 2016 to May 2018.
+# Saline pH steps, measured at 11 C, of 5.5, 6.1, 6.7, 7.2, 7.8 (control), 8.3, 8.8, 9.3, 9.8,
+# 10.4. Saline was changed every 15 min in steps of about 0.5 from control 7.8 to 5.5 (acid)
+# or 10.4 (base), followed by at least 30 min recovery at 7.8, then the opposite protocol and a
+# second recovery; acid-first and base-first orders were counterbalanced. Superfusion at 11 C,
+# about 9 mL/min; bath temperature and bath pH (pH microelectrode) were recorded.
+# - Stomatogastric ganglion (STG): 15 intact stomatogastric nervous system preparations.
+#   Intracellular PD and LP recordings, extracellular lvn (PD, LP, PY units; LG axon) and in
+#   some preparations mvn, dgn, lgn and ion. pHCumulative.m lists the 15 experiments
+#   (877_093, 877_101, 877_121, 877_127, 877_141, 887_005, 887_049, 887_069, 887_097, 887_105,
+#   887_137, 887_141, 887_145, 897_005, 897_037); the PD unit is analysed; the example STG #1
+#   of Figure 2 is 897_037.
+# - Cardiac ganglion (CG): 15 preparations, extracellular recordings of the trunk (Small Cell
+#   and Large Cell units). pHCumulative.m lists them as experiment and unit pairs, 10 distinct
+#   experiment numbers carrying 15 LC units (877_149 CG1L and CG2L; 887_005 CG2L; 887_011
+#   CG3L; 887_017 CG3L; 887_061 CG1L; 887_065 CG2L; 887_073 CG2L; 887_093 CG2L; 887_127 CG1L;
+#   887_149 CG1L and CG2L; 897_041 CG1L, CG3L and CG7L). The example CG #1 of Figure 6 is
+#   877_149 CG2L. The paper counts 15 CG preparations.
+# - Picrotoxin (PTX, 10^-5 M) experiments of Figure 4: intracellular PD and LP with PTX in
+#   every pH solution. pHCumulativePTX.m lists 9 experiments (903_046, 903_048, 903_050,
+#   903_052, 903_054, 903_056, 903_058, 903_060, 903_064); the text gives no n.
+# - extracellularAnalysis.m and intracellularAnalysis.m assume one .abf file per pH condition,
+#   12 files per experiment in protocol order. The OSF project is described as raw .abf files
+#   ("Recordings of stomatogastric and cardiac ganglia of C. borealis at varying pH").
+#
+# Methods fixed here, cited in the criteria by their letters.
+# [EXT] Extracellular measures (Methods, Data acquisition and analysis, paragraphs 2 and 4;
+#   code as named). Spikes and bursts are found by thresholding the extracellular trace
+#   (Methods); in spikenburst.s2s thresholds are set by hand and bursts are made by Spike2
+#   BurstMake with 0.3 s as the starting maximum interspike interval and 2 as the starting
+#   minimum spikes per burst, both adjustable per file. STG measures are from the PD unit
+#   (pHCumulative.m), CG measures from the LC unit (Methods, Figures 6 and 7). Frequency is
+#   1 / (onset of one burst to onset of the next); spikes per burst; duty cycle is burst
+#   duration (first to last spike) over period (Methods; readSpikeOutput.m). Duty cycles above
+#   0.4, and spike counts above 15 (STG) or 30 (CG), are discarded (extracellularAnalysis.m).
+#   The last 8 min of each 15 min step are analysed (Methods). Means are taken in 10 s bins,
+#   48 per preparation and condition (Methods); a bin with no burst counts as 0
+#   (pHCumulative.m). The value a statistical test uses per preparation and condition is the
+#   mean of its 48 bins (pHCumulative.m, csv export). Variant (code): as written,
+#   pHCumulative.m compares fileLength in seconds with sampleFreq*480 in samples, so its window
+#   is the 480 s after the first burst of each file; this is shown as a variant, the Methods'
+#   last 8 min are the main reading.
+# [STATE] States (Results, Figures 3B and 7A; Methods paragraph 3). Manual annotation; a
+#   transition is noted when a new state lasts at least 10 s. STG states 1 normal triphasic
+#   (PD, LP, PY, at least three spikes per burst each), 2 weak triphasic (all three units, some
+#   with one or two spikes per cycle), 3 intermittent triphasic (rhythmic, some units active),
+#   4 all silent, 5 atypical. CG states 1 SC and LC bursting (at least one LC spike per SC
+#   burst), 2 SC bursting only, 3 all silent, 4 atypical. The state is taken per second over
+#   the last 480 s of each step (pHCumulative.m). Fraction of time rhythmic is states 1 and 2
+#   for the STG and state 1 for the CG (Results, Figure 8 section; pHCumulative.m). In the
+#   code's STG annotation, a state x during a gastric rhythm is coded 8.x (pHCumulative.m). The
+#   annotations (stateData_*.xlsx) are not in the code repository; if the dataset does not
+#   hold them, states are annotated from the definitions above.
+# [INTRA] Intracellular measures of PTX preparations (Methods, paragraph 5; analyzeWaveform.m,
+#   intracellularAnalysis.m, pHCumulativePTX.m). Last minute of each step. Slow wave is Vm minus
+#   its high-pass (2nd order Butterworth at 10 Hz, filtfilt). Slow-wave troughs and peaks by
+#   findpeaks with prominence 1 mV and minimum distance 1/maxBurstFreq (starting values 2 Hz
+#   for PD, 10 Hz for LP, set by hand). Minimum membrane potential is, in the Methods, the
+#   minimum voltage of the unfiltered recording between bursts, measured before filtering (main
+#   reading); the code takes the slow-wave troughs instead, and a bin with no trough takes the
+#   mean of the per-second minima of the slow wave (pHCumulativePTX.m), shown as a variant. Spikes are
+#   peaks of the high-passed trace with prominence of at least minSpikeHeight (starting 10 mV
+#   PD, 3 mV LP, set by hand); spike amplitude is peak minus trough. PD burst frequency is the
+#   inverse of the trough-to-trough interval of the slow wave (Methods; analyzeWaveform.m uses
+#   peak-to-peak, shown as a variant). LP firing rate is the inverse interspike interval. Means
+#   in six 10 s bins; empty bins of frequency or amplitude count as 0; the per-preparation
+#   value is the mean of the six bins.
+# [RM] Effect of pH (Methods, Statistics; Figure 3, 4 and 7, figure supplement 1;
+#   statistics.R). Separately for acid (5.5, 6.1, 6.7, 7.2 and the control 7.8 just before the
+#   acid steps) and base (the control 7.8 just before the base steps, 8.3, 8.8, 9.3, 9.8,
+#   10.4), a univariate Type III repeated-measures ANOVA (car::Anova, idesign ~pH, uncorrected
+#   univariate p). Post hoc, for each step a paired t-test against that control, p multiplied
+#   by 4 (acid) or 5 (base). T-tests are not run for a non-significant ANOVA. Alpha 0.05.
+# [MIX] Ganglion comparison (Methods, Statistics; Figure 8, figure supplement 1). Per protocol,
+#   a two-way mixed-measures Type III ANOVA (car package), ganglion between preparations and pH within, on
+#   per-preparation fraction of time rhythmic. statistics.R at this commit fits ~1 with no
+#   ganglion term and then reads rows that model does not have, so it cannot be the code that
+#   made the table; the model is taken from the Methods. Open: the contrast coding of
+#   ganglion, which changes Type III main effects; readings (a) sum-to-zero contrasts, (b) R's
+#   default treatment contrasts. Also open: the legend of Figure 8, figure supplement 1 calls
+#   the test "Multivariate", the Methods "Two-Way" and statistics.R reads the univariate tests;
+#   readings (c) univariate tests (Methods, code), (d) multivariate tests (legend). Post hoc, per pH an independent samples t-test, Welch's form
+#   (t.test default in statistics.R), p multiplied by 4 (acid) or 5 (base).
+schema_version: 2
+paper: doi:10.7554/elife.41877
+claims:
+- id: fig2a-stg1-traces
+  statement: In the example acid-first STG preparation, the pyloric rhythm stayed triphasic
+    in acid until the most acidic pH, 5.5; in base it stayed triphasic up to 10.4 with fewer spikes
+    per burst and smaller slow waves at 10.4, and it recovered in control saline after each
+    protocol.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    2; Figure 2A
+  quote: As the preparation was subjected to more acidic saline, the rhythm remained triphasic
+    until the most acidic pH, 5.5 ... The bottom row shows the same preparation in basic
+    conditions where it remained triphasic, although with fewer spikes per burst and lower
+    amplitude slow waves at pH 10.4
+  criterion: On experiment 897_037 (STG 1, pHCumulative.m). States as in [STATE] over the last
+    8 min of each step. Reproduced when the preparation is in state 1 or 2 for most of each
+    step from 7.2 to 6.1 and from 8.3 to 10.4, in each recovery, and at 10.4 has a lower mean
+    PD spikes per burst ([EXT]) and a lower mean PD slow-wave amplitude (peak minus trough of
+    the slow wave, [INTRA] filtering, last minute) than at the control just before the base
+    steps. "Remained triphasic until 5.5" is open; readings (a) still triphasic at 5.5, (b)
+    triphasic down to 6.1 and not at 5.5. The state at 5.5 is reported; the claim holds under
+    either.
+- id: fig2bcd-stg1-measures
+  statement: In the example STG preparation, pyloric burst frequency increased in acid and
+    decreased in base, PD spikes per burst decreased at pH 5.5, and PD duty cycle decreased
+    slightly in base.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    3; Figure 2B to 2D
+  quote: >-
+    The pyloric burst frequency of STG #1 increased in acid and decreased in base ( Figure
+    2B ). The number of PD spikes per burst decreased at pH 5.5 ( Figure 2C ). The duty cycle of
+    the PD neurons in STG #1 decreased slightly in base
+  criterion: On 897_037, the 48 bin means per step of [EXT]. The paper gives no test. Open is
+    how "increased in acid" is judged; readings (a) the mean at the extreme step (5.5, or 10.4)
+    against the control just before that protocol, (b) the sign of the Spearman correlation of
+    the step means with pH over the control and the steps of that protocol. Reproduced when,
+    under one reading, frequency is higher in acid and lower in base, spikes per burst at 5.5
+    are below control, and duty cycle in base is below control.
+- id: fig3a-stg-variability-examples
+  statement: Two further STG preparations kept their activity from pH 6.1 to 10.4 but became
+    weakly active or silent at pH 5.5; at 10.4 one was slow and weakly triphasic while the other
+    kept a strong triphasic rhythm.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    4; Figure 3A
+  quote: >-
+    Both preparations displayed robust activity across a nearly 125-fold range of hydrogen
+    ion concentration but became weakly active or silent at pH 5.5. At pH 10.4, STG #2 was slow
+    and weakly triphasic while STG #3 retained a strong triphasic rhythm
+  criterion: The two preparations are not named in the paper or the code. With [STATE], reproduced
+    when among the other 14 STG preparations there are two that are in state 1 or 2 for most of
+    every step from 6.1 to 9.8 and in state 2, 3 or 4 for most of pH 5.5, one of them in state 2
+    at 10.4 with a pyloric frequency ([EXT]) below its control, and the other in state 1 at
+    10.4.
+- id: fig3c-stg-rhythmic-fraction
+  statement: Both acid and base significantly decreased the fraction of time STG preparations
+    were rhythmic (normal or weak triphasic), and the rhythm was significantly less triphasic at
+    pH 5.5 and 10.4 than at control.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    6; Figure 3C; Figure 3, figure supplement 1
+  quote: Both acid and base significantly decreased the fraction of time that preparations were
+    rhythmic, a combined metric of states 1 (normal triphasic) and 2 (weak triphasic) ... Preparations
+    were significantly less triphasically rhythmic at pH 5.5 and pH 10.4 compared to control pH 7.8
+  statistics:
+  - about: effect of pH, acid and base protocols separately
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 STG preparations
+  - about: pH 5.5 and pH 10.4 against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 15 STG preparations
+  expected:
+    quantity: STG preparations
+    value: 15
+    tolerance: 0
+  criterion: Per preparation fraction of time rhythmic in the last 8 min of each step ([STATE]),
+    tested with [RM]. Reproduced when both ANOVAs have p < 0.05 and the corrected paired t-tests
+    at 5.5 and at 10.4 have p < 0.05 with lower fractions than control. The steps where the
+    paper reports no significant difference are reported.
+- id: stg-state-transitions
+  statement: Pyloric rhythms rarely moved back and forth between two states, and usually went
+    from normal triphasic to weak triphasic to intermittent triphasic to silent, in the reverse
+    order during recovery.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    6
+  quote: Rhythms rarely transitioned intermittently between two states ... The pyloric rhythm
+    often transitioned from normal triphasic to weak triphasic to intermittent triphasic to all
+    silent. During recovery, this transition pattern was reversed
+  criterion: From the [STATE] annotation of the whole recording of each of the 15 STG
+    preparations (transitions need not fall in the last 8 min). The paper gives no count or
+    test. A reversal is a transition, during an acid or base step protocol, from a state to a
+    lower-numbered state among 1 to 4 (toward normal), or during a recovery, to a
+    higher-numbered one. Open are "rarely" and "often"; readings (a) reversals under 10% of all
+    transitions among states 1 to 4 and at least half of the transitions in step protocols go
+    to the next state in the order 1, 2, 3, 4; (b) the same with 20% and with a plurality.
+    Reproduced when one reading holds; the counts are reported.
+- id: fig3d-stg-frequency
+  statement: Mean pyloric burst frequency was relatively invariant across acid steps but varied
+    significantly across base steps, being significantly slower than control at pH 9.3 and 10.4.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    7; Figure 3D; Figure 3, figure supplement 1
+  quote: Mean pyloric burst frequency was relatively invariant across pH values in the presence
+    of acid, but varied significantly across base steps ( Figure 3D ). Pyloric burst frequency at
+    pH 9.3 and 10.4 was significantly slower than that at control
+  statistics:
+  - about: effect of pH, base protocol
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 STG preparations
+  - about: pH 9.3 and pH 10.4 against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation PD burst frequency ([EXT]), tested with [RM]. The acid part is a
+    claim of absence, judged on the acid ANOVA at alpha 0.05 as the paper ran it. Reproduced
+    when the acid ANOVA has p >= 0.05, the base ANOVA p < 0.05, and the corrected paired t-tests
+    at 9.3 and 10.4 have p < 0.05 with lower frequency than control. Effect sizes (mean
+    differences) are given for every step.
+- id: fig3e-stg-spikes-per-burst
+  statement: Acid and base both significantly affected the number of PD spikes per burst, which
+    was significantly reduced at pH 5.5.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    7; Figure 3E; Figure 3, figure supplement 1
+  quote: Both acid and base significantly affected the mean number of PD spikes per burst (
+    Figure 3E ). The number of spikes per burst was significantly reduced at pH 5.5
+  statistics:
+  - about: effect of pH, acid and base protocols separately
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 STG preparations
+  - about: pH 5.5 against control 7.8
+    test: paired samples t-test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation PD spikes per burst ([EXT], silent bins as 0), tested with [RM].
+    Reproduced when both ANOVAs have p < 0.05 and the corrected paired t-test at 5.5 has p < 0.05
+    with fewer spikes than control.
+- id: fig3f-stg-duty-cycle
+  statement: Acid and base both significantly affected PD duty cycle, with a slight increase from
+    control pH 7.8 to pH 6.1.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    7; Figure 3F; Figure 3, figure supplement 1
+  quote: Additionally, there was a significant effect of acid and base on the mean PD duty cycle
+    ( Figure 3F ). Paired samples t-tests revealed a slight increase in mean PD duty cycle from
+    control pH 7.8 to pH 6.1
+  statistics:
+  - about: effect of pH, acid and base protocols separately
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 STG preparations
+  - about: pH 6.1 against control 7.8
+    test: paired samples t-test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation PD duty cycle ([EXT]), tested with [RM]. Reproduced when both
+    ANOVAs have p < 0.05 and the corrected paired t-test at 6.1 has p < 0.05 with a higher duty
+    cycle than control.
+- id: fig3s2-stg-control-variability
+  statement: Pyloric frequency, PD spikes per burst and PD duty cycle vary widely between the 15
+    STG preparations at control pH, as widely as the pooled distributions across pH.
+  source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
+    8; Figure 3, figure supplement 2
+  quote: The pooled distributions for these three measures were highly variable for all pH
+    conditions reflecting the animal-to-animal variability in the pyloric rhythm. We plotted the
+    distributions for all 15 STG preparations at control pH 7.8 and found similarly variable
+    activity at baseline conditions
+  criterion: The 48 bin values of each preparation in the first control step ([EXT];
+    pHCumulative.m takes condition 1 for this figure). The paper gives no test (its legend says
+    "each CG preparation", which the Results and the code show is the STG). Open is how
+    "similarly variable" is judged; readings (a) the range of the 15 preparation means at
+    control spans at least half the range of the pooled bin values over all pH steps, for each
+    measure; (b) a Kruskal-Wallis test of the bin values on preparation has p < 0.05 for each
+    measure. Reproduced when one reading holds for all three measures.
+- id: fig4a-ptx-example
+  statement: In an example preparation with PTX, the PD neuron lost most of its slow wave at pH
+    6.7, became silent and depolarized at 5.5, kept its burst at 8.8 and fired single-spike
+    bursts at 10.4; the LP neuron fired tonically from 6.7 to 10.4 and lost activity at 5.5.
+  source: Results, Semi-isolated pyloric neurons are sensitive to extreme pH, paragraph 1; Figure
+    4A
+  quote: At pH 6.7, the PD neuron of this preparation lost most of its slow wave activity. It
+    then became silent and depolarized in pH 5.5 saline. At pH 8.8, the PD burst was largely
+    intact, and at pH 10.4, the neuron showed single spike bursts. The LP neuron fired tonically
+    from pH 6.7 to 10.4, again showing loss of activity at pH 5.5 similar to PD
+  criterion: The example is not named in the paper or the code. Reproduced when at least one of
+    the PTX preparations shows, in the last minute of each step ([INTRA]), a PD slow-wave
+    amplitude at 6.7 below half its PTX control value, no PD spikes and a minimum membrane
+    potential above control at 5.5, one spike per PD burst at 10.4, and LP spiking without
+    slow-wave bursts from 6.7 to 10.4 with no LP spikes at 5.5. The thresholds (half,
+    one spike) are readings of the words, named here because the paper gives none.
+- id: fig4bc-membrane-potential
+  statement: With PTX, the PD neuron depolarized significantly in extreme acid (pH 5.5 and 6.1)
+    while LP stayed relatively constant, and in base PD stayed relatively constant while LP hyperpolarized
+    significantly at pH 8.8, 9.3, 9.8 and 10.4.
+  source: Results, Semi-isolated pyloric neurons are sensitive to extreme pH, paragraph 2; Figure
+    4B, 4C; Figure 4, figure supplement 1
+  quote: At extreme acid, the mean PD neuron membrane potential depolarized significantly, while
+    the mean LP neuron membrane potential remained relatively constant ... In contrast, the PD
+    neuron's membrane potential in basic saline was relatively constant, even at extreme base,
+    but the LP neuron's membrane potential significantly hyperpolarized. The depolarization of PD
+    at pH 5.5 and 6.1 and the hyperpolarization of LP at pH 8.8, 9.3, 9.8, and 10.4 were
+    significantly different from control saline
+  statistics:
+  - about: PD in acid and LP in base, effect of pH
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: PTX preparations (9 in pHCumulativePTX.m)
+  - about: PD at 5.5 and 6.1, LP at 8.8, 9.3, 9.8 and 10.4, against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation minimum membrane potential ([INTRA]), tested with [RM]. Reproduced
+    when the PD acid ANOVA and the LP base ANOVA have p < 0.05, the corrected t-tests show PD
+    more depolarized at 5.5 and 6.1 and LP more hyperpolarized at 8.8, 9.3, 9.8 and 10.4 (p <
+    0.05 each); partially reproduced when the ANOVAs hold and at least half of these six
+    t-tests do. The "relatively constant" parts (LP in acid, PD in base) are judged as absence
+    on the same ANOVA at alpha 0.05, or on the corrected t-tests when the ANOVA is significant,
+    and reported with their effect sizes.
+- id: fig4de-spike-amplitude
+  statement: With PTX, acid significantly affected spike amplitude of both PD and LP, and base
+    affected LP but not PD; amplitude was significantly reduced at pH 5.5 in both, and LP
+    amplitude also at pH 6.1.
+  source: Results, Semi-isolated pyloric neurons are sensitive to extreme pH, paragraph 3; Figure
+    4D, 4E; Figure 4, figure supplement 1
+  quote: Acid significantly affected both PD and LP neuron spike amplitude while alkylosis had an
+    effect on LP, but not PD neurons ( Figure 4-figure supplement 1 ). At pH 5.5, spike amplitude
+    was significantly attenuated for both LP and PD. Additionally, LP spike amplitude was
+    significantly decreased at pH 6.1 while PD was only moderately affected
+  statistics:
+  - about: PD and LP in acid, LP in base, effect of pH
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: PTX preparations (9 in pHCumulativePTX.m)
+  - about: PD and LP at 5.5, LP at 6.1, against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation spike amplitude ([INTRA], empty bins as 0), tested with [RM].
+    Reproduced when the PD acid, LP acid and LP base ANOVAs have p < 0.05, the PD base ANOVA has
+    p >= 0.05 (absence, judged on that ANOVA), and the corrected t-tests show lower amplitude at
+    5.5 for PD and LP and at 6.1 for LP (p < 0.05 each). Partially reproduced when the acid
+    effects and the 5.5 reductions hold but another part does not.
+- id: fig4fg-ptx-frequency
+  statement: With PTX, acid and base both significantly affected PD burst frequency and LP firing
+    rate; PD burst frequency was significantly lower at pH 5.5, and LP firing rate was
+    significantly lower at pH 5.5, 6.1, 8.3, 9.3, 9.8 and 10.4 than at control.
+  source: Results, Semi-isolated pyloric neurons are sensitive to extreme pH, paragraph 4; Figure
+    4F, 4G; Figure 4, figure supplement 1
+  quote: There was a significant effect of both acidic and basic saline on mean PD burst frequency
+    and LP firing rate ... Mean PD burst frequency was significantly decreased at pH 5.5. The LP
+    firing rate was significantly reduced in pH 5.5, 6.1, 8.3, 9.3, 9.8, and 10.4 compared to
+    control pH 7.8
+  statistics:
+  - about: PD burst frequency and LP firing rate, acid and base protocols
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: PTX preparations (9 in pHCumulativePTX.m)
+  - about: PD at 5.5; LP at 5.5, 6.1, 8.3, 9.3, 9.8 and 10.4; against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation PD burst frequency and LP firing rate ([INTRA], empty bins as 0),
+    tested with [RM]. Reproduced when all four ANOVAs have p < 0.05 and the seven named corrected
+    t-tests have p < 0.05 with lower values than control; partially reproduced when the four
+    ANOVAs hold and at least four of the seven t-tests do.
+- id: gastric-like-rhythm-counts
+  statement: A gastric-like rhythm appeared in 10 of 15 STG preparations at pH 8.8 or above and in
+    4 of 15 at or below pH 6.1, and a strong gastric-like rhythm appeared on recovery from
+    extreme acid in 5 of 15 and from extreme base in 7 of 15.
+  source: Results, Rhythmic gastric-like activity was elicited upon exposure to and recovery from
+    extreme acid and base, paragraph 2
+  quote: Interestingly, in 10 of 15 preparations a gastric-like rhythm appeared at pH 8.8 or
+    above, and 4 of 15 showed this type of activity in acid at or below pH 6.1. Further, a strong
+    gastric-like rhythm was elicited upon recovery from extreme acid in 5 of 15 preparations and
+    from extreme base in 7 of 15
+  expected:
+  - quantity: STG preparations with a gastric-like rhythm at pH 8.8 or above
+    value: 10
+    tolerance: 1
+  - quantity: STG preparations with a gastric-like rhythm at pH 6.1 or below
+    value: 4
+    tolerance: 0.4
+  - quantity: STG preparations with a strong gastric-like rhythm on recovery from extreme acid
+    value: 5
+    tolerance: 0.5
+  - quantity: STG preparations with a strong gastric-like rhythm on recovery from extreme base
+    value: 7
+    tolerance: 0.7
+  criterion: Tolerances are 10% of each count, so the three smaller counts must match exactly.
+    The paper defines a gastric mill period as the time from one LG burst onset to the next
+    (Results, paragraph 3 of this section) and identifies the rhythm by eye, with no further
+    criterion; the code marks it as state 8.x in the manual STG annotation (pHCumulative.m).
+    Open is the window searched; readings (a) the whole of each step and recovery, (b) the last
+    8 min of each, as for states. Each count is made under both readings, from the 8.x codes if
+    the dataset holds them, otherwise from rhythmic LG bursting (lgn or lvn) with alternating
+    DG bursting (dgn) where recorded.
+- id: gastric-conditions-co-occur
+  statement: Preparations that showed gastric rhythms in one of the four conditions were likely
+    to show gastric-like activity in the others.
+  source: Results, Rhythmic gastric-like activity was elicited upon exposure to and recovery from
+    extreme acid and base, paragraph 2
+  quote: Preparations in which gastric rhythms were seen in one of these conditions were likely
+    to display gastric-like activity in the other conditions
+  depends_on:
+  - gastric-like-rhythm-counts
+  criterion: From the per-preparation presence of a gastric-like rhythm in the four conditions
+    of gastric-like-rhythm-counts. The paper gives no test. Open is how "likely" is judged;
+    readings (a) for each pair of conditions, the fraction of preparations with the rhythm in
+    the second condition is higher among those with it in the first than among those without;
+    (b) a Fisher exact test of each pair with p < 0.05. Reproduced when reading (a) holds for
+    at least five of the six pairs; reading (b) is reported.
+- id: fig5-gastric-recovery-example
+  statement: In an example preparation recovering in control saline after silence at pH 5.5,
+    gastric and pyloric activity grew over 20 min; LG bursts coincided with LP hyperpolarization,
+    and strong MCN1 bursts on the ion went with LG and GM bursts that alternated with DG bursts,
+    like the MCN1/CPN2 gastric mill rhythm.
+  source: Results, Rhythmic gastric-like activity was elicited upon exposure to and recovery from
+    extreme acid and base, paragraphs 3 to 5; Figure 5
+  quote: Strong LG neuron bursts were timed with hyperpolarizations of the LP neuron ... We see
+    similar activity here with strong MCN1 bursts on the ion corresponding to strong LG and GM
+    bursts on the lgn and dgn , respectively, in alternation with DG bursts on the dgn
+  criterion: The example is not named in the paper or the code. Reproduced when an STG
+    preparation with lgn, dgn and ion recordings, silent at the end of pH 5.5, shows in the first
+    20 min of the following control step LG bursts during which the LP membrane potential is
+    lower than between them, MCN1 bursts on the ion overlapping LG and GM bursts, and DG bursts
+    falling between GM bursts. The comparison of LP potential during and between LG bursts is a
+    reading of "timed with", named here.
+- id: fig6-cg1-measures
+  statement: In the example cardiac ganglion, the rhythm persisted over the whole pH range;
+    cardiac frequency decreased in acid and increased in base, LC spikes per burst increased in
+    acid, and LC duty cycle decreased slightly in acid and in base.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraphs 1 and 2; Figure
+    6A to 6D
+  quote: >-
+    The cardiac frequency of CG #1 decreased in acid and increased in base ( Figure 6B ).
+    Further, the number of LC spikes per burst increased in acid ( Figure 6C ) while the LC duty
+    cycle for CG #1 decreased slightly in acid and base ( Figure 6D ). Similar to STG #1, CG #1
+    retained robust activity throughout the entire range of pH tested
+  criterion: On 877_149 unit CG2L (CG 1, pHCumulative.m), the 48 bin means per step of [EXT].
+    The paper gives no test; the same readings as fig2bcd-stg1-measures, (a) extreme step
+    against the control just before the protocol, (b) sign of the Spearman correlation of step
+    means with pH. Reproduced when, under one reading, frequency is lower in acid and higher in
+    base, LC spikes per burst higher in acid, duty cycle lower in both, and the preparation is
+    in CG state 1 ([STATE]) for most of every step.
+- id: fig6a-cg2-less-rhythmic
+  statement: A second example cardiac ganglion became less rhythmic at pH 5.5 and at pH 9.8 and
+    above, and recovered a normal bursting rhythm in control saline.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 1; Figure 6A
+  quote: >-
+    In contrast, the cardiac rhythm in CG #2 became less rhythmic in pH 5.5 and in pH 9.8 and
+    above. A normal bursting rhythm recovered after superfusion of control saline
+  criterion: The example (acid-first) is not named in the paper or the code. Reproduced when among
+    the acid-first CG preparations other than 877_149 CG2L one has a fraction of time in state 1
+    ([STATE]) below its control at 5.5, 9.8 and 10.4, a fraction at each step from 6.1 to 9.3
+    higher than at each of 5.5, 9.8 and 10.4, and back to state 1 for most of the final
+    recovery. The comparison of 6.1 to 9.3 with the less rhythmic steps is a reading of "less
+    rhythmic in pH 5.5 and in pH 9.8 and above", named here.
+- id: fig7b-cg-rhythmic-fraction
+  statement: Acid and base both significantly affected the fraction of time cardiac preparations
+    were rhythmic (SC and LC bursting together), which was significantly lower at pH 5.5, 9.3, 9.8
+    and 10.4 than at control.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 3; Figure 7B;
+    Figure 7, figure supplement 1
+  quote: The mean fraction of time that preparations were rhythmic (state 1 - SC and LC bursting)
+    was significantly affected by both acid and base ( Figure 7-figure supplement 1 ). Rhythmic
+    activity was significantly decreased at pH 5.5, pH 9.3, pH 9.8, and pH 10.4 compared to
+    control pH 7.8
+  statistics:
+  - about: effect of pH, acid and base protocols separately
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 CG preparations
+  - about: pH 5.5, 9.3, 9.8 and 10.4 against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation fraction of time in CG state 1 ([STATE]), tested with [RM].
+    Reproduced when both ANOVAs have p < 0.05 and the four named corrected t-tests have p < 0.05
+    with lower fractions than control; partially reproduced when the ANOVAs hold and two or
+    three of the t-tests do.
+- id: cg-state-transitions
+  statement: The cardiac rhythm usually went from SC and LC bursting to SC bursting only to
+    silent, and in the reverse order during recovery.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 3
+  quote: The cardiac rhythm usually transitioned from SC and LC bursting to SC bursting only to
+    all silent. This transition pattern was reversed during recovery
+  criterion: From the [STATE] annotation of the whole recording of each CG preparation. The paper
+    gives no count. Reproduced when, of the transitions among states 1 to 3 during step
+    protocols, more go one step in the order 1, 2, 3 than any other way, and during recoveries
+    more go one step in the order 3, 2, 1. Open is "usually"; readings (a) a plurality, (b) more
+    than half. The counts are reported.
+- id: fig7c-cg-frequency
+  statement: Cardiac rhythm frequency declined in both acidic and basic saline and was
+    significantly slower at pH 10.4.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 4; Figure 7C;
+    Figure 7, figure supplement 1
+  quote: Cardiac rhythm frequency declined in both acidic and basic saline ( Figure 7C ; Figure
+    7-figure supplement 1 ). At pH 10.4, the cardiac rhythm was significantly slower
+  statistics:
+  - about: pH 10.4 against control 7.8
+    test: paired samples t-test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 15 CG preparations
+  criterion: Per preparation LC burst frequency ([EXT]), tested with [RM]. The text does not say
+    whether the acid ANOVA was significant; it cites the table for the decline in both. Readings
+    (a) both ANOVAs p < 0.05; (b) the base ANOVA p < 0.05 and the mean at 5.5 below the acid
+    control. Reproduced when under one reading the corrected t-test at 10.4 has p < 0.05 with
+    lower frequency than control.
+- id: fig7d-cg-spikes-per-burst
+  statement: Acid and base both significantly affected LC spikes per burst, which increased
+    significantly at pH 5.5 and 6.1 and decreased at pH 9.8 and 10.4.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 4; Figure 7D;
+    Figure 7, figure supplement 1
+  quote: The mean number of LC spikes per burst was significantly affected in both acid and base (
+    Figure 7D ). The number of LC spikes per burst was significantly increased at pH 5.5 and pH
+    6.1 and decreased at pH 9.8 and pH 10.4
+  statistics:
+  - about: effect of pH, acid and base protocols separately
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 CG preparations
+  - about: pH 5.5, 6.1, 9.8 and 10.4 against control 7.8
+    test: paired samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per preparation LC spikes per burst ([EXT]), tested with [RM]. Reproduced when both
+    ANOVAs have p < 0.05 and the four named corrected t-tests have p < 0.05 in the stated
+    directions; partially reproduced when the ANOVAs hold and two or three t-tests do.
+- id: fig7e-cg-duty-cycle
+  statement: Base, but not acid, had a significant effect on LC duty cycle.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 4; Figure 7E;
+    Figure 7, figure supplement 1
+  quote: There was a significant effect of base but not acid on mean LC duty cycle
+  statistics:
+  - about: effect of pH, base protocol
+    test: Univariate Type III Repeated-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 CG preparations
+  criterion: Per preparation LC duty cycle ([EXT]), tested with [RM]. Reproduced when the base
+    ANOVA has p < 0.05 and the acid ANOVA p >= 0.05 (absence, judged on that ANOVA); the effect
+    sizes are reported.
+- id: fig7s2-cg-control-variability
+  statement: Cardiac frequency, LC spikes per burst and LC duty cycle vary widely between
+    preparations at control pH, independent of pH.
+  source: Results, The cardiac rhythm is robust to acute changes in pH, paragraph 5; Figure 7,
+    figure supplement 2
+  quote: We plotted the distributions for all CG preparations at baseline and noted highly
+    variable cardiac rhythm activity independent of the pH perturbation
+  criterion: As fig3s2-stg-control-variability, on the 15 CG preparations, with the same readings
+    (a) and (b).
+- id: fig8a-ganglion-difference
+  statement: The fraction of time with a normal rhythm peaks near control in both ganglia, but the
+    CG is more sensitive to extreme base and the STG to extreme acid; pH, ganglion and their
+    interaction all had significant effects in both acid and base, and the pyloric rhythm was
+    significantly less rhythmic than the cardiac at pH 5.5 and more rhythmic at pH 9.3 and 9.8.
+  source: Results, The cardiac and pyloric rhythms are differentially sensitive to pH, paragraph
+    1; Figure 8A; Figure 8, figure supplement 1
+  quote: Interestingly, these distributions are asymmetrical, as the CG was more sensitive to
+    extreme base whereas the STG was more sensitive to extreme acid. There were significant main
+    effects of pH and ganglion as well as an interaction between pH and ganglion on rhythmicity in
+    both acidic and basic solutions ... The pyloric rhythm was significantly less rhythmic at pH
+    5.5, but significantly more rhythmic at pH 9.3 and 9.8 compared to the cardiac rhythm
+  statistics:
+  - about: main effects of pH and ganglion and their interaction, acid and base separately
+    test: Type III Mixed-Measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 15 STG and 15 CG preparations
+  - about: STG against CG at pH 5.5, 9.3 and 9.8
+    test: independent samples t-tests
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3c-stg-rhythmic-fraction
+  - fig7b-cg-rhythmic-fraction
+  criterion: Per preparation fraction of time rhythmic ([STATE]) for both ganglia, tested with
+    [MIX] under readings (a) and (b) of its contrast coding, each with (c) and (d). Reproduced when, under one reading,
+    all six effects (pH, ganglion, interaction; acid and base) have p < 0.05 and the corrected
+    t-tests show the STG lower at 5.5 and higher at 9.3 and 9.8 (p < 0.05 each). Partially
+    reproduced when the three t-tests hold but some ANOVA effect does not.
+- id: fig8b-individual-preparations
+  statement: All preparations were rhythmic at control; 14 of 15 STG preparations stopped firing
+    after 15 min at pH 5.5, only 6 of 15 CG preparations lost rhythmic activity at pH 5.5, and 3
+    of 15 CG preparations kept a normal rhythm in every pH condition.
+  source: Results, The cardiac and pyloric rhythms are differentially sensitive to pH, paragraph
+    2; Figure 8B
+  quote: All preparations were rhythmically bursting at control pH ... However, 14 of 15 STG
+    preparations ceased firing after 15 min of exposure to pH 5.5. In contrast, only 6 of 15 CG
+    preparations showed reductions in rhythmic activity at pH 5.5. Three of 15 CG preparations
+    maintained a normal rhythm in every pH condition
+  expected:
+  - quantity: STG preparations that ceased firing at pH 5.5
+    value: 14
+    tolerance: 1.4
+  - quantity: CG preparations with reduced rhythmic activity at pH 5.5
+    value: 6
+    tolerance: 0.6
+  - quantity: CG preparations with a normal rhythm in every pH condition
+    value: 3
+    tolerance: 0.3
+  criterion: Tolerances are 10% of each count. From [STATE] in the last 8 min of each step. Open
+    readings, each count made under all of them. "Ceased firing" (a) STG state 4 at the end of
+    the pH 5.5 step, (b) no PD bursts in the last minute of the step ([EXT]), (c) fraction
+    rhythmic 0 over its last 8 min. "Reductions in rhythmic activity" (a) CG fraction in state 1
+    at 5.5 below 1, (b) below the preparation's control value. "Every pH condition" (a) all 13
+    conditions including recoveries, (b) the three conditions of Figure 8B (5.5, control,
+    10.4). "Rhythmically bursting at control" (a) fraction rhythmic 1, (b) at least 0.5, in the
+    control before the acid steps. Figure 8B's STG control column is the recovery from acid in
+    pHCumulative.m (column 1) and the CG control column is the control before acid (column 6);
+    both are shown. Reproduced when each count is within tolerance under one reading and the
+    control condition holds.
+- id: fig8b-cross-predictive
+  statement: STG preparations with reduced activity in base were very susceptible to loss of
+    activity in extreme acid, while in the CG it was the reverse, activity in acid predicting
+    activity in base.
+  source: Results, The cardiac and pyloric rhythms are differentially sensitive to pH, paragraph
+    2; Figure 8B
+  quote: Interestingly, STG preparations that showed decrements in activity during basic
+    conditions were extremely susceptible to reductions in activity during extreme acid. The
+    opposite is true in CG preparations suggesting that activity in base is a better predictor of
+    acid activity in the STG and vice versa in the CG
+  depends_on:
+  - fig8b-individual-preparations
+  criterion: Per preparation fraction rhythmic at pH 5.5 and 10.4 ([STATE]), as in Figure 8B.
+    The paper gives no test. Readings of the claim (a) every STG preparation with a fraction
+    below 1 at 10.4 has fraction 0 at 5.5, and every CG preparation with a fraction below 1 at
+    5.5 has a fraction below 1 at 10.4, while the reverse implication fails in each ganglion for
+    at least one preparation; (b) in each ganglion, a Fisher exact test of the 2 by 2 table
+    (reduced at 5.5, reduced at 10.4; reduced meaning below 1) is reported with its counts.
+    Reproduced when reading (a) holds; the tables of (b) are shown.
+- id: baseline-frequency-correlations
+  statement: Frequency at control correlates strongly with frequency in extreme acid and in
+    extreme base for PD neurons, and LC frequency at control correlates strongly with LC frequency
+    in extreme acid but not in extreme base.
+  source: Results, The cardiac and pyloric rhythms are differentially sensitive to pH, paragraph 3
+  quote: Furthermore, strong correlations are found between baseline frequency and frequency in
+    extreme acid or base for PD neurons. Strong correlations are also found between baseline LC
+    frequency and LC frequency in extreme acid, but not in extreme base
+  criterion: No figure, test or coefficient is given. Per preparation frequency ([EXT]) at the
+    control just before each protocol and at 5.5 and at 10.4. Open readings (a) the PD data are
+    the 15 extracellular STG preparations, (b) the 9 PTX preparations (PD burst frequency of
+    [INTRA]); correlation (a) Pearson, (b) Spearman; "strong" (a) positive with p < 0.05, (b) r
+    of at least 0.7. Reproduced when, under one combination, both PD correlations and the LC
+    acid correlation are strong and the LC base correlation is not. All combinations are shown.
+- id: robust-6-1-to-8-8
+  statement: Both the pyloric and cardiac rhythms remained robust from about pH 6.1 to pH 8.8.
+  source: Discussion, paragraph 2 (also Abstract); Figures 3C and 7B
+  quote: it is surprising that the central pattern generating rhythms of both the STG and the CG
+    of the crab, C. borealis , are relatively insensitive to acute pH change from about pH 6.1 to
+    pH 8.8
+  depends_on:
+  - fig3c-stg-rhythmic-fraction
+  - fig7b-cg-rhythmic-fraction
+  criterion: A claim of absence, judged on the paper's own tests. In [RM] of fraction of time
+    rhythmic ([STATE]) for each ganglion, reproduced when no corrected paired t-test at 6.1, 6.7,
+    7.2, 8.3 or 8.8 shows a significant decrease from control (p < 0.05), as in the Results
+    (STG differs at 5.5 and 10.4 only; CG at 5.5, 9.3, 9.8 and 10.4); not reproduced when any
+    does. The mean fractions at each step are reported.
+- id: intact-depolarize-in-acid
+  statement: In intact (no PTX) preparations both PD and LP neurons depolarized in acid, unlike
+    the semi-isolated neurons where only PD did.
+  source: Discussion, paragraph 6
+  quote: In intact preparations, we observed depolarization in acid for both neurons, suggesting
+    an important role of circuit connectivity in regulating network activity across pH
+  criterion: No figure or test is given. On the intact STG preparations with intracellular PD and
+    LP recordings, the minimum membrane potential of [INTRA] (last minute of each step), tested
+    with [RM] on the acid protocol as for fig4bc-membrane-potential. Open is what "depolarized
+    in acid" requires; readings (a) the acid ANOVA p < 0.05 and a higher mean at 5.5 than
+    control for each neuron, (b) a higher mean at 5.5 than control in most preparations for each
+    neuron. Reproduced when one reading holds for both PD and LP.
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header [INTRA]. Minimum membrane potential was fixed as the slow-wave troughs of the code. The Methods (Data acquisition and analysis, paragraph 5) take the minimum voltage between bursts first and only then low-pass filter, so the unfiltered minimum is now the main reading and the code's slow-wave troughs (with the per-second fallback) a variant, as the protocol orders Methods over code. Affects fig4bc-membrane-potential and intact-depolarize-in-acid.
+  - Header [MIX], fig8a-ganglion-difference. The legend of Figure 8, figure supplement 1 calls the ANOVA "Multivariate" while the Methods say "Two-Way" and statistics.R reads the univariate tests; named readings (c) univariate and (d) multivariate, and the criterion now runs them with each contrast coding.
+  - fig2a-stg1-traces. The statement said the rhythm "changed at 5.5", which fixes one of the two readings the criterion itself leaves open; restated with the paper's words (triphasic until the most acidic pH, 5.5).
+  - fig3d-stg-frequency. The statement said frequency "did not vary significantly" in acid; the text says "relatively invariant" and the table is not in the text. Restated in the paper's words; the criterion still judges it as absence on the acid ANOVA.
+  - fig4bc-membrane-potential. The statement said "stayed constant"; the paper says "relatively constant". Restated.
+  - fig6a-cg2-less-rhythmic. The criterion required the fraction to be "at or near" control from 6.1 to 9.3, with no rule for "near". Replaced by a named reading (each step from 6.1 to 9.3 more rhythmic than 5.5, 9.8 and 10.4).
+  - gastric-like-rhythm-counts. The criterion cited paragraph 4 for the definition of a gastric mill period; it is the last sentence of paragraph 3 of that section.
+  - intact-depolarize-in-acid. The source cited Discussion paragraph 5; the sentence is in paragraph 6.
+  - Checked, unchanged. Every quote and source paragraph against the text; the code facts of the header against github.com/jesshaley/haley_hampton_marder_2018 at 83f5904 (experiment and unit lists, examples 897_037 and 877_149 CG2L, column order and the Figure 8B control columns, 10 s bins with empty bins as 0, the discard rules for duty cycle and spike count, per-second states over the last 480 s, Bonferroni factors 4 and 5, Welch t-tests, the two-way model in statistics.R that has no ganglion term, the 480 s window bug, peak-to-peak PD burst frequency, the PTX fallback to per-second minima).
+  - Open. The four statistics tables are images not in the text and no PDF was supplied, so no F, t or exact p is recorded and which acid ANOVAs were non-significant (fig3d acid, fig7c acid, fig7e acid, fig4de PD base) rests on the Results wording.
+  - Open. spikenburst.s2s calls BurstMake with minSpike% as its seventh argument while its dialog labels 0.3 s "Minimum delay between bursts"; which BurstMake parameter each value sets was not checked against the Spike2 manual.
+  - Open. gastric-conditions-co-occur judges "likely" as reading (a) holding for five of six pairs, and the variability claims (fig3s2, fig7s2) use thresholds of this file; the paper gives none, and each criterion says so.
+  - Open. The Discussion's observation that neurons impaled with sharp electrodes were more labile than unimpaled ones (paragraph 8) has no claim; the paper gives no measure or comparison for it, and it is not a main finding.
