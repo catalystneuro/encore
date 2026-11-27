@@ -228,8 +228,9 @@ claims:
     Ratio is the subregion's empirical median CV over its surrogate median. "For all brain
     regions" can be read (a) per subregion (26 tests) or (b) per major area (4 tests), both
     run. Reproduced when every subregion ratio lies inside its area's range widened by 10% of
-    each bound and the Mann-Whitney test gives p < 0.001 with empirical higher in every
-    region under one reading. Partially reproduced when the tests hold but some ratios fall
+    each bound, the VIS subregion surrogate medians lie in 0.189 to 0.264 (0.21 to 0.24
+    widened likewise), and the Mann-Whitney test gives p < 0.001 with empirical higher in
+    every region under one reading. Partially reproduced when the tests hold but some ratios fall
     outside.
 
 - id: fig1d-surrogate-abolishes-cv-correlations
@@ -347,8 +348,11 @@ claims:
   criterion: Per subregion and condition, the median CV of the condition's 100-s windows pooled
     over populations (Methods II.A and II.B). The condition readings of the opening comment
     (flash inclusion, spontaneous windows) are each run. Reproduced when, under one reading,
-    all twelve medians are within tolerance; partially reproduced when the order (active and
-    blank above natural images above spontaneous, per area) holds but some values miss.
+    all twelve medians are within tolerance; partially reproduced when the order the paper's
+    own values show holds (per area, active above natural images, natural images above
+    spontaneous, blanks above spontaneous) but some values miss. Blanks against natural images
+    is not part of the order, since the paper's VISl values are equal (0.46) and its VISal
+    natural-image median (0.48) exceeds the blank one (0.46).
 
 - id: fig2a-thalamus-cv-by-condition
   statement: Thalamic populations show the same pattern with smaller effects, LP median CV 0.37
@@ -497,7 +501,10 @@ claims:
     the three pairs among natural images, active behavior and blanks. Reproduced when most
     (at least two of three) are at most 4.4% (4% widened by 10%). This statement conflicts
     with the ~30% separation of natural images from active and blank in the same paragraph
-    (fig2b-vis-summed-js-cv); both are tested as written, and the conflict is noted.
+    (fig2b-vis-summed-js-cv); both are tested as written, and the conflict is noted. The
+    Fig. 2b legend states the same finding as JS values, not percentages ("typically
+    <0.20"); as a second reading, most JS values among visual subregions in each of the
+    three visually driven conditions are at most 0.22, and both readings are reported.
 
 - id: fig2b-dg-ca3-high-js-cv
   statement: DG and CA3 have high CV-based JS divergences in all four conditions, largest in
@@ -566,9 +573,12 @@ claims:
     and p in [5, 17], tent map, 1/f^k noise), H and C with D = 6, tau = 1. The parameter values
     of Fig. 3a, the series lengths and the transients dropped are not given in the text (the
     figure, which could not be read here, shows the parameters); the series length is 10^5
-    points with the first 10^3 dropped, a standard choice, and parameters span the ranges the
-    supplement names (logistic r in [3.5, 4], tent mu in (1, 2]). Reproduced when the
-    positions fall in the ranges quoted, widened by 10% of each bound.
+    points with the first 10^3 dropped, a standard choice. The supplement gives the tent map
+    slope as mu in (0, 2] and the Ikeda p in [5, 17]; it gives no range for the logistic r or
+    for alpha and k, so these are open, read as logistic r in [3.5, 4], tent mu in (1, 2]
+    (the chaotic part of the stated range, the one the statement concerns), alpha in [0.01,
+    1] and k in [0, 3]. Reproduced when the positions fall in the ranges quoted, widened by
+    10% of each bound.
 
 - id: fig3b-complexity-levels-by-region
   statement: Across the hour of active recording, visual cortex and hippocampus keep the
@@ -865,7 +875,10 @@ claims:
   criterion: 'Medians as fig4a, per hippocampal subregion and condition. The legend differs from
     the text: it gives DG and CA3 low medians in natural images (DG 0.12; CA3 0.11; CA1 0.1)
     and elevated in the other conditions (DG 0.19–0.26; CA3 0.13–0.18; CA1 0.12–0.17), POST,
-    ProS and SUB 0.1–0.13. Readings of the ranges (a) the text''s, over "most conditions"
+    ProS and SUB 0.1–0.13; the legend thus groups CA1 with DG and CA3, as does the summary
+    of Results III.D ("some subfields (DG, CA3, CA1) maintaining high complexity that peaks
+    during spontaneous activity"), while the text range puts CA1 with POST, ProS and SUB.
+    Readings of the ranges (a) the text''s, over "most conditions"
     (three of four); (b) the legend''s, natural images apart. Reproduced when, under one
     reading, the DG and CA3 medians match under the range rule, their highest median is in
     spontaneous activity, and CA1, POST, ProS and SUB match their range; partially
@@ -1052,7 +1065,9 @@ claims:
   - fig5-vis-complexity-cv-coupling
   criterion: Trajectories as fig5-vis-complexity-cv-coupling. Reproduced when, under one
     reading, in all four conditions the MB bin means lie in 0.09 to 0.143 and the MB
-    least-squares slope of C on CV is the smallest in absolute value of the four areas.
+    least-squares slope of C on CV is the smallest in absolute value of the four areas. The
+    Fig. 5 legend gives MB in natural images as C 0.10 to 0.15; bin means up to 0.165 in
+    that condition meet the legend's reading and are reported as such.
 
 - id: supp-fig6-mean-correlation
   statement: In visual cortex the mean pairwise spike count correlation is elevated during
@@ -1102,3 +1117,19 @@ claims:
     two conditions (larger JS, or IQRs that do not overlap) while CV and mean correlation do
     not (smaller JS than complexity, or overlapping IQRs). The comparison is reported for
     every subregion.'
+checks:
+- date: 2026-11-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2a-vis-cv-by-condition. The partial rule asked for blanks above natural images, which the paper's own medians contradict (VISl 0.46 and 0.46, VISal 0.48 natural images against 0.46 blanks); the order now holds only the relations the paper's values show.
+  - fig3a-reference-systems. The criterion gave the supplement's tent map range as mu in (1, 2]; Supplemental Sec. I.D gives (0, 2]. It also gave logistic r in [3.5, 4] as the supplement's, which names no range. Both are now stated as the supplement gives them, with the chaotic ranges and alpha and k ranges named as open readings.
+  - fig1c-cv-above-surrogate. The expected VIS surrogate medians (0.21 to 0.24) were not used by the criterion; they are now part of the rule.
+  - fig2b-visually-driven-js-cv-low. Added the Fig. 2b legend's form of the same finding (JS values typically below 0.20) as a second reading next to the text's percentage form.
+  - fig4c-dg-ca3-complexity. Noted that the legend and the Results III.D summary group CA1 with DG and CA3, while the text range groups it with POST, ProS and SUB.
+  - fig5-mb-flat. Noted the Fig. 5 legend's midbrain range in natural images (C 0.10 to 0.15), wider than the text's 0.10 to 0.13.
+  - Open. The PDF could not be rendered in this check either, so the figures (Fig. 3a parameters, boxplots, matrices, C-CV trajectories) were not read; claims rest on text and legends.
+  - Open. Unit selection reading (b) cites Allen default quality filters (ISI violations below 0.5, amplitude cutoff below 0.1, presence ratio above 0.9); these are not from the paper and the exact defaults for DANDI:000713 were not verified here. Table I counts are meant to decide between readings.
+  - Open. Several criteria use this file's own operational bounds where the paper gives none (surrogate correlations below 0.2 in fig1d, midbrain medians varying by less than 0.02 in supp-fig6, "most" as more than half); each says so.
+  - Open. The paper's text and legends conflict in several places (thalamic and hippocampal complexity ranges in Fig. 4, DG and CA3 JS values in Fig. 2b, VIS ~30% against <4%); the claims test both where they conflict, and the paper does not settle which is right.
