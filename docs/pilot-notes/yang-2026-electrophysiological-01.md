@@ -1,0 +1,93 @@
+# yang-2026-electrophysiological, Yang et al. 2026
+
+Eighteen claims reproduced, two partially, one not reproduced and none
+blocked. All but three outcomes (`fig3e-ramp-recruitment-current-order`,
+`fig4f-brief-gain-vip-cck-high` and `disc-brief-gain-sncg-cck-non-pvalb`)
+rest on an assumption, as the paper gives no quality-control thresholds,
+spike criterion, response windows, feature definitions or resampling
+settings. The first verification round
+agreed with 20 of the 21 outcomes and gave `fig5b-long-ramp-distance-alignment`
+as reproduced where the record had partially reproduced; the author took it,
+since the criterion counts a claim as reproduced under a reading and fig3a and
+fig4a had been judged that way. The second round agreed with all 21, and
+nothing was proposed after it, so there was no third round. It pins version
+0.210913.1639, which the paper cites and the only published version: 4435
+files, one cell each, from 1040 mice. The paper, Yang and Xiao,
+"Electrophysiological response geometries reveal shared and protocol-specific
+cell-type organization" (bioRxiv, doi:10.64898/2026.01.08.698522), builds PCA
+geometries of long-pulse, ramp and brief-pulse responses of Cre-labelled
+neurons of mouse visual cortex from the Allen Patch-seq resource, and reports
+that each geometry is low-dimensional and continuous with driver lines in
+biased regions, that Pvalb cells sit at the high end of long-pulse PC2 and of
+ramp recruitment current with Vip and Sncg at the low end, that on
+brief-pulse gain Vip and Cck are highest and Pvalb low, and that driver-line
+distances line up across protocols, also under balanced resampling and
+against a label-shuffle null. The claims were written from version 2 of the
+preprint and its supplement, which holds only Supplementary Table 1; the text
+reports no number, so every expected value was read off the figures, and the
+paper links no code. The continuity, loading, centroid, recruitment, gain,
+brief-pulse alignment and shuffle-null claims reproduce. `fig2a-longpulse-low-dimensional`
+is not reproduced: no reading of 24, nor any of 66 threshold, bin and count
+variants, has all three values within tolerance, with PC2 above tolerance in
+all (main reading PC1 41.9%, PC2 18.8%, PC1 to PC5 85.2% against 39, 15 and
+76%). `fig1c-cells-per-protocol` is partial because the ramp (3275) and brief
+pulse (2166) counts match but no long-pulse reading gives about 2270 (3276,
+1957 or 1881), and `fig5c-balanced-correlations-positive` because every
+balanced median is positive but only 2 of 6 are within tolerance. Several
+outcomes hold under readings that do not hold together: fig3a needs all 14
+ramp features and fig3d the 8 of Figure 3D, fig5b holds only on the
+suprathreshold long-pulse sweeps (r 0.662 over 36 pairs, against 0.881 under
+the main reading), on which fig2d, fig2e and fig5a fail, and no single chain
+of long-pulse and ramp readings holds more than 5 of the 8 claims on those
+geometries; under a Mantel test, added as a variant, no fig5b reading within
+tolerance reaches p < 0.001 (0.0088 to 0.0213). The author asked a reader no
+questions. Round 1 found that the brief response against gain comparison used
+the 8 lines shared by all three protocols where the pair shares 11, that the
+balanced comparisons ran only on the main readings, that the readings were not
+jointly consistent, that the fast-response window and the long-pulse
+thresholds were never varied and that the scatter plots deciding continuity
+were not rendered; in reply pairwise lines (0.795), 42 balanced settings, a
+section on readings that hold together, the variants and the plots were
+added, and no outcome changed but fig5b's. Round 2 found sentences the
+outputs did not support, on the fig2e medians, the Mantel range, the fig4e
+Pearson range and the fig2a assumption in the summary table, which were
+corrected, and asked that the main long-pulse reading be marked as context in
+fig5b's deviations. The author's run took about 2 h 15 min (00:34 to 02:49
+UTC); the notebook ran in about 23 min at first, 15 of them streaming in 40
+processes with peak memory 0.7 GB, 1214 s after round 1 and 1744 s at the end,
+and nothing failed.
+
+One recording is deposited twice (critical): sessions 680563483 (sub-673135474,
+Vip-IRES-Cre;Ai14) and 680897463 (sub-673135516,
+Ndnf-IRES2-dgCre;Slc32a1-IRES2-FlpO;Ai65) hold identical sweeps, at most one
+genotype can be right and nothing in the files says which, so both were left
+out of the line analyses. The driver line is not a field of the files and must
+be parsed from the genotype string, where 994 cells carry both a Cre and a Flp
+allele and 213 Sncg cells, 62 Th cells and 9 others a Flp allele only, with
+nothing saying which allele names the cell's group. Many sweeps stop before
+the end of their series and are filled with exact zeros, not NaN, so 13% of
+long square and 16% of ramp sweeps fail a complete-trace check. The dandiset
+holds two stimulus sets, 2597 cells with the newer (names beginning X) and
+1837 with only the older (C1), and the paper's brief pulse, X5SP_Search_DA_0,
+is only in the newer, consistent with the paper's 2154 cells. Units, the 50
+kHz sampling rate (127 sweeps at 200 kHz), the 25 pA/s ramp slope and the
+clock shared by command and voltage check out. In the paper, Figure 1D prints
+7 lines shared by all three geometries where the lines of Figures 2 to 4 give
+8, as the data do, it labels the ramp circle Short pulse, and the Figure 4B
+legend lists 9 lines where Figures 4D and 4F show 11. Four questions are put
+to the paper's authors: which stimulus descriptions, quality-control
+thresholds and line restriction define the long-pulse cells; which spike
+criterion, response windows and feature lists were used; what the balanced
+resampling and null settings are and what the stars of Figure 5C mean; and how
+driver lines were chosen.
+
+The author's points on the protocol: it does not say how "reproduced under a
+reading" combines with adopting the best-supported reading when open details
+multiply across dependent claims (up to 384 combinations for fig5b), and one
+main reading per geometry was fixed; `depends_on` does not say which upstream
+reading a downstream claim inherits; a value that misses tolerance because the
+effect is stronger than the paper's fits no outcome definition; the suggested
+clock check does not fit icephys data, and the sign of the command against the
+voltage change was used; there is no cheap check for duplicate recordings
+across 4435 files, and per-sweep summaries were compared; and there is no
+guidance on caching derived data during development.
