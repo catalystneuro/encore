@@ -140,11 +140,14 @@ claims:
     tolerance: 0.6
   criterion: Kurtosis per window as in M1 to M3, with the readings of O2 and O3; surrogate as in
     M2. Figure 3A pools "all subjects"; the phase is not named, read as the active phase
-    (Figure 3 is on the active phase), with all phases pooled as a variant. Reproduced when
-    the mode of the surrogate kurtoses is within tolerance of 6, the real windows' spread
-    (interquartile range) is larger than the surrogate windows', some real windows lie below
-    kappa_surr_max (O6) and a majority lie above it. Partially reproduced when the spread is
-    larger and some windows exceed kappa_surr_max but the surrogate mode is out of tolerance.
+    (Figure 3 is on the active phase), with all phases pooled as a variant. The paper speaks of
+    the lowest surrogate kurtoses, read as (a) the minimum surrogate kurtosis or (b) the 5th
+    percentile of the surrogate kurtoses (this file's robust variant). Reproduced when, under
+    one reading, the lowest surrogate kurtoses are within tolerance of 6, the real windows'
+    spread (interquartile range) is larger than the surrogate windows', some real windows lie
+    below kappa_surr_max (O6) and a majority lie above it. Partially reproduced when the spread
+    is larger and some windows exceed kappa_surr_max but the lowest surrogate kurtoses are out
+    of tolerance.
 - id: fig3c-scaling-hit-rate-higher
   statement: In the active phase, for any kurtosis threshold above the surrogate values, the
     hit rate pooled over scaling windows is higher than over no-scaling windows and higher
@@ -201,9 +204,12 @@ claims:
     higher kurtosis with better performance
   criterion: The analysis of fig3c-scaling-hit-rate-higher and fig3d-relative-gain-24 repeated
     with 10-s and 60-s windows (200 and 1200 bins), with no surrogate range (Supplement I omits
-    it). For each length, reproduced when the scaling hit rate exceeds the no-scaling hit rate
-    at every grid point from kappa_th = 8 to 12 and the relative gain at 12 exceeds that at 8.
-    Reproduced when both lengths pass, partially when one does.
+    it). For each length, the test passes when the scaling hit rate exceeds the no-scaling hit
+    rate at every grid point from kappa_th = 8 to 12 (this file's range) and the relative gain
+    at 12 exceeds that at 8. The onset is the smallest kappa_th above which the relative gain
+    stays more than one bootstrap SE (O8) above zero; the legend puts it around 7, judged
+    within 0.7 (10%). Reproduced when both lengths pass and both onsets are within 0.7 of 7;
+    partially reproduced when both pass with an onset out of range, or when one length passes.
   depends_on:
   - fig3c-scaling-hit-rate-higher
 - id: figs2-strict-units
@@ -275,19 +281,19 @@ claims:
   - about: alpha, active against passive
     test: Mann-Whitney U test
     p: 8.0e-5
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: beta, active against passive
     test: Mann-Whitney U test
     p: 0.17
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: z, active against passive
     test: Mann-Whitney U test
     p: 6.0e-5
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: mu, active against passive
     test: Mann-Whitney U test
     p: 4.0e-13
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   expected:
   - quantity: alpha, passive, mean across sessions
     value: 1.37
@@ -320,36 +326,36 @@ claims:
   - about: alpha, passive against NNI
     test: Mann-Whitney U test
     p: 4.0e-19
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: alpha, active against NNI
     test: Mann-Whitney U test
     p: 8.0e-21
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: beta, passive against NNI
     test: Mann-Whitney U test
     p: 3.0e-10
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: beta, active against NNI
     test: Mann-Whitney U test
     p: 3.0e-13
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: z, passive against NNI
     test: Mann-Whitney U test
     p: 6.0e-6
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: z, active against NNI
     test: Mann-Whitney U test
     p: 3.0e-10
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: mu, passive against NNI
     test: Mann-Whitney U test
     p: 3.0e-8
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   - about: mu, active against NNI (printed as a second "μ1 vs μ2", the last entry of the list;
       read as μ1 vs μ3, the only pair otherwise missing)
     test: Mann-Whitney U test
     p: 3.0e-8
-    n: 62 sessions per phase
+    n: 62 sessions per phase, read under O11 (a); the paper gives no n
   expected:
   - quantity: alpha, NNI, mean across sessions
     value: 1.28
@@ -420,9 +426,9 @@ claims:
   depends_on:
   - fig3a-kurtosis-broader-than-surrogate
 - id: figs5a-firing-rate-order
-  statement: Mean firing rate over windows above a kurtosis threshold decreases almost
-    monotonically with the threshold within each phase, and is ordered active < NNI < passive
-    for any threshold, unlike the kurtosis order of Figure 4A.
+  statement: Mean firing rate over windows above a kurtosis threshold varies almost
+    monotonically with the threshold within each phase (the legend expects it to decrease), and
+    is ordered active < NNI < passive for any threshold, unlike the kurtosis order of Figure 4A.
   source: Supplemental Material VI; Figure S5A and S5B
   quote: Indeed, firing rate varies almost monotonically with κth (Fig. S5A) ... The mean firing
     rate, on the other hand, gives no clue about that, since ρactive < ρNNI < ρpassive, for any
@@ -431,8 +437,9 @@ claims:
     to 0.16 suggest this unit; the scale does not change the order). As in the S5A legend,
     averaged over a mouse's windows above kappa_th, then over mice, on the grid of O7 from 5 to
     12 at points where every phase has windows. Reproduced when active < NNI < passive at every
-    point and, within each phase, the Spearman correlation of rate against kappa_th is
-    negative. Partially reproduced when the order holds at 90% or more of points.
+    point and, within each phase, the Spearman correlation of rate against kappa_th is negative
+    (the legend's expected direction) with magnitude at least 0.8 (this file's measure of
+    almost monotonic). Partially reproduced when the order holds at 90% or more of points.
   depends_on:
   - fig4a-active-most-scaling
 - id: figs5c-hit-rate-firing-rate-nonmonotonic
@@ -442,9 +449,10 @@ claims:
   quote: the hit rate below some threshold ρth is not a monotonic function of ρth (Fig. S5C)
   criterion: Active-phase windows split by their mean firing rate (as in figs5a-firing-rate-order)
     at rho_th on a grid of step 0.0025 from 0.05 to 0.20 (the plotted range); hit rate pooled as
-    in M5. Reproduced when the below-threshold hit rate has an interior maximum that exceeds its
-    values at both ends of the range by more than one bootstrap SE (O8); not reproduced when the
-    curve is monotonic within that margin.
+    in M5. Reproduced when the below-threshold hit rate changes direction, that is, it rises by
+    more than one bootstrap SE (O8) between two grid points and falls by more than one SE between
+    two others (an interior maximum or minimum both count); not reproduced when the curve is
+    monotonic within that margin.
   depends_on:
   - figs5a-firing-rate-order
 - id: figs7-fatigue-halves
@@ -456,7 +464,8 @@ claims:
     but the relation between performance and kurtosis is preserved
   criterion: The analysis of fig3c-scaling-hit-rate-higher, separately for windows in the first
     and the last 30 min of the active phase. Reproduced when, in each half, the relative gain
-    (Eq. 13) is positive at every grid point from kappa_th = 8 to 12 and larger at 12 than at 8,
+    (Eq. 13) is positive at every grid point from kappa_th = 8 to 12 (this file's range) and
+    larger at 12 than at 8,
     and the overall hit rate (all windows) of the second half is lower than that of the first.
     Partially reproduced when the gain holds in one half.
   depends_on:
@@ -475,3 +484,18 @@ claims:
     the second half over passive, or the first half over the second, fails at some points.
   depends_on:
   - fig4a-active-most-scaling
+checks:
+- date: 2026-11-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3a-kurtosis-broader-than-surrogate, criterion tested the mode of surrogate kurtoses against 6, but Appendix 3 says the lowest surrogate kurtoses are around 6; now the minimum, with the 5th percentile as a named variant.
+  - figs1-other-window-lengths, the statement's onset of the relative gain around kappa 7 (Figure S1 legend) was not judged; added an onset test within 10% of 7, and marked the 8 to 12 range as this file's.
+  - figs5a-firing-rate-order, the text says firing rate varies almost monotonically and only the legend expects a decrease; statement reworded, and the criterion now asks a Spearman magnitude of at least 0.8 (named as this file's) for almost monotonic, not just a negative sign.
+  - figs5c-hit-rate-firing-rate-nonmonotonic, the paper says only not monotonic; the criterion demanded an interior maximum, now any change of direction beyond one bootstrap SE counts.
+  - figs7-fatigue-halves, the 8 to 12 threshold range is marked as this file's choice.
+  - fig4-exponents-passive and fig4-exponents-nni, n of 62 sessions per phase is not stated in the paper; each n now says it is read under O11 (a).
+  - Open, this check could not render the PDF figures (no renderer installed), so values read from figures are unverified here, namely kappa_surr_max near 7, the plotted ranges to 12.5 and 15, the Figure S5A rates 0.09 to 0.16 and the rho_th range 0.05 to 0.20; they set grids, not expected values.
+  - Open, for mu the r2 < 0.85 rule may leave fewer than 62 sessions per phase, so the test n for mu may be smaller.
+  - Open, the last p-value of Supplement V is printed as mu1 vs mu2 and is read as mu1 vs mu3, as the file already notes.
