@@ -178,8 +178,8 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
   output: claim:fig2e-longpulse-pc2-pvalb-high-vip-low
-  notes: 'Main reading. By the median, Pvalb is highest (3.70) and Vip lowest (-1.84); by the mean also
-    Pvalb highest and Vip lowest. The order holds in 15 of 48 combinations: all 8 on every long square
+  notes: 'Main reading. By the median, Pvalb is highest (2.26) and Vip lowest (-1.04); by the mean also
+    Pvalb highest (2.20) and Vip lowest (-1.06). The order holds in 15 of 48 combinations: all 8 on every long square
     step without bins, 6 of 8 on the LP steps without bins, 1 of 16 on the suprathreshold steps; with
     bins on every long square or LP step Sncg is lowest. Of the 66 threshold, bin and count variants,
     20 hold by the median (10 of 10 without bins on every long square step, 9 of 10 on the LP steps, 1
@@ -430,7 +430,7 @@ outcomes:
     r 0.662 over 36 pairs. Under the main readings r is 0.881 (all PCs), 0.878 (5), 0.877 (2), p about
     1e-12, Pearson 0.921, above tolerance. Under the suprathreshold sweeps fig2d and fig2e fail and fig5a
     does not hold. A Mantel test (10000 permutations of the ramp line labels, a variant) gives p 0.0001
-    under the main readings but 0.0088 to 0.0111 for the 32 combinations within tolerance, so with that
+    under the main readings but 0.0088 to 0.0213 for the 32 combinations within tolerance, so with that
     test none reaches p < 0.001; the criterion's p is read as the Spearman test's own, the test the paper
     prints. No single chain of long-pulse and ramp readings (one spike detection and one imputation for
     both) holds more than 5 of the 8 claims on those geometries; none holds fig3a with fig3d in full,
@@ -438,11 +438,9 @@ outcomes:
   deviations:
   - Assumption, the suprathreshold long-pulse sweeps (X4PS_SupraThresh, C1LSCOARSE), the reading of fig1c
     under which the criterion holds; the other readings, including the main one, are shown.
-  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
-    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
-    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
-    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
-    more than 50% missing dropped (claims file).
+  - Context, not an assumption the outcome rests on. Under the main long-pulse reading (every long square
+    step family, features without the command-binned ones) r is 0.881, above tolerance; it is shown for
+    comparison.
   - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
     3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
     command at the first spike, post-recruitment rate is spikes over the time from the first spike to
@@ -761,7 +759,7 @@ verifications:
     response: 'Outcome changed from partially_reproduced to reproduced: the criterion holds under a reading,
       the rule this attempt applies to fig3a and fig4a, so the earlier outcome, taken from the main readings
       only, was inconsistent. The LP_named sweeps are now included (32 of 576 hold, all suprathreshold)
-      and a Mantel test is added as a variant: p 0.0001 under the main readings but 0.0088 to 0.0111 for
+      and a Mantel test is added as a variant: p 0.0001 under the main readings but 0.0088 to 0.0213 for
       the 32 combinations within tolerance. The notes say that the reproducing readings are those under
       which fig2d, fig2e and fig5a fail.'
   - claim: fig5c-balanced-correlations-positive
@@ -788,3 +786,183 @@ verifications:
     response: 'Run under the pairwise shared lines and the alternative long-pulse and ramp readings: all
       six pairs hold in 24 of 84 settings and shuffles, including the main setting with both geometries
       shuffled; histograms of all six pairs are now rendered. Outcome unchanged.'
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised entry, the attempt record, the README, the helper
+    module and the claims file, with the paper's full text.
+  results:
+  - claim: fig1c-cells-per-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The long-pulse count gap (3276, 1957 or 1881 cells against 2270 +/- 227) is still unexplained;
+      it may be linked to the fig2a failure and to which long-pulse reading fig5b needs, and is properly raised
+      as a question for the authors.
+    response: Outcome kept. The gap stays a question for the authors (finding 6); no analysis here explains it.
+  - claim: fig1d-driver-line-coverage
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The shared lines are now derived from the data and match the paper's 8; the largest-lines
+      inclusion rule is stated as an assumption.
+    response: Outcome kept; nothing changed.
+  - claim: fig2a-longpulse-low-dimensional
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The record has assumed true, but the Summary table says it rests on no assumption (no (no
+      reading matches)); the two should agree.
+    response: 'Outcome kept. The Summary table now says yes, as the record does: the outcome rests on this attempt''s
+      quality-control thresholds and feature definitions, although no reading of the sweeps, features, thresholds
+      or bins matches.'
+  - claim: fig2b-longpulse-continuous-biased
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The scatter and density plots are now rendered and show one cloud with no gap; the continuity
+      judgement is now supported.
+    response: Outcome kept; nothing changed.
+  - claim: fig2d-longpulse-loadings
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The readings are not jointly consistent (point 3): it is disclosed, but not resolved; no chain
+      of readings holds more than 5 of these 8 claims, and each outcome is legitimate under the claims file''s under-a-reading
+      rule.'
+    response: Outcome kept; the disagreement between readings stays disclosed in the notes and in the section on
+      readings that hold together.
+  - claim: fig2c-longpulse-centroid-distances
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The readings are not jointly consistent (point 3): it is disclosed, but not resolved; no chain
+      of readings holds more than 5 of these 8 claims, and each outcome is legitimate under the claims file''s under-a-reading
+      rule.'
+    response: Outcome kept; the disagreement between readings stays disclosed in the notes and in the section on
+      readings that hold together.
+  - claim: fig2e-longpulse-pc2-pvalb-high-vip-low
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The text says Pvalb median 3.70, Vip -1.84, while the printed main-reading medians are Pvalb
+      2.26 and Vip -1.04 (means 2.20 and -1.06); the ordering conclusion is unaffected. The readings are not jointly
+      consistent (point 3): it is disclosed, but not resolved; no chain of readings holds more than 5 of these 8
+      claims, and each outcome is legitimate under the claims file''s under-a-reading rule.'
+    response: Corrected the medians to 2.26 and -1.04 and added the means 2.20 and -1.06, in the notebook's result
+      cell and the record's notes. Outcome kept.
+  - claim: fig3a-ramp-variance
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. fig3a holds only with all 14 ramp features, while fig3d holds in full only with the 8 features
+      of Figure 3D. The readings are not jointly consistent (point 3): it is disclosed, but not resolved; no chain
+      of readings holds more than 5 of these 8 claims, and each outcome is legitimate under the claims file''s under-a-reading
+      rule.'
+    response: Outcome kept; the disagreement between readings stays disclosed.
+  - claim: fig3b-ramp-continuous-biased
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The ramp cloud has a sharp lower edge, an artefact of the collinear recruitment and latency
+      features, not a separation between groups; the continuity judgement is now supported.
+    response: Outcome kept; nothing changed.
+  - claim: fig3d-ramp-loadings
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. fig3d holds in full only with the 8 features of Figure 3D, while fig3a holds only with all
+      14. The readings are not jointly consistent (point 3): it is disclosed, but not resolved; no chain of readings
+      holds more than 5 of these 8 claims, and each outcome is legitimate under the claims file''s under-a-reading
+      rule.'
+    response: Outcome kept; the disagreement between readings stays disclosed.
+  - claim: fig3e-ramp-recruitment-current-order
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable.
+    response: Outcome kept; nothing changed.
+  - claim: fig4a-brief-response-variance
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. Fast-response windows of 1, 2 and 5 ms are now varied; no outcome changes.
+    response: Outcome kept; nothing changed.
+  - claim: fig4b-brief-continuous-biased
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The scatter and density plots are now rendered and show one cloud with no gap.
+    response: Outcome kept; nothing changed.
+  - claim: fig4c-brief-response-pc1-loadings
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable.
+    response: Outcome kept; nothing changed.
+  - claim: fig4e-brief-response-base-alignment
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The result cell says readings (a) give |r| of 0.93 to 0.99, while the Pearson values printed
+      run from 0.953 to 0.986; 0.93 is the Spearman minimum. The record's 0.95 to 0.99 is correct.
+    response: Corrected the result cell to |Pearson r| of 0.95 to 0.99. Outcome kept.
+  - claim: fig4f-brief-gain-vip-cck-high
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable.
+    response: Outcome kept; nothing changed.
+  - claim: disc-brief-gain-sncg-cck-non-pvalb
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable.
+    response: Outcome kept; nothing changed.
+  - claim: fig5a-longpc2-ramppc1-centroids
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. On the suprathreshold sweeps, which fig5b needs, fig5a fails (r -0.08 to 0.32). The readings
+      are not jointly consistent (point 3): it is disclosed, but not resolved; no chain of readings holds more than
+      5 of these 8 claims, and each outcome is legitimate under the claims file''s under-a-reading rule.'
+    response: Outcome kept; the disagreement between readings stays disclosed.
+  - claim: fig5b-long-ramp-distance-alignment
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. The outcome rests on the suprathreshold long-pulse sweeps and on Spearman''s own p-value,
+      the test the claims file names, so using it is correct. The Mantel variant gives p 0.0088 to 0.021 for every
+      within-tolerance combination, none below 0.001; the outcome is fragile, and the record says so. The deviations
+      list the main long-pulse reading assumption, but the outcome does not rest on it; that entry is misleading
+      and should be removed or marked as context. The text says the Mantel p is 0.0088 to 0.0111, while the output
+      prints 0.0088 to 0.0213. The readings are not jointly consistent (point 3): it is disclosed, but not resolved;
+      no chain of readings holds more than 5 of these 8 claims, and each outcome is legitimate under the claims
+      file''s under-a-reading rule.'
+    response: Outcome kept. The main long-pulse reading is now marked in the deviations as context, not an assumption
+      the outcome rests on. The Mantel range is corrected to 0.0088 to 0.0213 in the notebook's result cell, the
+      notes and the round-1 response.
+  - claim: fig5c-balanced-correlations-positive
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. Pairwise shared lines are now used (0.795 for brief response against gain, 0.700 over the
+      8 three-way lines as a variant) and balanced resampling runs on the alternative long and ramp readings: in
+      42 settings at most 3 of 6 medians fall within tolerance.'
+    response: Outcome kept; nothing changed.
+  - claim: fig5d-f-true-above-shuffle-null
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 21 stated outcomes. Every outcome with assumed true states its assumptions, and they
+      are reasonable. Thresholds, readings and the shuffle are varied, and the null histograms are rendered.
+    response: Outcome kept; nothing changed.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: Cell 6 shows it. Sessions 680563483 (subject 673135474, Vip-IRES-Cre;Ai14) and 680897463 (subject 673135516,
+      Ndnf-IRES2-dgCre;Slc32a1-IRES2-FlpO;Ai65) have identical per-sweep summaries and share the same first-sweep
+      fingerprint, and cell 8 sets both sessions' line labels to None. critical is the right rating; this is one
+      recording deposited as two sessions, under two subjects and two genotypes, and nothing in the files shows
+      which genotype is right. Its effect on these results is negligible, but the rating depends on the defect,
+      and the defect fits the definition. Findings 2 and 3 are rated appropriately as minor.
+    response: Kept critical; nothing changed.
