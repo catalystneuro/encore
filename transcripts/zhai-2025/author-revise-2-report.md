@@ -1,14 +1,21 @@
-I've worked through all of the round-2 points. No outcome changed and nothing is under `proposed`. The verifier agreed with all 45 outcomes and found nothing that should change one. The last run of `python tools/entry.py all entries/zhai-2025` passed with 0 errors in 6.8 min, and the numbers are the same as before.
+No outcome changed and nothing is proposed. The round-2 verifier agreed with all 45 outcomes, including fig4h as reproduced, which it had disputed in round 1. I re-ran the entry with `python tools/entry.py all entries/zhai-2025`: 0 check errors, the notebook passes, and every number cited matches the new output. Nothing is committed.
 
-**What I corrected or added:**
-- **fig1i-dspn-dendritic-sch-lower:** "The other eight SCH cells are within 10%" now reads "seven of the other eight", naming 2019-05-03 cell 3. I fixed it in cell 65, in the record's notes and in my round-1 response. Cell 64 now prints each cell's difference from the paper's value and the count (7 of 8). The printed difference for that cell is 10.9%, so the text says 10.9%. The verifier's 10.7% came from the rounded values, and its round-2 reason keeps its own figure.
-- **README run time:** "about eight minutes" now says 7 to 13 minutes, most of it streaming the files. My runs took 6.8 to 6.9 min, and the run the verifier saw took 13.1. I set `runtime_minutes` in `entry.yaml` to 13.
-- **fig2h headline:** the notes and cell 82 now lead with the per-cell median (P = 0.0044), which is the reading the record says it adopts, and give the mean second (P = 0.0031). fig4g had the same problem without being flagged, so I made it consistent: median first (P = 0.014), mean second (P = 0.0093), plus the same deviation stating the adopted reading.
-- **Cell 27 (link-grab-rois):** the sentence contradicted itself. It now lists as possible causes of the gaps the missing region identifiers, the 50 um circle used here in place of the region Prairie View saved, and the one region that takes its Fmax from another region in its slice. It also says a constant background cancels in the normalised area, so the missing background images cannot explain the gaps. I checked the cancellation against the area calculation in `lid.grab_auc`.
-- **Round 2 in the attempt record:** recorded under `verifications` with all 45 claims, each with `agrees: true`, the verifier's outcome, its reasons paraphrased closely from its report, and my response.
+**Added**
+- A new notebook cell, `somatic-last-sweep`, runs all 14 somatic tests (rheobase and summed spikes) using the first and then the last sweep of a repeated step. U and P are identical in every test, including the fig6c summed-spikes variant (P = 0.45). The somatic deviation, repeated in 10 outcomes, now cites this cell instead of the unsupported "every somatic result is the same".
+- Three reader questions in `questions/zhai-2025.yaml`:
+  - **link-dendritic-cells, Figure 6D letter:** the letter matches the file's cell number (16 of 16 cells) better than the cell's place in the day (14 of 16). The outcome is reproduced either way.
+  - **link-dendritic-cells, row order:** the criterion says the somatic link checks the row order. It does not, because the somatic link uses best matches.
+  - **link-sr-cells:** the criterion names `lid.detect_events`, which does not exist in this attempt.
+- The round-2 entry under `verifications`, with the verifier's reasons in its own words and my response for each of the 45 claims. No finding is rated critical, so the round has no `findings` list. The verifier would rate none of the 8 findings critical.
 
-**What I left alone, and why:**
-- The round-1 fig4k reason still says "17 files", because it is the verifier's own text. Its correction (16 Z-stacks plus 1 overview) is recorded in the round-2 reason.
-- The README fix is not tied to any one claim, so nothing in the record's per-claim results mentions it. It appears only in this report.
-- No new questions for a reader: this round reported no new place where the claims file misreads the paper.
-- Nothing is committed or pushed, as instructed.
+**Corrected**
+- **fig4h:** I removed the claim that the paper's per-cell counts support the "nearest run" choice of sweeps. That was in the notes, the deviation, cell 78 and a code comment. The text now says the support is weak: for 2023-04-06 cell 1 the two possible runs give 93 and 89 events against the paper's 73. It also says the outcome is fragile and rests on the paper not having used that cell's first 10 sweeps; with those, P = 0.049 instead of 0.064.
+- **README:** the Sr2+ row now says the iSPN frequency claim depends on which sweeps are used.
+- **Notebook text:** the Sr2+ claim headers now list every sweep variant the code actually runs.
+- **Summary:** "Seven claims rest on the paper's own tables" is now eight.
+- **link-somatic-cells notes:** "most of them" is now "6 on-state dSPNs and 3 sulpiride iSPNs" (9 of the 18 cells).
+- **GRAB finding 6:** "seven regions" with a short acetylcholine trial is now six. The 2024-05-24 Slice1Roi1 region is listed only because it lacks a tetrodotoxin trial; its acetylcholine trials last 4.6 and 5.2 s.
+
+**Not done**
+- **Claims file:** unchanged, as the rules require; the three points the verifier raised about it are now reader questions.
+- **fig1i-dspn-dendritic-sch-lower:** stays not reproduced. The verifier agreed this comes from the pair missing in the data, and asked for no change.

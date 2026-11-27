@@ -160,36 +160,6 @@ def test_a_failure_of_githubs_artifact_service_is_github_failing():
     assert subprocess.run(["grep", "-qE", down], input="FAIL  reproduce.ipynb (3603 s)", text=True).returncode == 1
 
 
-def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
-    # Issues 658 and 664: blind.sh leaves out a repeat author's earlier questions, which before the cutover were
-    # questions/<paper>/<dataset>.yaml; the commit job refused their removal as a change outside the paper.
-    import re
-    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
-    allowed = re.search(r'allowed="(\^\(attempts.*?)"', workflow).group(1).replace("$FOLDER", "pakhomov-2023")
-    ok = lambda path: re.search(allowed, path) is not None
-    assert ok("questions/pakhomov-2023/000686.yaml") and ok("questions/pakhomov-2023.yaml")
-    assert not ok("questions/silkuniene-2025/001276.yaml") and not ok("questions/pakhomov-2023/a/b.yaml")
-    assert not ok("claims/silkuniene-2025.yaml")
-
-
-def test_the_agents_job_guards_the_runners_memory_before_the_agent_starts():
-    # rozsa-2023, 2026-11-19: three author runs ended with the runner starved by the agent's own scripts and nothing
-    # saved. The guard ends the largest Python process first, never the agent or the runner, and a runner without
-    # it goes on.
-    import re
-    import yaml
-    workflow = yaml.safe_load((REPO / ".github" / "workflows" / "attempt.yml").read_text())
-    steps = next(j["steps"] for j in workflow["jobs"].values() if any(s.get("name") == "Run the agent" for s in j["steps"]))
-    names = [s.get("name") for s in steps]
-    assert names.index("Guard the runner's memory") < names.index("Run the agent")
-    run = steps[names.index("Guard the runner's memory")]["run"]
-    assert "exit 0" in run and run.rstrip().endswith('|| echo "earlyoom did not start; no guard"')
-    prefer, avoid = (re.search(rf"--{k} '([^']+)'", run).group(1) for k in ("prefer", "avoid"))
-    for name, spared in (("python3.12", False), ("python", False), ("jupyter-nbconvert", False), ("node", True),
-                         ("claude", True), ("Runner.Worker", True), ("Runner.Listener", True)):
-        assert bool(re.search(avoid, name)) == spared and bool(re.search(prefer, name)) != spared, name
-
-
 def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(tmp_path):
     # RUNNER_FALLBACK=queue:<file>: the paper goes first in the verified lanes' queue file (once), the rest of its
     # roles are marked for the verified account, and the chain ends QUEUED ON VERIFIED (exit 0), not STOPPED.
@@ -214,24 +184,12 @@ def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
     # chain.sh counted "0\n0" for a paper with no questions file, which is not 0: the answer and author-answers roles
     # ran for nothing on every such paper, and the first replicates hung at the answer role (2026-11-14).
     chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
-    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index('if [ "${open_questions:-0}" != 0 ]')]
+    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index("if ! is_done verifier-1 &&")]
     def count(on_branch):
         script = f"set -uo pipefail\nd=x\non_branch(){{ {on_branch}; }}\npython(){{ {sys.executable} \"$@\"; }}\n{lines}\necho \"[$open_questions]\""
         return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.strip()
     assert count("return 1") == "[0]"
     assert count("printf 'questions:\\n- {id: a}\\n- {id: b, answered: true}\\n'") == "[1]"
-    # A replicate's answer run goes to the papers workflow with its name, and commits to the replicate's branch.
-    papers = (REPO / ".github" / "workflows" / "papers.yml").read_text()
-    assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in papers and "format('-{0}', inputs.replicate)" in papers
-
-
-def test_an_authors_large_scratch_files_are_left_out_of_its_changes():
-    # petersen-2020, 2026-11-15: two pickles of 1.4 and 2.6 GB in the entry made a patch git refused to apply. New
-    # files over 20 MB are removed before the changes are collected, with a warning.
-    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
-    drop = workflow.index('git ls-files --others --exclude-standard -z -- "${paths[@]}"')
-    assert '-gt 20000000' in workflow[drop:drop + 400] and "::warning::Left out of the changes" in workflow[drop:drop + 400]
-    assert drop < workflow.index('git add -A -- "${paths[@]}" && git diff --cached --binary')
 
 
 def test_the_claims_checkpoint_waits_when_it_would_drop_a_claim_the_attempt_on_main_records(tmp_path):
@@ -251,36 +209,6 @@ def test_the_claims_checkpoint_waits_when_it_would_drop_a_claim_the_attempt_on_m
     assert dropped(["kept", "renamed", "new"]) == ""            # claims added: fine; an earlier record does not count
     assert dropped(["kept", "renamed-differently"]) == "renamed"
     assert 'if [ -n "$dropped" ]; then' in script_file and "left for the attempt's merge" in script_file
-
-
-def test_a_repeat_authors_commit_moves_a_finished_earlier_attempts_transcripts_aside(tmp_path):
-    # A repeat attempt that does not read the claims again found the earlier attempt's transcripts still in the
-    # folder, and its blind author's revision runs could read the earlier verifiers' reports (three replicates did).
-    # The author's commit now archives them whenever a finished attempt's are there (its recorder's transcript).
-    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
-    line = next(x.strip() for x in workflow.splitlines() if 'if [ "$ROLE" = author ] && {' in x)
-    def archives(role, files):
-        d = tmp_path / f"{role}-{len(files)}-{'-'.join(sorted(files))[:40]}"; (d / "transcripts" / "x").mkdir(parents=True)
-        for f in files: (d / "transcripts" / "x" / f).write_text("t")
-        script = f'ROLE={role}; FOLDER=x\n{line} echo yes; else echo no; fi'
-        return subprocess.run(["bash", "-c", script], cwd=d, capture_output=True, text=True).stdout.strip()
-    assert archives("author", ["claims.md", "author.md", "verifier-2-report.md", "recorder.md"]) == "yes"   # the hole
-    assert archives("author", ["author.md", "recorder.md"]) == "yes"
-    assert archives("author", ["claims.md", "claims-check.md"]) == "no"       # this attempt's own claims runs stay
-    assert archives("author", ["claims.md", "author.md"]) == "no"             # its own failed first author run stays
-    assert archives("author-revise-1", ["claims.md", "recorder.md"]) == "no"
-    # The reconcile run follows the instructions as they are now, not as the branch had them when its attempt began.
-    assert '[ "$ROLE" != reconcile ] || git restore --worktree --source "$GITHUB_SHA" -- docs/agents/reconcile.md' in workflow
-
-
-def test_the_reconcile_run_is_given_the_earlier_attempts_entry():
-    # It reads both attempts' code to say why an outcome differs; the earlier entry is copied from main, outside the
-    # folders whose changes are collected.
-    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
-    step = workflow[workflow.index("name: Put the earlier attempt's entry under earlier-entry/"):]
-    assert "if: inputs.role == 'reconcile'" in step[:200] and 'git archive FETCH_HEAD "entries/$FOLDER"' in step[:500]
-    assert "earlier-entry" not in workflow[workflow.index("paths=(attempts claims entries README.md)"):][:300]
-    assert "`earlier-entry/`" in (REPO / "docs" / "agents" / "reconcile.md").read_text()
 
 
 def test_a_papers_other_datasets_have_their_paper_match_before_its_claims_are_read():
@@ -319,13 +247,11 @@ def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges(
     done = body.index('end "$d REPLICATE $REPLICATE DONE"')
     assert done < body.index("step reconcile") < body.index('log "finishing"')
     assert body.index('log "replicate $REPLICATE: the claims on main"') < body.index("step claims\n")
-    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
-    assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in workflow and "format('replicate/{0}/{1}'" in workflow
-    assert "format('-{0}', inputs.replicate)" in workflow   # its own concurrency group: one waits for no other
 
 
-def _finish_sandbox(tmp_path, branch_change, main_change):
-    """An origin with main and attempt/x, a clone of it, and chain.sh's merge_main run in the clone."""
+def _finish_sandbox(tmp_path, branch_change, main_change, then="", env=None):
+    """An origin with main and attempt/x, a clone of it, and chain.sh's merge_main run in the clone; `then` is run
+    after it, in the same shell, while the worktree is still there."""
     import subprocess
     origin, clone = tmp_path / "origin.git", tmp_path / "clone"
     _git(tmp_path, "init", "-q", "--bare", "-b", "main", str(origin))
@@ -347,10 +273,10 @@ def _finish_sandbox(tmp_path, branch_change, main_change):
     body = chain[chain.index("drop_work(){"):chain.index('log "finishing"')]
     script = ('set -uo pipefail\nd=x\nbr=attempt/x\nwork=$(mktemp -d)\nnotify(){ :; }\n'
               'fetch(){ git fetch -q origin main "attempt/$d"; }\n' + body + 'merge_main; rc=$?\n'
-              'echo "rc=$rc"; [ $rc = 0 ] && git -C "$work" log -1 --format=%s; drop_work\n')
+              'echo "rc=$rc"; [ $rc = 0 ] && git -C "$work" log -1 --format=%s\n' + then + '\ndrop_work\n')
     out = subprocess.run(["bash", "-c", script], cwd=clone, capture_output=True, text=True,
                          env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.org",
-                              "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.org"}).stdout
+                              "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.org", **(env or {})}).stdout
     _git(clone, "fetch", "-q", "origin")
     return out, clone
 
@@ -374,3 +300,134 @@ def test_finishing_keeps_the_branchs_claims_file_and_stops_on_any_other_conflict
     assert "rc=1" in out
     assert _git(clone, "show", "origin/attempt/x:README.md") == "branch\n"          # nothing was pushed
 
+
+
+def _a_protocol(tmp_path, files):
+    """A stand-in for a clone of encore-protocol, and what a registry's main holds to have it laid."""
+    protocol = tmp_path / "protocol"
+    for name, text in files.items():
+        (protocol / name).parent.mkdir(parents=True, exist_ok=True); (protocol / name).write_text(text)
+    _git(protocol, "init", "-q")
+    registry = {"tools/protocol.sh": (REPO / "tools" / "protocol.sh").read_text(), "protocol.lock": "v0\n",
+                ".gitignore": "".join(f"/{name}\n" for name in files)}
+    return protocol, registry
+
+
+def test_finishing_lays_the_protocol_over_its_worktree(tmp_path):
+    # 2026-11-23 to 25: the registry's commits no longer held the protocol's tools, the finish worktree had none,
+    # describe.py could not read the attempt, and seven finished attempts stopped with a blank pull request title.
+    protocol, registry = _a_protocol(tmp_path, {"tools/agent_run.py": "attempt_of = None\n"})
+    out, clone = _finish_sandbox(
+        tmp_path, {"entries/x.txt": "entry\n"}, registry, env={"ENCORE_PROTOCOL": str(protocol)},
+        then='[ ! -e "$work/tools/agent_run.py" ] && echo "before=none"; lay_protocol; echo "lay=$?"\n'
+             'python3 -B -c "import sys; sys.path.insert(0, sys.argv[1]); import agent_run; print(\'read=ok\')" "$work/tools"\n'
+             'echo "status=[$(git -C "$work" status --porcelain)]"')
+    assert "rc=0" in out and "before=none" in out and "lay=0" in out and "read=ok" in out
+    assert "status=[]" in out                                    # and nothing of it is left for a commit to pick up
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    assert chain.index('checkout -q --detach "origin/$br"') < chain.index("lay_protocol ||") < chain.index("describe.py\" title")
+    # A branch from before the protocol had a repository of its own has no protocol.sh, and holds the protocol itself.
+    (tmp_path / "old").mkdir()
+    out, clone = _finish_sandbox(tmp_path / "old", {"entries/x.txt": "entry\n"}, {"docs/other.md": "main\n"},
+                                 then='lay_protocol; echo "lay=$?"')
+    assert "lay=0" in out
+
+
+def test_the_claims_checkpoint_validates_against_the_protocols_schema(tmp_path):
+    # 2026-11-25: the checkpoint's worktree of main had no schemas/ (they come with the protocol), so garud-2026's
+    # claims "did not validate" and stayed off main.
+    protocol, registry = _a_protocol(tmp_path, {"schemas/claims.schema.json": '{"type": "object", "required": ["claims"]}\n'})
+    origin, clone = tmp_path / "origin.git", tmp_path / "clone"
+    _git(tmp_path, "init", "-q", "--bare", "-b", "main", str(origin))
+    _git(tmp_path, "clone", "-q", str(origin), str(clone))
+    for name, text in registry.items():
+        (clone / name).parent.mkdir(exist_ok=True); (clone / name).write_text(text)
+    _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "start"); _git(clone, "push", "-q", "origin", "HEAD:main")
+    def checkpoint(paper, text):
+        _git(clone, "checkout", "-q", "-B", f"attempt/{paper}", "origin/main")
+        (clone / "claims").mkdir(exist_ok=True); (clone / "claims" / f"{paper}.yaml").write_text(text)
+        _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "claims"); _git(clone, "push", "-q", "origin", f"attempt/{paper}")
+        _git(clone, "checkout", "-q", "--detach", "origin/main")
+        run = subprocess.run(["bash", str(REPO / "tools" / "runner" / "merge_claims.sh"), paper], cwd=clone,
+                             capture_output=True, text=True,
+                             env={**os.environ, "ENCORE_PROTOCOL": str(protocol), "PATH": f"{Path(sys.executable).parent}:{os.environ['PATH']}"})
+        _git(clone, "fetch", "-q", "origin")
+        return run.stdout + run.stderr, _git(clone, "ls-tree", "-r", "--name-only", "origin/main").split()
+    out, on_main = checkpoint("x-2020", "claims:\n- {id: one}\n")
+    assert "x-2020: claims merged into main" in out, out
+    assert "claims/x-2020.yaml" in on_main and not [f for f in on_main if f.startswith("schemas/")]
+    out, on_main = checkpoint("y-2021", "not_claims: []\n")
+    assert "does not validate" in out and "claims/y-2021.yaml" not in on_main
+
+
+def test_a_chain_started_again_after_its_rounds_does_not_ask_the_questions_of_the_revisions():
+    # 2026-11-25: mah-2023 stopped at its pull request; its revisions had left two questions open. Started again, the
+    # chain ran the reader's answer role on them, after the verification and the reconcile step.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index("open_questions=${open_questions:-0}"):chain.index("for role in verifier-1")]
+    def roles_run(open_questions, done):
+        script = (f'open_questions={open_questions}\nis_done(){{ case " {" ".join(done)} " in *" $1 "*) return 0;; esac; return 1; }}\n'
+                  'log(){ :; }\nstep(){ is_done "$1" || echo "$1"; }\n' + block)
+        return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.split()
+    assert roles_run(2, ["author"]) == ["answer", "author-answers"]
+    assert roles_run(0, ["author"]) == []
+    assert roles_run(1, ["author", "answer"]) == ["author-answers"]          # stopped between the two
+    assert roles_run(0, ["author", "answer"]) == ["author-answers"]
+    assert roles_run(2, ["author", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2"]) == []
+    assert roles_run(2, ["author", "answer", "author-answers", "verifier-1"]) == []
+
+
+def test_a_chain_whose_recorder_has_run_only_finishes(tmp_path):
+    # 2026-11-25: seven attempts stopped at their pull request. Started again by the paper's key, with no version,
+    # the chains of choi-2025 and senzai-2017 (repeat attempts on a new version, which keep their claims) began to
+    # read the claims again. Between its start and its finish, a chain whose recorder has run starts no run.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index('recorded=""\n'):chain.index("# Finish. Each chain finishes")]
+    (tmp_path / "chain.sh").write_text('#!/bin/bash\necho "RUN the paper match of $1"\n'); (tmp_path / "chain.sh").chmod(0o755)
+    (tmp_path / "merge_claims.sh").write_text("#!/bin/bash\n"); (tmp_path / "merge_claims.sh").chmod(0o755)
+    def runs(done, proposed="false"):
+        script = (f'here={tmp_path}\nd=x-2020\nbr=attempt/x-2020\nmark=/dev/null\nVERSION=""\nREPLICATE=""\n'
+                  f'is_done(){{ case " {" ".join(done)} " in *" $1 "*) return 0;; esac; return 1; }}\n'
+                  'log(){ echo "LOG $*"; }\nfetch(){ :; }\nend(){ echo "END $*"; }\nstep(){ is_done "$1" || echo "RUN $1"; }\n'
+                  'on_branch(){ echo "checks: [{ready: true}]"; }\nclaims_file(){ echo claims/x-2020.yaml; }\n'
+                  'records_on_branch(){ echo attempts/x-2020-01.yaml; echo attempts/x-2020-02.yaml; }\n'
+                  f'git(){{ echo "outcomes: [{{proposed: {proposed}}}]"; echo "datasets: [{{relation: reuses}}]"; }}\n'
+                  'python(){ case "$*" in *"describe.py siblings"*) echo dandi-000001;; *"describe.py deprecated"*) echo false;;\n'
+                  f'  *"describe.py claims-ready"*) echo false;; *) {sys.executable} "$@";; esac; }}\n' + block)
+        out = subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout
+        return [line.split("RUN ", 1)[1] for line in out.splitlines() if "RUN " in line]
+    rounds = ["author", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2", "reconcile"]
+    assert runs(rounds + ["recorder"], proposed="true") == []
+    # Before the recorder, a chain started again goes on as it did: here the paper match of the paper's other dataset,
+    # the claims with no version given, and a third round for a record with proposed changes.
+    assert runs(rounds, proposed="true") == ["the paper match of dandi-000001", "claims", "claims-check", "verifier-3", "author-revise-3"]
+
+
+def test_a_first_attempt_reads_its_claims_even_when_a_version_is_named():
+    # 2026-11-25: four run requests for costabile-2023 named their published versions. The chain took a version
+    # for a repeat attempt, which keeps the claims file, but main had none: the author ran with no claims.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index('if [ -n "$recorded" ]; then\n  :'):chain.index("step author\n")]
+    def runs(version, claims_on_main, ready="false"):
+        script = (f'd=x-2020\nVERSION="{version}"\nREPLICATE=""\nrecorded=""\ndeprecated=false\non_main={ready}\n'
+                  'is_done(){ return 1; }\nlog(){ :; }\nfetch(){ :; }\nend(){ echo "END $*"; exit 0; }\n'
+                  'step(){ echo "RUN $1"; }\nclaims_file(){ echo claims/x-2020.yaml; }\nhere=/nonexistent\n'
+                  f'git(){{ [ "$1 $2" = "cat-file -e" ] && return {0 if claims_on_main else 1}; return 0; }}\n'
+                  'on_branch(){ echo "checks: [{ready: true}]"; }\n'
+                  f'python(){{ {sys.executable} "$@"; }}\n' + block)
+        out = subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout
+        return [line[4:] for line in out.splitlines() if line.startswith("RUN ")]
+    assert runs("0.230316.1519", claims_on_main=False)[:2] == ["claims", "claims-check"]
+    assert runs("", claims_on_main=False)[:2] == ["claims", "claims-check"]
+    assert runs("0.261124.1906", claims_on_main=True) == []                  # a repeat keeps the claims file
+    assert runs("", claims_on_main=True, ready="true") == []                  # checked claims on main
+
+
+def test_a_failed_commit_job_is_found_by_its_name_in_a_called_workflow():
+    # Since the runs are encore-protocol's workflows, called from the registry's, the commit job is named
+    # `attempt / commit` or `papers / commit` in the failed log; before, `commit`.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    test = chain[chain.index("if ! echo \"$runlog\" | cut -f1 | grep"):].split(";", 1)[0].removeprefix("if ")
+    only_commit = lambda log: subprocess.run(["bash", "-c", f"runlog=$'{log}'; {test}"]).returncode == 0
+    assert only_commit("commit\tx") and only_commit("attempt / commit\tx\npapers / commit\ty")
+    assert not only_commit("attempt / run\tx\nattempt / commit\ty") and not only_commit("run\tx")

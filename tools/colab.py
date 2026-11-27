@@ -2,7 +2,7 @@
 
     python tools/colab.py build OUT [ENTRY ...]     # every entry, or those named, into OUT/entries/<name>/
 
-Colab opens a notebook from GitHub (https://colab.research.google.com/github/catalystneuro/encore/blob/colab/
+Colab opens a notebook from GitHub (https://colab.research.google.com/github/encorescience/encore-registry/blob/colab/
 entries/<name>/<notebook>.ipynb), but not the files beside it, and with its own Python and packages. Each copy has:
 
 - the entry's notebooks, each with a first cell that, on Colab only, fetches the entry's files from the `colab`
@@ -27,7 +27,7 @@ import nbformat
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = "catalystneuro/encore"
+REPO = "encorescience/encore-registry"
 BRANCH = "colab"
 # The Python versions Colab has run or may run next; a lock is made for each. Add one when Colab moves.
 COLAB_PYTHONS = ("3.12", "3.13")
@@ -115,7 +115,7 @@ def main() -> int:
         print(f"warning: {p}", file=sys.stderr)
     (Path(sys.argv[2]) / "README.md").write_text(
         "# Colab copies of the registry's entries\n\nBuilt by tools/colab.py on the main branch; do not edit here. "
-        "Open a notebook in Colab at https://colab.research.google.com/github/catalystneuro/encore/blob/colab/"
+        "Open a notebook in Colab at https://colab.research.google.com/github/encorescience/encore-registry/blob/colab/"
         "entries/<entry>/<notebook>.ipynb\n")
     return 0
 

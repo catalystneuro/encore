@@ -1,0 +1,96 @@
+# mansvelder-2026, Shamugia et al. 2026
+
+Four claims reproduced on the dandiset, one partially, four not reproduced and
+five blocked, all five for missing data; among the claims that also use outside
+data, two reproduced, eight partially, six not reproduced and five blocked for
+missing data. The nine claims on Allen Brain Map expression and the NEURON
+models (`data: elsewhere`) are blocked, five under the time rule and four
+because the calcium conductance density is not given, and of the three link
+claims the author added, two reproduced and `mouse-specimen-link` partially.
+Six outcomes rest on an assumption. The first verification round agreed with 15
+of the 45 outcomes as they stood; the other 30 were blocked claims, most of them
+blocked as missing data although the verifier found the mouse cells in
+DANDI:000020 and the human acute and cultured cells of Lee, Dalley et al. (2023)
+in DANDI:000636. The second round agreed with 46 of 47 and would have rated
+`fig2d-subclass-proportion` not reproduced, as its criterion has no partial
+rule; the change was proposed and a third round reviewed that one claim and
+agreed. It pins version 0.230915.2257. The paper, Shamugia, Weiler, ...
+Goriounova and Mansvelder, "Ion Channels and Morphology Drive Widespread
+Resonance in Human Cortical Interneurons" (Research Square preprint), measures
+subthreshold resonance from chirp responses in 1085 human and 619 mouse Patch-seq
+interneurons and reports that human interneurons, PV cells most of all, are more
+often and more strongly resonant than mouse ones, that sag ratio and input
+resistance predict resonance in human cells, that resonance depends on cortical
+depth and on Ih, rises in slice culture and relates to ion channel expression,
+and that large human morphologies need added conductances to resonate in a
+model. The dandiset holds 210 human layer 1 cells of Chartrand et al. (2023).
+The claims were written from the preprint's text and the supplement PDF's text
+layer, with no figure seen; the paper's code address returned 404, so impedance,
+sag ratio and input resistance are computed as IPFX v2.0.0 computes them, with
+the other readings beside them. The species, sag, culture and expression claims
+could be tested with the two added dandisets; the depth, ZD7288, morphology,
+mouse PV and SST, Allen Brain Map and model claims could not. Reproduced are the
+higher fres and Q of human cells (Kolmogorov-Smirnov p = 1.0e-4 and 6.6e-5,
+though with LAMP5 and VIP cells only Q does not differ, p = 0.25), PV as the
+most often resonant human subclass (43.1%), the stricter resonance criteria, the
+weak mouse sag and Q relation, the high channel expression and the region and
+pathology claim. Among those not reproduced are the resonant fractions (25.5% and 7.9%
+against 32.7% and 9.3%, which chirp reading (a) or a LOWESS fraction of 0.02
+would reproduce), the subclass-specific relation of sag and input resistance to
+fres (interactions p = 0.90 and 0.57), the human Q differences by subclass and
+the gene correlations of Fig. 6c, of which only HCN1 with fres holds. The author's first
+run tested only 4 of the paper's 44 claims plus one link claim, with 40
+blocked. Round 1 also found that the chirp readings were never set against
+Table S3, that Satterthwaite tests had not been run and that fig6a and four
+model claims had no allowed block reason; in reply the two dandisets were read
+as pinned inputs through two new link claims, chirp reading (b) with its 0.4 Hz
+floor became the main reading, and Satterthwaite tests were added. Round 2
+asked that outcomes say they rest on the LOWESS fraction and on fres values
+censored at the floor, which were tested, and found sentences with no output
+behind them and a README count that disagreed with the record, all corrected.
+The author's run took about 2 h, of which about 55 minutes went on two loader
+runs that timed out because h5py's global lock serialized threaded streaming;
+the notebook ran in 243 s at first, with peak memory 0.4 GB, about 18 min after
+round 1, 735 s after round 2 and 991 s at the end.
+
+The dandiset holds 210 human interneurons from 53 donors, 85 of them with a
+usable chirp, where the paper's human acute sample has 542 cells from 170 donors
+(297 with a chirp) across all layers and four subclasses; it holds no mouse,
+cultured or ZD7288 recordings, no PV or SST cells, no transcriptomes and no
+morphologies, and it is complete for Chartrand et al. (2023), for which it was
+deposited. The files carry no subclass, t-type, donor name, structure, disease,
+layer or depth, which come from the Chartrand et al. repository by session id
+and from Table S1; that table's Depth_from_Pia_microns is 0 for all 210 cells
+and its soma_depth_um is filled for 15, so no pia-soma distance is available for
+most. Many sweeps were stopped early and zero-filled without a flag: 50 chirp
+sweeps and 1763 hyperpolarizing long squares over the 210 files (130 and 2561 in
+000636, 73 and 201 in the 000020 files read). The dandiset describes its cells
+as layer 1 neurons, but the Chartrand et al. table gives layer 2 for 34, 3 for 3
+and 4 for 1, and none for 10. Four cells are deposited in both 000630 and 000636
+with identical measures, and 41 donors have cells in both. The species is
+spelled "Homo Sapiens" in 192 files and "Homo sapiens" in 18, and one file gives
+the sex as "unknown" where the table gives M. One mouse cell of 000020 gives
+Q = 16.8, where the next largest is 1.14, and 21 files of 000636 from 6 subjects
+give the donor's age as P0.0D. Every file links to one row of the Chartrand
+table, sex agrees for 209 of 210 files and age within 0.06 years, and all 53
+donors are in Table S1. In the paper, Table S1 lists 43 of the 53 donors under
+"AcuteLDPublished" and only 10 under "Chartrand", so it does not say which cells
+come from this dandiset; 461 of the 628 mouse cells of Table S2b are in
+DANDI:000020, reached through an Allen metadata file with no fixed address, and
+the other 167, among them all the mouse PV and SST cells, were not found; and
+the paper cites the Lee, Dalley et al. article but not DANDI:000636. Questions
+are put to the paper's authors: the frequency range of the impedance profile and
+so Z0, the LOWESS fraction and the side of the peak for f3dB; how sag ratio and
+input resistance were computed; and whether the mixed models were fitted in SPSS
+or Python.
+
+The author's points on the protocol: no block reason fits public data that the
+run had no time to link, and `other` was used; Table S1 is only in the
+supplement, so its donor labels were copied into `resonance.py` and listed under
+`inputs`; adding a link claim means adding `depends_on` to paper claims in a
+claims file that binds the author; criteria written for four subclasses were
+judged only on the parts the dandiset can test; `measured` cannot record a value
+that cannot be measured, and it was left out; a reading that needs SPSS or R
+could not be run at first, and statsmodels Wald tests were recorded as a
+deviation; and the checker rejects `data_missing` for `elsewhere` claims when
+what is missing is a parameter, so `methods_underspecified` was used.

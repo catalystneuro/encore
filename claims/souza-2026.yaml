@@ -1,0 +1,1165 @@
+# Claims for Souza, Vieira, Ventura, de Lima, Arcanjo, de Paula, Sales, Souza, Alvarez-Jacobo,
+# Fontenele, Aguiar, de Santana, Sousa & de Vasconcelos (2026), "Reward coding across mouse visual
+# cortical areas", Front. Behav. Neurosci. 20:1944695, doi:10.3389/fnbeh.2026.1944695, on dandiset
+# 000713 (Allen Institute, Visual Behavior Neuropixels), which the paper reuses.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-21,
+# protocol as stated in docs/protocol.md (pilot-18).
+#
+# Text read. The version of record (Brief Research Report, published 28 October 2026), in
+# paper/10.3389-fnbeh.2026.1944695.txt: abstract, Introduction, Materials and methods 2.1 to 2.8,
+# Results 3.1 to 3.4, Discussion, the legends of Figures 1 to 3, and the legend of Supplementary
+# Figure S1. There is no PDF under paper/, so no figure was opened and no number below is read from a
+# figure. The display equations are garbled in the text but readable: (1) r_split =
+# corr(PSTH_odd, PSTH_even); (2) p_split = (1 + sum over b of 1[r_null(b) >= r_split]) / (N_perm + 1);
+# (3) SI = (A1 - A2) / (|A1| + |A2|); (4) M = (r_post - r_pre) / (r_post + r_pre); (5) n(t) = summed
+# spike count of the group in [t, t + T), T = 50 ms; (6) CV_i = SD(n) / E(n) over the 50 ms bins of
+# 10 s window i. The supplement is one figure (Supplementary Figure S1, rank selection for the NMF,
+# ranks 2 to 8); its image is not under paper/, only its legend. The rank-6 choice is the only result
+# that rests on it, and no claim below is about rank selection.
+#
+# Code. The Data availability statement says "The analysis code is available from the corresponding
+# authors upon reasonable request." No repository is linked, so no code was read. Every method below
+# comes from the text; details the text leaves open are named as open in the criterion, with the
+# readings the text allows. Section 2.8 says the analyses used Python 3.11 with numpy, scipy, pandas
+# and scikit-learn, and fixed seeds "defined in the production scripts" (not available).
+#
+# Data the paper describes (Materials and methods 2.1). 103 sessions of the Allen Visual Behavior
+# Neuropixels dataset, dandiset 000713 version 0.240702.1725, from 54 head-fixed trained adult mice
+# recorded with Neuropixels 1.0 probes in a visual change-detection task. The paper does not say how
+# the 103 sessions were chosen. Units from six visual areas, VISp, VISl, VISal, VISpm, VISam and
+# VISrl, 54,039 units in all; no unit quality filter is named. Two of six stimulus blocks are used,
+# the active behavior block (block 0; task, licking, reward) and the passive replay block (block 5;
+# same natural-image sequence, no task, no reward). Images shown for 250 ms with a 500 ms gray
+# interval. Change trials scored hit (lick in the response window, 150 to 750 ms after the change,
+# followed by water) or miss; catch trials scored false alarm or correct rejection. Only
+# performance-contingent rewards are used; automatic priming rewards are excluded. Measured
+# variables used: spike times, unit area labels, mean spike waveforms (trough-to-peak duration,
+# half-width), unit CCF coordinates, reward, lick and image-change times, trial outcomes.
+#
+# Outside data. Cortical layers come from the Allen Mouse Brain Common Coordinate Framework (CCFv3,
+# Wang et al., 2020) 25 um annotation volume, queried at each unit's CCF coordinates (Materials and
+# methods 2.5). The layer claims are therefore data with_inputs; the paper does not give a version or
+# file of the annotation volume.
+#
+# The cohort pipeline (Materials and methods 2.2 to 2.4), which most claims use. (i) Reward-aligned
+# PSTH of the active block, -0.5 to +2.0 s around each performance reward in 10 ms bins, rate =
+# counts / (events x bin width), smoothed with a normalised Gaussian kernel of sigma 25 ms; events
+# kept only when the whole window lies in the active block. (ii) Split-half reliability r_split, the
+# Pearson correlation across bins of the PSTHs of the odd and even rewards in chronological order.
+# (iii) ISI-shuffle null, 1,000 permutations, one-sided p_split as in equation (2); p values pooled
+# across sessions and Benjamini-Hochberg corrected within each area at q = 0.05. (iv) Per trial
+# amplitude = mean rate 0 to 0.75 s after the response event minus mean rate in the 0.5 s before the
+# trial's image change. Family A, hit trials (aligned to reward) against passive replay (pseudo-reward
+# after each replayed image change at the session's median change-to-reward latency); Family B, hit
+# trials against miss trials (pseudo-reward time after the miss trial's image change). Two-sided
+# Mann-Whitney U per unit and family, among units responsive in at least one of the two conditions
+# (two-sided Wilcoxon signed-rank of per-trial amplitude against zero, p < 0.05), BH at q = 0.05 per
+# area and family. (v) Cohort = split-half positive, significant in both families, and SI of the same
+# sign in both; negative = reward-suppressed, positive = reward-enhanced. The text implies A1 is the
+# rewarded condition (hit) and A2 the control, since a negative SI is labeled suppressed.
+schema_version: 2
+paper: doi:10.3389/fnbeh.2026.1944695
+claims:
+- id: data-sessions-units
+  kind: link
+  statement: The dandiset holds the data the paper analyzed, 103 sessions from 54 mice with 54,039
+    units in the six visual areas, with an active behavior block 0 and a passive replay block 5 in
+    every session.
+  source: Materials and methods 2.1, paragraphs 1 and 2
+  quote: We analyzed extracellular recordings from 103 sessions of the Allen Visual Behavior
+    Neuropixels dataset (Bennett et al., 2026), acquired with Neuropixels 1.0 probes in 54 head-fixed
+    trained adult mice ... yielding 54,039 units in total
+  expected:
+  - quantity: sessions
+    value: 103
+    tolerance: 0
+  - quantity: mice
+    value: 54
+    tolerance: 0
+  - quantity: units in VISp, VISl, VISal, VISpm, VISam and VISrl
+    value: 54039
+    tolerance: 0
+  criterion: The paper does not say how 103 sessions were chosen from the dandiset version
+    0.240702.1725, nor whether units were filtered by quality. The readings are (a) every session
+    of that version with block 0 and block 5 and performance rewards, and every unit the units table
+    assigns to the six areas; (b) the same sessions with units passing the Allen default quality
+    thresholds. The link holds (reproduced) when, under one reading, a set of sessions, mice and units
+    matches the three counts exactly; partially reproduced when the counts are within 10%; not
+    reproduced otherwise. The session set used by every other claim is the one this claim finds, and
+    the reading used is recorded as an assumption.
+- id: blocks-no-reward-in-replay
+  statement: Block 0 is the active behavior block and block 5 the passive replay block in all 103
+    sessions, and no lick or reward events occur during passive replay.
+  source: Materials and methods 2.1, paragraph 2
+  quote: We verified this block assignment in all 103 sessions and confirmed that no lick or reward
+    events occurred during passive replay
+  depends_on:
+  - data-sessions-units
+  criterion: Reproduced when, in every session, block 0 holds the task trials and rewards, block 5
+    replays the same image sequence, and no lick or reward time falls inside block 5.
+- id: reward-interval-min
+  statement: Consecutive rewards are separated by at least 6.96 s, so no peri-reward window holds a
+    neighboring reward.
+  source: Materials and methods 2.2, paragraph 1
+  quote: Consecutive rewards were separated by at least 6.96 s in this dataset
+  depends_on:
+  - data-sessions-units
+  expected:
+    quantity: minimum interval between consecutive performance rewards
+    value: 6.96
+    tolerance: 0.696
+    unit: s
+- id: latency-change-to-reward
+  statement: Across sessions the median change-to-reward latency is 0.467 s; over 16,330 hit trials
+    the median within-session standard deviation is 0.104 s (range 0.046 to 0.174 s), and 3.8% of hits
+    depart from their session median by more than 250 ms.
+  source: Materials and methods 2.4, paragraph 1
+  quote: Across sessions, the median change-to-reward latency was 0.467 s ... we quantified its
+    within-session dispersion over the 16,330 hit trials ... the median within-session standard
+    deviation was 0.104 s (range 0.046-0.174 s), and 3.8% of hits departed from their session median
+    by more than 250 ms
+  depends_on:
+  - data-sessions-units
+  expected:
+  - quantity: number of hit trials (earned rewards)
+    value: 16330
+    tolerance: 1633
+  - quantity: median change-to-reward latency across sessions
+    value: 0.467
+    tolerance: 0.0467
+    unit: s
+  - quantity: median within-session SD of latency
+    value: 0.104
+    tolerance: 0.0104
+    unit: s
+  - quantity: percent of hits more than 250 ms from their session median
+    value: 3.8
+    tolerance: 0.38
+    unit: percent
+  criterion: Latency is reward time minus the time of the trial's image change, on hit trials with a
+    performance reward (Materials and methods 2.1 and 2.4). "Median across sessions" is open; the
+    readings are (a) the median of the per-session medians; (b) the median over all hits pooled.
+    Reproduced when the four values are within tolerance under one reading; the range of
+    within-session SDs (0.046 to 0.174 s, widened by 10% of each bound) is reported.
+- id: lick-reward-coincide
+  statement: Water is delivered a median of 9.8 ms after the nearest lick (95th percentile 17.3 ms,
+    all within 20 ms), across the 16,330 earned rewards, so licking and reward cannot be separated by
+    alignment.
+  source: Discussion, paragraph 5
+  quote: across the 16,330 earned rewards of the 103 sessions, water was delivered a median of 9.8 ms
+    after the nearest lick (95th percentile 17.3 ms, all within 20 ms)
+  depends_on:
+  - data-sessions-units
+  expected:
+  - quantity: median reward time minus nearest lick time
+    value: 9.8
+    tolerance: 0.98
+    unit: ms
+  - quantity: 95th percentile of that delay
+    value: 17.3
+    tolerance: 1.73
+    unit: ms
+  criterion: For each earned reward, the delay from the nearest lick to water delivery. "Nearest" is
+    open; the readings are (a) the nearest preceding lick; (b) the nearest lick in absolute time.
+    Reproduced when the median and 95th percentile are within tolerance and every delay is within 20
+    ms (widened by 10%, 22 ms) under one reading.
+- id: fig1e-cohort-size
+  statement: Of 54,039 units, 11,032 (20.4%; 32.9% of the 33,502 units testable in both contrasts)
+    form the reward-modulated cohort, 7,229 suppressed (65.5%) and 3,803 enhanced (34.5%); 11,271 units
+    were significant in both families, of which 239 had discordant signs.
+  source: Results 3.1, paragraphs 2 and 3; Materials and methods 2.4, paragraph 4; Figure 1E
+  quote: This cohort comprised 11,032 units out of the 54,039 recorded across the six visual areas
+    (20.4%; 32.9% of the 33,502 units testable in both contrasts) ... Reward-suppressed units (7,229;
+    65.5% of the cohort) outnumbered reward-enhanced units (3,803; 34.5%) overall
+  depends_on:
+  - data-sessions-units
+  expected:
+  - quantity: cohort units
+    value: 11032
+    tolerance: 1103
+  - quantity: units testable in both contrasts
+    value: 33502
+    tolerance: 3350
+  - quantity: suppressed units
+    value: 7229
+    tolerance: 723
+  - quantity: enhanced units
+    value: 3803
+    tolerance: 380
+  - quantity: suppressed fraction of the cohort
+    value: 65.5
+    tolerance: 6.55
+    unit: percent
+  - quantity: units significant in both families
+    value: 11271
+    tolerance: 1127
+  - quantity: of these, discordant SI signs
+    value: 239
+    tolerance: 24
+  criterion: The cohort pipeline in the opening comment, from Materials and methods 2.2 to 2.4. Open
+    details, with readings. (1) The ISI shuffle reconstructs the spike train over (a) the active
+    block, starting at its first spike, as the circular-shift null is wrapped within the active block,
+    or (b) the whole recording. (2) "Testable in both contrasts" is (a) split-half positive units
+    passing the responsiveness filter in both families, (b) units passing that filter in both
+    families whatever their split-half result, or (c) split-half positive units with trials in all
+    three conditions. (3) Miss pseudo-reward time is the session median change-to-reward latency, as
+    Family A uses (the reading the text implies). (4) A unit with no spikes in one half has r_split
+    undefined and is not split-half positive (a standard choice). Kernel truncation and seeds are
+    standard choices. Reproduced when every count is within tolerance under one reading; partially
+    reproduced when the cohort size and suppressed fraction are, but not the rest.
+- id: fig1d-split-half-above-null
+  statement: The cohort's split-half reliabilities lie well above the ISI-shuffle null in all six
+    areas.
+  source: Results 3.1, paragraph 1; Figure 1D legend
+  quote: both with near-ceiling reproducibility (rsplit ≈ 1.0) well above the null, which the full
+    cohort exceeds (Figures 1C, D)
+  depends_on:
+  - fig1e-cohort-size
+  criterion: Per area, the distribution of observed r_split of cohort units against the pooled null
+    r_split values of the same units (Figure 1D legend). The paper gives no measure of "well above"
+    or "exceeds", so the comparison is open; the readings are (a) the cohort median r_split exceeds
+    the 95th percentile of the pooled null; (b) every cohort unit's r_split exceeds the median of its
+    own null. Reproduced when, in every area, the result holds under one reading; the outcome rests
+    on that reading as an assumption.
+- id: fig1c-example-cells
+  statement: The cohort contains reward-enhanced units in VISam and reward-suppressed units in VISrl
+    with near-ceiling split-half reproducibility (r_split 1.00 and 0.99 in the two examples).
+  source: Figure 1C legend; Results 3.1, paragraph 1
+  quote: Two example cells illustrate the two directions of modulation, one that increases its firing
+    at reward (VISam) and one that decreases it (VISrl), both with near-ceiling reproducibility
+  depends_on:
+  - fig1e-cohort-size
+  criterion: The example units are not identified. Reproduced when the cohort holds at least one
+    enhanced VISam unit with r_split at least 0.99 and one suppressed VISrl unit with r_split at least
+    0.98 (0.99 less its last printed digit).
+- id: fig1e-suppressed-fraction-by-area
+  statement: The per-unit suppressed fraction declines along the functional hierarchy, 86% in VISp (n
+    = 2,374), 68% in VISl (1,782), 60% in VISrl (1,894), 61% in VISal (1,511), 59% in VISpm (1,765) and
+    51% in VISam (1,706), so the enhanced fraction rises from 14% in VISp to 49% in VISam.
+  source: Results 3.1, paragraph 3; Figure 1E; Discussion, paragraph 1
+  quote: Ordered along the functional visual hierarchy, the per-unit suppressed fraction was 86% in
+    VISp (n = 2,374), 68% in VISl (n = 1,782), 60% in VISrl (n = 1,894), 61% in VISal (n = 1,511), 59%
+    in VISpm (n = 1,765) and 51% in VISam (n = 1,706)
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: VISp suppressed fraction
+    value: 86
+    tolerance: 8.6
+    unit: percent
+  - quantity: VISl suppressed fraction
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  - quantity: VISrl suppressed fraction
+    value: 60
+    tolerance: 6.0
+    unit: percent
+  - quantity: VISal suppressed fraction
+    value: 61
+    tolerance: 6.1
+    unit: percent
+  - quantity: VISpm suppressed fraction
+    value: 59
+    tolerance: 5.9
+    unit: percent
+  - quantity: VISam suppressed fraction
+    value: 51
+    tolerance: 5.1
+    unit: percent
+  - quantity: VISp cohort units
+    value: 2374
+    tolerance: 237
+  - quantity: VISp suppressed units (Discussion, 2,048 of 2,374)
+    value: 2048
+    tolerance: 205
+  - quantity: VISam cohort units
+    value: 1706
+    tolerance: 171
+  criterion: Area is the unit-table area label (Materials and methods 2.5 names the CCF-derived area
+    only as a check). Reproduced when all six fractions are within tolerance and VISp has the highest
+    and VISam the lowest suppressed fraction; the paper itself says VISrl and VISal are not reliably
+    ordered, so their order is not judged. Partially reproduced when VISp highest and VISam lowest
+    hold but some fraction is outside tolerance. The other per-area n values are reported against
+    the paper's.
+- id: fig1l-session-gradient
+  statement: With the session as the unit of analysis, the median suppressed fraction falls from 0.92
+    in VISp to 0.52 in VISam and the areas differ (Kruskal-Wallis, p < 0.001).
+  source: Results 3.1, paragraph 3; Figure 1L legend
+  quote: with the recording session as the unit of analysis, the per-session median suppressed
+    fraction fell from 0.92 in VISp to 0.52 in VISam, and the areas differed (Kruskal-Wallis, p <
+    0.001; Figure 1L)
+  statistics:
+  - test: Kruskal-Wallis test across the six areas
+    p: 0.001
+    p_relation: "<"
+    n: sessions with at least five cohort units in an area
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: VISp median per-session suppressed fraction
+    value: 0.92
+    tolerance: 0.092
+  - quantity: VISam median per-session suppressed fraction
+    value: 0.52
+    tolerance: 0.052
+  criterion: Per session and area, the suppressed fraction among cohort units, computed only with at
+    least five units (Materials and methods 2.5; Figure 1L legend); Kruskal-Wallis across the six
+    areas. Reproduced when both medians are within tolerance and p < 0.001; partially reproduced when
+    the test holds and VISp exceeds VISam but a median is outside tolerance.
+- id: latency-jitter-control
+  statement: Drawing pseudo-reward latencies at random from each session's hit latencies, twenty
+    times, leaves 99.2% of the cohort passing Family A with unchanged SI sign (range 99.1 to 99.3%),
+    and the index correlates with its original value at rho = 0.996.
+  source: Materials and methods 2.4, paragraph 1
+  quote: across the twenty realizations, 99.2% of the cohort continued to pass Family A with an
+    unchanged sign of the specificity index (range 99.1-99.3%) and the index correlated with its
+    original value at ρ = 0.996
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: percent of cohort still passing Family A with the same sign, mean over realizations
+    value: 99.2
+    tolerance: 0.8
+    unit: percent
+  - quantity: correlation of the jittered SI with the original
+    value: 0.996
+    tolerance: 0.004
+  criterion: Tolerances are capped at the upper bound of 100% and of 1, since 10% of the value would
+    exceed it; 0.8 points is the distance to 100. "Pass" is read as significant after the per-area BH
+    correction of Family A. rho is read as Spearman (the symbol the paper uses), with Pearson as a
+    variant. Twenty realizations with fixed seeds (a standard choice).
+- id: waveform-ambiguous-band
+  statement: The two-component Gaussian mixture on trough-to-peak duration labels 849 of 53,806 units
+    (1.6%) ambiguous, 227 of them in the cohort (2.1%); widening the band to 0.3 to 0.7 removes 1,280
+    units (2.4%) and leaves the suppressed fractions at 0.790 in narrow and 0.617 in broad units,
+    against 0.790 and 0.619 with the 0.4 to 0.6 band.
+  source: Materials and methods 2.5, paragraph 1
+  quote: this removed 849 of 53,806 units (1.6%), of which 227 belonged to the cohort (2.1% of it).
+    Widening the ambiguous band to 0.3-0.7 removed 1,280 units (2.4%) and left the results unchanged
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: units entering the mixture fit
+    value: 53806
+    tolerance: 5381
+  - quantity: ambiguous units, band 0.4 to 0.6
+    value: 849
+    tolerance: 85
+  - quantity: ambiguous cohort units, band 0.4 to 0.6
+    value: 227
+    tolerance: 23
+  - quantity: ambiguous units, band 0.3 to 0.7
+    value: 1280
+    tolerance: 128
+  criterion: Mixture as in Materials and methods 2.5, two components, full covariance, eight
+    initialisations, on trough-to-peak duration of all visual-area units; the shorter-mean component
+    is narrow. The paper does not say why 53,806 of the 54,039 units enter; the reading is units with
+    a usable mean waveform, an assumption. Duration is open; the readings are (a)
+    trough-to-peak duration computed from each unit's mean waveform as the Methods define it; (b) the
+    trough-to-peak duration stored in the dandiset's units table. The seed is a standard choice.
+    Reproduced when the counts are within tolerance under one reading.
+- id: fig1jk-narrow-fraction-by-area
+  statement: The narrow-spiking fraction of the cohort is highest in VISp and VISrl (about 26%) and
+    lower in the other four areas (14 to 19%).
+  source: Results 3.2, paragraph 3; Figures 1J and 1K
+  quote: The narrow fraction was highest in VISp and VISrl (approximately 26%) and lower in the
+    remaining areas (14-19%; Figures 1J, K)
+  depends_on:
+  - waveform-ambiguous-band
+  expected:
+  - quantity: narrow fraction in VISp
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  - quantity: narrow fraction in VISrl
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  criterion: Which units form the fraction is open; the readings are (a) narrow among the cohort's
+    narrow and broad units per area (ambiguous excluded); (b) the same within the suppressed and the
+    enhanced subpopulations separately, as Figures 1J and 1K show. Reproduced when, under one reading,
+    VISp and VISrl are within tolerance of 26% and the other four areas lie in 14 to 19% widened by
+    10% of each bound (12.6 to 20.9%).
+- id: fig1h-median-isi-narrow-broad
+  statement: Median ISI is lower in narrow-spiking cohort units (40.9 ms, n = 2,308) than in
+    broad-spiking units (85.0 ms, n = 8,716).
+  source: Figure 1H legend
+  quote: Median ISI was lower in narrow-spiking (40.9 ms, n = 2,308) than in broad-spiking units (85.0
+    ms, n = 8,716)
+  depends_on:
+  - waveform-ambiguous-band
+  expected:
+  - quantity: median ISI, narrow cohort units
+    value: 40.9
+    tolerance: 4.09
+    unit: ms
+  - quantity: median ISI, broad cohort units
+    value: 85.0
+    tolerance: 8.5
+    unit: ms
+  - quantity: narrow cohort units
+    value: 2308
+    tolerance: 231
+  - quantity: broad cohort units
+    value: 8716
+    tolerance: 872
+  criterion: Each unit's median ISI, then the median over units of each class. The spike span is open;
+    the readings are (a) the whole recording; (b) the active block (Figure 1O shows ISI separately for
+    active, replay and peri-reward conditions). The class counts are also open. 2,308 plus 8,716 is
+    11,024, more than the 10,805 cohort units left after the 227 ambiguous ones (Materials and methods
+    2.5) are removed. The readings are (a) ambiguous units excluded; (b) every unit given the class of
+    its larger posterior, with no ambiguous band. Reproduced when the four values are within tolerance
+    under one combination of readings.
+- id: fig1gi-waveform-separation
+  statement: The narrow and broad populations of the cohort separate also in waveform half-width and
+    in spiking statistics (median ISI, autocorrelogram rise time).
+  source: Results 3.2, paragraph 3; Figures 1G to 1I
+  quote: a separation that also held in complementary metrics of waveform shape (half-width) and of
+    spiking statistics (median inter-spike interval and autocorrelogram rise time; Figures 1G-I, O)
+  depends_on:
+  - waveform-ambiguous-band
+  criterion: The paper reports no test. Half-width as Materials and methods 2.5 defines it (width of
+    the trough at half its minimum amplitude). Reproduced when narrow cohort units have a lower median
+    half-width and a lower median ISI than broad units. A two-sided Mann-Whitney test is shown as a
+    variant only; the paper names none, so it does not decide the outcome. The autocorrelogram rise time is not defined in the
+    paper, so it is not judged; the author may show it with a stated definition.
+- id: narrow-more-suppressed
+  statement: Narrow-spiking cohort units are suppressed more often than broad-spiking units (suppressed
+    fraction 0.790 against 0.619).
+  source: Materials and methods 2.5, paragraph 1; Results 3.2, paragraph 4
+  quote: the suppressed fraction was 0.790 in narrow and 0.617 in broad units, against 0.790 and 0.619
+    with the narrower band
+  depends_on:
+  - waveform-ambiguous-band
+  expected:
+  - quantity: suppressed fraction, narrow cohort units (band 0.4 to 0.6)
+    value: 0.790
+    tolerance: 0.079
+  - quantity: suppressed fraction, broad cohort units (band 0.4 to 0.6)
+    value: 0.619
+    tolerance: 0.0619
+  - quantity: suppressed fraction, broad cohort units (band 0.3 to 0.7)
+    value: 0.617
+    tolerance: 0.0617
+- id: narrow-more-suppressed-within-layer
+  statement: Narrow-spiking units are more frequently suppressed than broad-spiking units within each
+    layer, in 85% of sessions (p < 0.001).
+  source: Results 3.2, paragraph 4
+  quote: Second, narrow-spiking units were more frequently suppressed than broad-spiking units, and
+    this difference persisted within each layer (85% of sessions; p < 0.001)
+  statistics:
+  - test: Wilcoxon signed-rank test, sessions as unit of analysis
+    p: 0.001
+    p_relation: "<"
+  data: with_inputs
+  depends_on:
+  - waveform-ambiguous-band
+  - layer4-suppression
+  expected:
+    quantity: percent of sessions with narrow suppressed fraction above broad
+    value: 85
+    tolerance: 8.5
+    unit: percent
+  criterion: Per session, the suppressed fraction of narrow and of broad units, each computed only
+    with at least five eligible units (Materials and methods 2.5), compared by paired Wilcoxon
+    signed-rank. How "within each layer" enters is open; the readings are (a) per session and layer
+    group (supragranular, granular, infragranular), the narrow minus broad difference averaged over
+    the layer groups available, one value per session; (b) each session and layer group a separate
+    pair. Reproduced when, under one reading, p < 0.001 with narrow higher and the percentage of
+    sessions is within tolerance.
+- id: fig1mn-modulation-index-negative
+  statement: The reward modulation index M has a negative median in all six areas; over the cohort its
+    median is -0.1323 and 71.6% of units have M < 0.
+  source: Results 3.2, paragraph 3; Figures 1M and 1N; Materials and methods 2.5, paragraph 4
+  quote: the reward modulation index (M) had a negative median in all six areas (Figures 1M, N),
+    consistent with the predominance of suppression
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: median M over the cohort
+    value: -0.1323
+    tolerance: 0.0132
+  - quantity: percent of cohort units with M < 0
+    value: 71.6
+    tolerance: 7.16
+    unit: percent
+  criterion: M = (r_post - r_pre) / (r_post + r_pre) on the active-block reward-aligned rate
+    histogram, r_post the mean over 0 to +2.0 s and r_pre over -0.5 to 0 s (Materials and methods
+    2.5). Whether the histogram is smoothed is open (the Gaussian kernel applies "unless otherwise
+    specified"); smoothed and unsmoothed are both run, and the window means differ only at the edges.
+    Reproduced when the per-area medians are all negative and the two values are within tolerance.
+- id: fig1m-narrow-stronger-m
+  statement: Narrow-waveform units are more strongly suppressed than broad-waveform units, with a more
+    negative reward modulation index.
+  source: Discussion, paragraph 3; Figure 1M
+  quote: Moreover, narrow-waveform units were more frequently and more strongly suppressed than
+    broad-waveform units
+  depends_on:
+  - fig1mn-modulation-index-negative
+  - waveform-ambiguous-band
+  criterion: The paper reports no test of M between classes. Reproduced when the median M of narrow
+    cohort units is below that of broad units. A two-sided Mann-Whitney test is shown as a variant
+    only; the paper names none, so it does not decide the outcome.
+- id: m-baseline-sensitivity
+  statement: Moving the M baseline to -1.5 to -1.0 s raises the median M from -0.1323 to -0.0351 and
+    lowers the fraction with M < 0 from 71.6% to 54.5%; the median changes sign in VISal, VISpm and
+    VISam, VISp stays the most negative under every baseline, and 44.6% of reward-enhanced units have
+    negative M under the adjacent baseline against 1.9% under the retreated one.
+  source: Materials and methods 2.5, paragraph 4 (beginning "The pre-reward baseline is deliberately
+    adjacent"); Discussion, paragraph 2
+  quote: Retreating the baseline to -1.5 to -1.0 s raises the median M from -0.1323 to -0.0351 and
+    lowers the fraction of units with M < 0 from 71.6% to 54.5%, with the median changing sign in
+    VISal, VISpm and VISam; the ordering across areas is preserved, VISp being the most negative under
+    every baseline tested
+  depends_on:
+  - fig1mn-modulation-index-negative
+  expected:
+  - quantity: median M, baseline -1.5 to -1.0 s
+    value: -0.0351
+    tolerance: 0.0035
+  - quantity: percent with M < 0, baseline -1.5 to -1.0 s
+    value: 54.5
+    tolerance: 5.45
+    unit: percent
+  - quantity: percent of enhanced units with M < 0, adjacent baseline
+    value: 44.6
+    tolerance: 4.46
+    unit: percent
+  - quantity: percent of enhanced units with M < 0, baseline -1.5 to -1.0 s
+    value: 1.9
+    tolerance: 0.19
+    unit: percent
+  criterion: M with the response window fixed at 0 to +2.0 s and baselines -0.5 to 0, -1.0 to -0.5,
+    -1.5 to -1.0 and -2.0 to -1.5 s (Materials and methods 2.5). The text says "the ordering across
+    areas is preserved"; it is judged on VISp, which it states, being the most negative area under
+    all four baselines. Reproduced when the values are within tolerance, the median is positive in
+    VISal, VISpm and VISam and negative in VISp under -1.5 to -1.0 s, and VISp is the most negative
+    under every baseline.
+- id: layer-assignment-coverage
+  statement: A layer is assigned to 87.5% of the 54,039 units and 84.9% of the cohort, from 96.6% in
+    VISam to 48.0% in VISrl, and the CCF-derived area agrees with the unit-table label for 63.5% of
+    tested units.
+  source: Materials and methods 2.5, paragraph 6
+  quote: A layer was assigned to 87.5% of the 54,039 tested units and to 84.9% of the cohort, ranging
+    from 96.6% in VISam to 48.0% in VISrl, and the CCF-derived area agreed with the unit-table label
+    for 63.5% of tested units
+  data: with_inputs
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: percent of units with a layer
+    value: 87.5
+    tolerance: 8.75
+    unit: percent
+  - quantity: percent of cohort with a layer
+    value: 84.9
+    tolerance: 8.49
+    unit: percent
+  - quantity: percent with a layer, VISam (cohort or all units, see criterion)
+    value: 96.6
+    tolerance: 3.4
+    unit: percent
+  - quantity: percent with a layer, VISrl (cohort or all units, see criterion)
+    value: 48.0
+    tolerance: 4.8
+    unit: percent
+  - quantity: percent of units whose CCF area agrees with the unit-table label
+    value: 63.5
+    tolerance: 6.35
+    unit: percent
+  criterion: Layers from the CCFv3 25 um annotation volume at each unit's CCF coordinates, the
+    structure mapped to its laminar acronym, layers 1 and 2/3 supragranular, 4 granular, 5, 6a and 6b
+    infragranular (Materials and methods 2.5). The volume's release is not given; the 2017 annotation
+    is the standard choice. Whether the 96.6% to 48.0% range is over the cohort or all units is open;
+    both are run. The VISam tolerance is capped at 100%. Reproduced when the values are within
+    tolerance under one reading.
+- id: layer4-suppression
+  statement: Among units with an assigned layer, suppression is concentrated in layer 4; the
+    per-session suppressed fraction is higher there than in the other layers in 70 of 87 sessions
+    (80%), by a median of +0.116 (IQR +0.04 to +0.20; paired Wilcoxon signed-rank, p < 0.001).
+  source: Results 3.2, paragraph 4
+  quote: suppression was concentrated in layer 4 ... the per-session fraction of suppressed units was
+    higher in this layer than in the others in 70 of 87 sessions (80%), by a median of +0.116
+    (interquartile range +0.04 to +0.20; paired Wilcoxon signed-rank test, p < 0.001)
+  statistics:
+  - test: paired Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 87 sessions
+  data: with_inputs
+  depends_on:
+  - layer-assignment-coverage
+  expected:
+  - quantity: sessions in the comparison
+    value: 87
+    tolerance: 9
+  - quantity: sessions with layer 4 higher
+    value: 70
+    tolerance: 7
+  - quantity: median per-session difference, layer 4 minus other layers
+    value: 0.116
+    tolerance: 0.0116
+  criterion: Per session, the suppressed fraction of cohort units in layer 4 and in the other layers,
+    each only with at least five eligible units (Materials and methods 2.5). "The others" is open; the
+    readings are (a) all other layers pooled; (b) the mean of the supragranular and infragranular
+    fractions. The paper also prints an unmatched excess of +0.148 in the rate-matching control
+    (claim layer4-controls); it is judged there, and this claim is judged on +0.116. Reproduced when p < 0.001 with layer 4 higher and the counts and median are within
+    tolerance under one reading; partially reproduced when the test holds but a value is outside
+    tolerance.
+- id: layer4-within-waveform
+  statement: The layer 4 excess of suppression persists within each waveform class (+0.137 in broad
+    and +0.114 in narrow-spiking units, p < 1e-6 in both), and narrow units are not over-represented in
+    layer 4 (14.4% of tested layer-4 units, against 20.7% in layer 6a and 15.5% in layer 2/3).
+  source: Results 3.2, paragraph 4
+  quote: Narrow-spiking units were not over-represented there (14.4% of tested layer-4 units, against
+    20.7% in layer 6a and 15.5% in layer 2/3), and the layer-4 excess persisted within each waveform
+    class (+0.137 in broad- and +0.114 in narrow-spiking units, p < 10-6 in both)
+  statistics:
+  - about: layer 4 excess within broad-spiking units
+    test: paired Wilcoxon signed-rank test
+    p: 0.000001
+    p_relation: "<"
+  - about: layer 4 excess within narrow-spiking units
+    test: paired Wilcoxon signed-rank test
+    p: 0.000001
+    p_relation: "<"
+  data: with_inputs
+  depends_on:
+  - layer4-suppression
+  - waveform-ambiguous-band
+  expected:
+  - quantity: layer 4 excess, broad units
+    value: 0.137
+    tolerance: 0.0137
+  - quantity: layer 4 excess, narrow units
+    value: 0.114
+    tolerance: 0.0114
+  - quantity: narrow percent of tested layer-4 units
+    value: 14.4
+    tolerance: 1.44
+    unit: percent
+  - quantity: narrow percent of tested layer-6a units
+    value: 20.7
+    tolerance: 2.07
+    unit: percent
+  - quantity: narrow percent of tested layer-2/3 units
+    value: 15.5
+    tolerance: 1.55
+    unit: percent
+  criterion: As layer4-suppression, within each waveform class. The excess is read as the median
+    per-session difference, as in layer4-suppression. "Tested units" is read as all units with an
+    assigned layer and a waveform class, with cohort units as a variant. Reproduced when both excesses
+    are positive with p < 1e-6 and all values are within tolerance.
+- id: layer4-controls
+  statement: The layer 4 effect is not a sampling or detection artifact; layer 4 holds 18.8% of tested
+    units with a layer against 16.6% of the cohort, its split-half detection rate matches the other
+    layers (86.3% against 86.2%), and the excess survives firing-rate matching (+0.178 against +0.148
+    unmatched) and restriction to units at least 50 um from a laminar boundary (+0.176, in 63 of 72
+    sessions).
+  source: Results 3.2, paragraph 4
+  quote: Layer 4 was not over-sampled relative to its contribution to the cohort (18.8% of tested
+    units with an assigned layer against 16.6% of the cohort), and its split-half detection rate
+    matched that of the remaining layers (86.3% against 86.2%) ... It also survived matching the
+    firing-rate distribution across layers (+0.178, against +0.148 unmatched) and restricting to units
+    at least 50 μm from a laminar boundary (+0.176, in 63 of 72 sessions)
+  data: with_inputs
+  depends_on:
+  - layer4-suppression
+  expected:
+  - quantity: layer 4 percent of tested units with a layer
+    value: 18.8
+    tolerance: 1.88
+    unit: percent
+  - quantity: layer 4 percent of cohort units with a layer
+    value: 16.6
+    tolerance: 1.66
+    unit: percent
+  - quantity: split-half detection rate, layer 4
+    value: 86.3
+    tolerance: 8.63
+    unit: percent
+  - quantity: split-half detection rate, other layers
+    value: 86.2
+    tolerance: 8.62
+    unit: percent
+  - quantity: layer 4 excess, rate matched
+    value: 0.178
+    tolerance: 0.0178
+  - quantity: layer 4 excess, unmatched, in the rate-matching comparison
+    value: 0.148
+    tolerance: 0.0148
+  - quantity: layer 4 excess, units at least 50 um from a boundary
+    value: 0.176
+    tolerance: 0.0176
+  - quantity: sessions with layer 4 higher, at least 50 um
+    value: 63
+    tolerance: 6
+  - quantity: sessions in the comparison, at least 50 um
+    value: 72
+    tolerance: 7
+  criterion: Distance to a boundary is the smallest displacement along the three CCF axes that changes
+    the laminar label (Materials and methods 2.5). The rate matching across layers is not described
+    beyond its name; the reading taken from Materials and methods 2.6 is octiles of log10
+    whole-recording rate with equal counts drawn per octile, 20 draws averaged. The split-half
+    detection rate denominator is open; the readings are (a) all units with a layer; (b) units
+    testable in both contrasts (claim fig1e-cohort-size). The unmatched +0.148 differs from the
+    +0.116 of layer4-suppression; the paper does not say why, and the readings are (a) the sessions
+    where rate matching is possible; (b) a mean in place of a median. Reproduced when the values are within
+    tolerance under one reading and each excess is positive; partially reproduced when the excesses
+    are positive and the 50 um count holds but other values are outside tolerance.
+- id: fig2c-cv-lower
+  statement: The summed activity of the reward-modulated cohort (RW+) has lower population variability
+    than the remaining units (RW-) in all six areas, median CV 0.59 against 0.79, median differences
+    -0.14 to -0.23 across areas, p < 0.001 in all, rank-biserial about -1.
+  source: Results 3.3, paragraph 2; Figure 2C
+  quote: RW+ operated at a lower variability level than RW- in all six areas (Figures 2A-C; median CV
+    0.59 in RW+ vs. 0.79 in RW-; paired Wilcoxon signed-rank test per session, median difference
+    between -0.14 and -0.23 across areas, p < 0.001 in all)
+  statistics:
+  - test: paired Wilcoxon signed-rank test per session, each area
+    statistic: rank-biserial ≈ -1
+    p: 0.001
+    p_relation: "<"
+    n: sessions with RW+ units in the area
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: median CV, RW+
+    value: 0.59
+    tolerance: 0.059
+  - quantity: median CV, RW-
+    value: 0.79
+    tolerance: 0.079
+  criterion: As Materials and methods 2.6, per session and area, units with whole-recording rate below
+    0.2 Hz excluded from all groups; summed spike counts in 50 ms bins over the active block; CV in
+    non-overlapping 10 s windows (the Results say "sliding window"; the Methods, which come first,
+    say non-overlapping); RW- subsampled without replacement to the RW+ count, 20 draws averaged; the
+    per-session median CV over windows; paired Wilcoxon RW+ against RW- per area. Open details. (1)
+    Whole-recording rate is spike count over the session span from first to last spike, or over the
+    session's recorded duration; both are run (a standard choice). (2) The minimum RW+ count for a
+    session and area to enter is not given; the readings are (a) at least one RW+ unit; (b) at least
+    five, as in Materials and methods 2.5. (3) Whether the 20 draws are averaged as CV(t) or as the
+    median CV is not given; both are run. Per-area median differences are judged against -0.14 to
+    -0.23 widened by 10% of each bound (-0.126 to -0.253). Reproduced when, under one reading, RW+ is
+    lower in all six areas at p < 0.001 and the two median CVs are within tolerance; partially
+    reproduced when RW+ is lower at p < 0.05 in at least four areas.
+- id: cohort-faster-firing
+  statement: The reward-modulated cohort fires faster than the rest, median whole-recording rates 5.18
+    Hz in RW+ against 3.08 Hz in RW-, a ratio of 1.5 to 1.9 across the six areas.
+  source: Results 3.3, paragraph 3
+  quote: over the whole recording, median rates were 5.18 Hz in RW+ against 3.08 Hz in RW-, a ratio of
+    1.5 to 1.9 across the six areas
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: median whole-recording rate, RW+
+    value: 5.18
+    tolerance: 0.518
+    unit: Hz
+  - quantity: median whole-recording rate, RW-
+    value: 3.08
+    tolerance: 0.308
+    unit: Hz
+  criterion: Whether the 0.2 Hz filter is applied before these medians is open; both are run.
+    Reproduced when the two medians are within tolerance and every per-area ratio of medians lies in
+    1.5 to 1.9 widened by 10% of each bound (1.35 to 2.09), under one reading.
+- id: cv-rate-matched
+  statement: With firing-rate distributions matched as well as unit counts, RW+ stays less variable in
+    five of six areas (median differences -0.02 to -0.12, p < 0.01, 69% of sessions), not in VISrl (p
+    = 0.07); the pooled median difference falls from -0.19 to -0.06 and the rank-biserial from -0.81
+    to -0.38.
+  source: Results 3.3, paragraph 3
+  quote: The lower-variability regime of RW+ survived in five of the six areas (median difference
+    between -0.02 and -0.12, p < 0.01 in all five; 69% of sessions), the exception being VISrl (p =
+    0.07), but attenuated substantially ... the pooled median difference fell from -0.19 to -0.06 and
+    the paired rank-biserial correlation from -0.81 to -0.38
+  statistics:
+  - about: RW+ against RW- per area, rate and count matched, five areas
+    test: paired Wilcoxon signed-rank test
+    p: 0.01
+    p_relation: "<"
+  - about: RW+ against RW-, rate and count matched, VISrl
+    test: paired Wilcoxon signed-rank test
+    p: 0.07
+  depends_on:
+  - fig2c-cv-lower
+  - cohort-faster-firing
+  expected:
+  - quantity: pooled median difference, count matched only
+    value: -0.19
+    tolerance: 0.019
+  - quantity: pooled median difference, rate and count matched
+    value: -0.06
+    tolerance: 0.006
+  - quantity: rank-biserial, count matched only, pooled
+    value: -0.81
+    tolerance: 0.081
+  - quantity: rank-biserial, rate and count matched, pooled
+    value: -0.38
+    tolerance: 0.038
+  - quantity: percent of sessions with RW+ below RW-, rate matched
+    value: 69
+    tolerance: 6.9
+    unit: percent
+  criterion: Rate matching per Materials and methods 2.6, octiles of log10 whole-recording rate over
+    the union of RW+ and RW-, the same number from each group in every octile (read as the smaller
+    of the two counts), 20 draws averaged. "Pooled" is read as over all session and area pairs.
+    Reproduced when, under the fig2c-cv-lower readings, RW+ is lower at p < 0.01 in VISp, VISl, VISal,
+    VISpm and VISam and the values are within tolerance; partially reproduced when the effect is
+    attenuated (pooled difference closer to zero than count matched only) and holds in at least three
+    areas. VISrl's result is reported either way.
+- id: cv-unmatched-reverses
+  statement: Without matching the unit count, the sign of the RW+ against RW- CV comparison reverses,
+    because RW+ is always the smaller group and summed variability falls with population size.
+  source: Results 3.3, paragraph 3
+  quote: without matching the unit count, the sign of the comparison reverses, because the variability
+    of a summed population falls with population size, and RW+ is always the smaller group
+  depends_on:
+  - fig2c-cv-lower
+  criterion: As fig2c-cv-lower with no subsampling. Reproduced when RW+ has fewer units than RW- in
+    every session and area and the pooled median of RW+ minus RW- CV is positive.
+- id: fig2d-cv-correlations
+  statement: The CV(t) series co-fluctuate most within RW- across areas (mean correlation +0.58), less
+    between RW+ and RW- (+0.45) and least within RW+ (+0.38); all 66 pairwise correlations exceed an
+    autocorrelation-preserving null (mean null correlation at most 0.014, z at least 15) and are
+    significant after FDR (largest p_FDR 1.0e-12).
+  source: Results 3.3, paragraph 4; Figure 2D legend
+  quote: the shared temporal co-fluctuation was strongest within the RW- population (mean cross-area
+    correlation +0.58), intermediate for the cross RW+/RW- block (+0.45), and weakest within the RW+
+    population (+0.38). All 66 pairwise correlations exceeded a null
+  statistics:
+  - about: each of the 66 pairwise CV(t) correlations; p is the largest FDR-corrected p of the 66
+    test: Pearson correlation, against circular-shift and block-permutation nulls
+    statistic: z ≥ 15 for every pair
+    p: 1.0e-12
+    corrected: false-discovery rate
+  depends_on:
+  - fig2c-cv-lower
+  expected:
+  - quantity: mean cross-area correlation within RW-
+    value: 0.58
+    tolerance: 0.058
+  - quantity: mean correlation in the RW+ by RW- block
+    value: 0.45
+    tolerance: 0.045
+  - quantity: mean cross-area correlation within RW+
+    value: 0.38
+    tolerance: 0.038
+  criterion: CV(t) series per area and group as in fig2c-cv-lower; nulls of independent circular
+    shifts and of permutation of blocks of 30 windows (300 s), 1,000 permutations each (Materials and
+    methods 2.6). How correlations are formed across sessions is open; the readings are (a) Pearson r
+    per session for each pair, averaged across sessions (the legend says "mean Pearson r"); (b) r
+    over the series concatenated across sessions. Whether the cross block includes same-area RW+ by
+    RW- pairs is open; both are run. The source of the FDR p values is not given. With 1,000
+    permutations a permutation p cannot fall below about 1e-3, so the largest p_FDR of 1.0e-12 can
+    only come from the parametric test of each Pearson r; that is the reading, BH over the 66 pairs
+    (Materials and methods 2.8), and the nulls give the z values. Reproduced when, under one reading, the three means are within tolerance and
+    every pair's z against both nulls is at least 15; partially reproduced when the order RW- above
+    cross above RW+ holds and all pairs exceed the nulls.
+- id: cv-correlation-block-excess
+  statement: Within sessions, the RW- block's mean CV(t) correlation exceeds the RW+ block's by a
+    median of +0.21, in 87% of sessions (p < 1e-13).
+  source: Results 3.3, paragraph 4
+  quote: measured within each session, the excess of the RW- block over the RW+ block had a median of
+    +0.21 and held in 87% of sessions (p < 10-13)
+  statistics:
+  - test: paired test across sessions (not named)
+    p: 1.0e-13
+    p_relation: "<"
+  depends_on:
+  - fig2d-cv-correlations
+  expected:
+  - quantity: median per-session excess of RW- over RW+ mean correlation
+    value: 0.21
+    tolerance: 0.021
+  - quantity: percent of sessions with RW- above RW+
+    value: 87
+    tolerance: 8.7
+    unit: percent
+  criterion: The test is not named; the paired Wilcoxon signed-rank test, which the paper uses for its
+    other paired session comparisons (Materials and methods 2.5 and 2.6), is used. Sessions need at
+    least two areas with both groups. Reproduced when the values are within tolerance and p < 1e-13;
+    partially reproduced when the excess is positive with p < 0.001.
+- id: fig2f-pre-post-cv
+  statement: Population CV rises from pre- to post-stimulus (image change) windows. In RW- the rise is
+    significant in all six areas in both blocks (p < 0.001); in RW+ it is significant in the active
+    block in VISp, VISl, VISpm and VISrl only, and in passive replay in VISp, VISl and VISal only. In
+    VISp the RW+ median CV rises from 0.74 to 0.95 in the active block and from 0.69 to 0.73 in
+    replay.
+  source: Results 3.3, paragraph 5; Figure 2F legend
+  quote: In the non-modulated population (RW-), the post-stimulus increase was significant in all six
+    areas and in both blocks (paired Wilcoxon signed-rank test per session, p < 0.001 in all). In the
+    reward-modulated cohort (RW+), the same increase was weaker and area-dependent
+  statistics:
+  - about: RW- pre against post, each area and block
+    test: paired Wilcoxon signed-rank test per session
+    p: 0.001
+    p_relation: "<"
+  - about: RW+ pre against post, active block, VISp, VISl, VISpm and VISrl
+    test: paired Wilcoxon signed-rank test per session
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig2c-cv-lower
+  expected:
+  - quantity: VISp RW+ median CV pre, active
+    value: 0.74
+    tolerance: 0.074
+  - quantity: VISp RW+ median CV post, active
+    value: 0.95
+    tolerance: 0.095
+  - quantity: VISp RW+ median CV pre, replay
+    value: 0.69
+    tolerance: 0.069
+  - quantity: VISp RW+ median CV post, replay
+    value: 0.73
+    tolerance: 0.073
+  criterion: The paper does not give the pre and post window lengths, which image changes are used,
+    or how the CV is formed around events. Readings. Windows (a) -0.5 to 0 s and 0 to +0.75 s around
+    each image change, the baseline and response windows of Materials and methods 2.4; (b) -0.75 to 0
+    and 0 to +0.75 s, equal lengths. Events (a) all image changes of the block; (b) in the active
+    block, hit and miss change trials only. CV per window, from 50 ms bin counts, as (a) the CV of each
+    event window, median over events; (b) the CV of all bins of the window pooled over events. Groups
+    and filters as fig2c-cv-lower; per-session median, paired Wilcoxon per area and block. Significance
+    at p < 0.05 (the legend's lowest level), uncorrected, with BH over six areas as a variant
+    (Materials and methods 2.8). Reproduced when, under one combination of readings, RW- rises at p <
+    0.001 in all 12 area-block cells, at least 10 of the 12 RW+ cells match the paper's significance
+    pattern, and the VISp values are within tolerance; partially reproduced when RW- holds and RW+ has
+    fewer significant cells than RW- with at least 8 of 12 matching.
+- id: fig3a-archetypes
+  statement: NMF of the cohort's standardized peri-reward profiles gives six signed archetypes, three
+    anticipatory with peaks between -445 and -175 ms, one peaking near reward (-45 ms), one late (+1405
+    ms) and one broad and slow.
+  source: Results 3.4, paragraph 1; Figure 3A
+  quote: three were anticipatory, rising before reward delivery with peaks between -445 and -175 ms,
+    and three were not, comprising a broad, slow archetype, one peaking near reward delivery (-45 ms),
+    and one peaking late in the window (+1405 ms)
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: response matrix rows (cohort units)
+    value: 11032
+    tolerance: 1103
+  - quantity: response matrix columns (10 ms bins, -0.5 to +1.5 s)
+    value: 200
+    tolerance: 0
+  criterion: As Materials and methods 2.7, per unit the active-block reward-aligned PSTH from -0.5 to
+    +1.5 s in 10 ms bins with 100 ms padding, smoothed with a 25 ms Gaussian, padding removed,
+    z-scored within the unit; split into [max(X, 0), max(-X, 0)]; scikit-learn NMF, rank 6, solver
+    coordinate descent, tol 1e-4, max_iter 600; signed archetype = positive minus negative channel.
+    Open details. (1) Initialisation is not named; the readings are (a) the scikit-learn default; (b)
+    random initialisation (the text speaks of "repeated random fits"). (2) Peak time is (a) the time
+    of the maximum of the signed archetype; (b) the time of its maximum absolute value. Peak times are
+    judged within 10% of the 2 s window (200 ms), as a peak is a bin of a smooth profile and 10% of
+    -45 ms is below the bin width. Reproduced when, under one reading, three archetypes peak before
+    0 within -445 to -175 ms widened by 200 ms at each end, one peaks within 200 ms of -45 ms, and one
+    within 200 ms of +1405 ms.
+- id: fig3b-mixtures
+  statement: Units are mixtures of archetypes, with a median effective number of 2.72 and only 1.0%
+    dominated by one archetype (weight at least 0.9); the soft mixture explains about twice the
+    variance of a hard single-archetype assignment (0.72 against 0.36).
+  source: Results 3.4, paragraphs 1 and 2; Figure 3B
+  quote: number of archetypes per unit had a median of 2.72, and only 1.0% of units were dominated by
+    a single archetype (weight ≥ 0.9; Figure 3B). Accordingly, the soft mixture reconstructed the
+    responses about twice as well as a hard, one-archetype assignment (variance explained 0.72 vs.
+    0.36)
+  depends_on:
+  - fig3a-archetypes
+  expected:
+  - quantity: median effective number of archetypes
+    value: 2.72
+    tolerance: 0.272
+  - quantity: percent of units with a weight at least 0.9
+    value: 1.0
+    tolerance: 0.1
+    unit: percent
+  - quantity: variance explained, NMF mixture
+    value: 0.72
+    tolerance: 0.072
+  - quantity: variance explained, hard assignment
+    value: 0.36
+    tolerance: 0.036
+  criterion: Effective number = exp of the entropy of the unit's normalized NMF weights (Materials and
+    methods 2.7). Open details. (1) Weight normalization is (a) the unit's W row divided by its sum;
+    (b) the same after scaling each archetype by the norm of its H row. (2) Variance explained is in
+    the signed space, 1 minus residual over total sum of squares. (3) The hard assignment is a
+    full-covariance Gaussian mixture after PCA; the numbers of components are not given, and the
+    reading is six PCs and six mixture components (rank matched), with each unit reconstructed (a) by
+    its cluster's mean profile; (b) by that mean scaled by least squares. Reproduced when, under one
+    reading, the four values are within tolerance; partially reproduced when the mixture explains at
+    least 1.5 times the variance of the hard assignment and the median effective number exceeds 2.
+- id: fig3c-area-overlap
+  statement: The six areas' distributions in the archetype simplex overlap almost entirely; the
+    between-area variance is small (eta squared 0.004) though above a label-shuffle null (p < 0.001).
+  source: Results 3.4, paragraph 2; Figure 3C
+  quote: the per-area distributions overlapped almost entirely ... the between-area variance of the
+    simplex positions was small (η2 = 0.004), though reliably above a null obtained by shuffling the
+    area labels (permutation test, p < 0.001)
+  statistics:
+  - test: permutation test, area labels shuffled
+    statistic: η2 = 0.004
+    p: 0.001
+    p_relation: "<"
+    n: 11,032 cohort units
+  depends_on:
+  - fig3b-mixtures
+  expected:
+    quantity: eta squared of simplex position by area
+    value: 0.004
+    tolerance: 0.0004
+  criterion: Simplex position = the unit's normalized weights (the readings of fig3b-mixtures). Eta
+    squared is read as the between-area sum of squares over the total sum of squares, summed over the
+    six coordinates; the number of permutations is not given and 1,000 is used (a standard choice;
+    p < 0.001 needs at least 1,000). Reproduced when eta squared is within tolerance and no shuffle
+    reaches it; partially reproduced when eta squared is below 0.01 and p < 0.001 but outside
+    tolerance.
+- id: fig3d-anticipatory-gradient
+  statement: The fraction of cohort units with an anticipatory profile is highest in VISp (89%) and VISl
+    (77%) and lower and similar across the four higher-order areas (66 to 69%).
+  source: Results 3.4, paragraph 3; Figure 3D
+  quote: the fraction of units with an anticipatory profile was highest in primary visual cortex
+    (VISp, 89%) and in VISl (77%), and lower and similar across the four higher-order areas (66-69%)
+  depends_on:
+  - fig3a-archetypes
+  expected:
+  - quantity: anticipatory fraction, VISp
+    value: 89
+    tolerance: 8.9
+    unit: percent
+  - quantity: anticipatory fraction, VISl
+    value: 77
+    tolerance: 7.7
+    unit: percent
+  criterion: The text classifies a unit by "the sign of its pre- vs. post-reward ramp" and gives no
+    windows. Readings, on the standardized profiles of fig3a-archetypes. (a) Mean response over -0.5
+    to 0 s greater than over 0 to +1.5 s; (b) mean over -0.5 to 0 s greater than over 0 to +0.5 s; (c)
+    the NMF weight on the anticipatory archetypes (A1 to A3) greater than on the others. Reproduced
+    when, under one reading, VISp and VISl are within tolerance and VISrl, VISal, VISpm and VISam lie
+    in 66 to 69% widened by 10% of each bound (59.4 to 75.9%).
+- id: anticipatory-direction-overlap
+  statement: The anticipatory label largely re-expresses the suppression label; they agree for 80.7% of
+    the cohort (phi = 0.56), 91.5% of suppressed against 39.9% of enhanced units carry an anticipatory
+    ramp, and standardizing areas to the overall direction composition leaves 31% of the VISp to VISam
+    gradient (+0.07 of +0.23).
+  source: Results 3.4, paragraph 3
+  quote: the two unit-level labels agreed for 80.7% of the cohort (φ = 0.56) ... 91.5% of suppressed
+    units carried an anticipatory ramp, against 39.9% of enhanced units. Standardizing every area to
+    the overall direction composition leaves 31% of the VISp-to-VISam amplitude of the
+    anticipatory-fraction gradient (+0.07 of +0.23)
+  depends_on:
+  - fig3d-anticipatory-gradient
+  expected:
+  - quantity: agreement of anticipatory and suppressed labels
+    value: 80.7
+    tolerance: 8.07
+    unit: percent
+  - quantity: phi coefficient
+    value: 0.56
+    tolerance: 0.056
+  - quantity: percent of suppressed units anticipatory
+    value: 91.5
+    tolerance: 8.5
+    unit: percent
+  - quantity: percent of enhanced units anticipatory
+    value: 39.9
+    tolerance: 3.99
+    unit: percent
+  - quantity: VISp minus VISam anticipatory fraction
+    value: 0.23
+    tolerance: 0.023
+  - quantity: same after direct standardization to the cohort's direction composition
+    value: 0.07
+    tolerance: 0.007
+  criterion: Under the reading that fig3d-anticipatory-gradient matched. Direct standardization is read
+    as each area's anticipatory fraction within suppressed and within enhanced units, weighted by the
+    cohort's 65.5% and 34.5%. The 91.5% tolerance is capped at 100%. Reproduced when the values are
+    within tolerance.
+- id: hits-vs-false-alarms
+  statement: In the underpowered hits against false alarms contrast (486 false alarms in 102 sessions,
+    a median of 4 per session against 160 hits), 14.6% (VISp) to 22.2% (VISpm) of cohort units differ
+    after FDR correction, with a median SI of -0.56 in VISp, deeper suppression when the lick is
+    rewarded.
+  source: Discussion, paragraph 6
+  quote: Only 486 false alarms were available in the 102 sessions covered by this family, a median of
+    four per session against a median of 160 hits ... Even so, between 14.6% (VISp) and 22.2% (VISpm)
+    of cohort units differed between the two conditions after false-discovery-rate correction, with a
+    median specificity index of -0.56 in VISp
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: false alarm trials
+    value: 486
+    tolerance: 49
+  - quantity: sessions covered by the hits against false alarms family
+    value: 102
+    tolerance: 10
+  - quantity: median false alarms per session
+    value: 4
+    tolerance: 0.4
+  - quantity: median hits per session
+    value: 160
+    tolerance: 16
+  - quantity: median SI, VISp
+    value: -0.56
+    tolerance: 0.056
+  criterion: Amplitudes, Mann-Whitney test, BH per area and SI as in Families A and B (Materials and
+    methods 2.4), on cohort units. The alignment of false alarm trials is not given; the readings are
+    (a) hits aligned to reward and false alarms to the first lick after the catch change, as the
+    contrast is "licking with water against licking without it"; (b) false alarms at the session median
+    change-to-reward latency after the catch change. Whether the responsiveness filter applies is
+    open; with and without are run. Reproduced when, under one reading, the counts and VISp median SI
+    are within tolerance and the per-area fractions lie in 14.6 to 22.2% widened by 10% of each bound,
+    with VISp lowest and VISpm highest not required. The power figures (probability of superiority
+    0.91; 26 sessions where no effect could reach it) are reported, not judged.
+- id: hits-vs-lick-bouts
+  statement: Against the onsets of unrewarded lick bouts (a median of 415 per session), 74.9% (VISp) to
+    88.8% (VISrl) of cohort units differ from the hit lick after correction, with deeper suppression on
+    rewarded licks in VISp (median SI -0.50).
+  source: Discussion, paragraph 7
+  quote: Unrewarded lick bouts occur about a hundred times more often than false alarms (median 415 per
+    session), and comparing the lick of a hit against the onset of an unrewarded bout, 74.9% (VISp) to
+    88.8% (VISrl) of cohort units differed after correction, again with deeper suppression on rewarded
+    licks in VISp (median specificity index -0.50)
+  depends_on:
+  - fig1e-cohort-size
+  expected:
+  - quantity: median unrewarded lick bouts per session
+    value: 415
+    tolerance: 41.5
+  - quantity: percent of cohort differing, VISp
+    value: 74.9
+    tolerance: 7.49
+    unit: percent
+  - quantity: percent of cohort differing, VISrl
+    value: 88.8
+    tolerance: 8.88
+    unit: percent
+  - quantity: median SI, VISp
+    value: -0.50
+    tolerance: 0.05
+  criterion: The paper does not define a lick bout, nor the baseline for a bout onset that has no image
+    change. Bouts are taken from the dandiset's lick times with an inter-lick gap threshold as a stated
+    assumption; 250 ms and 500 ms are run. A bout is unrewarded when no reward falls within it. The
+    baseline is (a) the 0.5 s before the lick event; (b) for hits, the 0.5 s before the image change,
+    as in Families A and B, and for bouts the 0.5 s before onset. Response window 0 to 0.75 s after
+    the hit's first lick and after the bout onset; Mann-Whitney, BH per area, SI as Materials and
+    methods 2.4. Reproduced when, under one combination of readings, the values are within tolerance
+    and every area lies in 74.9 to 88.8% widened by 10% of each bound (67.4 to 97.7%).
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1d-split-half-above-null. The criterion fixed "cohort median above the 95th percentile of the null" as if from the paper; the paper gives no measure of "well above" (Results 3.1, Figure 1D legend). It is now named as open, with two readings, and the outcome marked as resting on the one used.
+  - fig1gi-waveform-separation, fig1m-narrow-stronger-m. A Mann-Whitney test at p < 0.05, which the paper does not report or name, decided the outcome. The claims are now judged on the ordering of medians the paper states, and the test is shown as a variant.
+  - fig1h-median-isi-narrow-broad. The legend's n (2,308 plus 8,716, or 11,024) does not fit the 10,805 cohort units left after the 227 ambiguous ones (Materials and methods 2.5). Named the class counts as open, with readings (ambiguous excluded; class by the larger posterior).
+  - waveform-ambiguous-band. The criterion said the 53,806 units are those with a waveform; the paper does not say so. Now stated as an assumption.
+  - layer4-suppression, layer4-controls. The criterion let a median within tolerance of +0.148 pass for the +0.116 the paper reports for this test; +0.148 is the unmatched excess of the rate-matching control (Results 3.2, paragraph 4). The claim is now judged on +0.116, and +0.148 is an expected value of layer4-controls, with the paper's unexplained gap between the two named as open.
+  - m-baseline-sensitivity. Source cited Materials and methods 2.5 paragraph 5, while fig1mn-modulation-index-negative cites paragraph 4 for the same sentence; now paragraph 4 with its first words.
+  - fig2d-cv-correlations. The criterion took the FDR p values from the 1,000-permutation nulls, which cannot give the largest p_FDR of 1.0e-12 the Figure 2D legend reports; now read as parametric Pearson p values with BH over the 66 pairs. The statistics entry says p is the largest of the 66.
+  - layer-assignment-coverage. The VISam and VISrl expected values were labeled as cohort percentages while the criterion names cohort or all units as open; labels now match the criterion.
+  - hits-vs-false-alarms. The 102 was labeled sessions with false alarms; the paper says sessions covered by this family (Discussion, paragraph 6). Relabeled.
+  - Open, not settled. Paragraph numbers in Materials and methods 2.5 and Results 3.2 cannot be checked against the layout, as the text extraction loses paragraph breaks and there is no PDF; the quotes locate each finding.
+  - Open, not settled. The rate matching across layers (layer4-controls) and the pre and post windows of Figure 2F (fig2f-pre-post-cv) are not described in the paper; the readings in those criteria are the file's, taken from the closest Methods passages.

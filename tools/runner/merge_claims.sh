@@ -20,6 +20,7 @@ for try in 1 2 3 4 5; do
   git fetch -q origin main "attempt/$d"
   git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
   git worktree add -q --detach "$tmp" origin/main
+  bash "$tmp/tools/protocol.sh" "$tmp" >/dev/null   # the protocol main names (schemas/claims.schema.json)
   git -C "$tmp" checkout -q "origin/attempt/$d" -- "claims/$d.yaml"
   if [ "$with_transcripts" = --with-transcripts ]; then
     git -C "$tmp" ls-tree --name-only "origin/attempt/$d" "transcripts/$d/" | { grep '/claims[^/]*\.md$' || true; } \

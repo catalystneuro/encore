@@ -1,0 +1,1080 @@
+schema_version: 3
+id: costabile-2023-01
+datasets:
+- archive: dandi
+  id: '000235'
+  version: 0.230316.1600
+  doi: 10.48324/dandi.000235/0.230316.1600
+  relation: primary
+- archive: dandi
+  id: '000236'
+  version: 0.230316.2031
+  doi: 10.48324/dandi.000236/0.230316.2031
+  relation: primary
+- archive: dandi
+  id: '000237'
+  version: 0.230316.1655
+  doi: 10.48324/dandi.000237/0.230316.1655
+  relation: primary
+- archive: dandi
+  id: 000238
+  version: 0.230316.1519
+  doi: 10.48324/dandi.000238/0.230316.1519
+  relation: primary
+paper: doi:10.7554/elife.83289
+date: 2026-11-25
+entry: costabile-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45721168613
+inputs:
+- what: The paper's analysis code, read for the method details the claims file cites and for the brightness
+    criterion (experiment.py, avg_component_brightness), the 5 Hz time base and the binning of behavior
+    (rwave_data_fit.py), the CNN and its training (model.py, utilities.py) and the inter-trial correlations
+    (rwave_plot_panels.py). No code is run from it; the entry's helpers re-implement what they use.
+  source: https://github.com/haesemeyer/mine_pub at commit 368d75650a1de92d9dd6c7dd1aadff24be6ba379
+- what: The lab's tail-processing code that the paper names (Methods, Processing of zebrafish data), read
+    for the bout detection (helper_functions.py, detectBouts and anglePrep), which the entry re-implements
+    to re-derive swim bouts, vigor and direction from the deposited tail angles.
+  source: https://bitbucket.org/jcostabile/2p at commit 5ffaa2d2b2eeeb50466755a3520de5e5bf0687e2
+outcomes:
+- claim: data-zebrafish-coverage
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_costabile_2023.ipynb
+  output: claim:data-zebrafish-coverage
+  measured:
+  - 25
+  - 750
+  - 706543
+  - 434651
+  notes: The three whole-brain dandisets hold 25 fish (8, 9 and 8 files) with 30 planes each, 750 planes,
+    and 706,543 CaImAn components, the paper's count exactly. 434,651 components have a mean brightness
+    of at least 0.1 photons over imaging time, 0.41% more than the paper's 432,882 (a fraction of 0.615
+    against 0.613). The count changes by about 4,000 per 0.01 of the cut (439,048 at 0.09, 430,311 at
+    0.11). Per dandiset the bright components are 114,471 (000235), 172,795 (000236) and 147,385 (000237);
+    per fish the bright fraction ranges from 0.44 to 0.83. No plane is deposited twice (no repeated digest
+    of calcium, temperature or tail data among 925 planes; largest correlation of two planes' temperature
+    traces 0.926).
+  deviations:
+  - Brightness is the unweighted mean, over each component's pixel mask, of the time-average of the GCaMP
+    channel of the movie the NWB files hold (as experiment.py, avg_component_brightness). The code averages
+    the projection of its own experiment store; whether that projection was of the raw or the motion-corrected
+    movie is not stated. The raw movie is assumed here, as it is the movie the files hold; the count matches
+    the paper's to 0.4%. The outcome depends little on it, as the count moves by about 4,000 per 0.01 of
+    the cut, against a tolerance of 43,288, so only a large difference in brightness between the two
+    projections would move it out of tolerance. The question is recorded for the paper's authors (findings).
+- claim: figs6-train-test-uncorrelated
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_costabile_2023.ipynb
+  output: claim:figs6-train-test-uncorrelated
+  notes: Over 750 planes and 2,250 trial pairs the median inter-trial correlation is -0.051 for temperature,
+    and -0.009 (swim starts), -0.006 (vigor) and -0.001 (direction) under the main bout reading (5 rad/s,
+    at least 10 frames); every bout reading, including the code's default threshold of 2 rad/s, gives
+    medians within 0.013 of zero for the behavior traces. All four predictors meet both readings of the
+    criterion (absolute median below 0.2 and below 0.1). The temperature correlations spread widely (range
+    -0.909 to 0.873, 5th to 95th percentile -0.620 to 0.544), so their median absolute value is 0.266,
+    and a stricter variant (median of absolute values below 0.2) fails for temperature; the behavior traces
+    pass it (0.015 or less). Per dandiset the temperature median absolute value is 0.249, 0.268 and 0.286.
+    Under the main reading 117 of 2,250 behavior pairs are undefined, from trials without a bout. No random
+    draws are involved. The paper's panel uses the raw behavior traces (rwave_plot_panels.py reads bout_start,
+    rolling_vigor and sum_tail from rwave_build_main.get_behaviors, which reads raw_behavior, stored before
+    the Gram-Schmidt step); the orthogonalized and z-scored traces give medians within 0.009 of zero too
+    (median absolute values 0.025 or less). The criterion tests the median of the signed correlations,
+    which any distribution centred on zero passes; the round-1 verifier noted this, and it is asked of
+    a reader (questions/costabile-2023.yaml).
+  deviations:
+  - The dandisets hold no swim bouts, vigor or direction traces, so they are re-derived from the tail
+    angles with the lab's bout detection (2p helper_functions.py at 5ffaa2d, detectBouts after anglePrep).
+    Assumed, as the code's input is not deposited in that form, that the NWB segment angles are relative
+    (their sum equals the stored cumulative tail angle to 3e-14), so point angles are their cumulative
+    sum, and that the direction metric sums the cumulative tail angle (the code's column "sum_tail").
+    The Methods give the threshold only as "empirically determined". The code's default of 2 rad/s lies
+    inside the tracking noise here (4.9 bouts per second), so 5 and 10 rad/s, with minimum lengths of
+    10 or 5 frames, are the readings and the default is a variant. The outcome is the same under all four.
+    The question is recorded for the paper's authors (findings).
+  - Planes are cut to the shortest length and split into trials of 824 bins of 0.2 s, as rwave_plot_panels.py
+    does.
+- claim: fig6d-mine-identifies-more-than-lm
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_costabile_2023.ipynb
+  output: claim:fig6d-mine-identifies-more-than-lm
+  notes: 'Needs the paper''s CNN fit to each of the 432,882 bright components (434,651 here). One fit
+    of the paper''s architecture takes a median 2.14 s on one thread here (fits 2 to 20 of one plane,
+    range 2.10 to 2.19 s; the first, 8.37 s, includes building the graph; main notebook section 5), which
+    is 257 h on one thread for the real-data fits and 64 h on four CPUs if four processes kept that speed.
+    They do not: in four parallel processes a fit takes a median 4.37 s, 1.17 s of wall time per fit over
+    600 fits (mine_fits_subsample.ipynb), so the 432,882 real-data fits come to 141 h on the runner''s
+    four CPUs, and 283 h with the rotated controls, against a run of five hours. These times vary between
+    runs by tens of percent (the run reviewed in round 2 printed 1.37 s, 3.08 s, 0.89 s, 107 h and 214
+    h), and every run puts the fits far beyond the run''s length. The linear comparison model is fit to
+    every bright component (434,648; 2 planes with fewer than 5 bright components are left out): 26,328
+    reach a test correlation of sqrt(0.5) under the main bout reading (25,373 to 26,726 under the others;
+    26,326 and 25,375 in the run reviewed in round 2, so a few components near the cut move between
+    runs), against about 25,300 implied by the paper (60% of 42,229). MINE''s
+    side is estimated from a seeded random subsample of 600 components (20 in each of 30 random planes,
+    16 fish), which decides no outcome. MINE identifies 45 and the linear model 30 of them; scaled to
+    the dataset, the union is about 54,491 (95% interval over planes 26,711 to 86,594), 0.374 only by
+    MINE (0.226 to 0.607), 0.514 by both (0.297 to 0.640) and 0.113 only by the linear model (0.046 to
+    0.194). The paper''s values lie inside these intervals, which are far wider than the tolerances. Seven
+    of the 600 MINE fits gave no test correlation (constant prediction). The subsample was not repeated
+    under the four further seeds (four more sets of 600 fits); the bootstrap over planes gives the sampling
+    error instead.'
+  deviations:
+  - The estimates in the notes come from a random subsample of 600 bright components (mine_fits_subsample.ipynb),
+    not from all of them; the linear model's count is over all of them. Bouts are re-derived from the
+    tail tracking as in figs6-train-test-uncorrelated (main reading thr5_min10). The test frames follow
+    rwave_data_fit.py, which scores the prediction from train_frames on in the shifted series (the CNN's
+    and the linear model's test frames start 49 frames after the last training frame).
+- claim: figs6-shuffle-enrichment
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Needs the CNN fits to the real data and again to the rotated control data, 283 h on four
+    CPUs at the throughput measured in mine_fits_subsample.ipynb (section 5). A subsample cannot estimate the ratio:
+    at the paper''s 93-fold enrichment, the 45 MINE fits found in 600 sampled components would leave an
+    expected 0.5 in the rotated data.'
+- claim: figs6-mine-more-at-every-cutoff
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig6d-mine-identifies-more-than-lm, blocked as too large. Estimated from the subsample
+    of 600 fits (mine_fits_subsample.ipynb, no outcome rests on it): MINE''s estimated count is above
+    the linear model''s at every cutoff from 0.05 to 0.95, and below it at 0 (362,580 against 371,878).
+    The criterion asks for MINE above the linear model at every cutoff where either count is above zero,
+    so the point estimate fails at 0; the bootstrap interval of the difference there (-22,008 to 4,230)
+    includes zero, and no interval lies wholly below zero. The 7 MINE fits with no test correlation count
+    as not identified at every cutoff, which probably accounts for part of the gap at 0. The linear model''s
+    counts over all bright components by cutoff are in the main notebook, section 5 (for example 45,144
+    at 0.6, 13,880 at 0.8, 1,162 at 0.95).'
+  notebook: mine_fits_subsample.ipynb
+  output: claim:figs6-mine-more-at-every-cutoff
+- claim: fig6e-functional-classes
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNN fits and the Taylor bootstraps (1,000 resamples every 5 frames) of every fit neuron;
+    depends on fig6d-mine-identifies-more-than-lm, blocked as too large. The subsample of 600 fits (mine_fits_subsample.ipynb)
+    has 45 MINE-fit neurons, too few for the Taylor metrics and classes this claim needs, and the Taylor
+    bootstraps were not run on them.
+- claim: fig6e-mixed-selectivity-exists
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig6e-functional-classes, blocked as too large.
+- claim: fig6g-linear-model-bias
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig6d-mine-identifies-more-than-lm and fig6e-functional-classes, blocked as too large.
+- claim: fig6f-reticulospinal-behavior
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-not-deposited
+  notes: 'The claim is on the dataset (the claims file names no outside input), and 000238 holds no annotation
+    of which components are reticulospinal neurons labelled by the backfill: the segmentation has only
+    a pixel_mask column and no reference images, and the Texas-Red channel is there only as the raw movie
+    (175 of 175 planes have a 1182 x 512 x 512 red movie, main notebook, finding-not-deposited). The claim
+    would also need the fits of all 218,257 components of the six fish (the Bonferroni count is over all
+    fit neurons there), 71 h on four CPUs at the throughput of mine_fits_subsample.ipynb (section 5). The paper''s processed data
+    on Zenodo (doi:10.5281/zenodo.7737788, rs_analysis.hdf5) may hold the annotation; it was not opened.'
+- claim: fig7b-receptive-field-clusters
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig6e-functional-classes (needs the fits and the Jacobians of each pure stimulus neuron's
+    CNN), blocked as too large.
+- claim: fig7d-mixed-integration-modes
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig6e-functional-classes, blocked as too large.
+- claim: fig7e-complexity-by-cluster
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig7b-receptive-field-clusters, blocked as too large.
+- claim: lm-recovers-fewer-clusters
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig7b-receptive-field-clusters, blocked as too large.
+- claim: temperature-nonlinear-behavior-linear
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig6e-functional-classes, blocked as too large. The subsample of 600 fits (mine_fits_subsample.ipynb)
+    has 45 MINE-fit neurons, too few for the Taylor metrics and classes this claim needs, and the Taylor
+    bootstraps were not run on them.
+- claim: interaction-terms-small
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig6d-mine-identifies-more-than-lm and needs the Taylor metrics of every fit neuron,
+    blocked as too large. The subsample of 600 fits (mine_fits_subsample.ipynb) has 45 MINE-fit neurons,
+    too few for the Taylor metrics and classes this claim needs, and the Taylor bootstraps were not run
+    on them.
+- claim: figs6-stimulus-neuron-regions
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig6e-functional-classes, blocked as too large. It also needs each neuron''s Z-Brain
+    region; the dandisets hold no registration or anatomical coordinates (finding), so the centroids would
+    come from the paper''s processed data on Zenodo (doi:10.5281/zenodo.7737788, main_analysis.hdf5, 7.9
+    GB), which was not opened. The claims file marks this claim with_inputs: the registered centroids
+    are public on Zenodo, so data_missing does not apply, and the fits (too_large) are what blocks it
+    in this attempt; the round-1 verifier gives data_missing (see verifications).'
+- claim: figs6-behavior-neuron-regions
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig6e-functional-classes, blocked as too large; needs the Z-Brain regions too (see
+    figs6-stimulus-neuron-regions). The claims file marks this claim with_inputs: the registered centroids
+    are public on Zenodo, so data_missing does not apply, and the fits (too_large) are what blocks it
+    in this attempt; the round-1 verifier gives data_missing (see verifications).'
+- claim: figs6-mixed-neuron-regions
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig6e-functional-classes, blocked as too large; needs the Z-Brain regions too (see
+    figs6-stimulus-neuron-regions). The claims file marks this claim with_inputs: the registered centroids
+    are public on Zenodo, so data_missing does not apply, and the fits (too_large) are what blocks it
+    in this attempt; the round-1 verifier gives data_missing (see verifications).'
+- claim: fig7a-behavior-feature-regions
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig6e-functional-classes, blocked as too large; needs the Z-Brain regions too (see
+    figs6-stimulus-neuron-regions). The claims file marks this claim with_inputs: the registered centroids
+    are public on Zenodo, so data_missing does not apply, and the fits (too_large) are what blocks it
+    in this attempt; the round-1 verifier gives data_missing (see verifications).'
+- claim: fig7c-receptive-field-types
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig7b-receptive-field-clusters, blocked as too large; needs the Z-Brain regions too
+    (see figs6-stimulus-neuron-regions). The claims file marks this claim with_inputs: the registered
+    centroids are public on Zenodo, so data_missing does not apply, and the fits (too_large) are what
+    blocks it in this attempt; the round-1 verifier gives data_missing (see verifications).'
+- claim: fig7f-complexity-anatomy
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig7e-complexity-by-cluster, blocked as too large; needs the Z-Brain regions too
+    (see figs6-stimulus-neuron-regions). The claims file marks this claim with_inputs: the registered
+    centroids are public on Zenodo, so data_missing does not apply, and the fits (too_large) are what
+    blocks it in this attempt; the round-1 verifier gives data_missing (see verifications).'
+- claim: fig1f-mine-fits-ground-truth
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need 220 CNN fits on 15,000-frame
+    simulations, 0.2 h on four threads for the claim''s seed and 1.0 h for five by the notebook''s rough
+    estimate (section 5). Round 1 gave the reason as too_large; the notebook''s own estimates for some
+    of these claims are within the run''s time, so the computation is not what blocked them.'
+- claim: fig2bcd-complexity-scores
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need CNN fits for each mixing
+    fraction of three series and the Taylor expansions at the data mean. Round 1 gave the reason as too_large;
+    the notebook''s own estimates for some of these claims are within the run''s time, so the computation
+    is not what blocked them.'
+- claim: fig2e-linearity-roc
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need 2,000 CNN fits, about 1.8
+    h on four threads for one seed and 9.2 h for five by the notebook''s rough estimate. Round 1 gave
+    the reason as too_large; the notebook''s own estimates for some of these claims are within the run''s
+    time, so the computation is not what blocked them.'
+- claim: fig2s1-nonlinearity-metrics-agree
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need the networks of fig2e-linearity-roc.
+    Round 1 gave the reason as too_large; the notebook''s own estimates for some of these claims are within
+    the run''s time, so the computation is not what blocked them.'
+- claim: fig3-receptive-fields-slow-stimuli
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need 200 CNN fits, about 0.2
+    h on four threads per seed by the notebook''s rough estimate, plus OLS and Ridge Volterra fits. Round
+    1 gave the reason as too_large; the notebook''s own estimates for some of these claims are within
+    the run''s time, so the computation is not what blocked them.'
+- claim: fig3-effective-degrees-of-freedom
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need repeated simulation and
+    refitting of the CNN (mine_edf.py). Round 1 gave the reason as too_large; the notebook''s own estimates
+    for some of these claims are within the run''s time, so the computation is not what blocked them.'
+- claim: fig3s1-white-noise-benchmark
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need 10 or 100 simulations per
+    filter set with CNN and Volterra fits. Round 1 gave the reason as too_large; the notebook''s own estimates
+    for some of these claims are within the run''s time, so the computation is not what blocked them.'
+- claim: fig3s1-training-length
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need 350 CNN fits on up to 64
+    times the base length. Round 1 gave the reason as too_large; the notebook''s own estimates for some
+    of these claims are within the run''s time, so the computation is not what blocked them.'
+- claim: fig4-taylor-metric-ranks-predictors
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
+    simulations and models were not ported, so nothing was run. It would need the 220 fits of fig1f-mine-fits-ground-truth
+    and a Taylor decomposition every 25 frames of each. Round 1 gave the reason as too_large; the notebook''s
+    own estimates for some of these claims are within the run''s time, so the computation is not what
+    blocked them.'
+- claim: fig5c-cortex-components-fit
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
+    not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
+    for one seed, on the zebrafish training length (the mouse sessions are longer).'
+- claim: fig5d-cortex-largely-linear
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
+    not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
+    for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
+- claim: fig5e-uninstructed-movements-dominate
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
+    not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
+    for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
+- claim: fig5fh-cortex-maps
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
+    not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
+    for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
+- claim: fig5i-cortex-receptive-fields
+  outcome: blocked
+  blocked_by: other
+  notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
+    not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
+    for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
+findings:
+- kind: data_missing
+  about: data
+  severity: major
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  - 000238
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-bout-threshold
+  statement: The files hold the tail tracking (segment angles and cumulative tail angle at 250 Hz) but
+    no swim bouts, and none of the three behavior predictors the paper fits (swim starts, vigor, direction).
+    They have to be re-derived, and the threshold the paper uses is not given. The lab's bout detection
+    with its default threshold of 2 rad/s finds a median 4.9 bouts per second on these data, inside the
+    tracking noise (segment angles move in steps of 0.0997 rad); 5 or 10 rad/s give 0.075 to 0.095 per
+    second. Every analysis of behavior-driven activity depends on this choice.
+- kind: data_missing
+  about: data
+  severity: major
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-not-deposited
+  statement: The files hold no registration to the Z-Brain atlas and no anatomical coordinates of the
+    components beyond their pixel masks in each plane, and only a plane-level location label (such as
+    "Dorsal Forebrain"). The paper's regional analyses (Figure 6, figure supplement 1; Figure 7A, C and
+    F) cannot be run from the dandisets; the paper's processed data on Zenodo (doi:10.5281/zenodo.7737788)
+    hold its registered centroids.
+- kind: data_missing
+  about: data
+  severity: major
+  datasets:
+  - 000238
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-not-deposited
+  statement: The backfill dandiset holds no annotation of which components are reticulospinal neurons
+    labelled by the backfill (the segmentation has only pixel masks and no reference images; the Texas-Red
+    channel is there only as the raw movie). The paper's control analysis of Figure 6F rests on this manual
+    annotation.
+- kind: other
+  about: data
+  severity: minor
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  - 000238
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-frame-rate
+  statement: The imaging rate is 2.384 Hz in every plane of every file (frame duration 0.4194304 s in
+    the experiment description), where the Methods say 2.5 Hz. The files are consistent with themselves
+    and with the paper's 495 s per plane (1,182 frames last 495.8 s); the paper's rate is rounded.
+- kind: other
+  about: data
+  severity: minor
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-plane-anomalies
+  statement: 'In 10 of 925 planes the tail timestamps hold a single step of 128.004 s, where every other
+    step is 4 ms (the largest step in the other planes is 0.70 s). The 125,300 or so samples then span
+    about 629 s: in 8 planes the timestamps end at 623.8 s, 128 s after imaging ends, and in 2 they start
+    at -133.5 s, where the others run from about -5.4 s to 495.8 s. The jump lies at tail times from -113.7
+    to 474.6 s, so in each of these planes part of the tail recording, and the bouts derived from it,
+    are misplaced by 128 s relative to the imaging. The time ranges show which part: in the 8 planes
+    ending at 623.8 s the start (-5.3 to -5.5 s) matches every other plane, and in the 2 starting at -133.5
+    s the end (495.80 s) does, and the sample counts (about 125,300 at 4 ms) are those of the other planes.
+    Moving the misplaced side by the jump (after it in the 8, before it in the 2) gives starts of -5.35
+    to -5.55 s and ends of 495.79 to 495.82 s, the range of the other planes. The affected planes are Fish31 planes 12 and 29, Fish47 planes 13 and 22, Fish58 planes
+    0, 7 and 8, Fish10 plane 5, Fish36 plane 11 and Fish39 plane 16.'
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  - 000238
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-plane-anomalies
+  statement: Each plane's temperature trace (20 Hz) is a median 10.5 s longer than its imaging (from -0.07
+    to 10.95 s), and the files do not say which end carries the extra; all series store a starting time
+    of 0 s. Read as starting with imaging, as the paper's code takes it, the temperature predicts the
+    calcium better than read as ending with it (median held-out correlation 0.656 against 0.493, in 98.3%
+    of planes), so the extra lies at the end, shown to within a few seconds, not exactly.
+- kind: other
+  about: data
+  severity: minor
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-plane-anomalies
+  statement: Small differences from the paper's description. One backfill file (000238, RSpinal-Random-Wave-01)
+    has 25 planes, where the paper images 30 per fish; 8 planes have 1,181 frames, not 1,182; and in 10
+    planes the temperature exceeds the paper's 22 to 30 C, up to 31.57 C (Fish01).
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  - 000238
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  - 000238
+  notebook: reproduce_costabile_2023.ipynb
+  output: finding-not-deposited
+  statement: The segmentation's reference images are empty, so the time-average projection on which the
+    paper's brightness criterion is computed is not deposited. It can be recomputed from the raw movie,
+    and doing so reproduces the paper's count of analyzed components to 0.4%. The response series are
+    named CaUnitRespones (sic).
+- kind: other
+  about: data
+  severity: none
+  datasets:
+  - '000235'
+  - '000236'
+  - '000237'
+  notebook: reproduce_costabile_2023.ipynb
+  output: claim:data-zebrafish-coverage
+  statement: The whole-brain dandisets hold the paper's 25 fish, 750 planes and 706,543 CaImAn components
+    exactly, and the brightness criterion recomputed from the movies keeps 434,651 (the paper 432,882).
+    No plane is deposited twice. The pixel masks line up with the movie (traces from the mask pixels correlate
+    a median 0.834 with CaImAn's). The calcium is predicted far better by its own plane's temperature
+    than by the next plane's (held-out correlation 0.656 against 0.393, in 98.5% of planes and every fish)
+    and its correlation with swim starts peaks 1.8 s after them (0.212 at 2 s, against 0.086 at -5 s
+    and 0.108 at -1 s), consistent with shared clocks.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. Which threshold on the smoothed absolute angular derivative of
+    the tail, and which minimum bout length, were used to detect swim bouts (Methods, "an empirically
+    determined threshold")? The bout detection the paper names (bitbucket.org/jcostabile/2p, detectBouts)
+    defaults to 2 rad/s, which on the deposited tail angles detects about 4.9 bouts per second, inside
+    the tracking noise; 5 to 10 rad/s give about 0.1 per second. This attempt used 5 and 10 rad/s with
+    10 or 5 frames as readings. Were the angles fed to anglePrep the cumulative sums of the deposited
+    segment angles, and is "sum_tail" the cumulative tail angle?
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. Was the time-average projection behind the brightness criterion
+    (avg_component_brightness) taken from the raw movie, as deposited, or from CaImAn's motion-corrected
+    movie? The raw movie gives 434,651 components at 0.1 photons, against the paper's 432,882.
+verifications:
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the handover of the first run (the executed notebook with the conclusions and summary
+    removed), the helper modules and the claims file, with the paper under paper/; the verifier also queried
+    the DANDI API for the pinned versions'' assets and metadata.'
+  results:
+  - claim: data-zebrafish-coverage
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: 25 fish and 750 planes, both exact. 706,543 components, exact. 434,651 components
+      have brightness of at least 0.1, against 432,882 expected (+0.41%, tolerance 43,288). The counts
+      come from the NWB files; the pixel-mask orientation was checked in cell 10 (r 0.83 one way, 0.01
+      the other). Brightness is computed on the movie the NWB files hold; whether that is CaImAn''s motion-corrected
+      movie is not stated, a declared assumption (does not affect a conclusion).'
+    response: No change of outcome. The channel descriptions are now printed (Ch0 "PMT Ch0, Green", 515
+      nm, indicator HuC-H2B:GCaMP6s; Ch1 "PMT Ch1, Red", 570 nm, vglut2a-mCherry), which confirms that
+      channel 0 is GCaMP.
+  - claim: figs6-train-test-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 26 and 27: the largest |median| inter-trial r across the four predictors is 0.051,
+      under every bout reading, which passes reading (b), below 0.1. On the stricter variant the temperature
+      median |r| is 0.266 (5th to 95th percentile -0.62 to 0.54). The criterion tests the |median| of
+      the signed correlations, which any distribution centred on zero passes however large the individual
+      correlations; a weakness of the claims file, reported and not corrected. The bout thresholds of
+      5 and 10 rad/s are the author''s choice, a reasonable one (the code''s default of 2 rad/s gives
+      4.9 bouts/s, within the tracking noise), and the result is the same under all four readings. Whether
+      the paper used raw or orthogonalized behavior predictors could not be checked without rwave_plot_panels.py.'
+    response: 'No change of outcome. The weakness of the criterion is added to questions/costabile-2023.yaml
+      for a reader. A variant with the orthogonalized, z-scored behavior predictors is added (medians
+      within 0.009 of zero), and the notes cite where rwave_plot_panels.py takes the raw traces from.
+      The verifier''s point that behavior_5hz keeps the later bout''s vigor and direction when two bouts
+      share a 0.2 s bin is kept: the paper''s bin_time_discrete does the same (out[di] = np.sum(...));
+      the helper now says so, and the notebook prints how often it happens (1,866 bins of 47,480 bouts
+      under the main reading).'
+  - claim: fig6d-mine-identifies-more-than-lm
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The linear comparison model is closed form and could have been run on all 434k components for the
+      linear model''s count; a random subsample of a few thousand MINE fits would have estimated the fig6d
+      fractions. The swim, vigor and direction predictors also depend on bout thresholds chosen by the
+      author.'
+    response: No change of outcome. The linear model is now fit to every bright component (26,326 at sqrt(0.5),
+      against about 25,300 implied by the paper), and a new notebook fits MINE to a seeded random subsample
+      of 600 components; its estimates (union about 54,500, fractions 0.37, 0.51 and 0.11) are in the
+      notes and decide nothing. The subsample is 600 fits, not a few thousand, as a first run of 2,000
+      fits was stopped (its process pool was killed while preparing) and the run's time did not allow
+      more. The timing now rests on 20 single-thread fits and the 600 parallel ones, with the core count
+      printed (4); the record's earlier 2.08 s per fit did not match the notebook and is corrected.
+  - claim: figs6-shuffle-enrichment
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      A subsample would have given the enrichment ratio roughly. The swim, vigor and direction predictors
+      also depend on bout thresholds chosen by the author.'
+    response: 'No change of outcome. Not estimated: at a 93-fold enrichment, 600 sampled components with
+      45 MINE fits would leave an expected 0.5 fit in the rotated data, so the subsample cannot give the
+      ratio; the notes say so.'
+  - claim: figs6-mine-more-at-every-cutoff
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The linear model''s curve could have been computed on all components. The swim, vigor and direction
+      predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome. The linear model's counts by cutoff over all components are printed,
+      and the subsample estimate of both curves is in mine_fits_subsample.ipynb (MINE above the linear
+      model at every cutoff from 0.05 to 0.95); the notes give it as an estimate.
+  - claim: fig6e-functional-classes
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: fig6e-mixed-selectivity-exists
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: fig6g-linear-model-bias
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: fig6f-reticulospinal-behavior
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as data_missing. The hand-drawn backfill annotation is not in 000238: the segmentation
+      has only a pixel_mask column and empty reference_images, and the asset metadata agrees. It would
+      also need fits (too_large) on the 218,257 components of 000238. Whether Texas-Red images exist from
+      which a backfill mask could be approximated was not shown (movie_shape_red never printed).'
+    response: 'Block reason changed to data_missing, as the verifier says: the claim is on the dataset
+      and the dataset lacks the annotation. The notebook now prints the red-channel movies of 000238 (175
+      of 175 planes, 1182 x 512 x 512); an approximated mask from them would be the attempt''s own annotation,
+      not the paper''s, and was not made.'
+  - claim: fig7b-receptive-field-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: fig7d-mixed-integration-modes
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: fig7e-complexity-by-cluster
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: lm-recovers-fewer-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      The swim, vigor and direction predictors also depend on bout thresholds chosen by the author.'
+    response: No change of outcome; the timing in the notes is corrected to the new measurements.
+  - claim: temperature-nonlinear-behavior-linear
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      A subsample of MINE fits would have estimated its fractions. The swim, vigor and direction predictors
+      also depend on bout thresholds chosen by the author.'
+    response: 'No change of outcome. Not estimated: the subsample has 45 MINE-fit neurons and the Taylor
+      bootstraps and linearity scores were not computed on them in the time of the run.'
+  - claim: interaction-terms-small
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as too_large. The full analysis needs 432,882 CNN fits, plus as many on rotated controls:
+      about 36 h, and 73 h with the controls, on 4 threads (cell 29). Parts were testable at small cost.
+      A subsample of MINE fits would have estimated the interaction metrics. The swim, vigor and direction
+      predictors also depend on bout thresholds chosen by the author.'
+    response: 'No change of outcome. Not estimated: the subsample has 45 MINE-fit neurons and the Taylor
+      bootstraps were not computed on them in the time of the run.'
+  - claim: figs6-stimulus-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. These need each neuron's Z-Brain region; each pinned version holds
+      only NWB files, whose variableMeasured lists no registration, and cell 19 shows no registration
+      and no reference images. The registered centroids are on Zenodo (with_inputs). The binding constraint
+      is missing data, and they would stay blocked even with unlimited compute.
+    response: Block reason kept as too_large, and the disagreement recorded. The claims file marks these
+      claims with_inputs, with the registered centroids public on Zenodo (doi:10.5281/zenodo.7737788),
+      so the region data are not missing in the protocol's sense; what blocks the claims here is their
+      dependence on the MINE fits. The finding that the dandisets hold no registration stays.
+  - claim: figs6-behavior-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. These need each neuron's Z-Brain region; each pinned version holds
+      only NWB files, whose variableMeasured lists no registration, and cell 19 shows no registration
+      and no reference images. The registered centroids are on Zenodo (with_inputs). The binding constraint
+      is missing data, and they would stay blocked even with unlimited compute.
+    response: Block reason kept as too_large, and the disagreement recorded. The claims file marks these
+      claims with_inputs, with the registered centroids public on Zenodo (doi:10.5281/zenodo.7737788),
+      so the region data are not missing in the protocol's sense; what blocks the claims here is their
+      dependence on the MINE fits. The finding that the dandisets hold no registration stays.
+  - claim: figs6-mixed-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. These need each neuron's Z-Brain region; each pinned version holds
+      only NWB files, whose variableMeasured lists no registration, and cell 19 shows no registration
+      and no reference images. The registered centroids are on Zenodo (with_inputs). The binding constraint
+      is missing data, and they would stay blocked even with unlimited compute.
+    response: Block reason kept as too_large, and the disagreement recorded. The claims file marks these
+      claims with_inputs, with the registered centroids public on Zenodo (doi:10.5281/zenodo.7737788),
+      so the region data are not missing in the protocol's sense; what blocks the claims here is their
+      dependence on the MINE fits. The finding that the dandisets hold no registration stays.
+  - claim: fig7a-behavior-feature-regions
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. These need each neuron's Z-Brain region; each pinned version holds
+      only NWB files, whose variableMeasured lists no registration, and cell 19 shows no registration
+      and no reference images. The registered centroids are on Zenodo (with_inputs). The binding constraint
+      is missing data, and they would stay blocked even with unlimited compute.
+    response: Block reason kept as too_large, and the disagreement recorded. The claims file marks these
+      claims with_inputs, with the registered centroids public on Zenodo (doi:10.5281/zenodo.7737788),
+      so the region data are not missing in the protocol's sense; what blocks the claims here is their
+      dependence on the MINE fits. The finding that the dandisets hold no registration stays.
+  - claim: fig7c-receptive-field-types
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. These need each neuron's Z-Brain region; each pinned version holds
+      only NWB files, whose variableMeasured lists no registration, and cell 19 shows no registration
+      and no reference images. The registered centroids are on Zenodo (with_inputs). The binding constraint
+      is missing data, and they would stay blocked even with unlimited compute.
+    response: Block reason kept as too_large, and the disagreement recorded. The claims file marks these
+      claims with_inputs, with the registered centroids public on Zenodo (doi:10.5281/zenodo.7737788),
+      so the region data are not missing in the protocol's sense; what blocks the claims here is their
+      dependence on the MINE fits. The finding that the dandisets hold no registration stays.
+  - claim: fig7f-complexity-anatomy
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. These need each neuron's Z-Brain region; each pinned version holds
+      only NWB files, whose variableMeasured lists no registration, and cell 19 shows no registration
+      and no reference images. The registered centroids are on Zenodo (with_inputs). The binding constraint
+      is missing data, and they would stay blocked even with unlimited compute.
+    response: Block reason kept as too_large, and the disagreement recorded. The claims file marks these
+      claims with_inputs, with the registered centroids public on Zenodo (doi:10.5281/zenodo.7737788),
+      so the region data are not missing in the protocol's sense; what blocks the claims here is their
+      dependence on the MINE fits. The finding that the dandisets hold no registration stays.
+  - claim: fig1f-mine-fits-ground-truth
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig2bcd-complexity-scores
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig2e-linearity-roc
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig2s1-nonlinearity-metrics-agree
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig3-receptive-fields-slow-stimuli
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig3-effective-degrees-of-freedom
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig3s1-white-noise-benchmark
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig3s1-training-length
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig4-taylor-metric-ranks-predictors
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other (data elsewhere, generated by the paper''s code; not attempted). The notebook''s
+      own estimates undercut its too_large reason: 0.1 h on 4 threads for fig1f and fig4, 0.1 h for fig3,
+      1.0 h for fig2e, and the notebook had run 36 min by then.'
+    response: 'Block reason changed from too_large to other: not attempted, as the verifier says. They
+      were not attempted in this revision either, for lack of time in the run.'
+  - claim: fig5c-cortex-components-fit
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The mouse widefield data are in the CSHL repository (doi:10.14224/1.38599),
+      not in these dandisets; the notebook's too_large (1.4 h on 4 threads) is not the binding reason.
+    response: 'Block reason changed from too_large to other (not attempted), not to data_missing: the
+      claims are data elsewhere, and the protocol keeps data_missing for data that are not public anywhere
+      (author, step 1.4); the CSHL data are public. The disagreement on the reason is recorded here.'
+  - claim: fig5d-cortex-largely-linear
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The mouse widefield data are in the CSHL repository (doi:10.14224/1.38599),
+      not in these dandisets; the notebook's too_large (1.4 h on 4 threads) is not the binding reason.
+    response: 'Block reason changed from too_large to other (not attempted), not to data_missing: the
+      claims are data elsewhere, and the protocol keeps data_missing for data that are not public anywhere
+      (author, step 1.4); the CSHL data are public. The disagreement on the reason is recorded here.'
+  - claim: fig5e-uninstructed-movements-dominate
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The mouse widefield data are in the CSHL repository (doi:10.14224/1.38599),
+      not in these dandisets; the notebook's too_large (1.4 h on 4 threads) is not the binding reason.
+    response: 'Block reason changed from too_large to other (not attempted), not to data_missing: the
+      claims are data elsewhere, and the protocol keeps data_missing for data that are not public anywhere
+      (author, step 1.4); the CSHL data are public. The disagreement on the reason is recorded here.'
+  - claim: fig5fh-cortex-maps
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The mouse widefield data are in the CSHL repository (doi:10.14224/1.38599),
+      not in these dandisets; the notebook's too_large (1.4 h on 4 threads) is not the binding reason.
+    response: 'Block reason changed from too_large to other (not attempted), not to data_missing: the
+      claims are data elsewhere, and the protocol keeps data_missing for data that are not public anywhere
+      (author, step 1.4); the CSHL data are public. The disagreement on the reason is recorded here.'
+  - claim: fig5i-cortex-receptive-fields
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The mouse widefield data are in the CSHL repository (doi:10.14224/1.38599),
+      not in these dandisets; the notebook's too_large (1.4 h on 4 threads) is not the binding reason.
+    response: 'Block reason changed from too_large to other (not attempted), not to data_missing: the
+      claims are data elsewhere, and the protocol keeps data_missing for data that are not public anywhere
+      (author, step 1.4); the CSHL data are public. The disagreement on the reason is recorded here.'
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebooks of the round-1 revision (reproduce_costabile_2023.ipynb and
+    mine_fits_subsample.ipynb) with their conclusions and summary, the helper modules, the claims file and
+    the attempt record, with the paper under paper/. No finding was rated critical, so none was reviewed as
+    one.'
+  results:
+  - claim: data-zebrafish-coverage
+    agrees: true
+    outcome: reproduced
+    reason: 'Main notebook cells 24 and 25: 25 fish, 750 planes and 706,543 components, all exact. 434,651
+      components pass the cut, +0.41%, within the tolerance of 43,288. The deviation says the raw movie is
+      assumed here, but the outcome is not marked assumed: true. The assumption is reasonable, and the outcome
+      barely depends on it: the count moves about 4,000 per 0.01 of the cut, so only a large shift in brightness
+      would move it out of tolerance. It is still an assumption and should be flagged as one.'
+    response: 'No change of outcome. assumed: true is added, and the deviation now says why the raw movie was
+      taken and how little the outcome depends on it.'
+  - claim: figs6-train-test-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 28 to 30: the largest |median| is 0.051, under all four bout readings and in the orthogonalized
+      variant. The assumption (bouts re-derived at 5 or 10 rad/s, relative segment angles, sum_tail as the
+      direction metric) is stated and reasonable. Cell 17 shows the code''s default of 2 rad/s gives 4.9 bouts/s,
+      inside the noise, and the outcome does not change across readings.'
+    response: 'No change. In the clock check (cell 16), the sentence that calcium correlates with swim starts
+      "not before it" is corrected: the mean correlation is already 0.108 at -1 s against 0.086 at -5 s, and
+      peaks 1.8 s after the bout.'
+  - claim: fig6d-mine-identifies-more-than-lm
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls. The timing figures in cell 35 (1.89 s, 7.17 s, 227
+      h, 57 h) and in the record''s notes (1.89 s, about 4 s, 1.08 s, about 130 h, about 261 h) do not match
+      the outputs (1.37 s, 5.36 s, 164 h, 41 h; 3.08 s, 0.89 s, 107 h, 214 h); the round-1 response said the
+      per-fit time was corrected, and it still does not match.'
+    response: 'No change of outcome. The stale figures came from an earlier execution: the fit times vary between
+      runs by tens of percent. Cell 35 and the subsample''s conclusion no longer copy timing figures; they
+      refer to the printed ones, and cell 34 now prints how many five-hour runs the fits take (12.8, and 25.7
+      with the controls, in this run). The notes give the numbers of the new run (2.14 s on one thread, 257
+      h; 4.37 s in four processes, 1.17 s of wall time per fit, 141 h and 283 h), and the earlier run''s as
+      well. The linear model''s count moved from 26,326 to 26,328 in the new run; the notes give both, and
+      the notebook and README say about 26,300.'
+  - claim: figs6-shuffle-enrichment
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls. The record''s notes say about 261 h; the output is
+      214 h.'
+    response: No change of outcome. The notes give the new run's 283 h from the subsample's section 5, which
+      varies with the run's timing.
+  - claim: figs6-mine-more-at-every-cutoff
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls. Subsample cell 13 says "as figs6-mine-more-at-every-cutoff
+      states", but cell 10 shows MINE''s estimate below the linear model''s at cutoff 0 (362,799 against 371,188).
+      Under the claims file''s criterion (at every cutoff where either count is above zero) the point estimate
+      fails there; only the interval of the difference does not exclude zero. The same applies to "at 0 they
+      are about equal" in the record''s notes. The 7 MINE fits with no test correlation probably account for
+      part of this gap. This is an estimate and decides no outcome.'
+    response: No change of outcome. The subsample's conclusion and the notes now say that the point estimate
+      fails the criterion at cutoff 0 (362,580 against 371,878 in the new run), that the interval of the difference
+      there (-22,008 to 4,230) includes zero, and that the 7 fits without a test correlation probably account
+      for part of the gap.
+  - claim: fig6e-functional-classes
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig6e-mixed-selectivity-exists
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig6g-linear-model-bias
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig6f-reticulospinal-behavior
+    agrees: true
+    outcome: blocked
+    reason: 'fig6f, data_missing: agree. Cell 20: colnames [''pixel_mask''], no reference images; only the
+      raw red movie is present in 175 of 175 planes. The record''s notes say about 66 h on four CPUs; subsample
+      cell 12 prints 54 h, main cell 34 prints 21 h.'
+    response: No change of outcome. The notes now give the subsample's figure of the new run, 71 h on four
+      CPUs, and say where it is printed.
+  - claim: fig7b-receptive-field-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig7d-mixed-integration-modes
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig7e-complexity-by-cluster
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: lm-recovers-fewer-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: temperature-nonlinear-behavior-linear
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: interaction-terms-small
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: figs6-stimulus-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: figs6-behavior-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: figs6-mixed-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig7a-behavior-feature-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig7c-receptive-field-types
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig7f-complexity-anatomy
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig1f-mine-fits-ground-truth
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. The record says 0.2 h, 0.9 h for five
+      seeds; cell 34 prints 0.1 h, 0.6 h.'
+    response: No change of outcome. The notes give the new run's estimates, 0.2 h and 1.0 h for five seeds.
+  - claim: fig2bcd-complexity-scores
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig2e-linearity-roc
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. The record says 1.6 h and 8.1 h; cell
+      34 prints 1.2 h and 5.9 h.'
+    response: No change of outcome. The notes give the new run's estimates, 1.8 h and 9.2 h.
+  - claim: fig2s1-nonlinearity-metrics-agree
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig3-receptive-fields-slow-stimuli
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. The record says 0.2 h; cell 34 prints
+      0.1 h.'
+    response: No change of outcome. The new run's estimate is 0.2 h, as the notes say.
+  - claim: fig3-effective-degrees-of-freedom
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig3s1-white-noise-benchmark
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig3s1-training-length
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig4-taylor-metric-ranks-predictors
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig5c-cortex-components-fit
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5d-cortex-largely-linear
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5e-uninstructed-movements-dominate
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5fh-cortex-maps
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5i-cortex-receptive-fields
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.

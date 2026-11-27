@@ -1,48 +1,49 @@
-I did steps 1 to 6 of the protocol for dandiset 000070 and the entry runs cleanly. The paper's full text is open access: I used the NIH author manuscript (PMC3393826) and the Supplementary Information PDF from Nature, saved under `paper/`. I pinned version 0.260528.0919. The paper cites no version, and both published versions hold the same 10 files (same blobs and sizes), differing only in metadata. Nothing is committed.
+I've finished the blind repeat attempt on churchland-2012: 16 claims tested, 6 blocked. The entry is in `entries/churchland-2012/`, the record is `attempts/churchland-2012-02.yaml`, and the handover is in `executed/churchland-2012/handover/`. `entry.py all` passes with 0 errors and the notebook runs in 594 s. I did not come across any earlier attempt.
 
-**1. Outcome per claim**
+**1. Outcomes**
 
 | Claim | Outcome |
 |---|---|
-| array-dataset-composition (108 conditions; 146 and 218 isolations) | partially reproduced |
-| fig3ef-same-direction | reproduced (94.4% and 100% of conditions rotate the same way) |
-| fig3-independent-of-curvature | partially reproduced |
-| fig3-phase-from-prep-state | partially reproduced |
-| var-captured-jpc-plane | reproduced (20.0% and 23.1%; mean 21.6% against 28%) |
-| pc23-variance | partially reproduced |
-| suppfig4-j-array-planes | not reproduced (40% against 54%) |
-| suppfig4-planes-range | partially reproduced |
-| fig6a-angle-peak | reproduced |
-| fig6b-skew-fit | reproduced (6-D ratio 0.905 and 0.845) |
-| rotation-frequency | partially reproduced |
-| suppfig3-shuffle-controls | not reproduced (shuffle 1 removes the rotations; shuffles 2 and 3 do not by the chosen measure) |
-| suppfig5-areas-variance | partially reproduced |
+| array-dataset-composition | partially reproduced (108 conditions each; 192 units each, against 146 and 218) |
+| fig3ef-same-direction | reproduced (95.4% and 99.1% of conditions counter-clockwise) |
+| fig3-independent-of-curvature | partially reproduced, assumed (J-array clockwise reaches 88.2%, threshold 90%) |
+| fig3-phase-from-prep-state | partially reproduced (R2 0.568 and 0.676; J-array falls below its shuffle median of 0.686) |
+| var-captured-jpc-plane | not reproduced, assumed (14.9% and 22.9%, against 28%) |
+| pc23-variance | not reproduced, assumed (mean 23.8%, against 29%) |
+| suppfig4-j-array-planes | not reproduced (13.3, 13.3 and 12.2%; 38.8% together; top six PCs 51.9%) |
+| suppfig4-planes-range | partially reproduced (N-array 47.7%, J-array 38.8%) |
+| fig6a-angle-peak | reproduced (peaks at 0.53 pi and 0.64 pi) |
+| fig6b-skew-fit | reproduced (6-D ratios 0.918 and 0.909) |
+| rotation-frequency | reproduced, assumed (1.34 and 1.40 Hz) |
+| suppfig3-shuffle-controls | partially reproduced, assumed (all three shuffles pass in J-array, only shuffle 1 in N-array) |
+| suppfig5-areas-variance | not reproduced (21.6, 20.2, 17.7 and 27.1%) |
 | suppfig5-m1-faster | reproduced |
-| fig6-velocity-model | not reproduced (poor rotational fit holds; the angle peak is not near 0) |
-| fig6-complex-kinematic-model | not reproduced (same pattern) |
-| Six claims: leech and walking monkey, single-electrode datasets (2), EMG, generator model, speed task | blocked: data_missing |
+| fig6-velocity-model | not reproduced, assumed (fit is poor as claimed, but the angle peaks at 0.42 pi and 0.64 pi) |
+| fig6-complex-kinematic-model | partially reproduced, assumed, seed sensitive |
+| fig1, fig2, fig3abcd, fig4, fig5, fig6cd | blocked, data_missing |
 
-Totals: 5 reproduced, 7 partially, 4 not reproduced, 6 blocked.
+**2. What was found**
 
-**2. What was found about the dandiset**
-- **Coverage:** it holds the paper's two array datasets (J 2009-09-18, N 2010-09-23) plus 8 array sessions the paper does not describe. Its units are 192 per file, one per electrode. The paper's sorted isolations (146 and 218) are not there, and the Units table does not say what a unit is.
-- **Wrapped index:** in 9 of 10 files the first entry of `spike_times_index` wrapped at 65536. Unit 0 is cut short (61030 of 257638 spikes in J-array) and the rest of its spikes open unit 1. The loader corrects this.
-- **Clock restarts:** in 5 Nitschke files, N-array among them, the clock restarts at each recording segment after the first. Trials overlap in time (2094 overlapping pairs in N-array) and spike times are unsorted. The loader places spikes in trials by their storage order, and a decoding check shows this is right in every clock segment.
-- **Hand position:** it is labelled metres but the values are in mm. It is also offset 35 to 53 mm in y from the target, which the files do not describe; the cursor lands on the target.
-- **Dates:** the conversion code writes the year 2009 into every session date. `ses-20090910` has the same reached target as the 2010 N-array session for all 108 conditions. So it is probably the "N-9-10-2010" dataset of Supplementary Figure 5, dated a year early, but this is not proven.
+The dataset:
+- The Units tables hold unsorted threshold crossings, one per electrode (192 per session), not the paper's sorted isolations. The files say this. Rated major.
+- Only the paper's two array sessions are in it, plus eight further array sessions. sub-Nitschke ses-20100910 matches the "N-9-10-2010" session of Supplementary Figure 5. Rated major.
+- Two sessions not used by the paper, ses-20100920 and ses-20100922, have no `maze_condition` or `correct_reach` columns. Rated major.
+- There are two movement-onset columns, 25 to 52 ms apart, with no note saying which one the paper used. Rated minor.
+- Checks that passed: no recording is deposited twice. Hand units and alignment are consistent. Both arrays share the trial clock, with no drift over the session. A constant M1 lag of about 25 ms in N-array cannot be told apart from a genuinely later M1 response.
 
-**3. Points where the protocol was unclear, wrong or missing something**
-1. **Figure-only values:** some criteria needed values that appear only in figures (Figure 6a/b). Step 7 asks for reported numbers. I read thresholds off the figure and said so in the claims file.
-2. **Code the paper does not link:** the lab's jPCA download page returned HTTP 403. I used the Python port at a pinned commit and recorded it, together with the conversion code, under `inputs` as code read, with no data. The protocol does not say whether code read for method choices belongs in `inputs`.
-3. **Simulated control populations:** the paper's velocity and kinematic models are simulations built from the data, and the protocol has no category for that. I kept them `data: dandiset` and fixed the free choices (a 100 ms lead and others) in the helper before running. Both models then failed on the angle part of the criterion. Under the protocol's rules this is `not_reproduced`, not `methods_underspecified`, though the outcome depends on those choices.
-4. **Averages over datasets not deposited:** some reported numbers are averages over 9 datasets of which the dandiset has 2. I handled this with listed readings (mean of two, or each against the stated range).
-5. **Faults the loader corrects:** the protocol says to trust the data and record findings, but not whether an analysis may repair a format error. I corrected both faults in the helper, showed the corrections in the data check, and recorded them as `format_error`.
-6. **Extra session for a variant:** Supplementary Figure 5 uses a dataset that may be in the dandiset under the wrong date. I used it only as a variant, because the link to that dataset cannot be shown.
+Assumptions:
+- The movement onset is `offline_move_onset_time`. The other column would change five outcomes.
+- The firing-rate range for normalisation is taken over the analysed window. This changes nothing.
+- For the two simulated models, the rates lead the hand by 100 ms, the preparatory term ends at movement onset, and the factors have uniform weights. With no lead, the velocity model would be reproduced.
+
+Questions for the paper's authors: two `methods_unavailable` findings, one on the onset column and range window, one on the simulated-model details. I asked a reader no questions.
+
+**3. Protocol points**
+1. The protocol has no rule for a criterion whose literal reading passes a case it was not meant for. The complex-model angle peak of -0.97 pi counts as "below pi/4" but is a contraction, not rotation. I applied the criterion as written and said so in the notes.
+2. The claims file names `simulate_population`, a helper from an earlier attempt that the blind checkout does not have. I wrote my own model from the Methods and gave it the same name.
+3. The claims file's header refers to "the notebook" and to "clock resets of the 2010 file", both from the earlier attempt. I could not check either against that attempt, so I tested the clock myself.
+4. The protocol says nothing on whether a claim that depends on another claim's shuffle runs should reuse them. I gave the phase claim its own shuffle-3 runs from its own seed and recorded this as a deviation.
+5. The protocol says "the directory is empty", but `entries/churchland-2012` did not exist. I created it.
 
 **4. Runtime and failures**
-- The notebook runs in about 4 minutes (245 s under `tools/entry.py all`), and `check` reports 0 errors.
-- The locked run matches the run the conclusions were written from, and two runs gave identical numbers.
-- Reading spike times through remfile took 251 s per file. The helper reads the stored bytes directly with parallel range requests (5 s), and checks the result against h5py.
-- The Supplementary Information was not reachable from PMC (bot page). I took it from the publisher's site.
-- The handover is in `executed/000070-churchland-2012/handover/`.
-- The repo root has untracked files I did not create (`.bashrc`, `.gitconfig`, `.idea`, `.vscode`, `scripts`, and others). I left them alone.
+The run took about 1 h, from 23:12 to 00:12 UTC. The notebook takes 9.7 min with a peak of 3.5 GB. Nothing failed. My script that stripped extra bold from the markdown also damaged one code line (`** 2`); a diff against the development run caught it before the final run.

@@ -1,36 +1,26 @@
-The verifier's round-1 points are answered, and the entry re-runs cleanly: `tools/entry.py all` passes with 0 errors in about 2 minutes. One outcome changed. Nothing is committed.
+I've answered every point in the round-1 report and re-run the entry. No outcome changed. `python tools/entry.py all entries/zaki-2024` passes with 0 errors in 263 s, and the conclusions match the new numbers. Nothing is committed.
 
-**Outcome change**
-- **`fig5c-wake-overlap-neutral-coburst`** goes from partially reproduced to not reproduced. The verifier argued that the Methods' sleep scoring has no quiet-wake class, so "wake plus quiet wake" is the faithful reading. I tested that by applying the Methods' own scoring to 12 h of Ca_EEG2-1's EMG (6 s epochs, a two-state model on log EMG RMS). It puts 94.1% of quiet-wake frames in wake, and all 87 bursts. Under that reading overlap-neutral co-bursting is below overlap-aversive: 26.4% against 35.6%, McNemar p = 0.13. The criterion had allowed the wake-only reading too, so judging on one reading is recorded as a deviation.
-- Two limits are stated alongside it:
-  - Only one of the 24 offline recordings is deposited, so the ensemble traces are z-scored within that recording, not over all 24 as in the Methods. The levels here (26 to 36%) are not comparable with the paper's 10.37% and 8.39% for this mouse.
-  - The Methods don't name the EMG measure. Without the log, the model puts every epoch in one state.
+**Outcomes.** All 26 stay as they were, and the verifier agreed with all 26 in round 1:
+- `offline-bursts-above-shuffle`: reproduced, resting on reading (b).
+- `fig5c-wake-overlap-neutral-coburst`: partially reproduced, resting on reading (b).
+- `burst-locomotion-pause`: not reproduced.
+- The other 23 are unchanged.
 
-**Unchanged outcomes**
-- **`offline-bursts-above-shuffle`** stays blocked (methods underspecified). The record already had it that way; the verifier didn't see the record and suggested the same. A synthetic control now in the notebook confirms the criterion's shuffle test can't detect coordinated firing: 5.6 true bursts per minute against 34.98 in the shuffled data, even with coordination planted.
-- **`offline-skew-above-shuffle`** stays reproduced. The same synthetic control shows this test does detect coordination.
-- **`burst-locomotion-pause`** stays not reproduced. The notes now say the test gives p = 0.016 at random times in Ca_EEG2-1, so it is not calibrated, and that the result is weak evidence against the paper.
-- **`ed9b-aversive-freezing-high-vs-low`** stays reproduced. The notes now say the 30 s bins are not independent, so the p-values overstate the evidence.
+The two outcomes resting on reading (b) are the criterion's verdict, but both are fragile. The record now says so and adds a question for a reader about each.
 
-**Outputs added at the verifier's request**
-- **Activity signal:** its description and value range, its correlation with EMG (r = 0.11 to 0.55), and that it is 4 to 15 times higher in wake than in quiet wake.
-- **Sleep-state descriptions** from the files.
-- **The full 27-row epoch table:** it supports Ca_EEG2-1's first offline recording being the first after fear conditioning.
-- **Telemetry rate:** the files hold telemetry at 500 Hz, where the Methods say 100 Hz. This is now a new finding.
+**What I added or corrected:**
+- **Burst-frequency reading (b) (B1):** I added a synthetic check. On cells with no bursts that share only a slow drift, reading (b) still passes (5.90 bursts/min against a surrogate 95th percentile of 2.60). Reading (a) fails (surrogate mean 8.55), which is the same pattern as the real data. On independent cells neither reading passes. So the reproduced result shows only that the cells co-vary. I removed my earlier claim that (b) was the better-supported reading and added a question to `questions/zaki-2024.yaml`.
+- **Skew claim:** the same synthetic cells fail the skew test (skew −0.276 against a surrogate 95th percentile of 0.105). So that outcome is not an artefact of co-variation.
+- **Quiet wake (B2, C3):** the file's sleep-state description defines quiet wake as a waking state. Scoring the week of telemetry the way the paper's Methods describe puts 64 of the 68 quiet-wake epochs in wake. Reading (a), which counts quiet wake as wake, is therefore the better match to the paper, and under it overlap-neutral co-bursting is below overlap-aversive. I added a question for a reader. I also corrected finding 2, which wrongly said quiet wake had no description, and lowered it from major to minor.
+- **Locomotion clock (B3, B4, C1):** I aligned the telemetry to each recording's lag of peak correlation, which gives p = 0.805, 0.982 and 0.863. I also swept shifts from −8 to +8 s: no shift gives the result in all three recordings. A 1 s baseline window gives the same negative result. The notebook now prints the description of the movement signal.
+- **Ca_EEG3-4 cell registration (C2):** the notebook now prints the processing modules of every file. The only cell-registration module in the dataset is in Ca_EEG2-1's Week file.
+- **Two blocked claims, shown descriptively:** both stay blocked.
+  - `ed9c-eeg-cohort-linking`: the low-shock mouse's neutral and novel recall freezing is printed.
+  - `ed9-ed10-sleep-unchanged`: one mouse's 9.36 days of telemetry are now scored by the Methods' procedure. Time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after aversive encoding. The scoring cannot settle REM (its REM bouts of about 10 s are not physiological).
+- **New finding (9):** the offline files' session descriptions describe the one-hour webcam experiment, not the 10-minute home-cage recordings they hold.
+- **Other record edits:**
+  - A deviation on ed9b notes that its 30 s bins are autocorrelated.
+  - Round 1 is recorded under `verifications`.
+  - The README now includes these points and gives a runtime of about six minutes.
 
-The co-bursting outside bursts now uses only windows where every frame is in the same state. With that fix the top value is 1.02%, so the earlier "under 1%" was corrected.
-
-**Other edits**
-- `memlink.py` has a new `emg_wake_gmm` helper, and scikit-learn was added to the requirements and the lock file.
-- The README table and the notebook summary match the new outcomes.
-- The attempt record has the round under `verifications` for all 26 claims, with the verifier's reasons and my responses.
-- The paper's text is saved under `paper/`.
-
-**Not done**
-- **Partial tests the verifier said were possible on three blocked claims:**
-  - Centroid-based registration for the low-shock fig5c claim: it would replace the paper's registration method with mine, and a "no difference" claim can't be judged on one recording of one mouse.
-  - One-mouse sleep scoring for ED9/ED10: the claim compares mice across days and groups, so one mouse would only describe it.
-  - A one-mouse SVM for ED7: the paper reports that analysis only for the one-hour cohort.
-
-  All three stay blocked, with the reasons in the record.
-- **Handover package:** I did not rebuild it, since round 2 gets the full executed notebook.
+**Not done:** B4 (unequal window lengths), B5 (the claims are tested on different mice and a different movement measure than the paper's) and B6 (autocorrelated bins) come from the criterion, so I recorded them and left the criterion alone. C5, the amendment record, was only missing from what the verifier was given; it is in the questions file.

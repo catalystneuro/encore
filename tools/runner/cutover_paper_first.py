@@ -41,7 +41,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path.cwd()
-REPO = "catalystneuro/encore"
+REPO = "encorescience/encore-registry"
 MAIN = "origin/main"   # --main REF: another ref as main, to try the steps out locally
 TRY = False            # --try: convert and merge the branches, but push nothing
 COMMIT = ["-c", "user.name=github-actions[bot]", "-c", "user.email=github-actions[bot]@users.noreply.github.com"]

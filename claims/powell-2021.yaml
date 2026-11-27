@@ -1,0 +1,531 @@
+# Claims for Powell, Haddad, Gorur-Shandilya & Marder (2021), eLife 10, e60454,
+# doi:10.7554/elife.60454, tested on ZENODO:3924718.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-25, following docs/protocol.md (Reader, protocol version pilot-18). No data of the
+# dataset were seen; only its title and description on the archive (the paper's title and
+# abstract: evoked gastric mill and pyloric rhythms of Cancer borealis recorded from 7 to 23 C).
+#
+# Text read: the version of record as served by Europe PMC (PMC7889077, open access JATS,
+# flattened to paper/10.7554-elife.60454.txt), with Results, Discussion, Materials and methods,
+# the figure legends of Figures 1 to 6 and the legends of the four figure supplements (Figure 2,
+# figure supplement 1; Figure 3, figure supplement 1; Figure 4, figure supplements 1 and 2).
+# The paper has no other supplementary text. The legend of Figure 5f is garbled in the text
+# ("Ratios of LG to PD cycle period were n across temperature"); the Results sentence that
+# reports the same test is quoted instead.
+#
+# Code read: https://github.com/marderlab/gastric at commit
+# fa07d36a7e57fc7787a9a8e2fed72300b1a8e6e2 (2020-11-17), the commit the paper cites as archived
+# at Software Heritage, and the later head 7a82b1f9a2239f46d73ae86d2cc70de8226d89be
+# (2021-09-09), which differs in fig_phase_relationships.m (a prep-by-prep Rayleigh test on the
+# first 50 burst starts), plotIntegerCoupling.m (the null c.d.f. line commented out) and labels.
+# It holds MATLAB figure scripts (paper-figures/fig_burst_period.m for Figure 4,
+# fig_integer_coupling.m with +gastric/plotIntegerCoupling.m and +gastric/integerCoupling.m for
+# Figure 5, fig_phase_relationships.m with +gastric/measurePhase.m for Figure 6,
+# fig_evoked_slowdown.m with +gastric/BurstPeriodsVsTime.m for Figure 4 supplement 1, PD_hyp.m
+# for Figure 4 supplement 2, fig_spont_rhythms.m for Figure 2, and
+# fig_within_prep_spont_evoked_comparison.m for Figure 3 supplement 1). It relies on the
+# crabsort and srinivas.gs_mtools repositories (burst detection is crabsort.computePeriods),
+# which were not read. The list of the ten evoked preparations is in +gastric/getEvokedData.m
+# (901_005, 901_046, 901_049, 901_052, 901_062, 901_080, 901_086, 901_095, 901_098, 932_151).
+#
+# Data the paper used (Materials and methods). Isolated stomatogastric nervous systems of adult
+# male Cancer borealis, extracellular recordings of lgn, dgn, mvn, lvn and pdn at 10 kHz, with
+# saline temperature recorded on a channel; PD, LG and DG spikes sorted with crabsort. Three
+# sets: (1) nine preparations from crabs caught in July 2013 with spontaneous gastric mill
+# rhythms, temperature raised from 11 to 33 C in 2 C steps held at least 2 min (recordings of
+# Haddad and Marder 2018; the code reads them from a separate "haddad" folder); (2) ten
+# preparations from 2017 in which gastric mill rhythms were evoked by bilateral dpon
+# stimulation (ten 6-s trains at 0.6 Hz, 15 Hz within train) at temperature steps of 2 or 4 C
+# from 7 C until no rhythm could be evoked (typically 21 or 23 C); (3) nine preparations from
+# 2020 in which rhythms were evoked twice at 11, 15, 19 and 21 C with the two PD neurons
+# hyperpolarized and not. The dataset description names the evoked experiments; whether it
+# holds sets (1) and (3) is the author's to find.
+#
+# Method details fixed here from the paper's code where the Methods are silent: PD bursts
+# split at inter-spike intervals above 0.18 s with at least 2 spikes (LG and DG at 1 s with
+# at least 5, as the Methods say); the temperature of an event is the temperature channel at
+# the event's time (sampled at 1 kHz in the code); temperature steps are grouped in bins
+# centred on 7, 9, ..., 23 C, an event belonging to a bin when its temperature lies within
+# 1 C of the centre.
+schema_version: 2
+paper: doi:10.7554/elife.60454
+claims:
+- id: fig2-spontaneous-11-to-30
+  statement: Spontaneous gastric mill activity (LG bursting) occurred at temperatures between
+    11 and 30 C, in nine preparations in total.
+  source: Results, Spontaneous gastric mill rhythms span a physiological range of temperatures,
+    paragraphs 1 and 3; Figure 2 and Figure 2, figure supplement 1
+  quote: We inspected a dataset of extracellular recordings of dgn and lgn during temperature
+    ramps ( Haddad and Marder, 2018 ) and found spontaneous gastric mill activity at temperatures
+    between 11°C and 30°C ... there were a total of nine preparations in which spontaneous
+    rhythms were observed at a variety of different temperatures
+  expected:
+  - quantity: preparations with spontaneous gastric mill rhythms
+    value: 9
+    tolerance: 0
+  - quantity: highest temperature with spontaneous LG bursting
+    value: 30
+    tolerance: 1
+    unit: C
+  criterion: LG bursts detected as the Methods define them (inter-spike interval above 1 s
+    starts a burst, at least 5 spikes). Reproduced when nine preparations of the spontaneous
+    set show LG bursts and, pooled over them, LG bursting occurs at temperature steps from 11 C
+    up to 30 C (the steps are 2 C apart, so 1 C tolerance on the top step; the count is exact
+    because it is a count of recordings). The paper gives no minimum number of bursts that
+    makes activity "spontaneous gastric mill activity"; the readings are (a) at least one LG
+    burst at the step, (b) at least two consecutive LG bursts, so that a period exists.
+- id: fig2a-less-regular-at-high-temperature
+  statement: In the example preparation of Figure 2a, spontaneous gastric mill rhythms were
+    relatively regular at lower temperatures and less regular at higher temperatures.
+  source: Results, Spontaneous gastric mill rhythms span a physiological range of temperatures,
+    paragraph 2; Figure 2a
+  quote: While these recordings show relatively regular gastric mill rhythms at lower
+    temperatures, they were less regular at higher temperatures
+  criterion: The example preparation is 830_116_2 in fig_spont_rhythms.m (the traces of Figure 2a
+    and the rasters of preparation 2 in Figure 2b are from the same animal, legend of Figure 2).
+    The paper gives no measure of regularity. Regularity is read as the coefficient of
+    variation of LG burst periods (bursts as in the Methods) at each temperature step with at
+    least three periods (the minimum is a choice made here). Reproduced when the mean coefficient of variation over the steps above
+    20 C exceeds that over the steps at or below 20 C. The split at 20 C is a choice made here
+    (the paper names no boundary); the Spearman correlation of coefficient of variation with
+    temperature is shown as a variant.
+- id: fig3-evoked-7-to-21-in-9-of-10
+  statement: Gastric mill rhythms could be evoked by dpon stimulation across 7 to 21 C in 9 of
+    10 preparations.
+  source: Results, Gastric mill rhythms speed up with increased temperature, paragraph 1;
+    Figure 3
+  quote: We were able to evoke gastric rhythms across a temperature range of 7 to 21°C in 9 of
+    10 preparations
+  expected:
+  - quantity: preparations with evoked rhythms at every step from 7 to 21 C
+    value: 9
+    tolerance: 0
+  - quantity: evoked preparations
+    value: 10
+    tolerance: 0
+  criterion: LG bursts as the Methods define them. A rhythm is present at a temperature bin
+    when the preparation has LG bursts in that bin. The paper does not say how many bursts make
+    an evoked rhythm; readings (a) at least one LG burst period, (b) at least 30 LG
+    significands, the minimum plotIntegerCoupling.m uses per preparation and temperature.
+    Reproduced when, under one reading, 9 of the 10 preparations have a rhythm in every bin
+    from 7 to 21 C. Steps were 2 or 4 C (Methods), so "every bin" means every bin the
+    preparation was held at; the author reports which bins each preparation has.
+- id: fig3s1-spontaneous-and-evoked-similar
+  statement: In 4 of 10 evoked preparations a spontaneous gastric mill rhythm was seen at 11 C
+    before stimulation; in three of these four the spontaneous and evoked rhythms were similar
+    in LG spike and burst timing and in cycle period.
+  source: Results, Gastric mill rhythms speed up with increased temperature, paragraph 2; Figure
+    3, figure supplement 1
+  quote: Three of the four preparations that had spontaneous and evoked rhythms shared
+    similarities in LG spike and burst timing ( Figure 3—figure supplement 1b ) and rhythm cycle
+    period (mean ± SD; Figure 3—figure supplement 1c )
+  expected:
+  - quantity: preparations with a spontaneous rhythm before stimulation
+    value: 4
+    tolerance: 0
+  - quantity: preparations with similar spontaneous and evoked periods
+    value: 3
+    tolerance: 0
+  criterion: The spontaneous and evoked stretches are those selected in
+    fig_within_prep_spont_evoked_comparison.m. LG burst periods as in the Methods, mean and SD
+    for each stretch (Figure 3, figure supplement 1c). The paper does not define "similar".
+    Readings (a) each mean lies within one SD of the other; (b) the mean plus or minus SD
+    intervals overlap. Reproduced when, under one reading, three of the four preparations are
+    similar and one is not. The paper gives no measure for the similarity of LG spike and burst
+    timing (the ISIs of Figure 3, figure supplement 1b); the ISIs of each stretch are shown and
+    this part is not judged. Of the four spontaneous files the script lists (941_006, 901_086,
+    901_080, 901_062), 941_006 is not among the ten evoked preparations of getEvokedData.m; the
+    author reports which preparations the four are.
+- id: fig4b-periods-decrease-all-preps
+  statement: Both LG (gastric mill) and PD (pyloric) burst periods decrease with increasing
+    temperature, a coordinated decrease seen in all 10 preparations.
+  source: Results, Gastric mill and pyloric cycle periods are similarly temperature-sensitive,
+    paragraphs 1 and 2; Figure 4a and 4b
+  quote: A coordinated decrease in both gastric mill and pyloric cycle periods was observed in
+    all 10 preparations ( Figure 4b )
+  expected:
+    quantity: preparations with decreasing PD and LG periods
+    value: 10
+    tolerance: 0
+  criterion: Burst periods of each burst as in the Methods and code (PD periods above 5 s and LG
+    periods above 50 s removed as outliers, fig_burst_period.m), assigned to the temperature at
+    burst start, averaged per preparation and temperature bin (gastric.groupAndPlotErrorBars).
+    The paper names no test of "decrease". Readings (a) for each preparation, the mean period
+    in its warmest bin is below that in its coldest bin, for PD and for LG; (b) for each
+    preparation, the Spearman correlation of bin mean period with bin temperature is negative,
+    for PD and for LG. Reproduced when all 10 preparations decrease under one reading.
+- id: fig4c-q10-about-2
+  statement: Most preparations (8 of 10) had a cycle period Q10 of about 2 for both the
+    pyloric and the gastric mill rhythm.
+  source: Results, Gastric mill and pyloric cycle periods are similarly temperature-sensitive,
+    paragraph 2; Figure 4c
+  quote: Figure 4c shows that most preparations (8 of 10) exhibited a cycle period Q 10 of ~2
+    for both the pyloric and gastric mill rhythms
+  expected:
+    quantity: preparations with Q10 near 2 for both PD and LG
+    value: 8
+    tolerance: 0.8
+  criterion: Q10 = (f_T / f_11)^(10 / (T - 11)), f the mean burst frequency, 11 C the reference
+    (Methods). The Methods take f_T as the mean frequency at each temperature step, giving one
+    Q10 per step, and average the Q10s per preparation; fig_burst_period.m instead computes a
+    Q10 for every burst against the mean frequency of bursts within 0.1 C of 11 C, drops Q10s
+    above 10, and averages per preparation. The Methods version is the main analysis and the
+    code's is a variant. The paper does not say how close to 2 "~2" is; readings (a) within
+    10% of 2 (1.8 to 2.2), the protocol's default tolerance; (b) 1.5 to 2.5. Reproduced when,
+    under one reading, 8 of 10 preparations (tolerance 0.8, so exactly 8) have both mean Q10s
+    in the range. The per-preparation values are reported.
+- id: fig4c-q10-pd-lg-not-different
+  statement: The apparent Q10s of the pyloric (PD) and gastric mill (LG) burst frequencies do
+    not differ (paired t-test, p = 0.235, N = 10, t = 1.27).
+  source: Results, Gastric mill and pyloric cycle periods are similarly temperature-sensitive,
+    paragraph 2; Figure 4c legend
+  quote: Estimated Q 10 s were not significantly different for LG and PD burst periods (paired
+    t-test, p = 0.235 , N = 10 , t = 1.27 )
+  statistics:
+  - test: paired t-test
+    statistic: t = 1.27
+    p: 0.235
+    n: 10 preparations
+  depends_on:
+  - fig4c-q10-about-2
+  criterion: A claim of absence, judged on the paper's test. Per-preparation mean Q10s of PD and
+    LG as in fig4c-q10-about-2 (Methods version), compared with a two-sided paired t-test over
+    the 10 preparations (Methods; ttest in fig_burst_period.m). Reproduced when p >= 0.05; not
+    reproduced when p < 0.05. The t and p are reported against 1.27 and 0.235 either way, and
+    the code's per-burst Q10 is shown as a variant.
+- id: fig4s1-slowdown-after-stimulation
+  statement: The evoked gastric mill rhythm slows down (LG burst period lengthens) with time
+    since stimulation.
+  source: Results, Gastric mill and pyloric cycle periods are similarly temperature-sensitive,
+    paragraph 1; Figure 4, figure supplement 1
+  quote: despite significant variability in the LG burst period, due to a slowing down ( Figure
+    4—figure supplement 1 ) of the gastric mill rhythm with time since stimulation
+  criterion: As in fig_evoked_slowdown.m and gastric.BurstPeriodsVsTime. Stimulation ends are
+    found from the stimulus artifacts (code's mask), stretches at one temperature held at least
+    120 s; LG burst periods above 30 s removed; time measured from the first LG burst after
+    stimulation; each stretch interpolated at 1 s over 0 to 600 s; mean over all stretches of
+    all preparations at each temperature (7 to 23 C), and a linear fit of mean period on time
+    per temperature (Figure 4, figure supplement 1c and d). The code detects LG bursts with at
+    least 7 spikes here, the Methods with at least 5; both are run. The paper gives no rule for
+    how many temperatures must slow; read here as reproduced when the fitted slope is positive
+    at a majority of the temperatures with data, under one burst rule.
+- id: fig4s2-gastric-without-pyloric-pacemaker
+  statement: With the pyloric pacemaker suppressed by hyperpolarizing both PD neurons, an
+    evoked gastric mill rhythm persists, and its cycle period decreases with increasing
+    temperature as it does with the pacemaker active.
+  source: Results, Gastric mill rhythms can be evoked when the pyloric pacemaker is suppressed,
+    paragraph 2; Figure 4, figure supplement 2c
+  quote: Figure 4—figure supplement 2c shows that the gastric mill rhythm cycle period steadily
+    decreased with increased temperature regardless of pyloric pacemaker activity
+  criterion: Figure 4, figure supplement 2c shows one preparation (999_017 in PD_hyp.m), LG
+    burst period (LG bursts at 1 s and 5 spikes; PD at 0.25 s and 2 spikes in PD_hyp.m) mean
+    and SEM at 11, 15, 19 and 21 C, PD active and hyperpolarized. Reproduced when in that
+    preparation the mean LG period falls monotonically across the temperatures with a rhythm,
+    in both conditions. The same test over all nine preparations is shown as a variant.
+- id: fig4s2-rhythm-counts
+  statement: In all nine preparations a gastric mill rhythm was evoked at 11 and 15 C, with the
+    pacemaker active and with AB/PD hyperpolarized; at 19 and 21 C only a subset produced one.
+  source: Results, Gastric mill rhythms can be evoked when the pyloric pacemaker is suppressed,
+    paragraph 2; Figure 4, figure supplement 2d
+  quote: Figure 4—figure supplement 2d shows that in all nine preparations, the gastric mill
+    rhythm was activated at 11°C and 15°C, whereas at 19°C and 21°C only a subset of preparations
+    produced gastric mill rhythms at these elevated temperatures
+  expected:
+  - quantity: preparations with a rhythm at 11 C, both conditions
+    value: 9
+    tolerance: 0
+  - quantity: preparations with a rhythm at 15 C, both conditions
+    value: 9
+    tolerance: 0
+  criterion: PD_hyp.m keeps a recording when it has at least 100 LG spikes; a rhythm is read as
+    present at a temperature and condition when a recording there has at least 100 LG spikes
+    and LG bursts (1 s, 5 spikes). Reproduced when all nine preparations have a rhythm at 11 and
+    15 C in both conditions and fewer than nine have one at 19 C and at 21 C in at least one
+    condition. The per-temperature counts are reported against the figure.
+- id: fig5a-example-ratios
+  statement: In the example preparation the ratio of LG to PD period is close to an integer at
+    both temperatures, about 10 at 7 C and about 11 at 23 C, and PD bursts end shortly before
+    LG bursts start.
+  source: Results, Integer coupling is maintained across a physiological temperature range,
+    paragraph 2; Figure 5a
+  quote: The ratio of LG to PD periods was close to an integer at both temperatures (~10 at 7°C
+    and ~11 at 23°C)
+  expected:
+  - quantity: T_LG / mean T_PD at 7 C (fig_integer_coupling.m label 10.06)
+    value: 10.06
+    tolerance: 1.0
+  - quantity: T_LG / mean T_PD at 23 C (fig_integer_coupling.m label 10.98)
+    value: 10.98
+    tolerance: 1.1
+  criterion: The example is preparation 901_046, files 0006 (7 C) and 0079 (23 C), in
+    fig_integer_coupling.m, which labels T_LG = 9.17 s and mean T_PD = 0.911 s at 7 C, and T_LG
+    = 3.44 s and mean T_PD = 0.313 s at 23 C, for one LG cycle each. The code does not record
+    which LG cycle was drawn (the bars were placed by hand). Readings (a) the LG cycle whose
+    period is closest to the labelled T_LG; (b) the median ratio over all LG cycles of the
+    file. Reproduced when, under one reading, both ratios are within 10% of the labels and
+    within 0.2 of an integer (the 0.2 is a choice made here; the paper says only "close to an
+    integer"). The paper gives no measure of PD bursts ending "shortly before" LG burst starts;
+    for each file the time from the end of the last PD burst to each LG burst start is shown,
+    and this part is not judged.
+- id: fig5d-lg-pd-integer-coupled
+  statement: LG and PD burst periods are significantly integer-coupled at every temperature
+    from 7 to 21 C (two-sample Kolmogorov-Smirnov test against shuffled periods, p < 1e-5, D >
+    0.24).
+  source: Results, Integer coupling is maintained across a physiological temperature range,
+    paragraph 4; Figure 5b, 5d and 5e
+  quote: LG and PD were significantly integer-coupled, at temperatures from 7°C to 21°C (p < 10
+    –5 , D > 0.24)
+  statistics:
+  - test: two-sample Kolmogorov-Smirnoff test, observed against shuffled significands, per
+      temperature
+    statistic: D > 0.24
+    p: 0.00001
+    p_relation: "<"
+    corrected: Bonferroni over 9 temperature steps (threshold 0.05/9 = 0.0056)
+    n: LG bursts pooled across all 10 preparations at each temperature
+  criterion: Per LG burst, the mean PD period over that LG cycle, as integerCoupling.m computes
+    it (PD burst start nearest the next LG start minus the PD burst start nearest this LG start,
+    over the number of PD cycles between them); mean PD periods above 2 s and LG periods above
+    30 s removed (plotIntegerCoupling.m); significand = fractional part of LG period over mean
+    PD period (Methods). Per temperature bin, pooled over preparations (Methods), a
+    two-sample KS test of the significands against significands from shuffled pairings
+    (Methods). How the shuffle is formed is open; readings (a) as the code, 100 LG periods and
+    100 mean PD periods drawn independently with replacement from the bin; (b) a random
+    permutation of the bin's mean PD periods against its LG periods, same size. Because the
+    shuffle is random, each is repeated 1000 times with a fixed seed and the median p and D
+    reported (a standard choice; the paper used one draw). Reproduced when, under one reading,
+    every bin from 7 to 21 C has p < 0.05/9 with D > 0.24 (10% tolerance, D > 0.216); partially
+    reproduced when every bin is significant but some D or p miss the reported bounds.
+- id: fig5d-dg-pd-not-coupled
+  statement: DG and PD burst periods are not significantly integer-coupled at any temperature
+    (p > 0.02, D < 0.16).
+  source: Results, Integer coupling is maintained across a physiological temperature range,
+    paragraph 4; Figure 5c, 5d and 5e
+  quote: while DG and PD were not significantly coupled at any temperature (p > 0.02, D < 0.16)
+  statistics:
+  - test: two-sample Kolmogorov-Smirnoff test, observed against shuffled significands, per
+      temperature
+    statistic: D < 0.16
+    p: 0.02
+    p_relation: ">"
+    corrected: Bonferroni over 9 temperature steps (threshold 0.05/9 = 0.0056)
+  depends_on:
+  - fig5d-lg-pd-integer-coupled
+  criterion: A claim of absence, judged on the paper's test, the same KS test as
+    fig5d-lg-pd-integer-coupled with DG in place of LG (code's shuffle, reading a, median over
+    the repetitions), at the Bonferroni threshold 0.05/9. Reproduced when no temperature bin
+    reaches p < 0.0056; not reproduced when any does. The D and p of every bin are reported
+    against D < 0.16 and p > 0.02, and the permutation shuffle is shown as a variant.
+- id: fig5e-lg-area-exceeds-dg
+  statement: The area between the significand c.d.f. and the diagonal, a measure of integer
+    coupling, is larger for LG/PD than for DG/PD at every temperature, and the DG/PD areas
+    overlap those of shuffled periods.
+  source: Results, Integer coupling is maintained across a physiological temperature range,
+    paragraph 4; Figure 5e
+  quote: Areas for LG/PD significands were larger than areas for DG/PD significands at every
+    temperature ( Figure 5e ), suggesting greater integer coupling. Areas for DG/PD significands
+    overlapped with areas computed after shuffling
+  depends_on:
+  - fig5d-lg-pd-integer-coupled
+  criterion: As plotIntegerCoupling.m computes it. For each preparation and temperature bin with
+    at least 30 significands, the area is the mean absolute difference between the empirical
+    c.d.f. (interpolated at 100 points on 0 to 1) and the diagonal, averaged over 100 bootstrap
+    resamples; the shuffled area uses as many significands drawn from the pool of shuffled
+    ratios over all temperatures. Each bin's value is the mean over preparations, with SEM
+    across preparations. Reproduced when the LG mean exceeds the DG mean in every bin where
+    both exist, and the DG mean plus or minus SEM overlaps the shuffled mean plus or minus SEM
+    in most bins. The overlap rule is a reading of "overlapped" (the paper gives none).
+- id: fig5f-ratio-independent-of-temperature
+  statement: The ratio of LG to PD cycle period does not change with temperature (Spearman
+    test, p = 0.88, n = 3799).
+  source: Results, Integer coupling is maintained across a physiological temperature range,
+    paragraph 4; Figure 5f
+  quote: Ratios of LG to PD cycle period were spread across a similar range of temperatures,
+    even at higher temperatures when integer coupling was less pronounced (p = 0.88, n = 3799 ,
+    PD cycles pooled across all preparations, Spearman test)
+  statistics:
+  - test: Spearman test
+    p: 0.88
+    n: 3799 cycles pooled across all preparations
+  depends_on:
+  - fig5d-lg-pd-integer-coupled
+  criterion: A claim of absence, judged on the paper's test. As plotIntegerCoupling.m, the ratio
+    of each LG period to the mean PD period over that cycle (same filters as
+    fig5d-lg-pd-integer-coupled), against the temperature at the LG burst start, Spearman
+    correlation over all cycles pooled across preparations. Reproduced when p >= 0.05; not
+    reproduced when p < 0.05. Rho and the number of cycles (3799 reported, though the paper
+    calls them PD cycles, the code counts LG cycles) are reported either way; the code's
+    prep-by-prep means per temperature are shown as a variant.
+- id: fig5f-ratio-range
+  statement: At low temperatures the ratios of LG to PD cycle period range widely, from about 5
+    to 25.
+  source: Results, Integer coupling is maintained across a physiological temperature range,
+    paragraph 4; Figure 5f
+  quote: At low temperatures, when integer coupling was particularly strong (as seen from the
+    horizontal banding), these ratios were distributed over a wide range from 5 to 25
+  depends_on:
+  - fig5d-lg-pd-integer-coupled
+  expected:
+  - quantity: lower end of the LG to PD period ratios at low temperature
+    value: 5
+    tolerance: 0.5
+  - quantity: upper end of the LG to PD period ratios at low temperature
+    value: 25
+    tolerance: 2.5
+  criterion: Ratios as in fig5f-ratio-independent-of-temperature. "Low temperatures" is not
+    defined; readings (a) the 7 C bin, (b) bins 7 to 11 C. A range of 5 to 25 widened by 10% of
+    each bound is 4.5 to 27.5. Reproduced when, under one reading, the 2.5th to 97.5th
+    percentile of the ratios lies within 4.5 to 27.5 and spans at least 5.5 to 22.5 (the range
+    narrowed by 10% of each bound). The percentiles are a choice made here, as the paper gives
+    the range by eye.
+- id: fig6b-lg-phase-locked
+  statement: LG burst starts are phase-locked to the PD cycle, their distribution in PD phase
+    sharply peaked and significantly non-uniform (Rayleigh test, p < 4e-4, 7.5 < z < 45).
+  source: Results, LG preserves phase locking to PD across physiological temperatures, paragraph
+    2; Figure 6a and 6b
+  quote: LG burst start probabilities were sharply peaked ( Figure 6b ) and were significantly
+    different from a uniform distribution ( Figure 6b , dashed line, p < 4×10 –4 , 7.5<z<45,
+    Rayleigh test for non-uniformity; see Methods for details)
+  statistics:
+  - test: Rayleigh test for non-uniformity, per preparation and temperature
+    statistic: 7.5 < z < 45
+    p: 0.0004
+    p_relation: "<"
+  criterion: PD phase of each LG burst start = time since the start of the preceding PD burst
+    over that PD burst's period (Methods; measurePhase.m, which skips the first and last LG
+    burst of each preparation); temperature that at the PD burst start, rounded to a whole
+    degree. The Rayleigh test (circ_rtest of Berens 2009, z = n R^2). Which sample is tested
+    differs between the Methods, the archived code and the later code. The Methods are followed
+    for the main result, (a) the first 40 LG burst starts of each preparation and temperature,
+    combinations with fewer than 40 excluded, each tested individually. The code's choices are
+    variants, (b) the later code (commit 7a82b1f), the first 50, combinations with fewer than
+    50 excluded; (c) the archived code, all burst starts of a temperature pooled over
+    preparations, temperatures with fewer than 100 excluded. Under (a) z cannot exceed 40, so
+    the reported upper z of 45 cannot be met under the Methods. Reproduced when, under (a),
+    every tested combination has p < 4e-4 (widened by 10%, p < 4.4e-4) and every z lies within
+    7.5 to 45 widened by 10% (6.75 to 49.5); partially reproduced when every combination has
+    p < 0.05 but these bounds are not met. The variants are reported against the same bounds.
+- id: fig6b-lg-start-counts
+  statement: A total of 3816 LG burst starts and 3228 DG burst starts across nine temperature
+    points and 10 preparations enter the phase distributions, and about 35% of preparation and
+    temperature combinations have fewer than 40 burst starts.
+  source: Materials and methods, Analysis of distribution of LG/DG burst starts in PD phase,
+    paragraph 2
+  quote: Preparation and temperature combinations where there were <40 burst starts (~35% of
+    data) were excluded. A total of n = 3816 LG burst starts and n = 3228 DG burst starts across
+    nine temperature points and 10 preparations are plotted in Figure 6b,d
+  expected:
+  - quantity: LG burst starts
+    value: 3816
+    tolerance: 381.6
+  - quantity: DG burst starts
+    value: 3228
+    tolerance: 322.8
+  - quantity: fraction of data excluded for fewer than 40 burst starts
+    value: 0.35
+    tolerance: 0.035
+  criterion: Burst starts as in the Methods (LG and DG at 1 s and 5 spikes) with a defined PD
+    phase, in temperature bins 7 to 23 C. 3816 is not a multiple of 40, so the totals are read
+    as all burst starts plotted, not the first-40 subset. The "~35% of data" is open; readings
+    (a) the fraction of preparation and temperature combinations, (b) the fraction of burst
+    starts. Reproduced when both totals are within tolerance and the fraction is within
+    tolerance under one reading.
+- id: fig6b-lg-phase-constant
+  statement: From 7 to 21 C, LG bursts start at a phase of about 0.5 in the PD cycle, and this
+    phase does not trend with temperature (Spearman test, p = 0.46, rho = -0.31).
+  source: Results, LG preserves phase locking to PD across physiological temperatures, paragraph
+    2; Figure 6b inset
+  quote: From 7°C to 21°C, LG bursts started at a phase of ~0.5 in the PD cycle ( Figure 6b ,
+    inset), and this phase offset did not significantly trend across this temperature range (p
+    = 0.46, ρ = –0.31, Spearman test)
+  statistics:
+  - test: Spearman test
+    statistic: rho = -0.31
+    p: 0.46
+    n: 8 temperature steps (7 to 21 C), means across preparations
+  expected:
+    quantity: mean LG burst start phase in the PD cycle
+    value: 0.5
+    tolerance: 0.05
+  depends_on:
+  - fig6b-lg-phase-locked
+  criterion: Phases as in fig6b-lg-phase-locked. As fig_phase_relationships.m, the circular mean
+    phase per preparation and temperature bin, then the circular mean over preparations per bin
+    (gastric.groupAndPlotErrorBars with circular means); Spearman correlation of these bin means
+    with temperature over the bins 7 to 21 C. The trend is a claim of absence judged on this
+    test (reproduced when p >= 0.05, rho reported against -0.31). The phase holds when every
+    bin mean from 7 to 21 C lies within 0.5 plus or minus 0.05. Whether all LG burst starts or
+    the first 40 per preparation and temperature (Methods, Figure 6b, e) enter is open; both
+    are run, and the claim holds when both parts hold under one.
+- id: fig6c-lg-spiking-drops-near-pd-end
+  statement: LG spike probability in the PD cycle shows a pronounced decrease at higher
+    temperatures, occurring close to PD burst termination.
+  source: Results, LG preserves phase locking to PD across physiological temperatures, paragraph
+    3; Figure 6c
+  quote: We measured the spike probability of LG conditional on PD phase across this temperature
+    range and found a pronounced decrease in the probability of spiking in LG at higher
+    temperatures ( Figure 6c ). This decrease in LG spike probability occurred close to PD burst
+    termination
+  criterion: As fig_phase_relationships.m, the PD phase of every LG spike (measurePhase.m),
+    grouped by rounded temperature, temperatures with at least 1000 spikes, histogram of 30
+    bins on 0 to 1 normalized as a p.d.f.; the mean PD burst-end phase per temperature. The
+    paper gives no measure of the decrease. It is read here as the p.d.f. in the bin that holds
+    the mean PD burst-end phase (readings (a) that bin, (b) the lowest bin within 0.1 phase of
+    it). Reproduced when, under one reading, this value is below 1 (the uniform level) at the
+    warmest temperature included and its Spearman correlation with temperature across the
+    included temperatures is negative.
+- id: fig6e-dg-not-phase-locked
+  statement: DG bursts are not phase-locked to PD; DG burst starts are not sharply peaked in PD
+    phase, not significantly non-uniform in every preparation and temperature, and the effect
+    is much smaller than for LG (p from 0.001 to 0.85, 0.15 < z < 13).
+  source: Results, LG preserves phase locking to PD across physiological temperatures, paragraph
+    4; Figure 6d and 6e
+  quote: DG burst starts are not sharply peaked in PD phase, and they are not significantly
+    different from a uniform distribution for all preparations at all temperatures ( Figure 6e ,
+    p ∈ [0.001, 0.85], 0.15 < z < 13, Rayleigh test)
+  statistics:
+  - test: Rayleigh test for non-uniformity, per preparation and temperature
+    statistic: 0.15 < z < 13
+    p: 0.001
+    p_relation: ">"
+  depends_on:
+  - fig6b-lg-phase-locked
+  criterion: The same test as fig6b-lg-phase-locked, with DG burst starts, the Methods sample
+    (a) for the main result and the code's samples (b) and (c) as variants. The paper gives no
+    measure of "much smaller"; the paper's own ranges overlap (DG z up to 13, LG z from 7.5), so
+    it is read here as the median DG z over the tested combinations being below the median LG
+    z of fig6b-lg-phase-locked under the same sample (a choice made here). Reproduced when at
+    least one combination has p >= 0.05 and the median DG z is below the median LG z. The p and
+    z ranges are reported against 0.001 to 0.85 and 0.15 to 13.
+- id: fig6f-dg-spiking-no-drop
+  statement: DG spike probability does not show a noticeable decrease close to the end of PD
+    bursting.
+  source: Results, LG preserves phase locking to PD across physiological temperatures, paragraph
+    4; Figure 6f
+  quote: DG spike probability also does not show a noticeable decrease close to the end of PD
+    bursting
+  depends_on:
+  - fig6c-lg-spiking-drops-near-pd-end
+  criterion: The measure of fig6c-lg-spiking-drops-near-pd-end, applied to DG spikes. The paper
+    reports no test. Reproduced when, under the reading used for LG, the DG p.d.f. at the PD
+    burst-end bin is not below 1 by more than half of the LG drop at the same temperature, at
+    every included temperature. The half is a choice made here.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4b-periods-decrease-all-preps, fig4c-q10-about-2, fig4c-q10-pd-lg-not-different and fig4s1-slowdown-after-stimulation, source paragraphs corrected (the section has two paragraphs in the text; the quoted sentences are in paragraphs 1 and 2).
+  - fig5d-lg-pd-integer-coupled, fig5d-dg-pd-not-coupled, fig5e-lg-area-exceeds-dg, fig5f-ratio-independent-of-temperature and fig5f-ratio-range, source corrected to paragraph 4 (the integer coupling section has four paragraphs; the quoted sentences are all in the fourth).
+  - fig3-evoked-7-to-21-in-9-of-10, dropped "the evoked rhythms remained regular at high temperature" from the statement; the paper says it of the example preparation at 23 C, outside the quoted finding, and the criterion did not test it.
+  - fig2a-less-regular-at-high-temperature, named the minimum of three periods per step as a choice made here.
+  - fig3s1-spontaneous-and-evoked-similar, the statement includes similar LG spike and burst timing, for which the paper gives no measure; named as shown and not judged. Noted that 941_006, one of the four spontaneous files in fig_within_prep_spont_evoked_comparison.m, is not in the ten preparations of getEvokedData.m.
+  - fig5a-example-ratios, named the 0.2 distance to an integer as a choice made here, and the PD end before LG start part of the statement as shown and not judged, since the paper gives no measure.
+  - fig6b-lg-phase-locked, the three samples were equal readings; per protocol the Methods sample (first 40 starts per preparation and temperature) is now the main result and the code samples (later code first 50, archived code pooled with at least 100) are variants. The p bound is now judged with its 10% tolerance.
+  - fig6e-dg-not-phase-locked, the criterion required the largest DG z to be below the smallest LG z, which the paper's own ranges (DG z up to 13, LG z from 7.5) fail; replaced with a comparison of median z, named as a choice, with the same sample rule as fig6b-lg-phase-locked.
+  - Open, fig6b-lg-phase-locked, the reported LG z of up to 45 cannot occur with the Methods sample of 40 starts (z = nR^2 is at most n), so the paper's numbers likely come from a pooled sample as in the archived code.
+  - Open, fig6e-dg-not-phase-locked, the reported DG ranges are not consistent with each other; a Rayleigh z of 13 gives p near 1e-6 for any sample size, below the reported smallest p of 0.001.
+  - Open, fig5a-example-ratios, the expected ratios 10.06 and 10.98 are the labels drawn in Figure 5a (fig_integer_coupling.m); the text gives only ~10 and ~11.
+  - Checked the code citations against https://github.com/marderlab/gastric at fa07d36 and 7a82b1f (burst thresholds, Q10 per burst, KS shuffle of 100 draws each, area computation, Rayleigh pooling at 100 starts, Spearman on 7 to 21 C, PD_hyp.m thresholds, slowdown script); they match the file.

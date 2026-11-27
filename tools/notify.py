@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import datasets  # noqa: E402
 
 LABEL = "needs-you"
-REPO = os.environ.get("GITHUB_REPOSITORY", "catalystneuro/encore")
+REPO = os.environ.get("GITHUB_REPOSITORY", "encorescience/encore-registry")
 SERVER = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
 
 # The report that explains a stop, for the stops a report explains.
@@ -215,7 +215,7 @@ def diagnose(folder: str, status: str, detail: str, run: str) -> tuple[list[str]
     if "wrote no claims file" in what:
         why.append("The reader could not read the claims from the paper's text as stored. Its report, below, says "
                    "what is missing: usually a supplement, the methods, or figure legends.")
-        steps += ["Add what the report asks for to the paper store (catalystneuro/registry-papers, in this "
+        steps += ["Add what the report asks for to the paper store (encorescience/registry-papers, in this "
                   "dataset's folder): the article's PDF or the supplementary files.",
                   restart(folder)]
     elif "claims file is not ready" in what:

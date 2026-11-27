@@ -1,0 +1,1125 @@
+# Claims for Malfatti, Velica et al. (2026), "Increased layer 5 Martinotti cell excitation reduces
+# pyramidal cell population plasticity and improves learned motor execution", eLife 14:RP109286,
+# on DANDI:002056.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-27,
+# protocol pilot-18 (docs/protocol.md, Reader).
+#
+# Text read: the eLife reviewed preprint v3 (2026-11-02, revised by the authors), from a PDF
+# supplied by a person (paper/10.7554-elife.109286.txt): main text, Materials and methods,
+# figure legends and the authors' responses, with its supplement (supp-file02: Supplemental
+# Figures 1 to 7 and Supplemental Tables 1 to 6 of expanded statistics). Missing from the
+# supplement: Supplemental Table 1M to 1P, which the Results cite for the pasta handling test and
+# the prehension task after ablation (claims fig5d-pasta-drops and fig5i-ablation-prehension
+# carry no statistics for that reason). Equation 1 (assembly resilience) is lost in the text
+# extraction and the PDF could not be rendered; equation 2 (salience) survives only as its
+# terms. Both are taken from the code.
+#
+# Code read: https://gitlab.com/malfatti/M1MartinottiOnMovement, commit 86efdf1 (2024-04-26), the
+# only branch. It holds the prehension detection and classification from DeepLabCut output
+# (MS_PRT_Reaches.py, LFP_PRT_Reaches.py, BehavOnly.py, Core.ReachClassify), the calcium imaging
+# analysis (MS_PRT_CalciumImaging.py: event-triggered slices, the per-neuron before/after test,
+# peak latency and peak width), the assembly detection and analysis (MS_PRT_AssembliesDetection.py,
+# MS_PRT_AssembliesAnalysis.py: ICA through GoodhillLab/neural-assembly-detection, salience,
+# resilience, polygon area), the LFP amplitude analysis (LFP_PRT_EPhys.py) and the pasta handling
+# and hanging wire statistics. Statistics run through sciscripts Stats.Full with 'auto' test
+# choice. The commit predates the reviewed preprint: it has no spectrogram or band-power code
+# for the LFP bands of Figure 4 and Supplemental Figure 7 (LFP_PRT_EPhys.py computes only the
+# 1-100 Hz filtered amplitude), and no code for the trial adjacency, the baseline epochs or the
+# during/before ratio analyses. Those methods rest on the Methods text alone.
+#
+# Data the paper used, as it reports them. All mice received 0.01 mg/kg clozapine (CLZ) i.p.
+# where stated; Chrna2-Cre+ mice (Cre+) express hM3Dq in Chrna2 Martinotti (Ma2) cells, controls
+# are Cre-negative littermates with the same treatment.
+#  - Miniscope group (Figures 1D-J, 2, 3, Supplemental Figures 2 to 6): male mice, GCaMP6f in layer 5
+#    pyramidal cells (PCs) of right M1 through a prism lens, UCLA miniscope at about 20 frames/s,
+#    10 min sessions; 8 implanted, 2 Cre+ excluded, 6 analysed (3 control, 3 Cre+). Imaging on
+#    sessions 1, 2, 5 (pellet on the spoon) and 6 (pellet on the plate, same day directly after
+#    session 5); behaviour video (50 frames/s, front view) on sessions 1 to 6; CLZ 45-60 min
+#    before every session. Assemblies use sessions 1, 2 and 6 of 4 mice (2 per genotype).
+#  - Behaviour-only learning group (Figure 1F-H, Supplemental Table 1A-F): 20 mice injected, 13
+#    analysed (6 Cre+, 7 control), CLZ before every session, about 11 sessions (Table 1D has
+#    F(10,110)); sessions 1-5 on the spoon, then the plate.
+#  - LFP group (Figure 4, Supplemental Figure 7, Tables 1G-L and 6): female mice, 2x5 tungsten
+#    wire array in right M1, 16-channel Intan headstage, Open-ephys; trained for sessions 1-7
+#    before hM3Dq injection, then sessions 8-10 with saline and 11-13 with CLZ; 6 control and
+#    5 Cre+ (the Methods also give 13 and 11 mice for this group; the Results and Figure 4 legend
+#    give 11).
+#  - Caspase ablation group (Figure 5): Chrna2-Cre/tdTomato mice, AAV5-FLEX-taCasp3 in forelimb M1;
+#    prehension sessions 7 (before) and 8-12 (after), pasta handling and hanging wire (scored by
+#    visual inspection), 3 Cre+ and 6 controls (Figure 5I legend gives 8 controls and 6 Cre+).
+#  - Histology (Supplemental Figure 1, Figure 5B): c-Fos and mCherry immunolabelling, tdTomato counts.
+# Measured variables: DeepLabCut positions and likelihoods of nose, both paws, three fingers of
+# each paw and the pellet; CNMF-E traces of PCs, detrended by a running 8th percentile over 250
+# frames (dF detr.), matched across sessions; LFP filtered 1-100 Hz and in bands. The dataset
+# (title "Calcium imaging of pyramidal cells and LFP recordings in layer 5 of mouse primary motor
+# cortex") is described as holding miniscope imaging, LFP and DeepLabCut tracking from mice on
+# the prehension task, 31 subjects. Histology, pasta handling and hanging wire are not described.
+#
+# Method details fixed here for all imaging claims, from the Methods and the code.
+#  - Prehensions: blocks where the DeepLabCut likelihood of the left paw and its three fingers
+#    exceeds 0.7 (Methods, Pellet prehension task analysis). The code tests only LPaw and LFinger1
+#    (columns 5 and 6 of the network's body parts, Core.LHCutOff 0.7), fills single-frame gaps,
+#    drops single-frame blocks, takes block onsets and keeps the first onset in each second
+#    (MS_PRT_Reaches.py); the code's two body parts are a variant. Onset is time 0.
+#  - Accuracy: successful when the mouse reached, grasped and brought the pellet to its mouth,
+#    failed otherwise (Methods). The Methods do not say how this was scored; the code classifies
+#    automatically from the tracking (Core.ReachClassify) and pools all non-success classes as
+#    failed. Follow the code.
+#  - Event slices: dF detr. traces cut 1 s before to 1 s after onset, averaged over the
+#    prehensions of each accuracy, per neuron and session (Methods; Core.ETAWindow = (-1, 1)).
+#  - Task-modulated PCs: per neuron, the averaged trace before (t < 0) against after onset,
+#    ANOVA or Kruskal-Wallis by Shapiro's test, p < 0.05, kept when significant for at least one
+#    accuracy in that session (Methods). The code tests the time samples of the averaged trace and
+#    keeps a neuron when it is significant in any session of that animal; a variant.
+#  - Statistics: as the Statistical analysis section and the legends say; mixed ANOVA, or for
+#    non-normal data (Shapiro) ANOVA-type statistics or Scheirer-Ray-Hare, Kruskal-Wallis with F
+#    ratio, post hoc t-test, Mann-Whitney U or Wilcoxon, Holm-corrected, alpha 0.05. Neurons (or
+#    assemblies, or animals for behaviour and LFP) are the observations, as the n of each legend
+#    and the code's IDs show.
+schema_version: 2
+paper: doi:10.7554/elife.109286
+claims:
+- id: pc-selection-counts
+  statement: After excluding the 15.97% of recorded PCs without prehension-related modulation,
+    an average of 61.4 +/- 11.49 PCs per mouse and session were analysed, 1070 cells over 4 sessions
+    in 3 control mice (162, 363, 399 and 146 in sessions 1, 2, 5 and 6) and 403 in 3 Cre+ mice
+    (106, 126, 53 and 118).
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 2;
+    Methods, Neural activity around prehensions, paragraph 2; Figure 1J legend
+  quote: On average, 61.4 ± 11.49 PCs (n = 6 mice; 3 Control, total of 1070 cells for 4 sessions,
+    average of 105.2, 102.8 and 59.5 for each animal; 3 Chrna2-Cre+, total of 403 cells for 4
+    sessions, average of 45, 53.8 and 16) were included in the analysis
+  expected:
+  - quantity: control PCs over the four sessions
+    value: 1070
+    tolerance: 107
+  - quantity: Cre+ PCs over the four sessions
+    value: 403
+    tolerance: 40.3
+  - quantity: mean PCs per mouse and session
+    value: 61.4
+    tolerance: 11.49
+  - quantity: percentage of recorded PCs excluded as not task-modulated
+    value: 15.97
+    tolerance: 1.6
+    unit: '%'
+  criterion: Prehensions, slices and the task-modulation test as in the opening comment. The
+    tolerance on the mean per mouse and session is its reported spread. Per-session counts are
+    reported against the Figure 1J legend. The paper's own numbers disagree for Cre+ (the
+    per-animal averages 45, 53.8 and 16 over 4 sessions give 459, not 403), so the totals are
+    judged and the per-animal averages are shown only. Whether a neuron counts once per session
+    (the Methods' per-session selection) or once per animal across sessions is open; both counts
+    are shown, the per-session count is the main one. Reproduced when the totals and the
+    excluded percentage are within tolerance.
+- id: supfig1-cfos-validation
+  statement: CLZ induced c-Fos in hM3Dq-expressing cells of Cre+ mice (76% of mCherry-positive
+    cells, 32 per hemisection) but hardly in controls (0.8%, 5 mCherry-positive cells per section).
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 1;
+    Supplemental Figure 1C
+  quote: In Chrna2-Cre+ mice (n=9, number of sections=346), on average 32 mCherry positive cells per
+    hemisection were found, of which 76% were c-Fos positive. In control mice (n=5, number of
+    sections=60), on average 5 mCherry positive cells per section were found, of which 0.8% were
+    c-Fos positive
+  expected:
+  - quantity: c-Fos-positive fraction of mCherry-positive cells, Cre+
+    value: 76
+    tolerance: 7.6
+    unit: '%'
+  - quantity: c-Fos-positive fraction of mCherry-positive cells, control
+    value: 0.8
+    tolerance: 0.08
+    unit: '%'
+  - quantity: mCherry-positive cells per hemisection, Cre+
+    value: 32
+    tolerance: 3.2
+- id: fig1fh-no-genotype-effect-learning
+  statement: In a separate group of mice given CLZ before every session (6 Cre+, 7 controls),
+    genotype had no effect on the total number of prehensions, the number of successful
+    prehensions or the success ratio.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 2;
+    Figure 1F-H; Supplemental Table 1A-C
+  quote: Our analysis revealed no effect of genotype on prehension performance in a separate group of
+    mice treated with CLZ before each session (n = 13 mice; 6 Chrna2-Cre+ and 7 controls
+  statistics:
+  - about: total prehensions
+    test: ANOVA, genotype effect
+    statistic: F(1,11) = 4.8e-02
+    p: 0.83
+    n: 13 mice
+  - about: successful prehensions
+    test: ANOVA, genotype effect
+    statistic: F(1,11) = 3.4e-02
+    p: 0.856
+    n: 13 mice
+  - about: success ratio
+    test: ANOVA, genotype effect
+    statistic: F(1,11) = 0.336
+    p: 0.574
+    n: 13 mice
+  criterion: A claim of absence, judged on the paper's test, a mixed ANOVA with genotype between
+    mice and session within mice (ANOVA-type statistics if Shapiro's test rejects normality), on
+    per-mouse, per-session values, as Supplemental Table 1A-C and the Statistical analysis
+    section give. Prehensions and accuracy as in the opening comment; success ratio is successful
+    over total prehensions, 0 when there are none (BehavOnly.py). Reproduced when the genotype
+    effect has p > 0.05 for all three measures; not reproduced when it has p < 0.05 for any.
+    The genotype difference in means is reported. Open, with the readings the paper allows
+    (a) the sessions, all sessions recorded (Table 1D-F has 10 session degrees of freedom, so
+    11 sessions), or sessions 1, 2 and 6 as BehavOnly.py tests; (b) the counts as raw counts per
+    session or normalised to 10 min of session as the code does. All readings are run.
+- id: fig1fh-session-effect
+  statement: Mice improved in the task, with an effect of training session on total prehensions,
+    successful prehensions and success ratio; totals and successes rose from session 1 to 2, fell
+    in the harder sessions 5 and 6, and were stable after session 7.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 2;
+    Figure 1F-H; Supplemental Table 1D-F
+  quote: However, mice display improvement in the task (overall effect of training session for total
+    number of prehensions, number of successful prehensions, and success ratio ... with an increase
+    in the average number of total prehensions and successful prehensions from the first to the
+    second session, as well as an expected decrease in the fifth (harder spoon session) and sixth
+    sessions (pellet on the plate) due to increased difficulty and stable performance after session 7
+  statistics:
+  - about: total prehensions
+    test: ANOVA, session effect
+    statistic: F(10,110) = 9.525
+    p: 2.9e-11
+    n: 13 mice
+  - about: successful prehensions
+    test: ANOVA, session effect
+    statistic: F(10,110) = 7.571
+    p: 4.3e-09
+    n: 13 mice
+  - about: success ratio
+    test: ANOVA, session effect
+    statistic: F(10,110) = 5.536
+    p: 1.2e-06
+    n: 13 mice
+  depends_on:
+  - fig1fh-no-genotype-effect-learning
+  criterion: Same data, measures and test as fig1fh-no-genotype-effect-learning, over all sessions
+    recorded. Reproduced when the session effect has p < 0.05 for all three measures and the mean
+    over mice of total and successful prehensions is higher in session 2 than in session 1 and
+    lower in sessions 5 and 6 than in session 2. The description of stability after session 7
+    is reported, not judged. Partially reproduced when the session effects hold but the
+    direction of change does not.
+- id: supfig2i-baseline-lower
+  statement: Increasing Ma2 cell excitation lowered baseline (non-prehension) PC activity in Cre+
+    mice compared to controls.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 3;
+    Supplemental Figure 2I
+  quote: As expected, increasing Mα2 cell excitation led to a decrease in baseline PC activity
+    (nonprehension related) in Chrna2-Cre+ mice compared to controls
+  statistics:
+  - about: Cre+ against control, baseline amplitude
+    test: not named (printed in Supplemental Figure 2I)
+    p: 1.2e-06
+  depends_on:
+  - pc-selection-counts
+  criterion: The paper does not define baseline activity, its window or its test; Supplemental
+    Figure 2I plots it in dF detr. units with one printed p = 1.2e-06 (in the extracted text it
+    follows panel I's axis and precedes its Ctrl and Cre+ labels, before the six p-values of
+    panel J). Readings the paper allows (a) per neuron, the mean dF detr. over the
+    frames of the session outside every -1 to 1 s prehension window; (b) per neuron, the mean
+    dF detr. from -5 to -1 s before onset of prehensions not preceded by another within 6 s (the
+    baseline windows of Supplemental Figure 3). Neurons of all sessions pooled per genotype,
+    compared by Kruskal-Wallis or ANOVA as Shapiro's test decides (Statistical analysis).
+    Reproduced when, under both readings, Cre+ is lower than control at p < 0.05; partially
+    reproduced under one.
+- id: fig1j-session-effect-controls
+  statement: In control mice, PC activity amplitude around successful prehensions changed with
+    training session.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 3;
+    Figure 1J; Supplemental Table 2A-C
+  quote: When looking specifically at PC activity 2s around the prehension onset (−1 to 1s), our
+    results showed an effect of session in PC amplitude on successful prehensions of controls
+  statistics:
+  - about: accuracy by session interaction, PC amplitude
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 10.378
+    p: 0.016
+  - about: genotype by session interaction, PC amplitude during prehension
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 12.057
+    p: 0.0072
+  - about: session effect, successful prehensions of controls
+    test: Kruskal-Wallis
+    statistic: F(3,844) = 4.951
+    p: 0.0082
+  depends_on:
+  - pc-selection-counts
+  criterion: Amplitude is the mean dF detr. of each task-modulated neuron's averaged -1 to 1 s
+    slice, per session and accuracy (Methods). Scheirer-Ray-Hare on genotype, session and accuracy
+    over neurons (Figure 1J legend), then Kruskal-Wallis on session for control neurons on
+    successful prehensions. Reproduced when the accuracy by session interaction and the control
+    session effect each have p < 0.05.
+- id: fig1j-session2-success-lower
+  statement: In control mice, PC amplitudes on successful prehensions in session 2 were lower than
+    on failed prehensions of session 2 and than on successful prehensions of session 1.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 3;
+    Figure 1I-J; Supplemental Table 2D-E
+  quote: PC activity amplitudes were decreased during successful prehensions in the second session
+    compared both to failed prehensions ... and to successful prehensions from the first session
+  statistics:
+  - about: session 2, successful against failed
+    test: Mann-Whitney U
+    statistic: eff. size = 0.147
+    p: 0.0055
+    corrected: Holm
+  - about: successful, session 2 against session 1
+    test: Mann-Whitney U
+    statistic: eff. size = 0.154
+    p: 0.01
+    corrected: Holm
+  depends_on:
+  - fig1j-session-effect-controls
+  criterion: Same amplitudes as fig1j-session-effect-controls, control neurons. Mann-Whitney U,
+    Holm-corrected over all pairwise comparisons (Statistical analysis; Figure 1J legend). Whether
+    the session 2 comparison of accuracies is paired (the same neurons; the code marks accuracy as
+    paired) or unpaired (the legend's Mann-Whitney U) is open; both are run. Reproduced when
+    both comparisons give session 2 successful lower at corrected p < 0.05.
+- id: fig1j-genotype-session6
+  statement: In session 6, PC activity in the prehension window was higher in Cre+ mice than in
+    controls.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 3;
+    Figure 1J; Supplemental Table 2F
+  quote: Furthermore, an overall effect of genotype on PC activity amplitude was found for session 6
+    ... where PCs in Chrna2-Cre+ mice exhibited an overall increased activity in the prehension
+    window compared to PCs in control mice
+  statistics:
+  - test: Scheirer-Ray-Hare, genotype effect in session 6
+    statistic: H(1) = 10.497
+    p: 0.0048
+    n: 146 control and 118 Cre+ cells
+  depends_on:
+  - fig1j-session-effect-controls
+  criterion: Same amplitudes, session 6 neurons, Scheirer-Ray-Hare on genotype and accuracy.
+    Reproduced when the genotype effect has p < 0.05 with the Cre+ median above the control
+    median.
+- id: prehension-overlap
+  statement: Some prehensions fell within 2 s of another prehension, more often for failed than
+    successful ones; 3.17% and 36.07% in session 1, 6.08% and 28.26% in session 2, 1.79% and
+    28.12% in session 5, 4.76% and 29.71% in session 6, and 4.0% and 29.91% over all sessions.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 4
+  quote: Specifically, in the first session, 3.17% of successful and 36.07% of error prehensions
+    occurred within 2s of a succeeding prehension. Similar proportions were found in later
+    sessions ... When considering all sessions combined, we found a total prehension overlap of
+    4.0% for successful and 29.91% for error prehensions
+  expected:
+  - quantity: successful prehensions overlapping, session 1
+    value: 3.17
+    tolerance: 0.32
+    unit: '%'
+  - quantity: failed prehensions overlapping, session 1
+    value: 36.07
+    tolerance: 3.61
+    unit: '%'
+  - quantity: successful prehensions overlapping, session 2
+    value: 6.08
+    tolerance: 0.61
+    unit: '%'
+  - quantity: failed prehensions overlapping, session 2
+    value: 28.26
+    tolerance: 2.83
+    unit: '%'
+  - quantity: successful prehensions overlapping, session 5
+    value: 1.79
+    tolerance: 0.18
+    unit: '%'
+  - quantity: failed prehensions overlapping, session 5
+    value: 28.12
+    tolerance: 2.81
+    unit: '%'
+  - quantity: successful prehensions overlapping, session 6
+    value: 4.76
+    tolerance: 0.48
+    unit: '%'
+  - quantity: failed prehensions overlapping, session 6
+    value: 29.71
+    tolerance: 2.97
+    unit: '%'
+  - quantity: successful prehensions overlapping, all sessions
+    value: 4.0
+    tolerance: 0.4
+    unit: '%'
+  - quantity: failed prehensions overlapping, all sessions
+    value: 29.91
+    tolerance: 2.99
+    unit: '%'
+  criterion: Miniscope group, imaged sessions 1, 2, 5 and 6, prehensions and accuracy as in the
+    opening comment, pooled over mice and genotypes. Open, with the readings the text allows
+    (a) a prehension overlaps when the next prehension starts within 2 s after its onset; (b)
+    when the previous prehension started within 2 s before its onset (the adjacency analysis
+    compares a trial with its previous one); (c) either. Reproduced when, under one reading,
+    at least 8 of the 10 values are within tolerance and failed exceeds successful in every
+    session; partially reproduced when failed exceeds successful in every session but fewer
+    values match.
+- id: trial-adjacency
+  statement: For prehensions within 2 s of each other, the previous trial affected calcium activity
+    of the current trial in only 17.7% of pairs, after FDR correction.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 4;
+    Methods, Trial adjacency interference, paragraph 1
+  quote: we performed FDR-corrected trial-by-trial comparisons of adjacent trials, finding significant
+    effect of the previous trial in the current trial in only 17.7% of pairs
+  expected:
+    quantity: percentage of adjacent trial pairs with a significant effect of the previous trial
+    value: 17.7
+    tolerance: 1.77
+    unit: '%'
+  depends_on:
+  - prehension-overlap
+  - pc-selection-counts
+  criterion: Pairs of consecutive prehensions with inter-trial interval of 2 s or less (Methods).
+    Per pair, the previous against the current trial by ANOVA or ANOVA-type statistics as
+    Shapiro's test decides, p-values over all pairs corrected by Benjamini-Yekutieli FDR,
+    significant at 0.05 (Methods). The code has none of this analysis. Open, with the readings
+    the Methods allow (a) the observations of a pair are the task-modulated neurons' mean dF detr.
+    over the -1 to 1 s window of each trial, paired by neuron; (b) the observations are the time
+    samples of the population mean trace in each trial's window, paired by time. Reproduced when
+    one reading gives a percentage within tolerance; the claim's sense (a minority of pairs) is
+    reported under both.
+- id: supfig3-baseline-epochs
+  statement: In trials not preceded by another for at least 6 s, baseline amplitude did not differ
+    between the -5 to -3 s and -3 to -1 s windows by genotype or session; only in session 2 an
+    accuracy by epoch interaction appeared, driven by lower fluorescence on successful than failed
+    prehensions in control mice in the -5 to -3 s window.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 4;
+    Supplemental Figure 3; Supplemental Table 2G-H
+  quote: This analysis revealed no genotype- or session-related differences in baseline amplitude
+    between epochs, though an interaction between accuracy and epoch emerged in the second session
+    ... driven by lower fluorescence in successful versus failed prehensions for control mice within
+    the (−5, −3) window
+  statistics:
+  - about: accuracy by epoch interaction, session 2
+    test: ANOVA-type, F2-LD-F1 model
+    statistic: F(1,inf) = 8.623
+    p: 0.013
+  - about: successful against failed, controls, session 2, -5 to -3 s
+    test: Kruskal-Wallis
+    statistic: F(1,535) = 9.446
+    p: 0.036
+  depends_on:
+  - pc-selection-counts
+  criterion: Trials with no prehension in the 6 s before onset (Methods; the Results' "for 6 s or
+    less" is read as the Methods' "at least 6 s"); per neuron the mean dF detr. from -5 to -3 s
+    and from -3 to -1 s, averaged per genotype, session and accuracy (Methods). The absence part is
+    judged on the paper's test, the epoch effect and its interactions with genotype and with
+    session by ANOVA or ANOVA-type statistics as Shapiro's test decides; it holds when none of
+    them has p < 0.05. The presence part holds when, in session 2, the accuracy by epoch
+    interaction has p < 0.05 and control neurons in the -5 to -3 s window are lower on successful
+    than failed prehensions by Kruskal-Wallis at p < 0.05. Reproduced when both parts hold;
+    partially reproduced when one does.
+- id: supfig2j-phase-amplitudes
+  statement: Splitting the window into 1 s before (planning) and 1 s during (execution)
+    prehension, control PC amplitudes in session 2 were lower for successful than failed
+    prehensions in both phases, and Cre+ PCs in session 6 had larger amplitudes than controls.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 5;
+    Supplemental Figure 2J and its text; Supplemental Table 2I-J
+  quote: reduced PC amplitudes for successful compared to failed prehensions from the second session
+    in control mice. Also, increased excitation of Mα2 cells in the sixth session resulted in larger
+    PC amplitudes when compared to controls
+  statistics:
+  - about: genotype effect, PC amplitude
+    test: ANOVA-type, F2-LD-F1 model
+    statistic: F(1,inf) > 5.846
+    p: 0.047
+    p_relation: <
+  - about: accuracy by session interaction, controls
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 13.654
+    p: 0.0068
+  - about: controls, session 2, failed against successful, before and during
+    test: Mann-Whitney U
+    statistic: eff. size > 0.143
+    p: 0.014
+    p_relation: <
+    corrected: Holm
+  depends_on:
+  - fig1j-session-effect-controls
+  criterion: Per task-modulated neuron, the mean dF detr. from -1 to 0 s (before) and 0 to 1 s
+    (during) of the averaged slice, per session and accuracy (Methods; the code's Baseline =
+    Time < 0). Factors genotype, session, accuracy and phase, tests as the Statistical analysis
+    section decides; post hoc Mann-Whitney U, Holm. Reproduced when control session 2 neurons
+    are lower on successful than failed prehensions in both phases at corrected p < 0.05 and in
+    session 6 Cre+ amplitudes exceed controls at p < 0.05 in at least one phase; partially
+    reproduced when one of the two holds.
+- id: supfig2j-control-training-decrease
+  statement: In control mice, PC activity on successful prehensions decreased as training
+    progressed, most clearly before prehension in session 2 compared with session 1; no such
+    effects were seen in Cre+ mice.
+  source: Supplemental Figure 2 text, paragraph 1; Supplemental Figure 2J
+  quote: Also, PC activity decreases on successful prehensions as the training progresses
+    (ANOVA-type, F1-LD-F1 model F(3,inf) = 5.37, p = 5.5e-03), especially before successful
+    prehensions in the learning session compared to the naive session (eff. size = 0.204, p =
+    1.3e-02; Supplemental Figure 2J) ... No such effects were observed for Chrna2-Cre+ mice
+  statistics:
+  - about: session effect, control PCs, successful prehensions
+    test: ANOVA-type, F1-LD-F1 model
+    statistic: F(3,inf) = 5.37
+    p: 0.0055
+  - about: controls, successful, before prehension, session 2 against session 1
+    test: not named (post hoc; Mann-Whitney U for independent factors in the Statistical analysis)
+    statistic: eff. size = 0.204
+    p: 0.013
+  depends_on:
+  - supfig2j-phase-amplitudes
+  criterion: Before and during amplitudes as in supfig2j-phase-amplitudes, control neurons,
+    successful prehensions. Session (between, neurons identified per session) and phase (within
+    neuron) by ANOVA-type statistics, the F1-LD-F1 model the supplement names; post hoc
+    Mann-Whitney U, Holm (Statistical analysis). The same test on Cre+ neurons for the absence
+    part. Reproduced when the control session effect has p < 0.05, session 2 is below session 1
+    before prehension at corrected p < 0.05, and the Cre+ session effect has p > 0.05; partially
+    reproduced when the control parts hold and the Cre+ effect is significant.
+- id: supfig2j-creplus-naive-failed
+  statement: In Cre+ mice in session 1, PC activity during failed prehensions was lower than
+    before them.
+  source: Supplemental Figure 2 text, paragraph 1; Supplemental Figure 2J
+  quote: however, PC activity during failed prehensions was decreased compared to activity ...
+    before failed prehensions in the naive session (Wilcoxon signed-rank eff. size = 0.344, p =
+    6.5e-03; Supplemental Figure
+  statistics:
+  - test: Wilcoxon signed-rank
+    statistic: eff. size = 0.344
+    p: 0.0065
+  depends_on:
+  - supfig2j-phase-amplitudes
+  criterion: Before and during amplitudes as in supfig2j-phase-amplitudes, Cre+ neurons of
+    session 1, failed prehensions, during against before paired by neuron, Wilcoxon signed-rank,
+    Holm over the pairwise comparisons (Statistical analysis). Reproduced when during is lower
+    at corrected p < 0.05.
+- id: supfig4-ratio-interaction
+  statement: The ratio of PC activity during to before prehension showed a three-way interaction of
+    genotype, session and accuracy, with genotype effects for both accuracies in session 1 and
+    for successful prehensions in session 2, and accuracy effects in controls in sessions 2 and 5.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 6;
+    Supplemental Figure 4; Supplemental Table 2K-P
+  quote: We found a three-way interaction effect of genotype, session, and prehension accuracy ...
+    with genotype effects for both accuracies on the first session and successful prehensions during
+    the second session ... and accuracy effects in control mice across the second and fifth sessions
+  statistics:
+  - about: genotype by session by accuracy interaction
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 23.752
+    p: 2.8e-05
+  - about: genotype, successful, session 1
+    test: Kruskal-Wallis
+    statistic: F(1,212) = 12.418
+    p: 0.0036
+  - about: genotype, failed, session 1
+    test: Kruskal-Wallis
+    statistic: F(1,266) = 15.674
+    p: 0.00077
+  - about: genotype, successful, session 2
+    test: Kruskal-Wallis
+    statistic: F(1,479) = 10.449
+    p: 0.0079
+  - about: accuracy, controls, session 2
+    test: Kruskal-Wallis
+    statistic: F(1,535) = 15.857
+    p: 0.00054
+  - about: accuracy, controls, session 5
+    test: Kruskal-Wallis
+    statistic: F(1,574) = 19.586
+    p: 9.2e-05
+  depends_on:
+  - supfig2j-phase-amplitudes
+  criterion: Per neuron, session and accuracy, the during amplitude divided by the before amplitude
+    of supfig2j-phase-amplitudes (Results, paragraph 6). Scheirer-Ray-Hare on genotype, session and
+    accuracy, then Kruskal-Wallis per cell (Supplemental Table 2K-P). The code has no ratio
+    analysis; how a before amplitude near zero is handled is not said, and the ratio is computed
+    as written with neurons of zero before amplitude left out, a standard choice. Reproduced when
+    the three-way interaction and at least four of the five follow-up effects have p < 0.05;
+    partially reproduced when the interaction holds with fewer.
+- id: supfig4-ratio-reconfiguration
+  statement: In control mice the balance of PC activity shifted toward execution on successful
+    prehensions as training went from session 1 to 5 and shifted back toward planning in session
+    6, while Cre+ mice showed much less reconfiguration of this balance across sessions.
+  source: Results, Increased Ma2 cell excitation affected calcium signal amplitudes, paragraph 6;
+    Supplemental Figure 4
+  quote: In control mice, the balance of PC activity progressively shifted toward movement execution
+    for successful prehensions as the motor skill was refined (sessions 1–5). Following the
+    pellet-position change (session 6), this trend reversed, with activity shifting back toward the
+    planning phase during successful prehensions ... However, Chrna2-Cre+ mice exhibited a markedly
+    reduced reconfiguration of the planning/execution balance across sessions
+  depends_on:
+  - supfig4-ratio-interaction
+  criterion: Mean over neurons of the during/before ratio on successful prehensions, per genotype
+    and session (Supplemental Figure 4 plots mean +/- SEM). The paper gives no test of the trend,
+    so this reading is fixed here. Controls hold when the means increase from session 1 to 2 to 5
+    and session 6 is below session 5. Cre+ holds when the range (largest minus smallest) of its
+    four session means is smaller than that of controls. Reproduced when both hold; partially
+    reproduced when one does. The session-wise Kruskal-Wallis on control successful ratios is
+    reported as well.
+- id: fig2d-latency-accuracy
+  statement: PC peak latency was strongly affected by prehension accuracy; PCs peaking before onset
+    peaked earlier on successful than failed prehensions, and PCs peaking during prehension peaked
+    later on successful than failed ones, in both genotypes and all sessions with one exception
+    each (Cre+ in session 1 and in session 5).
+  source: Results, Increased Ma2 cell excitation resulted in earlier PC firing during retraining,
+    paragraph 1; Figure 2D; Supplemental Figure 5 and its text, paragraph 2 (the quote and the
+    exceptions); Supplemental Table 3A-C
+  quote: PCs that reached their activity peak before prehensions had decreased latencies in
+    successful prehensions compared to failed prehensions for both genotypes at all sessions ...
+    except for Chrna2-Cre+ mice in the naive session. Conversely, PCs that reached their activity
+    peak during prehensions had increased latencies in successful prehensions compared to failed
+    prehensions for both genotypes at all sessions
+  statistics:
+  - about: accuracy by genotype by session interaction
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 27.514
+    p: 4.6e-06
+  - about: phase by session interaction
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 20.244
+    p: 0.00015
+  - about: accuracy effect, both phases, all sessions except session 2
+    test: Scheirer-Ray-Hare
+    statistic: H(1) > 16.552
+    p: 4.7e-05
+    p_relation: <
+  - about: accuracy by genotype interaction, session 2
+    test: Scheirer-Ray-Hare
+    statistic: H(1) > 10.364
+    p: 0.009
+    p_relation: <
+  - about: before-neurons, successful against failed
+    test: Mann-Whitney U
+    statistic: eff.size > 0.26
+    p: 0.0037
+    p_relation: <
+    corrected: Holm
+  - about: during-neurons, successful against failed
+    test: Mann-Whitney U
+    statistic: eff.size > 0.304
+    p: 0.00096
+    p_relation: <
+    corrected: Holm
+  depends_on:
+  - pc-selection-counts
+  criterion: Per task-modulated neuron and session, the averaged trace of each accuracy normalised
+    and its peak latency taken as the time of its maximum in -1 to 1 s (Methods; the code's argmax
+    in GetMatricesStats). The phase is "before" when the peak on successful prehensions is before
+    onset and "during" otherwise, and the same phase label is kept for failed prehensions
+    (Results; code SortBy Success). Sorting per session (Methods, "from each session"; the code's
+    SortPerSession True). Scheirer-Ray-Hare on accuracy, genotype, session and phase, then
+    Mann-Whitney U per genotype, session and phase, Holm (Figure 2D legend). Reproduced when the
+    three-way interaction has p < 0.05 and, of the 16 genotype, session and phase cells, at least
+    13 show the stated direction at corrected p < 0.05; partially reproduced for 9 to 12.
+- id: fig2d-control-temporal-separation
+  statement: In control mice, training progressively increased the temporal separation of
+    before-peaking and during-peaking PCs on successful prehensions, with before-neurons peaking
+    earlier and during-neurons later.
+  source: Results, Increased Ma2 cell excitation resulted in earlier PC firing during retraining,
+    paragraph 1; Figure 2D, left
+  quote: 'In control mice, training progressively increased the temporal separation between "before"
+    and "during" execution neurons during successful prehensions, with "before-neurons" peaking
+    earlier and "during-neurons" peaking later'
+  depends_on:
+  - fig2d-latency-accuracy
+  criterion: Latencies as in fig2d-latency-accuracy, control neurons, successful prehensions,
+    sessions 1, 2 and 5 (the training sessions before the pellet change). The paper gives no test
+    of the trend; Figure 2D shows significance bars between control sessions (Mann-Whitney U,
+    Holm). Reproduced when the median latency of before-neurons decreases and that of
+    during-neurons increases from session 1 to session 5, and at least one of the two session 1
+    against session 5 comparisons is significant at corrected p < 0.05; partially reproduced when
+    the medians move as stated without a significant comparison.
+- id: fig2d-genotype-latency
+  statement: Increased Ma2 cell excitability delayed PC responses in session 2 and made them
+    premature in session 6, the retraining session.
+  source: Results, Increased Ma2 cell excitation resulted in earlier PC firing during retraining,
+    paragraph 1; Figure 2D; Supplemental Table 3D-E
+  quote: This temporal organization was disrupted during failed prehensions and was altered by
+    increased Mα2 cell excitability, which produced delayed responses during session 2 and premature
+    responses during task retraining in session 6
+  statistics:
+  - about: genotype difference, one of sessions 2 and 6
+    test: Mann-Whitney U
+    statistic: eff. size = 0.371
+    p: 4.0e-07
+    corrected: Holm
+  - about: genotype difference, the other of sessions 2 and 6
+    test: Mann-Whitney U
+    statistic: eff. size = 0.277
+    p: 0.016
+    corrected: Holm
+  depends_on:
+  - fig2d-latency-accuracy
+  criterion: Latencies as in fig2d-latency-accuracy; Cre+ against control by Mann-Whitney U, Holm,
+    per session, phase and accuracy (the Figure 2D asterisks). The paper does not say which phase
+    or accuracy carries the two differences of Supplemental Table 3D-E. Readings (a) before-neurons
+    on successful prehensions; (b) during-neurons on successful prehensions; (c) any phase and
+    accuracy. Reproduced when, under one reading, Cre+ latency is later than control in session 2
+    and earlier in session 6, both at corrected p < 0.05; partially reproduced when one holds.
+- id: fig2i-peak-width
+  statement: PC response peak width was influenced most by session and then by genotype, with Cre+
+    PCs having sharper (narrower) peaks than controls overall and especially in session 2.
+  source: Results, Increased Ma2 cell excitation resulted in earlier PC firing during retraining,
+    paragraph 2; Figure 2I-J; Supplemental Table 4
+  quote: The width of PC activity peaks was most strongly influenced by the session followed by
+    genotype ... where PCs in Chrna2-Cre+ mice displayed overall sharper peaks compared to PCs in
+    control mice, particularly during session 2
+  statistics:
+  - about: accuracy by genotype by session interaction
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 10.028
+    p: 0.018
+  - about: accuracy by phase by session interaction
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 10.612
+    p: 0.014
+  - about: genotype by phase by session interaction
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 17.698
+    p: 0.00051
+  - about: genotype effect, successful prehensions
+    test: Scheirer-Ray-Hare
+    statistic: H(1) = 8.86
+    p: 0.012
+  - about: genotype effect, session 2
+    test: Scheirer-Ray-Hare
+    statistic: H(1) = 16.629
+    p: 0.00036
+  depends_on:
+  - fig2d-latency-accuracy
+  criterion: Per neuron and accuracy, the width in seconds at half prominence of the largest peak
+    of the averaged normalised trace (Methods; code GetPeakWidthStats, scipy find_peaks and
+    peak_widths with rel_height 0.5, converted from samples to seconds over the 2 s window), phase
+    as in fig2d-latency-accuracy. Scheirer-Ray-Hare on genotype, session, accuracy and phase
+    (Figure 2 legend). Reproduced when the genotype effect on successful prehensions and in
+    session 2 each have p < 0.05 with Cre+ median widths below control; partially reproduced when
+    one does.
+- id: supfig6-width-training
+  statement: In control mice, peak width of all PCs decreased steadily with training and rose
+    slightly on retraining, which was not seen in Cre+ mice; in Cre+ mice only PCs peaking during
+    prehension showed a session effect, with a different trend.
+  source: Supplemental Figure 6 and its text
+  quote: For control mice, the width of activity peaks from all PCs steadily decreases with training,
+    and slightly increases upon retraining (H(3) = 15.639, p = 2.7e-03, Supplemental Figure 6A), an
+    effect not observed in Chrna2-Cre+ mice
+  statistics:
+  - about: session effect, control PCs
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 15.639
+    p: 0.0027
+  - about: session effect, Cre+ PCs peaking during prehension
+    test: Scheirer-Ray-Hare
+    statistic: H(3) = 11.524
+    p: 0.028
+  depends_on:
+  - fig2i-peak-width
+  criterion: Widths as in fig2i-peak-width. Scheirer-Ray-Hare on session (with accuracy and phase)
+    per genotype. Reproduced when the control session effect has p < 0.05 with the median width
+    lower in session 5 than in session 1 and higher in session 6 than in session 5, and the Cre+
+    session effect over all PCs has p > 0.05; partially reproduced when the control part holds
+    alone.
+- id: assemblies-counts
+  statement: For the assembly analysis 84.8 +/- 14.2 PCs per mouse were matched over sessions 1, 2
+    and 6 (133 and 68 in 2 control mice, 77 and 61 in 2 Cre+ mice); 70 control and 49 Cre+
+    assemblies were found over the three sessions, 23 and 19 in session 1, with 5.6 +/- 0.4 cells
+    per assembly and similar sizes in sessions 2 and 6.
+  source: Results, Increased Ma2 cell excitation resulted in PC assembly salience rigidity,
+    paragraph 1; Methods, Assembly analysis; Figure 3B-E
+  quote: On average, 84.8 ± 14.2 PCs were kept for the analysis (n = 4 mice; 2 Control, total of 70
+    assemblies for 3 sessions, average of 14 and 9.3 for each animal; 2 Chrna2-Cre+, total of 49
+    assemblies for 3 sessions, average of 11.7 and 4.7) ... In the first session, we identified a
+    total of 23 assemblies in controls and 19 assemblies in Chrna2-Cre+ mice, with an average number
+    of 5.6 ± 0.4 cells in each assembly for each session
+  expected:
+  - quantity: matched PCs per mouse, mean
+    value: 84.8
+    tolerance: 14.2
+  - quantity: control assemblies over sessions 1, 2 and 6
+    value: 70
+    tolerance: 7
+  - quantity: Cre+ assemblies over sessions 1, 2 and 6
+    value: 49
+    tolerance: 4.9
+  - quantity: control assemblies, session 1
+    value: 23
+    tolerance: 2.3
+  - quantity: Cre+ assemblies, session 1
+    value: 19
+    tolerance: 1.9
+  - quantity: cells per assembly, mean
+    value: 5.6
+    tolerance: 0.4
+  depends_on:
+  - pc-selection-counts
+  criterion: PCs matched across sessions 1, 2 and 6 (intersection over union and the Hungarian
+    algorithm, Methods). Assemblies detected on the whole 10 min recording of each session by
+    ICA with circular shifts (ICA-CS, ref. 39) as implemented in GoodhillLab
+    neural-assembly-detection (MS_PRT_AssembliesDetection.py, ICA_ASSEMBLY_DETECTION); then
+    non-task-modulated neurons removed and assemblies of 4 or more neurons kept (Methods; code
+    len > 3). Tolerances are the reported spreads where given, else 10%. Which four mice is not
+    said beyond 2 per genotype; the mice with PCs matched on all three sessions are used.
+    Reproduced when at least five of the six values are within tolerance.
+- id: fig3g-salience
+  statement: Assembly salience (activity within the prehension window relative to outside it,
+    from -2.04 to 24.62) changed with session; in controls it was lower on successful prehensions
+    in session 6 than in sessions 1 and 2, with no other differences, none in Cre+ mice.
+  source: Results, Increased Ma2 cell excitation resulted in PC assembly salience rigidity,
+    paragraph 2; Figure 3G; Supplemental Table 5A-C
+  quote: The salience data for single assemblies varied from −2.04 to 24.62 and we found an overall
+    effect of the training session on assembly salience ... Assembly activity during successful
+    prehensions in control mice was less salient in session 6 compared to sessions 1 and 2 ... We
+    found no other differences in salience for failed prehensions or between training sessions in
+    Chrna2-Cre+ mice
+  statistics:
+  - about: session effect
+    test: ANOVA-type, F2-LD-F1 model
+    statistic: F(2,inf) = 5.50
+    p: 0.0047
+  - about: controls, successful, session 6 against session 1 or 2
+    test: Mann-Whitney U
+    statistic: eff. size = 0.55
+    p: 0.0036
+    corrected: Holm
+  - about: controls, successful, session 6 against the other of sessions 1 and 2
+    test: Mann-Whitney U
+    statistic: eff. size = 0.42
+    p: 0.045
+    corrected: Holm
+  expected:
+  - quantity: lowest assembly salience
+    value: -2.04
+    tolerance: 0.2
+  - quantity: highest assembly salience
+    value: 24.62
+    tolerance: 2.46
+  depends_on:
+  - assemblies-counts
+  criterion: Assembly activity peaks are time samples where the summed activity of the assembly's
+    neurons exceeds 95% of 1000 time shuffles of each neuron (Methods; the code's GetSigPeaks has
+    ShuffleRounds 1000, Alpha 0.05, and also STDThr 2, a variant). Salience = 100 x (peaks inside
+    the -1 to 1 s windows / samples inside - peaks outside / samples outside), per assembly,
+    session and accuracy (equation 2 terms in the Methods; the x 100 from the code and the stated
+    -100 to 100 range). Assemblies of each session with factors accuracy, genotype and session,
+    ANOVA-type statistics, post hoc Mann-Whitney U, Holm (Figure 3G legend). Reproduced when the
+    session effect has p < 0.05, control successful salience in session 6 is below both sessions
+    1 and 2 at corrected p < 0.05, and no Cre+ session pair differs; partially reproduced when the
+    session effect and one control comparison hold. The salience range is reported against the
+    expected values.
+- id: fig3k-assembly-area
+  statement: In session 6, assemblies of Cre+ mice covered a smaller area than those of control
+    mice, their PCs lying closer together.
+  source: Results, Increased Ma2 cell excitation resulted in PC assembly salience rigidity,
+    paragraph 3; Figure 3H-K; Supplemental Table 5D-E
+  quote: We found smaller assemblies in Chrna2-Cre+ mice compared to control mice in session 6
+  statistics:
+  - about: genotype effect, assembly area
+    test: Scheirer-Ray-Hare
+    statistic: H(1) = 10.539
+    p: 0.0012
+  - about: Cre+ against control, session 6
+    test: Mann-Whitney U
+    statistic: eff. size = 0.495
+    p: 0.012
+    corrected: Holm
+  depends_on:
+  - assemblies-counts
+  criterion: Area of each assembly as the polygon formed by its neurons' centres of mass sorted by
+    angle around their mean position (Methods; code Analysis.PolygonArea on the matched centres
+    of mass). All assemblies of sessions 1, 2 and 6, Scheirer-Ray-Hare on genotype and session,
+    then Mann-Whitney U per session, Holm (code, Assemblies distance area stats; Figure 3K legend).
+    Reproduced when the genotype effect has p < 0.05 and session 6 Cre+ areas are smaller at
+    corrected p < 0.05.
+- id: fig3l-resilience
+  statement: Genotype and session affected assembly resilience; assemblies of session 6 traced back
+    to session 2 had higher resilience in Cre+ mice than in controls (20 control and 14 Cre+
+    assemblies).
+  source: Results, Increased Ma2 cell excitation resulted in PC assembly salience rigidity,
+    paragraph 3; Figure 3L; Supplemental Table 5F-G
+  quote: We found that genotype and training session affected assembly resilience ... where
+    assemblies in Chrna2-Cre+ mice displayed increased resilience compared to assemblies in control
+    mice in session 2 (n = 20 assemblies control and 14 assemblies Chrna2-Cre+ traced back from
+    session 6
+  statistics:
+  - about: genotype by session interaction
+    test: ANOVA
+    statistic: F(2,94) = 4.18
+    p: 0.018
+  - about: Cre+ against control, session 2
+    test: t-test
+    statistic: eff. size = 0.937
+    p: 0.012
+    corrected: Holm
+    n: 20 control and 14 Cre+ assemblies
+  expected:
+  - quantity: control assemblies of session 6 traced back
+    value: 20
+    tolerance: 2
+  - quantity: Cre+ assemblies of session 6 traced back
+    value: 14
+    tolerance: 1.4
+  depends_on:
+  - assemblies-counts
+  criterion: For each assembly of session 6, the assembly of session 1 and of session 2 with the
+    highest resilience to it (Methods). Equation 1 is lost from the extracted text, so the code's
+    AssemblyResilience is used, I/|ref| + (I/|res|)(|res|/|ref| - 1), I the shared neurons, ref the
+    session 6 assembly; only assemblies of 4 or more neurons. That formula equals
+    2I/|ref| - I/|res|, which can fall below 0 or exceed 1, while the Methods put resilience
+    within 0 and 1 and the Results call it the percentage of neuron match. The code's formula is
+    the main reading; the intersection over the union of the two assemblies, which meets the
+    Methods' range and endpoints, is run as a variant. ANOVA on genotype and session, then
+    t-test per session, Holm (Figure 3L legend). The ANOVA's 94 degrees of freedom suggest the
+    code's loop over every session as reference; that reading is run as a variant. Reproduced
+    when the interaction has p < 0.05 and Cre+ resilience in session 2 is higher at corrected
+    p < 0.05.
+- id: fig4b-clz-improves-success
+  statement: In mice trained before hM3Dq expression, CLZ (sessions 11-13) raised the prehension
+    success rate of Cre+ mice compared with saline (sessions 8-10), which was not seen in controls.
+  source: Results, Increased Ma2 cell excitation resulted in improved execution of a learned motor
+    task, paragraph 1; Figure 4B; Supplemental Table 1G-L
+  quote: We found an overall effect of session in the success rate ... and when grouping by genotype
+    we found that CLZ treatment increased the success rate in Chrna2-Cre+ mice compared to saline
+    treatment, which was not observed in control mice
+  statistics:
+  - about: session effect
+    test: ANOVA
+    statistic: F(6,54) = 4.27
+    p: 0.001
+    n: 11 mice
+  - about: genotype by session interaction
+    test: ANOVA
+    statistic: F(6,54) = 2.203
+    p: 0.057
+  - about: session effect, Cre+
+    test: ANOVA
+    statistic: F(6,24) = 5.612
+    p: 0.0019
+  - about: session effect, controls
+    test: ANOVA
+    statistic: F(6,30) = 1.083
+    p: 0.395
+  - about: treatment effect, Cre+
+    test: ANOVA
+    statistic: F(1,15) = 10.974
+    p: 0.01
+  - about: treatment effect, controls
+    test: ANOVA
+    statistic: F(1,19) = 0.878
+    p: 0.361
+  criterion: LFP group, 5 Cre+ and 6 controls (Results; Figure 4 legend), sessions 7 to 13 (seven
+    sessions, as Table 1G's 6 degrees of freedom and LFP_PRT_Reaches.py SessionCutOff 7 give),
+    mice with all sessions. Success ratio per mouse and session from prehensions and accuracy as
+    in the opening comment. Mixed ANOVA on genotype and session, then per genotype ANOVA on
+    session and on treatment (saline 8-10 against CLZ 11-13), followed by t-test (Figure 4B
+    legend). The treatment tests' degrees of freedom, F(1,15) for 5 Cre+ and F(1,19) for 6
+    control mice (Supplemental Table 1K-L), do not fit a within-mouse test over mice (F(1,4) and
+    F(1,5)); they suggest mouse-session values taken as independent, 17 and 21 of them, fewer
+    than the 30 and 36 of sessions 8 to 13, so some sessions are missing. Both readings are
+    run, (a) treatment within mouse on per-mouse saline and CLZ means; (b) a one-way ANOVA over
+    the available mouse-session success ratios of sessions 8 to 13. Reproduced when the Cre+ treatment effect has p < 0.05 with CLZ higher and the
+    control treatment effect has p > 0.05; partially reproduced when the Cre+ effect holds and the
+    control effect is also significant.
+- id: fig4d-theta-genotype
+  statement: Around prehensions, LFP power in the full theta band (4-12 Hz) and the low theta band
+    (4-7 Hz) was higher in Cre+ mice than in controls, and theta power differed with accuracy.
+  source: Results, Increased Ma2 cell excitation resulted in improved execution of a learned motor
+    task, paragraph 3; Figure 4D; Supplemental Table 6A-C
+  quote: LFP analysis provided a detailed view of Mα2 cell involvement, showing increased power in
+    the full theta band and the low theta band in Chrna2-Cre+ mice compared to controls
+  statistics:
+  - about: genotype effect, theta power
+    test: ANOVA
+    statistic: F(1,8) = 6.783
+    p: 0.031
+  - about: accuracy effect, theta power
+    test: ANOVA
+    statistic: F(1,8) = 6.332
+    p: 0.036
+  - about: genotype effect, low theta power
+    test: ANOVA
+    statistic: F(1,8) = 6.489
+    p: 0.034
+  depends_on:
+  - fig4b-clz-improves-success
+  criterion: Method from the Methods (LFP electrophysiology analysis) and Results, as the code has
+    no spectrogram. Per channel, a second-order Butterworth band-pass of the band, then a
+    spectrogram, each power value divided by the cumulative mean, averaged over the frequency bins
+    inside the band; mean power in the 1 s before and 1 s after onset, per accuracy, averaged over
+    prehensions per mouse and session. Mixed ANOVA (ANOVA-type if not normal) on genotype,
+    accuracy, phase and session, mice as observations. Sessions 11-13, the CLZ sessions the
+    Results name; the session terms of Supplemental Table 6 have 2 degrees of freedom (6I
+    F(2,16), 6K F(2,18), 6L F(2,8)), so three sessions, and "full dataset" in the Figure 4
+    legend means all three sessions. The genotype terms around prehensions have F(1,8), so 10
+    mice, while Table 6K and 6P (outside prehensions) fit 11; which mouse is missing is not
+    said, and mice with prehensions of both accuracies in all three sessions are used. Open, with
+    readings run (b) channels, the mean over all accepted channels, or one
+    channel per mouse (the code's SingleCh, from a channel list not in the repository; the
+    channel with the highest median theta power over the session is the stand-in); (c) the
+    normalisation, each frequency bin divided by its mean over the whole recording, or each
+    value divided by the mean over all time and frequency bins; (d) spectrogram window,
+    not given, 1 s Hann windows with 50% overlap, and 0.5 s windows as a variant. Reproduced when
+    the genotype effects on theta and low theta have p < 0.05 with Cre+ higher under the
+    readings the outcome rests on; the outcome is the one all readings give, or marked as
+    resting on a reading.
+- id: fig4e-high-theta-accuracy
+  statement: In the high theta band (8-12 Hz), LFP power was higher on successful than on failed
+    prehensions.
+  source: Results, Increased Ma2 cell excitation resulted in improved execution of a learned motor
+    task, paragraph 3; Figure 4E; Supplemental Table 6D
+  quote: Notably, in the high theta band, we observed higher power in successful than failed
+    prehensions
+  statistics:
+  - test: ANOVA, accuracy effect
+    statistic: F(1,8) = 8.724
+    p: 0.018
+  depends_on:
+  - fig4d-theta-genotype
+  criterion: Band power and readings as in fig4d-theta-genotype, high theta band. Reproduced when
+    the accuracy effect has p < 0.05 with successful higher.
+- id: fig4fh-gamma-session13
+  statement: Gamma band effects appeared only in session 13, where power was higher on successful
+    than failed prehensions, and Cre+ mice had higher low gamma (30-40 Hz) and high gamma (60-90 Hz)
+    power than controls.
+  source: Results, Increased Ma2 cell excitation resulted in improved execution of a learned motor
+    task, paragraph 3; Figure 4F-H; Supplemental Table 6E-J
+  quote: For the gamma band, we only found significant effects on session 13, which showed similar
+    trends as high theta, with higher power in successful than failed prehensions across gamma bands
+    ... For the low gamma band, Chrna2-Cre+ mice displayed higher power than controls, especially in
+    successful prehensions ... High gamma power was also elevated in Chrna2-Cre+ mice compared to
+    controls
+  statistics:
+  - about: accuracy by genotype by phase interaction, gamma
+    test: ANOVA-type, F1-LD-F2 model
+    statistic: F(1,inf) = 5.919
+    p: 0.045
+  - about: accuracy, session 13 gamma, Cre+ before prehension
+    test: ANOVA-type, LD-F1 model
+    statistic: F(1,inf) = 8.333
+    p: 0.043
+  - about: genotype, session 13 low gamma
+    test: ANOVA-type, F1-LD-F2 model
+    statistic: F(1,inf) = 8.781
+    p: 0.0091
+  - about: accuracy, session 13 low gamma, Cre+ before prehension
+    test: ANOVA-type, LD-F1 model
+    statistic: F(1,inf) = 8.333
+    p: 0.043
+  - about: genotype by session, high gamma
+    test: ANOVA
+    statistic: F(2,16) = 3.706
+    p: 0.048
+  - about: genotype, session 13 high gamma
+    test: ANOVA
+    statistic: F(1,8) = 9.329
+    p: 0.048
+  depends_on:
+  - fig4d-theta-genotype
+  criterion: Band power and readings as in fig4d-theta-genotype, gamma (30-90 Hz), low gamma and
+    high gamma. Session 13 tested alone after the overall model (Figure 4 legend, "only isolated
+    effects for session 13"). Reproduced when in session 13 the genotype effects on low and high
+    gamma have p < 0.05 with Cre+ higher, and successful exceeds failed in at least one gamma band
+    at p < 0.05; partially reproduced when the genotype part holds for one band.
+- id: supfig7-lfp-nonprehension
+  statement: Outside prehensions, genotype and session interacted in all frequency bands; in Cre+
+    mice full, theta and beta power fell in session 13, low theta power depended on genotype and
+    session, low and high gamma on genotype, and high theta showed no effect.
+  source: Results, Increased Ma2 cell excitation resulted in improved execution of a learned motor
+    task, paragraph 4; Supplemental Figure 7B-H; Supplemental Table 6K-P
+  quote: Analysis showed an interaction effect of genotype and session across all frequency bands
+    ... with LFP power in session 13 consistently decreased compared to previous sessions, not
+    observed in control mice ... low-theta power was affected both by genotype and training session
+    ... Similarly, genotype affected both low- and high-gamma bands ... No effects were found for
+    the high-theta band
+  statistics:
+  - about: genotype by session interaction, each band
+    test: ANOVA
+    statistic: F(2,18) > 3.584
+    p: 0.049
+    p_relation: <
+  - about: session effect in Cre+, full, theta and beta
+    test: ANOVA
+    statistic: F(2,8) > 8.667
+    p: 0.02
+    p_relation: <
+  - about: genotype effect, low theta
+    test: ANOVA-type, F1-LD-F1 model
+    statistic: F(1,inf) = 5.687
+    p: 0.017
+  - about: session effect, low theta
+    test: ANOVA-type, F1-LD-F1 model
+    statistic: F(2,inf) = 3.37
+    p: 0.037
+  - about: genotype effect, low gamma
+    test: ANOVA-type, F1-LD-F1 model
+    statistic: F(1,inf) = 6.225
+    p: 0.013
+  - about: genotype effect, high gamma
+    test: ANOVA
+    statistic: F(1,9) = 5.356
+    p: 0.046
+  depends_on:
+  - fig4d-theta-genotype
+  criterion: Spectrogram band power as in fig4d-theta-genotype, averaged per mouse and session over
+    the time outside every -1 to 1 s prehension window, sessions 11, 12 and 13 (Supplemental Figure
+    7B-H plots these three). Beta is not defined in the Methods; 13-30 Hz is a standard choice and
+    is named as one. Mixed ANOVA on genotype and session per band. Supplemental Figure 7 plots
+    seven bands (full, theta, beta, gamma, low theta, low gamma, high gamma); high theta is not
+    plotted. The Results give the interaction "across all frequency bands" and also "no effects"
+    for high theta, which conflict; the seven plotted bands are read as "all", and high theta is
+    judged as the absence. Reproduced when the
+    interaction has p < 0.05 in at least five of the seven plotted bands, Cre+ session 13 power is below
+    sessions 11 and 12 for full, theta and beta, and high theta shows no effect at p < 0.05;
+    partially reproduced when the interaction holds in three or four bands.
+- id: fig5b-ablation-efficiency
+  statement: Unilateral caspase injection reduced tdTomato-positive Chrna2 cells on the injected side
+    by 80.4% compared with the uninjected side.
+  source: Results, Ablation of Ma2 cells affected fine motor functions, paragraph 1; Figure 5B
+  quote: the deletion resulted in a reduction of 80.4% of the number of tdTomato-positive cells on the
+    injected side compared to the uninjected side within the same mouse
+  expected:
+    quantity: reduction of tdTomato-positive cells, injected against uninjected side
+    value: 80.4
+    tolerance: 8.04
+    unit: '%'
+- id: fig5d-pasta-drops
+  statement: After bilateral ablation of Ma2 cells, Cre+ mice dropped the pasta more often than
+    controls, with similar handling times.
+  source: Results, Ablation of Ma2 cells affected fine motor functions, paragraph 1; Figure 5C-E
+  quote: bilaterally injected Chrna2Cre+ mice dropped more pasta than control mice ... although their
+    handling times were similar
+  criterion: Drops and handling time per mouse, scored by visual inspection of the videos (Methods,
+    Pasta Handling Test), 3 Cre+ and 6 controls; ANOVA (Figure 5D-E legend), as
+    CaspM1MC_PHHW.py runs it. The statistics (Supplemental Table 1M) are missing from the
+    supplement. Reproduced when drops are higher in Cre+ at p < 0.05 and handling time shows no
+    effect at p < 0.05.
+- id: fig5gh-hanging-wire
+  statement: Ablation of Ma2 cells did not change the number of falls or the time spent on the
+    wire in the hanging wire test.
+  source: Results, Ablation of Ma2 cells affected fine motor functions, paragraph 1; Figure 5F-H
+  quote: but found no differences between the two groups in terms of number of falls or time spent
+    on the wire
+  criterion: A claim of absence, on the paper's test, ANOVA of falls and time on the wire per mouse
+    (Figure 5G-H legend), 3 Cre+ and 6 controls. Reproduced when neither has p < 0.05.
+- id: fig5i-ablation-prehension
+  statement: After ablation, the prehension success ratio changed with session, but genotype had no
+    effect, with only a pairwise difference between sessions 7 and 10.
+  source: Results, Ablation of Ma2 cells affected fine motor functions, paragraph 1; Figure 5I
+  quote: In the prehension task, we found an overall effect of training session in the success ratio
+    ... but we did not find an effect of genotype in the prehension's success ratio ... only a
+    punctual pairwise difference between sessions 7 and 10
+  criterion: Caspase group, session 7 (before) and 8-12 (after), success ratio per mouse and
+    session; mixed ANOVA on genotype and session (Figure 5I legend). The statistics (Supplemental
+    Table 1N-P) are missing from the supplement, and the legend (8 controls, 6 Cre+) and the
+    Methods (6 controls, 3 Cre+) disagree on n; all mice with session 7 and at least one later
+    session are used. The genotype part is a claim of absence on this test. Reproduced when the
+    session effect has p < 0.05 and the genotype effect does not.
+checks:
+- date: 2026-11-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. All 41 values it reports as not found (37 before this check) are in Supplemental Tables 1 to 6 or the supplement legends, printed in scientific notation (1.6e-02 and the like); each was read and matches. All quotes match.
+  - supfig2i-baseline-lower. The criterion said the p-value in Supplemental Figure 2I cannot be assigned. In the extracted text a single p = 1.2e-06 sits between panel I's axis and its Ctrl and Cre+ labels, before panel J's six p-values; recorded it, with the test marked as not named.
+  - supfig2j-phase-amplitudes. The third statistic (eff. size > 0.143, p < 1.4e-02) comes from the Supplemental Figure 2 text, which the source did not cite; added it.
+  - Added claim supfig2j-control-training-decrease (Supplemental Figure 2 text), a reported finding with its own test (F(3,inf) = 5.37, p = 5.5e-03) and no claim.
+  - Added claim supfig2j-creplus-naive-failed (Supplemental Figure 2 text, Wilcoxon signed-rank, p = 6.5e-03), a reported finding with no claim.
+  - fig2d-latency-accuracy. The quote and the two exceptions are from the Supplemental Figure 5 text, not the main Results; the source now says so. Added the session 2 accuracy by genotype interaction (H(1) > 10.364, p < 9.0e-03) from the same text.
+  - fig3l-resilience. The code's formula reduces to 2I/|ref| - I/|res|, which is not bounded by 0 and 1 as the Methods state, and the Results describe a percentage of neuron match. Named the conflict, kept the code's formula as the main reading and added intersection over union as a variant.
+  - fig4b-clz-improves-success. The treatment tests' F(1,15) and F(1,19) for 5 and 6 mice do not fit a within-mouse test; named the two readings (per-mouse means, or mouse-session values as independent observations).
+  - fig4d-theta-genotype. Reading (a), sessions 8 to 13, is ruled out by the paper; every session term in Supplemental Table 6 has 2 degrees of freedom, so sessions 11 to 13. Removed it. Noted that F(1,8) implies 10 mice around prehensions, against 11 outside them.
+  - supfig7-lfp-nonprehension. The "seven bands" were not named, and the Results' "all frequency bands" conflicts with "no effects" for high theta. Named the seven plotted bands and the conflict.
+  - Open. Equation 1 (resilience) cannot be read from the text; the criterion relies on the code.
+  - Open. Supplemental Table 1M to 1P (pasta handling, prehension after ablation) are missing, so fig5d-pasta-drops and fig5i-ablation-prehension have no statistics.
+  - Open. Group sizes conflict within the paper (LFP group 11 or 13 mice; caspase prehension 6 and 3 or 8 and 6), as the header and criteria say.
