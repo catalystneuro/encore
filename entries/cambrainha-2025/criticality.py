@@ -52,6 +52,10 @@ Where the parameters come from:
   (where P_silence > 0), with at least three sizes (a standard choice: -log 0 cannot be
   fitted). mu (a) is one fit of log lambda on log(rank/K) pooled over all K >= 16; (b) the
   spectrum at K = 64, ranks 1 to 64. Windows with r^2 < 0.85 lose their mu (Appendix 4c).
+  Variants of mu asked for by the verifier, not readings of O9: (c) as (a) and (d) as (b), over
+  ranks 1 to K/2 only, leaving out the noise floor of the spectrum.
+- Correlation-matrix variant (asked for by the verifier): the kurtosis of M3 with each unit's
+  counts z-scored before Eq. 2 (`kappa_z`, real windows and the claim-seed surrogate).
 """
 
 from __future__ import annotations
@@ -268,14 +272,18 @@ def _kurt(psi):
     return ka, kb
 
 
-def momentum_kurtosis(X):
+def momentum_kurtosis(X, zscore=False):
     """Kurtosis after momentum-space coarse graining (M3, Eqs. 2 to 5), and before (kappa_0).
 
     X holds the binned counts of the units active in the window. Returns
-    (kappa_a, kappa_b, kappa0_a, kappa0_b) under the two poolings of O3.
+    (kappa_a, kappa_b, kappa0_a, kappa0_b) under the two poolings of O3. With `zscore`, each
+    unit's counts are z-scored before Eq. 2, so that C is the correlation matrix (a variant the
+    verifier asked for, as in some momentum-space analyses; Eq. 2 prints the covariance).
     """
     N = X.shape[0]
     D = X - X.mean(1, keepdims=True)
+    if zscore:
+        D = D / D.std(1, keepdims=True)
     C = D @ D.T / X.shape[1]
     w, U = np.linalg.eigh(C)
     k = max(N // NCUT_DIV, 1)
@@ -416,11 +424,24 @@ def fit_exponents(rs, N, krange="a", fsil="a", mu="a"):
         if xs:
             s, r2 = _fit(np.concatenate(xs), np.concatenate(ys))
             m = -s
+    elif mu == "c":
+        # variant asked for by the verifier: as (a), ranks 1 to K/2 only (upper half)
+        xs, ys = [], []
+        for k, sp in rs["spectra"].items():
+            if k >= 16:
+                rank = np.arange(1, len(sp) + 1)
+                pos = (sp > 0) & (rank <= k // 2)
+                xs.append(np.log(rank[pos] / k))
+                ys.append(np.log(sp[pos]))
+        if xs:
+            s, r2 = _fit(np.concatenate(xs), np.concatenate(ys))
+            m = -s
     else:
+        # (b), and variant (d): as (b), ranks 1 to 32 only
         sp = rs["spectra"].get(64)
         if sp is not None:
             rank = np.arange(1, len(sp) + 1)
-            pos = sp > 0
+            pos = (sp > 0) & ((rank <= 32) if mu == "d" else True)
             s, r2 = _fit(np.log(rank[pos] / 64), np.log(sp[pos]))
             m = -s
     return dict(alpha=alpha, beta=beta, mu=m, mu_r2=r2, z=z)
@@ -471,6 +492,8 @@ def analyse_window(spikes, t0, t1, rng_list, do_real_space=True, surr_real_space
                spikes=int(X.sum()))
     rec["cv_a"], rec["cv_b"], rec["cv_c"] = cv_readings(X)
     rec["kappa_a"], rec["kappa_b"], rec["kappa0_a"], rec["kappa0_b"] = momentum_kurtosis(Xa)
+    if rng_list:
+        rec["kappa_z"] = momentum_kurtosis(Xa, zscore=True)[0]
     if do_real_space:
         rec["rs"] = real_space(Xa)
     wa = [s for s, a in zip(ws, active) if a]
@@ -479,6 +502,8 @@ def analyse_window(spikes, t0, t1, rng_list, do_real_space=True, surr_real_space
         S = S[S.sum(1) > 0]
         ka, kb, _, _ = momentum_kurtosis(S)
         rec[f"surr{si}_kappa_a"], rec[f"surr{si}_kappa_b"] = ka, kb
+        if si == 0:
+            rec["surr0_kappa_z"] = momentum_kurtosis(S, zscore=True)[0]
         if si == 0 and do_real_space and surr_real_space:
             rec["surr_rs"] = real_space(S)
     return rec
@@ -590,6 +615,26 @@ def session_trials(r, autoreward="a", anchor="change"):
     return np.asarray(times)[keep], np.asarray(hit)[keep].astype(int)
 
 
+def session_trials_counted(r, reading):
+    """Trial-count variants for the trial density of Appendix 5 ("three to five trials" per
+    30-s window), asked for by the verifier; not readings of O5. "go": O5 (a). "go+aborted":
+    also aborted trials, as failures. "all": every trial (go, catch, aborted, auto-rewarded),
+    a hit counting as success. Go trials are placed at their change time, the others at their
+    start time. Returns (times, hit) arrays."""
+    t = r["trials"]
+    ab = t["aborted"].astype(bool)
+    go = t["go"].astype(bool) & ~ab & (t["hit"].astype(bool) | t["miss"].astype(bool))
+    hit = t["hit"].astype(bool)
+    times = np.where(go, t["change_time_no_display_delay"], t["start_time"])
+    if reading == "go":
+        keep = go
+    elif reading == "go+aborted":
+        keep = go | ab
+    else:
+        keep = np.ones(len(hit), bool)
+    return np.asarray(times)[keep], hit[keep].astype(int)
+
+
 def trials_per_window(t0s, t1s, times, hit):
     """Hits and trials per window [t0, t1); trials outside every window are dropped."""
     h = np.zeros(len(t0s), int)
@@ -695,6 +740,9 @@ def window_fits(rs, N):
                     out["mu_a"], out["mu_r2_a"] = f["mu"], f["mu_r2"]
             elif kr == "a":
                 out["mu_b"], out["mu_r2_b"] = f["mu"], f["mu_r2"]
+    for v in "cd":
+        f = fit_exponents(rs, N, "a", "a", v)
+        out[f"mu_{v}"], out[f"mu_r2_{v}"] = f["mu"], f["mu_r2"]
     return out
 
 
