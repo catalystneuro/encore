@@ -31,8 +31,16 @@ window with every measure the claims use. Sources of each parameter:
 - Spontaneous: the longest `spontaneous` presentation after the active block (the ~5 min gray
   screen, Methods II.A); reading 'a' the first two 100-s windows from its start, reading 'b'
   two consecutive windows centred in it (claims file, opening comment).
-- Unit readings (claims file): 'all', every unit of the units table; 'qc', ISI violations <
-  0.5, amplitude cutoff < 0.1 and presence ratio > 0.9.
+- Unit readings: 'all', every unit of the units table, and 'qc', ISI violations < 0.5,
+  amplitude cutoff < 0.1 and presence ratio > 0.9 (the claims file's two readings); 'vbn',
+  snr > 1, ISI violations < 1 and firing rate > 0.1 spikes/s, the "good_unit_filter" of the
+  Allen Institute's Visual Behavior Neuropixels quickstart tutorial (AllenSDK, commit
+  a56bd8ea7613a812334602b64746cdd30c325a96, doc_template/examples_root/examples/nb/
+  visual_behavior_neuropixels_quickstart.ipynb). 'vbn' is the adopted reading, an assumption:
+  the paper states no filter, and of the filters tried it is the one whose neuron counts per
+  population match Table I (see the notebook, claim table1-sample). Unit counts per subregion
+  are also kept for 'good' (quality label 'good'), 'qc95' (as 'qc' with presence ratio > 0.95)
+  and 'good_pr95' ('good' with presence ratio > 0.95), for the count comparison only.
 - Brain structure of a unit: the `location` of its peak channel in the electrodes table.
 - Mean pairwise correlation (supplement Sec. III): the mean Pearson correlation over all unit
   pairs of spike counts in 50 ms and 20 ms bins, units without spikes in the window left out
@@ -69,6 +77,21 @@ SURR_SEED_OFFSETS = [0, 1000, 2000, 3000, 4000]
 SURR_CLAIM = "fig1c-cv-above-surrogate"
 MIN_UNITS = 30
 MIN_SESSIONS = 8
+UNIT_READINGS = ["vbn", "all", "qc"]  # 'vbn' adopted; the surrogate is drawn under five seeds for it only
+MAIN_UNITS = "vbn"
+COUNT_FILTERS = ["all", "qc", "vbn", "good", "qc95", "good_pr95"]
+
+
+def unit_filters(units):
+    """Boolean selections of the unit readings and of the filters used for counts only."""
+    q = (units.isi_violations < 0.5) & (units.amplitude_cutoff < 0.1)
+    good = units.quality == "good"
+    return {"all": pd.Series(True, index=units.index),
+            "qc": q & (units.presence_ratio > 0.9),
+            "vbn": (units.snr > 1) & (units.isi_violations < 1) & (units.firing_rate > 0.1),
+            "good": good,
+            "qc95": q & (units.presence_ratio > 0.95),
+            "good_pr95": good & (units.presence_ratio > 0.95)}
 
 AREAS = {
     "VIS": ["VISal", "VISam", "VISl", "VISp", "VISpm", "VISrl"],
@@ -238,7 +261,7 @@ def mean_corr(t, own, n_units, bw, length=WIN):
 
 def window_measures(t, own, n_units, surr_rngs, do_corr, full=True):
     """All measures of one 100-s window of a population (t in 0..100 s, own in 0..N-1).
-    With full False, only CV, H, C and the surrogate (the unit-selection variant)."""
+    With full False, only CV, H, C and the surrogate."""
     r = rate(t, n_units)
     cv10 = cv_windows(r)
     h, c = bandt_pompe(r)
@@ -285,9 +308,12 @@ def read_session(asset):
         "region": loc.loc[u["peak_channel_id"][:]].values,
         "isi_violations": u["isi_violations"][:], "amplitude_cutoff": u["amplitude_cutoff"][:],
         "presence_ratio": u["presence_ratio"][:], "quality": _str(u["quality"][:]),
-        "firing_rate": u["firing_rate"][:]})
-    units["qc"] = ((units.isi_violations < 0.5) & (units.amplitude_cutoff < 0.1)
-                   & (units.presence_ratio > 0.9))
+        "firing_rate": u["firing_rate"][:], "snr": u["snr"][:]})
+    pc = u["peak_channel_id"][:]
+    if "group_name" in e:
+        meta["n_probes"] = int(pd.Series(_str(e["group_name"][:]), index=e["id"][:]).loc[pc].nunique())
+    else:
+        meta["n_probes"] = -1
     idx = u["spike_times_index"][:].astype(np.int64)
     meta["n_units"] = len(units)
     meta["n_spikes"] = int(idx[-1])
@@ -298,7 +324,7 @@ def read_session(asset):
     stim = pd.DataFrame({"start": ni["start_time"][:], "stop": ni["stop_time"][:],
                          "image": _str(ni["image_name"][:]), "block": ni["stimulus_block"][:],
                          "active": ni["active"][:], "omitted": ni["omitted"][:],
-                         "is_change": ni["is_change"][:]})
+                         "is_change": ni["is_change"][:], "novel": ni["is_image_novel"][:]})
     act_block = stim[stim.active].block.min()
     stim = stim[stim.block == act_block].sort_values("start").reset_index(drop=True)
     stim["omitted"] = stim.omitted.astype(bool) | (stim.image == "omitted")
@@ -314,7 +340,7 @@ def read_session(asset):
     cutoff = float(sp_best.stop) if sp_best is not None else act_end
     meta["cutoff"] = cutoff
 
-    counts = units.region.value_counts()
+    counts = units.region.value_counts()  # 'all' holds every other reading, so its counts bound them
     cand = counts[counts >= MIN_UNITS].index
     keep = np.flatnonzero(units.region.isin(cand).values & units.region.isin(REGION_AREA).values)
     # also keep all visual-cortex units, for the clock check
@@ -442,20 +468,30 @@ def compute_session(sess_i, meta, units, stim, sp_best, spikes):
     meta.update(clock_check(stim, np.concatenate([spikes[k] for k in vis_k]) if vis_k
                             else np.array([])))
     meta["n_vis_units_clock"] = len(vis_k)
-    meta["region_counts_all"] = units.region.value_counts().to_dict()
-    meta["region_counts_qc"] = units.region[units.qc].value_counts().to_dict()
+    filt = unit_filters(units)
+    for name in COUNT_FILTERS:
+        meta[f"region_counts_{name}"] = units.region[filt[name]].value_counts().to_dict()
     meta["n_flashes"] = int((~stim.omitted).sum())
     meta["n_omitted"] = int(stim.omitted.sum())
     meta["n_changes"] = int(np.nansum(stim.is_change.values))
     meta["n_images"] = int(stim[~stim.omitted].image.nunique())
+    meta["novel_fraction"] = float(np.nanmean(stim.novel.values[~stim.omitted.values].astype(float)))
     ft = flash_table(stim)
+    shown = ft[~ft.omitted]
+    blk = (shown.bstop - shown.stop).values
+    meta["flashes_per_image"] = shown.image.value_counts().to_dict()
+    meta["changes_per_image"] = shown[np.asarray(shown.is_change, float) > 0].image.value_counts().to_dict()
+    meta["blank_piece_full"] = int((blk >= 0.5 - 1e-6).sum())
+    meta["blank_piece_short"] = int((blk < 0.5 - 1e-6).sum())
+    meta["blank_piece_median"] = float(np.median(blk))
+    meta["gray_after_flash_median"] = float(np.median((np.r_[ft.start.values[1:], np.nan] - ft.stop.values)[~ft.omitted.values][:-1]))
     ew = epoch_windows(stim, sp_best)
     meta["n_active_windows"] = sum(1 for w in ew if w[0] == "active")
     meta["n_spont_windows"] = sum(1 for w in ew if w[0] == "spont" and w[1] == "a")
     rows, cv10 = [], []
     base = seed(SURR_CLAIM)
-    for ur in ["all", "qc"]:
-        sel = units.qc if ur == "qc" else pd.Series(True, index=units.index)
+    for ur in UNIT_READINGS:
+        sel = filt[ur]
         for region in REGION_ORDER:
             ks = np.flatnonzero(sel.values & (units.region == region).values)
             if len(ks) < MIN_UNITS:
@@ -475,11 +511,10 @@ def compute_session(sess_i, meta, units, stim, sp_best, spikes):
             for wi, (cond, rd, k, img, t, ow, length) in enumerate(wins):
                 if t is None:
                     continue
-                full = ur == "all"
-                nseeds = 5 if (cond == "active" and full) else 1
-                rngs = [np.random.default_rng([base + off, sess_i, wi, 0 if ur == "all" else 1])
+                nseeds = 5 if (cond == "active" and ur == MAIN_UNITS) else 1
+                rngs = [np.random.default_rng([base + off, sess_i, wi, UNIT_READINGS.index(ur)])
                         for off in SURR_SEED_OFFSETS[:nseeds]]
-                m = window_measures(t, ow, n, rngs, do_corr, full)
+                m = window_measures(t, ow, n, rngs, do_corr)
                 c10 = m.pop("cv10")
                 s10 = {k: m.pop(k) for k in [k for k in m if k.startswith("s_cv10")]}
                 row = {"session": sess_i, "subject": meta["subject"], "units": ur,
@@ -492,21 +527,6 @@ def compute_session(sess_i, meta, units, stim, sp_best, spikes):
                     cv10.append({"session": sess_i, "units": ur, "region": region, "k": k,
                                  "cv10": c10, **s10})
     return meta, pd.DataFrame(rows), cv10
-
-
-def survey_session(asset):
-    """Metadata only: unit counts by region and filter, epochs (no spike times)."""
-    f = h5py.File(remfile.File(s3_url(asset)), "r")
-    e = f["general/extracellular_ephys/electrodes"]
-    loc = pd.Series(_str(e["location"][:]), index=e["id"][:])
-    u = f["units"]
-    reg = loc.loc[u["peak_channel_id"][:]].values
-    qc = ((u["isi_violations"][:] < 0.5) & (u["amplitude_cutoff"][:] < 0.1)
-          & (u["presence_ratio"][:] > 0.9))
-    out = {"path": asset["path"], "all": pd.Series(reg).value_counts().to_dict(),
-           "qc": pd.Series(reg[qc]).value_counts().to_dict()}
-    f.close()
-    return out
 
 
 def _safe(args):
