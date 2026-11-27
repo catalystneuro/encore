@@ -26,7 +26,8 @@ Where each parameter comes from:
   claims file, a standard choice), over the first 5 s after onset in 1 s windows with 0.5 s
   overlap (9 windows, Methods B). cf_w is computed per window and averaged; as cf_w is linear in
   the GC matrix, averaging the matrices first gives the same value (claims file readings (a) and
-  (b) of combining coincide).
+  (b) of combining coincide). As a variant, a fixed order `GC_ORDER_WHITE` (40), at which the
+  residuals are closer to white (a choice of this attempt, see the constant).
 - PSD: Welch, bands of Methods D; window lengths a standard choice (claims file).
 - IIS: Methods F rules (200 ms minimum interval keeping the larger peak, width at most 100 ms,
   |height| above mean + 5 SD of a baseline stretch); width at half prominence is a standard
@@ -70,6 +71,10 @@ SZ_MINDUR = 5.0
 # GC (standard choice)
 GC_MAXORDER = 20
 GC_DOWNSAMPLE = 1
+# fixed VAR order of the whiteness variant: at the BIC order the residuals are not white; at 40
+# lags (40 ms at 1 kHz) they are close to white in the seizures tried while preparing this entry,
+# and the notebook prints the whiteness reached (a variant, not the paper's choice)
+GC_ORDER_WHITE = 40
 
 
 def list_assets():
@@ -483,7 +488,10 @@ def epoch_features(d, kind, gc=True):
     if gc and onset * FS + 5000 <= len(d):
         out["cfw"], out["gc"], out["gc_order"], (out["var_maxmod"], out["var_lb_frac"]) = \
             cfw_onset(d, onset, checks=True)
-        out["cfw_ds4"], _, out["gc_order_ds4"] = cfw_onset(d, onset, ds=4)
+        out["cfw_ds4"], _, out["gc_order_ds4"], (out["var_maxmod_ds4"], out["var_lb_frac_ds4"]) = \
+            cfw_onset(d, onset, ds=4, checks=True)
+        out["cfw_p40"], _, _, (out["var_maxmod_p40"], out["var_lb_frac_p40"]) = \
+            cfw_onset(d, onset, order=GC_ORDER_WHITE, checks=True)
         for th in SZ_THRESH_VARIANTS:
             o2 = out[f"sz_{th}"][0]
             if th != SZ_THRESH and np.isfinite(o2) and o2 * FS + 5000 <= len(d):
