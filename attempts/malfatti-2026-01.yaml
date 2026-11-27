@@ -40,8 +40,9 @@ outcomes:
     that points to 342 raw AVI files (89.4 GB); no ROI, fluorescence or trace data are in any file,
     and the paper names no other archive for them. Deriving them again would need the CNMF-E
     parameters and the matching threshold, which the Methods ("Neural signal extraction") and the
-    code at commit 86efdf1 do not give, as well as compute (streaming the videos alone takes about
-    27 min at the measured rate, before motion correction and CNMF-E of 28 recordings). The
+    code at commit 86efdf1 do not give, as well as compute (streaming the videos alone takes tens
+    of minutes at the measured rate, 23 to 50 min in five runs of this attempt, before motion
+    correction and CNMF-E of 28 recordings). The
     extraction was not run. A dandiset holding the extracted traces would make the claim testable.
 - claim: supfig1-cfos-validation
   outcome: blocked
@@ -59,7 +60,8 @@ outcomes:
     and -0.024 in success ratio. Under every reading of the criterion (all sessions or sessions 1,
     2 and 6, raw counts or counts per 10 min) the genotype p is above 0.05; the smallest is 0.145
     (success ratio, sessions 1, 2 and 6). The variants (the duplicated session counted, the
-    Methods' four body parts) give p of 0.141 and above. No random draws are used.
+    Methods' four body parts, each half of session 5 divided by its own length) give p of 0.141
+    and above. No random draws are used.
   deviations:
   - The deposited session 5 holds both the spoon and the plate halves, as the Methods say ("After
     five minutes in the fifth session, the pellet was instead placed on a fixed position on the
@@ -76,6 +78,11 @@ outcomes:
   - BehavOnly.py splits session 5 at per-mouse times from Session5Split.dict, which is not in the
     repository; 300 s is the Methods' "After five minutes". The DeepLabCut start time is 0 s in
     all 13 session 5 files.
+  - Counts per 10 min divide by the recording's duration, and both halves of session 5 by the whole
+    recording's (about 607 s), as BehavOnly.py does (lines 333-344 copy the file's TotalTimes to
+    both halves, line 378 divides by it). So the values per 10 min of sessions 5 and 6 are per 10
+    min of the recording, not of the half. Dividing each half by its own length is run as a
+    variant.
   - Prehensions and accuracy are taken from the deposited DeepLabCut tracking with the paper's
     code; the paper's own per-prehension classes are not public, so they cannot be compared.
   - The ANOVA-type statistic is a Python implementation of the formulas of nparLD (Brunner,
@@ -87,17 +94,26 @@ outcomes:
   output: claim:fig1fh-session-effect
   notes: Over all 10 distinct sessions the session effect is F(9,99) = 9.57, p = 2.2e-10 for total
     prehensions per 10 min, 7.86, p = 1.1e-08 for successful prehensions and 6.30, p = 5.3e-07 for
-    the success ratio (paper F(10,110) = 9.525, 7.571 and 5.536). Means over mice of total
-    prehensions are 47.4 in session 1, 88.7 in session 2, 60.8 in session 5 and 44.3 in session 6,
-    and of successful prehensions 16.5, 24.0, 15.0 and 11.0, so both rise from session 1 to 2 and
-    fall below session 2 in sessions 5 and 6, raw and per 10 min, and under both variants. With
-    the copy counted as a session F(10,110) = 8.94, 6.86 and 6.06. With the sessions after 5
+    the success ratio (paper F(10,110) = 9.525, 7.571 and 5.536). Means over mice of raw counts of
+    total prehensions are 48.1 in session 1, 90.0 in session 2, 61.5 in session 5 and 44.8 in
+    session 6, and of successful prehensions 16.7, 24.3, 15.2 and 11.2, so both rise from session 1
+    to 2 and fall below session 2 in sessions 5 and 6. Per 10 min as the paper's code computes them
+    (the halves of session 5 per 10 min of the whole recording) they are 47.4, 88.7, 60.8 and 44.3,
+    and 16.5, 24.0, 15.0 and 11.0, with the same directions, also with the copy counted and with
+    the four body parts. With each half divided by its own length, session 5 has 123.1 total and
+    30.3 successful prehensions per 10 min, above session 2 (88.7 and 24.0), and session 6 has 87.5
+    and 21.8, so under that variant the decrease in session 5 does not hold; its session effects
+    have F(9,99) = 5.58, p = 3.3e-06, and 3.44, p = 0.001. The outcome is judged on the raw counts,
+    the first reading the criterion lists, and holds also for the code's counts per 10 min;
+    Figure 1F-H plots the number of prehensions. With the copy counted as a session F(10,110) =
+    8.94, 6.86 and 6.06. With the sessions after 5
     renumbered +1, as the paper's code does, sessions 8 to 11 average 141.5, 175.5, 136.4 and 177.6
     total prehensions per 10 min, above every one of sessions 1 to 6 ("stable after session 7" is
     reported, not judged).
   deviations:
   - As for fig1fh-no-genotype-effect-learning, session 5 split at 300 s, the duplicated session 6
-    dropped and later sessions renumbered +1, so 10 sessions where the paper has 11.
+    dropped and later sessions renumbered +1, so 10 sessions where the paper has 11, and the halves
+    of session 5 counted per 10 min of the whole recording, as the paper's code does.
 - claim: supfig2i-baseline-lower
   outcome: blocked
   blocked_by: data_missing
@@ -138,8 +154,11 @@ outcomes:
     session under all three readings with all seven mice, and under 27 of 30 readings and
     variants; the three exceptions are the four-body-part detection with 67109 left out, where
     neither accuracy overlaps in session 1. With all seven mice at most one of the ten values is
-    within tolerance, and at most three under any variant. Leaving out 67113, 67314 or both changes
-    the values by less than 1 point. The miniscope tracking finds few prehensions. LPaw and LFinger1
+    within tolerance, and at most three under any variant. With the code's detection under reading
+    (a), leaving out 67113, 67314 or both changes the values by less than 1 point; over all three
+    readings and both detections it changes them by up to 2.04 points (failed in session 2 under
+    reading (c), 61.70 to 63.04 with the code's detection and 65.15 to 67.19 with the paw and three
+    fingers). The miniscope tracking finds few prehensions. LPaw and LFinger1
     are both above 0.7 likelihood in a median of 0.2% of frames of a file (0 to 3.3%), against 1.4%
     in the behaviour-only group and 2.4% in the LFP group. The median file has 9.7 prehensions per
     10 min, against 66.8 and 117.2. Four mice give 97% of the prehensions (67109 alone 38%), and
@@ -364,7 +383,8 @@ findings:
     -8.7 s). The other seven mice show it at lag 0. This is consistent with the LFP and the
     tracking of these four mice being on clocks about 8 s apart, but the files hold no LED or sync
     trace that would settle it. Two further sessions (66128 session 11, 66546 session 12) show no
-    locked potential at any lag.
+    locked potential at lag 0 and their strongest away from it (at 3.3 s, z 4.5, and at -2.0 s, z
+    18.6), so their clock could not be established either.
 - kind: metadata_error
   severity: major
   statement: The LFP is stated in volts, but its values have standard deviations of 72 to 1057 and
@@ -422,6 +442,15 @@ findings:
   statement: The session_start_time of 65 of the 66 LFP files is 23:59:5x on the last day of a
     month (31 July, 31 August or 31 December 2021); one file of 69204 gives 30 April 2020. These
     look like placeholders, so the files do not say when each session was recorded.
+- kind: other
+  about: paper
+  statement: BehavOnly.py splits session 5 into sessions 5 and 6 and copies the whole recording's
+    TotalTimes to both halves (lines 333-344), then divides the counts by it to give counts per 10
+    min (line 378). So the counts per 10 min of sessions 5 and 6 are per 10 min of the 10 min
+    recording, about half the rate within each 5 min half. Per 10 min of its own half, session 5
+    has more total and successful prehensions than session 2 here (123.1 and 30.3 against 88.7 and
+    24.0), so the decrease in the fifth session that the paper reports holds for the counts and
+    the code's values, not for rates within the half.
 verifications:
 - date: '2026-11-27'
   kind: agent
@@ -810,3 +839,262 @@ verifications:
       needs at least 3. The realigned reading raises it from 0 to 2 bands.
     response: Judged as deposited (no band in any reading), with the four mice left out (at most one band)
       and realigned (at most two) as variants. Outcome unchanged.
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the revised attempt, with its conclusion cells
+    and summary, the helper module m1mc.py, the claims file and this record, with the paper''s full
+    text. The verifier checked every sentence of the conclusions, the summary, the README and the
+    notes against the printed outputs, and reviewed the two findings rated critical. It could not
+    check ats against R nparLD, whether the deposited LFP channel is a mean or a single channel, or
+    the per-mouse session 5 split times.'
+  results:
+  - claim: pc-selection-counts
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'The streaming time in the notes and in the notebook''s Imaging section now refers to
+      the rate measured in the run (tens of minutes; 23 to 50 min in five runs), where they had
+      given 27 min and half an hour against a printed 23 min. Outcome unchanged.'
+  - claim: supfig2i-baseline-lower
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig1j-session-effect-controls
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig1j-session2-success-lower
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig1j-genotype-session6
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: trial-adjacency
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig3-baseline-epochs
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig2j-phase-amplitudes
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig2j-control-training-decrease
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig2j-creplus-naive-failed
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig4-ratio-interaction
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig4-ratio-reconfiguration
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig2d-latency-accuracy
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig2d-control-temporal-separation
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig2d-genotype-latency
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig2i-peak-width
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig6-width-training
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: assemblies-counts
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig3g-salience
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig3k-assembly-area
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: fig3l-resilience
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked imaging claims, now data_missing, are agreed.'
+    response: 'No change.'
+  - claim: supfig1-cfos-validation
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked histology and caspase claims are agreed.'
+    response: 'No change.'
+  - claim: fig5b-ablation-efficiency
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked histology and caspase claims are agreed.'
+    response: 'No change.'
+  - claim: fig5d-pasta-drops
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked histology and caspase claims are agreed.'
+    response: 'No change.'
+  - claim: fig5gh-hanging-wire
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked histology and caspase claims are agreed.'
+    response: 'No change.'
+  - claim: fig5i-ablation-prehension
+    agrees: true
+    outcome: blocked
+    reason: 'The blocked histology and caspase claims are agreed.'
+    response: 'No change.'
+  - claim: fig1fh-no-genotype-effect-learning
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed. Cell 24 gives a smallest genotype p of 0.141. The per-10-min reading is not run
+      correctly for the halves of session 5 in either fig1fh claim: learning_table divides the two
+      300 s halves by the whole file''s duration (about 607 s).'
+    response: 'learning_table now has a variant that divides each half of session 5 by its own
+      length (300 s and the rest), run in cells 24 and 27. The whole-file division is kept as the
+      criterion''s reading, since the criterion asks for counts normalised to 10 min as the code
+      does, and BehavOnly.py gives both halves the file''s TotalTimes (lines 333-344) and divides by
+      it (line 378); this is now a deviation, and finding 16 reports it as a property of the
+      paper''s code. Under the new variant the genotype p values per 10 min are 0.94, 0.94, 0.83 and
+      0.58, and the smallest p over all readings and variants is still 0.141. Outcome unchanged.'
+  - claim: fig1fh-session-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed on the raw-count reading. The per-10-min reading is mislabelled: cell 28 says
+      the means fall in sessions 5 and 6 below session 2 ''raw and per 10 min'', and the notes ''raw
+      and per 10 min, and under both variants'', but the per-10-min values of sessions 5 and 6 are
+      roughly per 5 min (cell 27, session 5 is 60.8 per 10 min but 61.5 raw). Normalised to their 5
+      min, session 5 would be about 123 total and 30 successful per 10 min, above session 2 (88.7
+      and 24.0), so that reading fails the decrease part of the criterion. The outcome stands on raw
+      counts.'
+    response: 'Cell 28 and the notes now give the raw counts and the code''s counts per 10 min
+      separately and say that the code''s values for sessions 5 and 6 are per 10 min of the whole
+      recording. The variant with each half divided by its own length is run: session 5 has 123.1
+      total and 30.3 successful prehensions per 10 min against 88.7 and 24.0 in session 2, and
+      session 6 87.5 and 21.8, so the decrease in session 5 fails under it, as the verifier found;
+      its session effects have p of 0.001 or less. The outcome is kept on the raw counts, the
+      criterion''s first reading, which the code''s normalisation also gives and which Figure 1F-H
+      plots (number of prehensions). Outcome unchanged.'
+  - claim: prehension-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed (cell 30). The notes'' ''Leaving out 67113, 67314 or both changes the values by
+      less than 1 point'' holds for reading (a) only; cell 30 shows larger changes under reading (c)
+      (failed in session 2, 61.70 to 63.04, and 65.15 to 67.19 with the paw and three fingers). The
+      miniscope detection remains unresolved: the overlap magnitudes may reflect the detection, and
+      the paper''s 6 mice are unknown, which affects how much the partial outcome means.'
+    response: 'The notes now say that the change is under 1 point with the code''s detection under
+      reading (a) and up to 2.04 points over all readings and both detections, with the two
+      examples. The detection and the paper''s 6 mice cannot be settled from the files or the paper,
+      and the notes and cell 16 say so. Outcome unchanged.'
+  - claim: fig4b-clz-improves-success
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed (cell 33).'
+    response: 'No change.'
+  - claim: fig4d-theta-genotype
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed. With the files as deposited, the theta genotype p is 0.235 to 0.48 and low
+      theta 0.198 to 0.447 (cell 38). The outcome rests on the criterion''s choice of test, and the
+      record says so: the ATS alone gives a theta genotype p of 0.017 to 0.034 in 4 of 6 deposited
+      readings, and the outcome rests on Shapiro selecting the mixed ANOVA. ats against R nparLD is
+      still unchecked.'
+    response: 'No change. The notes and the conclusion already state that the outcome rests on the
+      criterion''s test; R is not available on the runner, so the ats implementation could not be
+      compared with nparLD.'
+  - claim: fig4e-high-theta-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed (cell 41).'
+    response: 'No change.'
+  - claim: fig4fh-gamma-session13
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed with the change from partial. As deposited, no gamma-band genotype part holds
+      (cell 44). The Summary''s ''realigning them ... changes none of them either'' is false: cell
+      44 shows that realigning gives one genotype part of fig4fh in 4 of 6 readings, which is the
+      criterion''s partial outcome.'
+    response: 'The Summary now says that realigning the four mice (circular, shown only for
+      comparison) gives one genotype part of fig4fh-gamma-session13 in four of six readings, the
+      criterion''s partial outcome, and changes none of the other outcomes. Outcome unchanged.'
+  - claim: supfig7-lfp-nonprehension
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed. As deposited, 0 bands show the interaction (cell 47).'
+    response: 'No change.'
+  findings:
+  - finding: 3
+    agrees: true
+    reason: 'Cell 9 shows 13 pairs of files with identical LPaw likelihood traces, Session5Trial1 =
+      Session6Trial1 in every behaviour-only mouse, and cell 11 shows the pellet moving at 300 s in
+      all 13 mice (median 112 px), which supports the paper''s session 6 being the second half of
+      session 5. critical is right: one recording is deposited as two sessions, nothing in the files
+      says so, and counting the files as labelled counts session 5 twice.'
+    response: 'No change.'
+  - finding: 4
+    agrees: true
+    reason: 'Cell 9 shows identical DLC frame counts (30384 and 30384) and pellet x correlated at r
+      = 0.98, a median 0.97 px apart, against r = -0.035 for the two files of 67112. The LPaw
+      likelihood correlates at only r = 0.559, and cell 15 shows different tracking (0 against 1
+      prehension, LFinger1 above 0.7 in 0.1% against 1.1% of frames), so ''the same video tracked
+      twice'' is plausible, not proven. critical is right if it holds: one imaging recording carries
+      behaviour that is not its own, and nothing in the files shows it. Its effect here is
+      negligible, at most 1 prehension.'
+    response: 'No change. The statement already says the video was tracked twice, which accounts for
+      the different likelihoods.'
+  - finding: 5
+    agrees: false
+    severity: critical
+    reason: 'Not rated critical, but a candidate. If the offset is real, it is signals on different
+      clocks, which the brief rates critical. Cell 21 is strong evidence for it: lag 0 has no locked
+      potential in any of the four mice''s 24 sessions, while 16 of them peak at -6.9 to -9.0 s and
+      the other 7 mice peak near 0. The rating major is defensible only because the files cannot
+      confirm the offset. It would rate it critical, with the record noting that it is unconfirmed.
+      Separately, the finding''s ''Two further sessions (66128 session 11, 66546 session 12) show no
+      locked potential at any lag'' is not supported: cell 21 prints only the z score at lag 0 and
+      the best lag.'
+    response: 'Severity kept at major. The protocol says that when the data could not settle whether
+      something is wrong (a clock that could not be established, say), the finding rates what was
+      shown, at most major; here the files hold no LED or sync trace, and the verifier agrees the
+      offset is unconfirmed. Cell 21 now prints the z score at the best lag for the sessions without
+      a locked potential at lag 0, and the statement is corrected: 66128 session 11 and 66546
+      session 12 have their strongest potential at 3.3 s (z 4.5) and -2.0 s (z 18.6), so their clock
+      could not be established either.'

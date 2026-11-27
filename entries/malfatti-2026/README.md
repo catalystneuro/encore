@@ -29,7 +29,7 @@ one about 8 s earlier, which the files cannot confirm as a clock offset. The att
 record, with the reasons and the differences from the paper's method, is
 [`attempts/malfatti-2026-01.yaml`](../../attempts/malfatti-2026-01.yaml).
 
-- `reproduce_malfatti_2026.ipynb`: the analysis. It takes about 11 minutes, most of it streaming
+- `reproduce_malfatti_2026.ipynb`: the analysis. It takes about 10 to 20 minutes, most of it streaming
   the files.
 - `m1mc.py`: loading the files, the prehension detection and classification of the paper's code,
   LFP band power, and the mixed ANOVA and ANOVA-type statistics. Other notebooks on this dandiset

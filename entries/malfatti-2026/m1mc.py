@@ -512,7 +512,7 @@ def outside_mean(t, pw, onsets, half=1.0):
 
 # ---------------------------------------------------------------------------- per-claim tables
 
-def learning_table(files, datas, parts=LEFT_CODE, keep_copy=False):
+def learning_table(files, datas, parts=LEFT_CODE, keep_copy=False, halves="file"):
     """Per mouse and session counts of the behaviour-only group.
 
     The deposited session 5 holds the spoon (first 300 s) and plate halves (Methods); they become
@@ -521,7 +521,13 @@ def learning_table(files, datas, parts=LEFT_CODE, keep_copy=False):
     after renumbering) is the same recording as session 5 (identical traces, shown in the data
     check) and is dropped, unless keep_copy, which counts it as session 7. That variant has no
     meaning of its own: it only gives the paper's eleven sessions and degrees of freedom. Genotype
-    is taken per subject from its files that state one."""
+    is taken per subject from its files that state one.
+
+    Counts per 10 min divide by the recording's duration. With halves="file", as BehavOnly.py does
+    (lines 333-344 copy the file's TotalTimes to both halves, line 378 divides by it), both halves of
+    session 5 are divided by the whole file's duration, so they are counts per 10 min of the file,
+    not of the half. With halves="own" each half is divided by its own duration (300 s, and the
+    rest of the file)."""
     gen = {}
     for d in datas:
         if d["genotype"] != "unknown":
@@ -531,15 +537,17 @@ def learning_table(files, datas, parts=LEFT_CODE, keep_copy=False):
         p = prehensions(d, parts)
         if r.session == 6 and not keep_copy:
             continue
+        dur = p.attrs["duration_s"]
         if r.session == 5:
-            parts_ = [(5, p[p.t < SESSION5_SPLIT_S]), (6, p[p.t >= SESSION5_SPLIT_S])]
+            d5, d6 = (SESSION5_SPLIT_S, dur - SESSION5_SPLIT_S) if halves == "own" else (dur, dur)
+            parts_ = [(5, p[p.t < SESSION5_SPLIT_S], d5), (6, p[p.t >= SESSION5_SPLIT_S], d6)]
         elif r.session > 5:
-            parts_ = [(r.session + 1, p)]
+            parts_ = [(r.session + 1, p, dur)]
         else:
-            parts_ = [(r.session, p)]
-        for s, q in parts_:
+            parts_ = [(r.session, p, dur)]
+        for s, q, dq in parts_:
             rows.append(dict(mouse=r.subject, gen=gen[r.subject], session=s, total_raw=len(q),
-                             success_raw=int(q.success.sum()), duration_s=p.attrs["duration_s"]))
+                             success_raw=int(q.success.sum()), duration_s=dq))
     df = pd.DataFrame(rows)
     f = (df.duration_s / 60) / SESSION_MINUTES
     df["total"] = df.total_raw / f
