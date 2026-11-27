@@ -1,17 +1,33 @@
-I'm stopping here and have written no claims file. The text in `paper/` is a different version of this paper from the one the registry names.
+I wrote `claims/yang-2026-electrophysiological.yaml` with 21 claims, and all 21 quotes match the text. The quote checker still reports one problem: p = 0.002 for Figure 5A is not in the text because it is printed only inside the figure. I confirmed it by reading the figure in the PDF.
 
-**What's in `paper/`.** `paper/10.64898-2026.01.08.698522.txt` (header "Version: preprint", "Source: find_reuse cache") is bioRxiv version 1, posted 9 January 2026. Its title is "A robust low-dimensional manifold organizes neuronal responses to sustained input". It has the main text, Results (Figures 1 to 3), Discussion and a short Methods section, and no supplement. It cites DANDI:000020 as its data. There is no PDF.
+**Text read:** the bioRxiv preprint, version 2 (2026-08-20), with Results, Methods sections 1 to 7, the legends of Figures 1 to 5 and the Data and Code Availability statement. The supplement is only Supplementary Table 1, the list of derived features for each protocol. Its body and Table 1 are images, so I read them from the PDFs.
 
-**What the registry names.** The bioRxiv API (api.biorxiv.org/details/biorxiv/10.64898/2026.01.08.698522) shows that "Electrophysiological response geometries reveal shared and protocol-specific cell-type organization" is version 2, posted 2026-08-20. Its abstract describes a different study:
-- separate response geometries for the long-pulse, ramp and brief-pulse protocols;
-- driver-defined cell groups placed within those geometries;
-- comparisons of group distances across protocols, using balanced resampling and driver-label shuffle null models.
+The text gives no numbers at all. Cell counts, variance explained, correlations and n all come from the figures. Figures 4E, 5A and 5B print their statistics inside the panel; everything else was read off bars or box plots, and the claims mark those values as approximate. The paper links no code: it says the code "will be made publicly available upon publication". So none of the open details below could be settled by code.
 
-None of that is in the version 1 text, so claims written from it would not be the findings of the paper being tested. The protocol says to stop when the full text is missing, and only the abstract of version 2 is available here, which the protocol forbids writing claims from.
+**Claims:**
+- **Quotes:** 21 of 21.
+- **Statistics:** 2 claims.
+  - Fig 5A: Spearman r = 0.883, p = 0.002, n = 9 driver lines.
+  - Fig 5B: Spearman r = 0.707, p < 0.001, 36 driver-line pairs.
+- **Expected values:** 9 claims.
+- **Criteria:** all 21. All claims use the dataset itself.
 
-**What's needed to continue:**
-- the version 2 full text (main text, Methods, figure legends) under `paper/`;
-- any supplement it has;
-- its code, if version 2 links any. Version 1 offers its code only "upon request", with no repository.
+**Details the paper leaves open, with the readings named:**
+- **Quality control thresholds:** none are given.
+- **Which stimulus descriptions count as long pulse and ramp:** only the brief-pulse protocol, X5SP_Search_DA_0, is named. Readings: all long square steps, or only the suprathreshold family.
+- **Spike detection,** which sets recruitment current and latency: a 0 mV crossing, or dV/dt of 20 V/s.
+- **Response window for gain:** pulse plus 10 ms, or pulse plus 50 ms.
+- **Imputation and missingness:** mean or median imputation. Dropping features over 50% missing is my assumption.
+- **Feature-set membership:**
+  - Ramp, recruitment-focused: the 8 features shown in Fig 3D, or all ramp features.
+  - Brief response: two variants of the listed amplitude features.
+  - Brief base set: all brief-pulse features.
+  - Brief gain set: gain plus the command-slope features.
+- **How many PCs form the space for centroids and distances:** all, the first five, or PC1 and PC2.
+- **Per-group summary for orderings:** median or mean.
+- **Balanced resampling:** cells per line per draw (the smallest line's count, or 20). The exclusion rule follows from that number. I used 1000 iterations and sampling without replacement as standard choices.
+- **Empirical p-value:** a plain fraction, or a fraction with one added to each count. The shuffle can be applied in one geometry or both.
+- **Stars in Fig 5C:** their meaning is not given.
+- **Shared driver lines:** the paper is inconsistent. Fig 1D prints 7 lines shared by all three protocols, but the line names in Figs 2 to 4 give 8, so the claim accepts 7 or 8. The Fig 1D diagram also labels the ramp set "Short pulse".
 
-Claims: 0, so there are no quotes, statistics or criteria and nothing to check.
+**Missing that a claim needed:** no exact numbers in the text, no code, and no definitions of the feature sets or resampling parameters. Nothing missing stops a claim from being written, so I did not stop the run.
