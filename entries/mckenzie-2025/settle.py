@@ -14,7 +14,8 @@ Where the parameters come from:
 
 - `BIN = 0.1` s population vectors, z-scored over the first `ZWIN = 1000` s after transfer
   (Methods, ACG slope analysis; claims file E4).
-- Transfer (time 0 of a run) is the start of the maze epoch (claims file E2).
+- Transfer (time 0 of a run) is the start of the maze epoch (claims file E2). Tracking starts 15 to
+  63 s later; time 0 at the first tracked frame is shown as a variant.
 - Nearest neighbours: `K_NN = 3` most correlated vectors in the same location bin, location bins with
   at least `MIN_OCC = 1` s of occupancy, smoothed with a Gaussian of `SMOOTH_SD = 1` s (Methods, Reset
   analysis). Whether "1-s Gaussian kernel" is the standard deviation or the width is not said; the
@@ -29,9 +30,12 @@ Where the parameters come from:
   choice. Readings of claims file E8: (a) a second-order (constant acceleration) Kalman smoother,
   as the photometry Methods use, with process noise `KALMAN_Q` and measurement noise `KALMAN_R`
   (standard choices, the paper gives none); (b) finite differences smoothed with a 1 s Gaussian.
-- Ripples are the events deposited in the files (processing/ecephys/Ripples), those of Huszar et
-  al. (2022); the broadband LFP the Methods detect them from is only in the raw files (claims file
-  E9 names them as a variant).
+- Ripples are detected as the Methods say (Ripple detection; claims file E9) from the 1250 Hz LFP of
+  each session's raw file, which can be read one channel at a time, on the channel with the largest
+  ripple-band power before the familiar run. The Chebyshev type and the smoothing of the squared
+  signal are not given: type II with 20 dB stopband attenuation, zero phase, and an 11-sample
+  (8.8 ms) moving average are standard choices. The
+  events deposited in the files (processing/ecephys/Ripples, Huszar et al. 2022) are a variant.
 - Reactivation (Methods, Reactivation analysis): each ripple's vector is spike count over duration;
   `N_SHUF = 1000` shuffles that move each unit's value on a ripple to a random other ripple (an
   independent permutation of each unit across the pooled ripples); a ripple reactivates a moment
@@ -107,6 +111,7 @@ def load_session(sid):
     s["spikes"] = np.split(st, idx[:-1])
     s["unit_name"] = _str(f["units/unit_name"][:])
     s["spike_index"] = idx
+    s["spike_times"] = st
     if "epochs" in f["intervals"]:
         s["epochs"] = np.c_[f["intervals/epochs/start_time"][:], f["intervals/epochs/stop_time"][:]]
     else:
@@ -129,11 +134,14 @@ def load_session(sid):
     return s
 
 
-def cell_types(sid, spike_index):
-    """CellExplorer putative cell types from LABEL_VERSION, after checking its spike index matches."""
+def cell_types(sid, spike_index, spike_times=None):
+    """CellExplorer putative cell types from LABEL_VERSION, after checking that its spike index and,
+    when given, its spike times are identical to the pinned version's."""
     f = open_file(sid, LABEL_VERSION)
     if not np.array_equal(f["units/spike_times_index"][:], spike_index):
         raise ValueError(f"{sid}: units differ between versions")
+    if spike_times is not None and not np.array_equal(f["units/spike_times"][:], spike_times):
+        raise ValueError(f"{sid}: spike times differ between versions")
     ct = np.array(_str(f["units/putative_cell_type"][:]))
     env = None
     if "environment" in f["intervals/epochs"]:
@@ -167,6 +175,22 @@ def find_runs(s):
                          last_track=float(b), n_trials=int(intr.sum()),
                          familiar=bool(fam.all()) if len(fam) else None))
     return runs
+
+
+def moved_run(s, run, t0, t1):
+    """The session with one run's tracking moved onto the epoch (t0, t1), and that run.
+
+    For e16-3m2-211211, whose linear-track tracking is filed in the open-field epoch (settling.ipynb,
+    finding-tracking-misfiled): moved by the difference of the epoch starts, it is tuned at zero shift.
+    """
+    off = t0 - run["t0"]
+    s2 = dict(s)
+    s2["pos_t"] = s["pos_t"].copy()
+    s2["pos_t"][run["idx"]] += off
+    r2 = dict(run, t0=float(t0), t1=float(t1), first_track=run["first_track"] + off,
+              last_track=run["last_track"] + off)
+    s2["runs"] = [r2 if r is run else r for r in s["runs"]]
+    return s2, r2, off
 
 
 # ---------------------------------------------------------------- behaviour
@@ -349,11 +373,71 @@ def window_mean(x, t, start, length=60.0):
     return float(np.nanmean(x[m])) if np.isfinite(x[m]).any() else np.nan
 
 
+# ---------------------------------------------------------------- ripple detection (claims file E9)
+
+RIP_BAND = (130.0, 200.0)
+RIP_PEAK_SD = 5.0
+RIP_EDGE_SD = 2.0
+RIP_DUR = (0.020, 0.200)
+RIP_SMOOTH = 11          # samples of the moving average of the squared signal (8.8 ms at 1250 Hz)
+
+
+def raw_lfp(sid):
+    """The 1250 Hz LFP of a session: from the pinned version's raw file (processing/ecephys/LFP, chunked
+    by channel) or, for the one session whose raw file the pinned version lacks (e13-26m1-211119), from
+    the LABEL_VERSION file of the session, which holds it (processing/ecephys/LFP/LFP).
+    Returns the open file, the data, the rate, the start time and the source."""
+    sub = sid.rsplit("-", 1)[0]
+    path = f"sub-{sub}/sub-{sub}_ses-{sid}-raw_ecephys.nwb"
+    if any(a.path == path for a in _dandiset().get_assets_with_path_prefix(path)):
+        asset = _dandiset().get_asset_by_path(path)
+        f = h5py.File(remfile.File(asset.get_content_url(follow_redirects=1, strip_query=True)), "r")
+        g = f["processing/ecephys/LFP/ElectricalSeriesLFP"]
+        source = f"{VERSION} {path.split('/')[1]}"
+    else:
+        f = open_file(sid, LABEL_VERSION)
+        g = f["processing/ecephys/LFP/LFP"]
+        source = f"{LABEL_VERSION} {asset_path(sid).split('/')[1]}"
+    rate = float(g["starting_time"].attrs["rate"])
+    return f, g["data"], rate, float(g["starting_time"][()]), source
+
+
+def _ripple_filter(x, rate):
+    from scipy.signal import cheby2, filtfilt
+    b, a = cheby2(4, 20, RIP_BAND, btype="band", fs=rate)
+    return filtfilt(b, a, x.astype(np.float64), axis=0)
+
+
+def ripple_channel(data, rate, t0, t1):
+    """The channel with the largest ripple-band power over (t0, t1) s: the pyramidal layer, where
+    ripples are largest (a standard choice; the Methods name no channel)."""
+    x = data[int(t0 * rate):int(t1 * rate), :]
+    pw = (_ripple_filter(x, rate) ** 2).mean(0)
+    return int(np.argmax(pw)), pw
+
+
+def detect_ripples(x, rate, start=0.0):
+    """Methods, Ripple detection: 130 to 200 Hz fourth-order Chebyshev (type II, 20 dB, zero phase),
+    the squared signal (moving average of RIP_SMOOTH samples) normalized to z, peaks above 5 SD,
+    edges at 2 SD, durations 20 to 200 ms. Returns start, stop and peak times (s)."""
+    sq = np.convolve(_ripple_filter(x, rate) ** 2, np.ones(RIP_SMOOTH) / RIP_SMOOTH, "same")
+    z = (sq - sq.mean()) / sq.std()
+    above = np.r_[False, z > RIP_EDGE_SD, False]
+    d = np.diff(above.astype(np.int8))
+    on, off = np.where(d == 1)[0], np.where(d == -1)[0]
+    out = []
+    for a, b in zip(on, off):
+        if z[a:b].max() > RIP_PEAK_SD and RIP_DUR[0] <= (b - a) / rate <= RIP_DUR[1]:
+            out.append((start + a / rate, start + b / rate, start + (a + np.argmax(z[a:b])) / rate))
+    return np.array(out).reshape(-1, 3)
+
+
 # ---------------------------------------------------------------- reactivation (Figure 8)
 
-def ripple_vectors(s, units, windows):
-    """Rate vectors (spikes / duration) of the ripples starting inside any of the windows."""
-    r = s["rip"]
+def ripple_vectors(s, units, windows, rip=None):
+    """Rate vectors (spikes / duration) of the ripples (start, stop; default the deposited ones)
+    starting inside any of the windows."""
+    r = s["rip"] if rip is None else rip
     m = np.zeros(len(r), bool)
     for a, b in windows:
         m |= (r[:, 0] >= a) & (r[:, 0] < b)
@@ -384,6 +468,74 @@ def reactivation(rip_vec, groups, moments, rng, n_shuf=N_SHUF, alpha=ALPHA):
     sig = (exceed < max(1, round(alpha * n_shuf))) & np.isfinite(obs)
     return {g: (sig[m].mean(0) if m.sum() else np.full(mn.shape[1], np.nan), int(m.sum()))
             for g, m in groups.items()}
+
+
+B_SID = "e16-3m2-211211b"
+
+
+def reactivation_sessions():
+    """The eight tested sessions of settling.ipynb (claims file E1: a familiar run and a novel run of at
+    least 660 s), each with its cell types and the ripples detected on its LFP (`rip_det`, start and
+    stop; `rip_info` describes the detection), and e16-3m2-211211 under E1 reading (b) as B_SID: its
+    linear-track epoch, with the tracking moved onto it (`moved_run`)."""
+    out = {}
+    for sid in SESSIONS:
+        s = load_session(sid)
+        if len(s["runs"]) < 2 or s["runs"][1]["t1"] - s["runs"][1]["t0"] < 660:
+            continue
+        s["cell_type"], labels = cell_types(sid, s["spike_index"])
+        f, data, rate, start, source = raw_lfp(sid)
+        t0 = s["runs"][0]["t0"]                     # 165 s of home cage before the familiar run
+        ch, pw = ripple_channel(data, rate, t0 - 170, t0 - 5)
+        ev = detect_ripples(data[:, ch], rate, start)
+        f.close()
+        s["rip_det"] = ev[:, :2]
+        s["rip_info"] = dict(source=source, channel=ch, channels=len(pw), power_vs_median=float(pw[ch] / np.median(pw)), peaks=ev[:, 2])
+        out[sid] = s
+        if sid == "e16-3m2-211211":
+            lin_ep = [(a, b) for a, b, e in labels if e == "linear_manu"][0]
+            s2, _, _ = moved_run(s, s["runs"][1], *lin_ep)
+            out[B_SID] = s2
+    return out
+
+
+def reactivation_windows(s, run):
+    """Pre and post windows of claims file E10: pre (a) the 30 min before the run, pre (b) the first
+    30 min of the recording, post the 30 min after the run."""
+    rec0 = 0.0 if s["epochs"] is None else float(s["epochs"][0, 0])
+    return dict(preA=(run["t0"] - 1800, run["t0"]), preB=(rec0, rec0 + 1800), post=(run["t1"], run["t1"] + 1800))
+
+
+def run_moments(s, run, units, off=0.0):
+    """The 100 ms moments of minute 1 and of minutes 10 to 11 (Figure 8B), counted from `off` s after
+    the epoch start (0, claims file E2; the first tracked frame as a variant)."""
+    V = run_vectors(s, run, units)
+    t = V["t"]
+    sel = np.r_[np.where((t >= off) & (t < off + 60))[0], np.where((t >= off + 600) & (t < off + 660))[0]]
+    return dict(units=V["units"], z=V["z"][sel], raw=V["counts"][sel], early=t[sel] < off + 60)
+
+
+def run_reactivation(s, rip, win, mo, rng, pre="preA", vec="z", pool="a", sets=("pre", "post")):
+    """Percentage of the pre and post ripples that reactivate each moment, under one reading of E10.
+
+    pre: 'preA' or 'preB'; vec: 'z' (z-scored track vectors) or 'raw' (counts); pool: 'a' (the shuffle
+    moves activity within the ripple's own set) or 'b' (within pre and post together).
+    """
+    rv = {k: ripple_vectors(s, mo["units"], [win[pre if k == "pre" else "post"]], rip) for k in sets}
+    out = {}
+    if pool == "a":
+        for k in sets:
+            out[k] = reactivation(rv[k], {k: np.ones(len(rv[k]), bool)}, mo[vec], rng)[k]
+    else:
+        allv = np.concatenate([rv[k] for k in sets])
+        lab = np.concatenate([[k] * len(rv[k]) for k in sets])
+        out.update(reactivation(allv, {k: lab == k for k in sets}, mo[vec], rng))
+    rows = []
+    for k, (frac, n) in out.items():
+        rows.append(dict(pre=pre, vec=vec, pool=pool, set=k, n_ripples=n,
+                         early_pct=100 * np.nanmean(frac[mo["early"]]), late_pct=100 * np.nanmean(frac[~mo["early"]]),
+                         all_pct=100 * np.nanmean(frac)))
+    return rows
 
 
 # ---------------------------------------------------------------- one run, every measure
@@ -535,7 +687,7 @@ def _design(t, dv, da, terms, p):
 
 
 def fit_nn_model(t, dv, da, y, terms, form):
-    """Fit one model; form 'exp' (photometry Methods form, rates bounded as there) or 'linear'."""
+    """Fit one model; form 'exp' or 'exp_pos' (photometry Methods form, rates bounded as there) or 'linear'."""
     from scipy.optimize import least_squares
     if form == "linear":
         cols = []
@@ -551,16 +703,21 @@ def fit_nn_model(t, dv, da, y, terms, form):
         X = np.stack(cols, 1)
         beta = np.linalg.lstsq(X, y, rcond=None)[0]
         return ("linear", terms, beta)
-    lo = np.array([-10, 0, 0.001, 0, 0.0001, -10, -10.0])
+    # every beta bounded at +-10 (photometry Methods, "All beta values were bound at +-10 s.t.d."), so the
+    # fast term can describe a rise as well as a fall; form 'exp_pos' keeps both betas >= 0, the signs
+    # the Methods give the two terms ("a positive term ... and a negative term")
+    lo = np.array([-10, -10, 0.001, -10, 0.0001, -10, -10.0])
     hi = np.array([10, 10, 0.1, 10, 0.001, 10, 10.0])
+    if form == "exp_pos":
+        lo[[1, 3]] = 0
     p0 = np.array([np.mean(y), 0.1, 0.01, 0.01, 0.0005, 0, 0])
     res = least_squares(lambda p: _design(t, dv, da, terms, p) - y, p0, bounds=(lo, hi))
-    return ("exp", terms, res.x)
+    return (form, terms, res.x)
 
 
 def predict_nn_model(model, t, dv, da):
     form, terms, p = model
-    if form == "exp":
+    if form != "linear":
         return _design(t, dv, da, terms, p)
     cols = []
     if "intercept" in terms:
