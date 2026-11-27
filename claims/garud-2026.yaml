@@ -1,0 +1,445 @@
+# Claims for Garud & Morris (2026), "Continuous Temporal Difference Learning as a Unifying
+# Theory of Dopamine Function", bioRxiv doi:10.64898/2026.04.07.716149, on DANDI:001552.
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-25, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the bioRxiv preprint, version posted April 8, 2026
+# (paper/10.64898-2026.04.07.716149.txt, extracted from the PDF): main text, figure legends,
+# Table 1 legend and Methods. No PDF was supplied and no figure was read. The supplementary
+# information is not in the text read. The paper cites it for the derivation (Supplementary
+# S1), the phasic conditioning walkthrough (Supplementary Figure S1), the analysis of the
+# Brown et al. (2026) dataset (Supplementary Figure S2), and "Further detailed methods". The
+# claims on DANDI:001552 (Figure 4) rest on the main Methods, which describe that analysis in
+# full enough to test; any detail the supplement may add to it was not seen. The claim on
+# Supplementary Figure S2 rests on the supplement and has only the main-text sentence.
+#
+# Code read: none. Code Availability links https://osf.io/g3e2d/. On 2026-11-25 its OSF API
+# (api.osf.io/v2/nodes/g3e2d/) answered 401, authentication required, so the project is not
+# public and no file could be listed or read. No method detail below is settled by code. The
+# Methods say all analyses were run in Julia v1.12, integration with DifferentialEquations.jl
+# (Tsit5), figures with CairoMakie.jl, and a significance threshold of p < 0.05 for all tests.
+#
+# Data the paper used (Methods, Datasets). The paper reuses two published datasets and a third
+# in the supplement; it records none of its own.
+# - Floeder et al. (2025), DANDI:001552, version 0.250828.1728 as cited in Data Availability
+#   (Figure 4). NAc dLight fiber photometry in head-fixed mice in Pavlovian conditioning;
+#   n = 18 mice, 16 to 24 sessions each, alternating short-ITI and long-ITI sessions across
+#   days. Each trial, an auditory cue, then liquid reward after a fixed delay. Signals used:
+#   continuous 470 nm and 405 nm (isosbestic) photometry, and timestamped cue onsets, reward
+#   deliveries and licks. The text gives the ITIs two ways, "short (~8s) or long (~55s)" in
+#   the Results and "~15 s median" and "~45 s" in the Methods; sessions are classed by median
+#   inter-cue interval, below 25 s short and 25 s or more long.
+# - Krausz et al. (2023), Mendeley Data doi:10.17632/m59zdjpm9h.1 (Figures 2, 3 and 5), not in
+#   the dandiset. NAc dLight photometry in 10 freely moving rats on a hexagonal maze of 49
+#   positions with three reward ports whose magnitudes varied across blocks; 5 to 12 sessions
+#   per rat, 82 rat-sessions. The paper used the hex-level table hexLevelDf (298,918
+#   observations) with z-scored DA, instantaneous velocity, distance to chosen port and reward
+#   magnitude.
+# - Brown et al. (2026), Nature, doi:10.1038/s41586-025-10083-1 (Supplementary Figure S2), mice
+#   running with no spatial goal. Where its data are held is not given in the text read.
+#
+# Not made into claims: Figure 1 and Figure 5A (model simulations, no data), Table 1 (the
+# model's predictions by regime) and Supplementary Figure S1 (a model walkthrough).
+#
+# Details the paper leaves open for the DANDI:001552 claims, with the readings named in the
+# criteria: how the isosbestic regression and ΔF/F are formed; whether "baseline" is ΔF/F of
+# zero; whether ITI duration and its midpoint run from reward or from the previous cue; what
+# an "observation" is in the rule dropping bins with fewer than 20; whether session number
+# counts all of a mouse's sessions or its long-ITI sessions only; how the r values reported
+# next to the mixed-effects models were computed; and which sessions the lick-rate trend uses.
+schema_version: 2
+paper: doi:10.64898/2026.04.07.716149
+claims:
+- id: floeder-subjects-sessions
+  statement: The Floeder dataset holds 18 mice, each with 16 to 24 sessions, alternating between
+    short-ITI and long-ITI conditions across days.
+  source: Methods, Datasets, paragraph 2; Methods, Floeder (2025) dataset, paragraph 1
+  quote: Mice (n = 18) completed 16–24 sessions each, alternating between short-ITI (~15 s median
+    inter-trial interval) and long-ITI (~45 s) conditions across days
+  expected:
+  - quantity: mice
+    value: 18
+    tolerance: 0
+    unit: mice
+  - quantity: fewest sessions in a mouse
+    value: 16
+    tolerance: 1.6
+    unit: sessions
+  - quantity: most sessions in a mouse
+    value: 24
+    tolerance: 2.4
+    unit: sessions
+  criterion: Mice with photometry and event data are counted, so the tolerance on the count is
+    zero; the per-mouse session counts must fall within 16 to 24 widened by 10% of each bound
+    (14.4 to 26.4). Sessions are classed as the Methods say, by the median inter-cue interval
+    of the session, below 25 s short and 25 s or more long. Reproduced when the count is 18,
+    every mouse's session count is in range, and both classes occur in every mouse. The
+    session median inter-cue intervals of each class are reported against the two sets of
+    values the text gives (about 8 and 55 s in the Results, about 15 and 45 s in the Methods).
+- id: fig4a-lick-short-above-long
+  statement: Mice show higher anticipatory lick rates in short-ITI sessions than in long-ITI
+    sessions.
+  source: Results, paragraph on tonic dopamine (Fig. 4A); Figure 4A legend
+  quote: Mice in short-ITI sessions showed higher anticipatory lick rates (Fig. 4A)
+  depends_on:
+  - floeder-subjects-sessions
+  criterion: Methods, Floeder (2025) dataset, paragraph 2. Anticipatory lick rate per trial is
+    the number of lick onsets 5 to 8 s after cue onset divided by 3 s; sessions are short or
+    long by median inter-cue interval (25 s). Short against long rates are compared with a
+    paired t-test across subjects, at p < 0.05 (Methods, Analysis). Open, the paper does not
+    say how a subject's rate in each condition is formed; the readings are (a) the mean over
+    that subject's sessions of the session mean over trials, (b) the mean over all its trials
+    of that condition pooled. It does not say whether the test is one- or two-tailed; the
+    two-tailed test is used, as the paper names one-tailed where it uses it (Figure 2G-H).
+    Lick onsets are read as the lick event timestamps the NWB files hold. Reproduced when,
+    under a reading, short is higher with p < 0.05.
+- id: fig4b-long-iti-dip-below-baseline
+  statement: During the late inter-trial interval of long-ITI sessions, dopamine settles below
+    baseline, while in short-ITI sessions a slowly decaying reward response does not resolve
+    before the next trial.
+  source: Results, paragraph on tonic dopamine (Fig. 4B); Figure 4B legend; Discussion,
+    paragraph 7
+  quote: long-ITI dopamine settled reliably below baseline ... while the short-ITI trace showed a
+    slowly decaying reward response that did not resolve before the next trial (Fig. 4B)
+  depends_on:
+  - floeder-subjects-sessions
+  criterion: Methods, Floeder (2025) dataset. The 470 nm signal is corrected by regressing out
+    the 405 nm signal and computing ΔF/F; it is binned in 1 s windows locked to reward
+    delivery, each trial's trace cut 1 s before the next cue onset, and bins with fewer than
+    20 observations dropped. The tonic measure is the mean ΔF/F from the midpoint of the ITI
+    to 1 s before the next cue, in long-ITI trials with ITI of 30 s or more, per subject and
+    session. Open, and named as readings, (1) the correction, (a) a least-squares fit of the
+    405 nm signal to the 470 nm signal per session, ΔF/F = (470 - fit) / fit, or (b) ΔF/F of
+    each channel against its own session mean, then the fitted 405 ΔF/F subtracted; no
+    filtering is named, so none is applied. (2) ITI duration and midpoint, (a) from reward
+    delivery to the next cue (the trace is reward locked), or (b) from cue to next cue. (3) An
+    observation in the 20-observation rule, (a) a trial contributing to the bin, or (b) a
+    sample. Baseline is read as ΔF/F of zero; the paper names no pre-cue baseline window. The
+    paper reports no test for this panel; the test used is the one it uses for the matching
+    stationary dip (Methods, Krausz dataset), a one-sample t-test across subjects of each
+    subject's mean tonic measure against zero, one-tailed as there. For the short-ITI part,
+    "did not resolve" is read as the trace not having returned to baseline, so the
+    across-subject mean ΔF/F of the last kept bin before the next cue in short-ITI trials must
+    be above zero; the paper reports no test for it, so the value is reported with its SEM.
+    Reproduced when the long-ITI measure is below zero at p < 0.05 under every reading and the
+    short-ITI part holds; partially reproduced when only the long-ITI part holds.
+    If the readings differ, the one the paper best supports is adopted as an assumption.
+- id: fig4d-dip-deepens-with-training
+  statement: In long-ITI sessions the tonic dopamine dip deepens across training sessions (r =
+    -0.29, p < 0.001).
+  source: Results, paragraph on tonic dopamine (Fig. 4D); Figure 4D-E legend
+  quote: we found that the dip deepened across training sessions as V̂  was learned (Fig. 4D,
+    r=-0.29, p<1e-3)
+  statistics:
+  - test: linear mixed-effects model with random intercepts and slopes per subject
+    statistic: r = -0.29
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: r between per-session tonic DA and session number
+    value: -0.29
+    tolerance: 0.029
+  depends_on:
+  - fig4b-long-iti-dip-below-baseline
+  criterion: The per-session tonic measure of fig4b-long-iti-dip-below-baseline (with its
+    readings) is regressed on session number in a linear mixed-effects model with random
+    intercepts and slopes per subject (Methods, Floeder (2025) dataset, paragraph 2).
+    Open, (1) session number, (a) the session's place among all of the mouse's sessions in
+    date order, or (b) its place among the mouse's long-ITI sessions; (2) the r the paper
+    prints beside the model, (a) Pearson r over all subject-session values pooled, or (b)
+    Pearson r after removing each subject's mean. Reproduced when the fixed slope on session
+    number is negative with p < 0.001 and r is within tolerance under one reading; partially
+    reproduced when the slope is negative with p < 0.05 but r is out of tolerance or p is not
+    below 0.001.
+- id: fig4c-lick-rate-rises-with-training
+  statement: Anticipatory lick rate increases across training sessions, in parallel with the
+    deepening tonic dip (r = 0.65).
+  source: Results, paragraph on tonic dopamine (Fig. 4C); Figure 4C legend
+  quote: while anticipatory vigour increased in parallel (Fig. 4C, r = 0.65, p=so this 1e-4)
+  statistics:
+  - test: linear mixed-effects model with random intercepts and slopes per subject
+    statistic: r = 0.65
+    p: 0.0001
+  expected:
+  - quantity: r between per-session anticipatory lick rate and session number
+    value: 0.65
+    tolerance: 0.065
+  depends_on:
+  - fig4a-lick-short-above-long
+  criterion: Per-session anticipatory lick rate (lick onsets 5 to 8 s after cue onset over 3 s,
+    mean over trials) regressed on session number in a linear mixed-effects model with random
+    intercepts and slopes per subject (Methods, Floeder (2025) dataset, paragraph 2). The
+    p-value is printed garbled ("p=so this 1e-4") and is read as 1e-4. Open, (1) the sessions,
+    (a) long-ITI sessions only, as the Results focus on the long-ITI condition and the legend
+    says "Lick rate increases with long ITI sessions", or (b) all sessions; (2) session number
+    and (3) r, with the same readings as fig4d-dip-deepens-with-training. Reproduced when the
+    fixed slope is positive with p < 0.05 and r is within tolerance under one reading;
+    partially reproduced when the slope is positive with p < 0.05 and r is out of tolerance.
+- id: krausz-included-observations
+  statement: The approach-epoch selection of the Krausz hex-level data keeps 264,042 of 298,918
+    observations across 10 rats.
+  source: Methods, Krausz (2023) dataset, paragraph 1; Methods, Datasets, paragraph 1
+  quote: This yielded 264,042 included observations across 10 rats
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  expected:
+  - quantity: included observations
+    value: 264042
+    tolerance: 26404
+  - quantity: rats
+    value: 10
+    tolerance: 0
+  criterion: Observations in an approach epoch are kept; those not in transit, at the reward
+    port, after reward was received, or with missing values are dropped (Methods). The
+    columns that mark each condition are not named; the author maps them from the table and
+    states the mapping.
+- id: fig2a-ramp-toward-goal
+  statement: In freely moving rats, NAc dopamine ramps up as the rats approach a reward port.
+  source: Results, paragraph after Figure 1 legend; Figure 2A
+  quote: DA ramped as animals approached their goals (Fig. 2A)
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - krausz-included-observations
+  criterion: Included approach observations; DA averaged within each rat at each hex position,
+    then across rats (Methods), plotted against distance to the chosen port. The paper names no
+    test for the ramp. The reading used is built from the tests it names, per rat the Pearson
+    r between distance to goal and position-mean DA, tested against zero across rats with a
+    one-sample t-test at p < 0.05. Reproduced when the mean r is negative (DA higher nearer
+    the goal) and significant.
+- id: fig2b-ramp-scales-with-reward
+  statement: The dopamine ramp is steeper on approaches to high reward (80 µL or more) than to
+    low reward (20 µL or less).
+  source: Results, paragraph after Figure 1 legend; Figure 2B legend
+  quote: The ramp is steeper on approaches ending at high reward (>80 µL juice) versus low reward
+    (< 20 µL)
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - fig2a-ramp-toward-goal
+  criterion: Within each rat, approaches split by destination reward of 80 µL or more against 20
+    µL or less (Methods; the legend prints > and <, the Methods 80 and 20 inclusive, and the
+    Methods are followed). No test is named. Readings for "steeper", (a) per-rat slope of DA
+    on distance to goal, or (b) per-rat mean DA over the approach, each compared high against
+    low with a paired t-test across rats (the paper's paired test). Reproduced when high is
+    steeper (more negative slope) or larger at p < 0.05 under a reading.
+- id: fig2c-ramp-similar-early-late
+  statement: Ramps in early and late sessions look similar, with at most a modest reduction in
+    ramp amplitude from early to late sessions.
+  source: Results, paragraph after Figure 1 legend; Figure 2C legend
+  quote: the ramps in early and late sessions look similar (i.e. the ramps do not flatten across
+    time in the absence of learning)
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - fig2a-ramp-toward-goal
+  criterion: Sessions split within each rat into first and last quartile (Methods). The legend
+    says "a modest reduction in ramp amplitude" and the Results that the ramps "look similar";
+    no test is named. Judged as a claim of absence with the paper's paired t-test across rats
+    of per-rat ramp amplitude, read as the slope of DA on distance to goal. Reproduced when
+    p is 0.05 or more; the size and sign of the change are reported either way.
+- id: fig2d-ramp-scales-with-velocity
+  statement: On fast approaches, dopamine is larger at the same positions than on slow ones.
+  source: Results, paragraph after Figure 1 legend; Figure 2D legend
+  quote: fast trials show larger DA at the same positions, consistent with velocity scaling the
+    ramp
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - krausz-included-observations
+  criterion: Within each rat, observations split into top and bottom velocity quartiles
+    (Methods). No test is named; the reading used is the paper's paired t-test across rats of
+    per-rat mean DA over positions present in both splits, fast against slow. Reproduced when
+    fast is larger at p < 0.05.
+- id: fig2e-velocity-covaries-with-distance
+  statement: Velocity co-varies with distance to goal, and average dopamine and velocity covary
+    across distance.
+  source: Results, paragraph after Figure 1 legend; Figure 2E legend
+  quote: We found that the velocity co-varied with the distance to goal (Fig. 2E)
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - krausz-included-observations
+  criterion: Mean velocity and mean DA per distance to goal, averaged within rat then across
+    rats (Methods). No test is named; per rat the Pearson r between distance and mean velocity,
+    and per rat the Pearson r between mean DA and mean velocity across distance values, each
+    tested across rats with a one-sample t-test against zero. Reproduced when both are
+    significant at p < 0.05; partially reproduced when only the velocity and distance part is.
+    The signs are reported, as the paper does not give them.
+- id: fig2f-coupling-grows-near-goal
+  statement: The within-position coupling of velocity and dopamine increases with proximity to
+    the goal (r = -0.494, df = 18, p = 0.027).
+  source: Results, paragraph after Figure 1 legend; Figure 2F
+  quote: the velocity-dopamine coupling increased with proximity to goal, consistent with the idea
+    that velocity scales with the gradient (Fig 2F, r=-0.494, df=18, p = 0.027)
+  statistics:
+  - test: correlation of within-position DA-velocity r with distance to goal
+    statistic: r = -0.494, df = 18
+    p: 0.027
+  expected:
+  - quantity: r between within-position coupling and distance to goal
+    value: -0.494
+    tolerance: 0.0494
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - krausz-included-observations
+  criterion: Within-position DA-velocity correlations as Pearson's r at each hex position
+    (Methods), then correlated with distance to goal. df = 18 means 20 points, which neither
+    the 49 positions nor 10 rats give. Readings, (a) one point per distance-to-goal value (20
+    values), the within-distance r over observations pooled across rats; (b) the same with r
+    computed per rat and averaged; (c) the 20 hex positions with enough observations. Reproduced
+    when r is within tolerance with p < 0.05 under a reading.
+- id: fig2gh-stationary-dip
+  statement: When rats are stationary (velocity below 5 cm/s), dopamine dips below zero (t =
+    -4.27, df = 9, p = 0.001, one-tailed).
+  source: Results, paragraph on the stationary prediction; Figure 2G-H legend
+  quote: found that indeed the dopamine dipped below baseline (df =9, t = -4.27, p = 0.001,
+    one-tailed) in instances where the rats’ velocity was near zero (Fig 2G-H)
+  statistics:
+  - test: one-sample t-test against zero across rats, one-tailed
+    statistic: t(9) = -4.27
+    p: 0.001
+    n: 10 rats
+  expected:
+  - quantity: t
+    value: -4.27
+    tolerance: 0.427
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  criterion: Stationary observations are velocity below 5 cm/s (Results and Methods); per-rat
+    mean stationary DA tested against zero with a one-sample t-test across rats, one-tailed
+    (Methods). Open, which observations, (a) approach observations only, as the Methods
+    selection says, or (b) approach and non-approach observations, as the Figure 2G-H legend
+    says. Reproduced when t is within tolerance and p < 0.05 under a reading. The paired t-test
+    of moving (15 cm/s or more) against stationary per-rat DA (Methods) is reported as well.
+- id: fig3-recovered-value-increases
+  statement: The value function recovered from moving minus stationary dopamine shows a net
+    increase toward the goal in 8 of 10 rats.
+  source: Results, paragraph on internal consistency (Fig. 3A-B); Figure 3 legend
+  quote: The recovered value function showed a net increase toward the goal in 8 out of 10 rats (A>0
+    in BIC winning model)
+  expected:
+  - quantity: rats with A > 0 in the BIC-winning fit
+    value: 8
+    tolerance: 0
+    unit: rats
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - fig2gh-stationary-dip
+  criterion: Methods, Krausz (2023) dataset, paragraph 3. Per hex position, gradient = (mean
+    moving DA - mean stationary DA) / mean moving velocity, moving 15 cm/s or more and
+    stationary below 5 cm/s; integrated along the approach axis with Tsit5 to give V(x) up to a
+    constant; four three-parameter profiles fitted per rat and the best chosen by BIC. A count
+    of rats has no 10% tolerance short of the exact value. Open, (1) the approach axis, read as
+    distance to the chosen port, with gradients averaged per distance; (2) the profile forms,
+    not given, read by analogy with the Figure 5 forms as A exp(-λd) + c, A / (1 + kd) + c,
+    A (d + 1)^(-k) + c and A exp(-d²/2σ²) + c; (3) BIC from the sum of squared errors, n ln(SSE/n)
+    + k ln n, the standard form for least squares. Reproduced when 8 rats have A > 0;
+    partially reproduced for 7 or 9.
+- id: fig3cd-gaussian-shape-wins
+  statement: All four candidate shapes fit each rat's recovered value function well (mean R²
+    above 0.8), and the best shape varies across rats, Gaussian in 8, exponential in 1 and
+    power-law in 1.
+  source: Results, paragraph on internal consistency (Fig. 3C-D); Figure 3 legend
+  quote: All four provided good fits (mean R² > 0.8), with the best-fitting shape varying across
+    rats ... a Gaussian profile won in 8, exponential in 1, and power-law in 1 (Fig 3C-D)
+  expected:
+  - quantity: rats best fit by the Gaussian profile
+    value: 8
+    tolerance: 0
+    unit: rats
+  - quantity: rats best fit by the exponential profile
+    value: 1
+    tolerance: 0
+    unit: rats
+  - quantity: rats best fit by the power-law profile
+    value: 1
+    tolerance: 0
+    unit: rats
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - fig3-recovered-value-increases
+  criterion: Fits and readings as in fig3-recovered-value-increases. Reproduced when the mean R²
+    over rats exceeds 0.8 for each of the four shapes and the BIC winners are 8 Gaussian, 1
+    exponential and 1 power-law; partially reproduced when the Gaussian wins in most rats but
+    the counts differ.
+- id: fig5bc-gaussian-ct-td-best
+  statement: Of six models of approach dopamine, the Gaussian continuous-time TD model fits
+    best summed across rats and wins in 8 of 10 rats by BIC.
+  source: Results, paragraph on model comparison (Fig. 5B-C); Figure 5B-C legend
+  quote: The Gaussian CT TD model provided the best fit across rats (Fig. 5B, Krausz 2023 dataset),
+    and was also winning in 8 of 10 individual rats by BIC (Fig. 5C)
+  expected:
+  - quantity: rats won by the Gaussian CT TD model
+    value: 8
+    tolerance: 0
+    unit: rats
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - krausz-included-observations
+  criterion: Methods, Model Comparison. Six models of DA on distance d and velocity v (CT TD
+    exponential and Gaussian with 4 parameters; dV/dt exponential and Gaussian and Value with
+    3; Velocity with 2), fitted to each rat's approach observations by Nelder-Mead from 4
+    initial vectors plus 10 random perturbations each, 200,000 iterations per start, keeping
+    the lowest sum of squared errors; compared by BIC, ΔBIC relative to the best model summed
+    over rats. Open, (1) the BIC formula, read as n ln(SSE/n) + k ln n; (2) the initial vectors
+    and perturbation size, not given, which affect only whether the optimum is found (a
+    standard spread and a fixed seed are used and stated). Reproduced when the Gaussian CT TD
+    model has the lowest summed BIC and wins in 8 rats; partially reproduced when it is best
+    summed but wins in a different number of rats.
+- id: fig5d-tonic-term-and-gaussian-contribute
+  statement: In a factorial decomposition, the tonic term improves fit by ΔBIC = 1156 and the
+    Gaussian spatial profile by ΔBIC = 706.
+  source: Results, paragraph on model comparison (Fig. 5D); Figure 5D legend
+  quote: The tonic term −ρV̂  improved fit by ΔBIC =1156, while the Gaussian ... profile improved
+    fit by ΔBIC = 706
+  expected:
+  - quantity: ΔBIC from the tonic term
+    value: 1156
+    tolerance: 115.6
+  - quantity: ΔBIC from the Gaussian profile
+    value: 706
+    tolerance: 70.6
+  data: elsewhere
+  where: Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)
+  depends_on:
+  - fig5bc-gaussian-ct-td-best
+  criterion: From the summed BICs of the four CT TD and dV/dt fits of fig5bc-gaussian-ct-td-best.
+    Open, how a factor's ΔBIC is formed; readings, (a) the main effect, the mean over the two
+    levels of the other factor of the summed BIC difference; (b) the difference at the
+    Gaussian level (tonic) and at the CT TD level (profile); (c) the difference at the
+    exponential level (tonic) and at the dV/dt level (profile). Reproduced when both values
+    are within tolerance under one reading.
+- id: figs2-no-velocity-coupling-without-goal
+  statement: In an independent dataset of mice running without a spatial goal, dopamine does not
+    track velocity, as the model predicts when there is no spatial value gradient.
+  source: Results, paragraph before Table 1; Discussion, paragraph 10; Supplementary Figure S2
+    (not in the text read)
+  quote: correctly predicts no dopamine-velocity coupling in the absence of a spatial value gradient
+    (confirmed in an independent dataset of mice running without a spatial goal25, Supplementary
+    Figure S2)
+  data: elsewhere
+  where: Brown et al. (2026), Nature, doi:10.1038/s41586-025-10083-1; the repository holding its
+    data is not named in the text read
+  criterion: The analysis is in the supplement, which was not available, so its selection,
+    measure and test are not known. A claim of absence must be judged on the paper's test,
+    which cannot be named here; the claim is blocked until the supplement is read.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4b-long-iti-dip-below-baseline, source corrected from Discussion paragraph 6 to paragraph 7; paragraph 6 is the one on the recovered value function, and the tonic ITI dip is in paragraph 7 ("During periods where state variables...").
+  - fig4b-long-iti-dip-below-baseline, the short-ITI test compared the last bin with the long-ITI tonic measure, which is below zero and so passes even when the short-ITI trace has returned to baseline; the paper says the reward response "did not resolve before the next trial", so the test is now the last kept bin above baseline (ΔF/F of zero, the file's reading of baseline).
+  - fig2e-velocity-covaries-with-distance, the statement includes the Figure 2E legend's "Average dopamine and velocity covary across the distance to goal" but the criterion tested only velocity against distance; a test of the DA and velocity part, built the same way, was added.
+  - Open, the supplementary information was not in the text read. The Methods say "Further detailed methods are reported in the supplementary information", so it may settle details named open in the Figure 4 claims (ΔF/F formation, ITI reference point, the 20-observation rule, session numbering, how r was computed); the Figure 4 claims are testable from the main Methods with those readings named. figs2-no-velocity-coupling-without-goal stays blocked until the supplement is read.
+  - Open, the OSF code (https://osf.io/g3e2d/) was reported as not public, so no detail is settled by code.
+  - Open, fig4c-lick-rate-rises-with-training, the printed p ("p=so this 1e-4") is garbled and could be p = 1e-4 or p < 1e-4; it is recorded as 1e-4 and the criterion only needs p < 0.05, so the outcome does not depend on it.
+  - Open, fig2c-ramp-similar-early-late, the paper names no test for this claim of absence; the criterion borrows the paired t-test the Methods use for moving against stationary DA, and reads ramp amplitude as slope of DA on distance. Both are choices the paper does not make, and the outcome rests on them.
+  - Open, fig4b-long-iti-dip-below-baseline, the paper reports no test for the long-ITI dip; the one-sample one-tailed t-test is taken by analogy from the Krausz stationary dip, as the criterion says.

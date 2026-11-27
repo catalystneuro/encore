@@ -1,4 +1,4 @@
-# mah-2023 · verifier-1 · run 42791107745
+# mah-2023 · verifier-1 · run 45526620460
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
@@ -10,27 +10,31 @@ cd  ls -la; ls paper docs 2>/dev/null; wc -c *
 
 ```
 Exit code 1
-total 228
-drwxr-xr-x 6 runner runner    4096 Nov 10 09:48 .
-drwxr-xr-x 7 runner runner    4096 Nov 10 09:48 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 10 09:29 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 10 09:29 .bashrc
-drwxr-xr-x 5 runner runner    4096 Nov 10 09:48 .claude
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.development
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.development.local
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.local
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.production
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.production.local
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.test
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .env.test.local
-drwx------ 2 runner runner    4096 Nov 10 09:48 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 10 09:29 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 10 09:29 .github
--rw-r--r-- 1 runner runner       0 Nov 10 09:48 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 10 09:29 .idea
-[... 39 more lines not kept]
+total 488
+drwxr-xr-x 6 runner runner    4096 Nov 25 02:44 .
+drwxr-xr-x 8 runner runner    4096 Nov 25 02:44 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 01:33 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 01:33 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 25 02:44 .claude
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .env.test.local
+drwx------ 2 runner runner    4096 Nov 25 02:44 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 01:33 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 01:33 .github
+-rw-r--r-- 1 runner runner       0 Nov 25 02:44 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 01:33 .idea
+[... 41 more lines not kept]
 ```
+
+**Agent**
+
+Two notebooks. Let me read the claims file first.
 
 **Agent calls Read**
 
@@ -67,95 +71,147 @@ crw-rw-rw- 1 nobody nogroup   1, 3 Nov 10 09:29 .idea
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "
+cd  python3 - <<'EOF'
 import json
-nb=json.load(open('reproduce_mah_2023.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print('='*20,i,c['cell_type'])
-    print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:6000])
-        elif 'data' in o:
-            d=o['data']
-            if 'text/plain' in d: print('--OUT--');print(''.join(d['text/plain'])[:4000])
-            if 'image/png' in d: print('[image]')
-        elif o.get('output_type')=='error': print('--ERR--',o['ename'],o['evalue'])
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
+for fn in ['reproduce_mah_2023.ipynb','models_mah_2023.ipynb']:
+    nb=json.load(open(fn))
+    print('#'*20,fn,len(nb['cells']))
+    for i,c in enumerate(nb['cells']):
+        print(f"\n===== [{i}] {c['cell_type']} =====")
+        print(''.join(c['source']))
+        for o in c.get('outputs',[]):
+            if 'text' in o: t=''.join(o['text'])
+            elif 'data' in o: t=''.join(o['data'].get('text/plain',''))
+            elif o.get('output_type')=='error': t='ERROR '+o['ename']+': '+o['evalue']
+            else: t=''
+            if len(t)>4000: t=t[:4000]+'\n...[truncated]'
+            print('--- out:'); print(t)
+EOF
 ```
 
 ```
-1223 /tmp/claude-1001/nb.txt
+<persisted-output>
+Output too large (113.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/a859c439-6c14-4d71-8ba9-94e5f498601c/tool-results/bet30p0tl.txt
+
+Preview (first 2KB):
+#################### reproduce_mah_2023.ipynb 63
+
+===== [0] markdown =====
+# Reproducing Mah et al. (2023) from DANDI:001169: behaviour
+
+Paper: Mah, Schiereck, Bossio and Constantinople (2023), "Distinct value computations support rapid sequential decisions", Nature Communications 14, 7573, doi:10.1038/s41467-023-43250-x.
+
+Dataset: DANDI:001169, version 0.261120.1450 (doi:10.48324/dandi.001169/0.261120.1450). This version was asked for by the prompt of this repeat attempt; it is the most recent published version (published 2026-11-20). The paper cites no dandiset version: its Data availability names the Zenodo deposit doi:10.5281/zenodo.10031483, which this notebook reads for Figure 4 only (all final-stage sessions, which the dandiset does not hold).
+
+Claims file: `claims/mah-2023.yaml`, written from the version of record (Europe PMC, PMC10663503) with Supplementary Information, peer review file and reporting summary, and the paper's code (github.com/constantinoplelab/published, rat_behavior, at b7b68ca8c107). Method details the claims file lacks are cited to the paper or that code where they are used.
+
+The NWB files are streamed: each file is fetched over HTTPS into memory and read with h5py; nothing is written to disk.
+
+Claims, and where they are tested (all 33 are tested; none is blocked):
+
+| Claim | Notebook | Data |
+[... 13 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/a859c439-6c14-4d71-8ba9-94e5f498601c/tool-results/bet30p0tl.txt"
 }
 ```
 
 ```
-1	==================== 0 markdown
-2	# Reproducing Mah, Schiereck, Bossio and Constantinople (2023) from DANDI:001169
-3	
-4	Paper. Mah A, Schiereck SS, Bossio V, Constantinople CM (2023). Distinct value computations support rapid
-5	sequential decisions. *Nature Communications* 14, 7573. doi:10.1038/s41467-023-43250-x.
-6	
-7	Dataset. DANDI:001169, version 0.260825.1909 (doi:10.48324/dandi.001169/0.260825.1909). The paper cites no
-8	version of the dandiset (it cites the Zenodo deposit doi:10.5281/zenodo.10031483), and 0.260825.1909 is the only
-9	published version, so it is pinned. Its 23,034 NWB files hold one behavioral session each, for 291 rats. Each file
-10	is streamed from the archive into memory and never written to disk.
+1	#################### reproduce_mah_2023.ipynb 63
+2	
+3	===== [0] markdown =====
+4	# Reproducing Mah et al. (2023) from DANDI:001169: behaviour
+5	
+6	Paper: Mah, Schiereck, Bossio and Constantinople (2023), "Distinct value computations support rapid sequential decisions", Nature Communications 14, 7573, doi:10.1038/s41467-023-43250-x.
+7	
+8	Dataset: DANDI:001169, version 0.261120.1450 (doi:10.48324/dandi.001169/0.261120.1450). This version was asked for by the prompt of this repeat attempt; it is the most recent published version (published 2026-11-20). The paper cites no dandiset version: its Data availability names the Zenodo deposit doi:10.5281/zenodo.10031483, which this notebook reads for Figure 4 only (all final-stage sessions, which the dandiset does not hold).
+9	
+10	Claims file: `claims/mah-2023.yaml`, written from the version of record (Europe PMC, PMC10663503) with Supplementary Information, peer review file and reporting summary, and the paper's code (github.com/constantinoplelab/published, rat_behavior, at b7b68ca8c107). Method details the claims file lacks are cited to the paper or that code where they are used.
 11	
-12	Text the claims were written from. The version of record (Europe PMC, PMC10663503) with the Methods and the
-13	Supplementary Information; the claims file is `claims/mah-2023.yaml`. The paper's code was read at
-14	github.com/constantinoplelab/published, folder rat_behavior, commit b7b68ca8c107.
+12	The NWB files are streamed: each file is fetched over HTTPS into memory and read with h5py; nothing is written to disk.
+13	
+14	Claims, and where they are tested (all 33 are tested; none is blocked):
 15	
-16	Claims. 32 claims from the paper and one link claim added here (pre-cue-session-link). Tested here: 25.
-17	Blocked: 8.
-18	
-19	| claim | tested or blocked |
-20	|---|---|
-[... 670 more lines not kept]
+16	| Claim | Notebook | Data |
+17	|---|---|---|
+18	| cohort-size, fig1e, fig1f, fig1i, suppfig2, suppfig3, suppfig12, suppfig14 | this one | dandiset |
+19	| fig2a, suppfig5, suppfig6, fig2c-d, fig2e, fig2f, fig2g-h, fig2j, fig2k, fig2l | this one | dandiset |
+20	| fig3c, bayes-observer-offer-reduces-uncertainty | this one | dandiset |
+[... 703 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 690,
- "limit": 540
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/a859c439-6c14-4d71-8ba9-94e5f498601c/tool-results/bet30p0tl.txt",
+ "offset": 724,
+ "limit": 600
 }
 ```
 
 ```
-690	sw = PR.wp_lo - PR.wp_hi
-691	print("wait time sensitivity: mean", round(sw.mean(), 4), "; rats", int(sw.notna().sum()))
-692	for lab, k in (("code reading", "ip"), ("Methods reading", "im")):
-693	    si = PR[f"{k}_lo"] - PR[f"{k}_hi"]
-694	    w = wilcoxon(si, sw, nan_policy="omit")
-695	    print(f"{lab}: initiation sensitivity mean {si.mean():+.4f}; rats with initiation > wait time sensitivity {int((si > sw).sum())}; signed-rank p = {w.pvalue:.3g} (paper 6.21e-38)")
-696	--OUT--
-697	wait time sensitivity: mean -0.0119 ; rats 291
-698	code reading: initiation sensitivity mean +0.2476; rats with initiation > wait time sensitivity 247; signed-rank p = 6.09e-38 (paper 6.21e-38)
-699	Methods reading: initiation sensitivity mean +0.0828; rats with initiation > wait time sensitivity 183; signed-rank p = 2.19e-08 (paper 6.21e-38)
-700	
-701	==================== 42 markdown
-702	## suppfig6-results-without-detrending
-703	
-704	> Satiety effects on trial initiation times are modest, and the results, including the dynamics at block
-705	> transitions, do not change qualitatively without detrending.
-706	
-707	The initiation transition curves without the trial-number regression (block_dynamics_latency.m with detrending
-708	off); part (2) of fig2a (which does not detrend) and the ordering of the curves over trials 1 to 20 of the mixed
-709	block (above after high blocks, below after low blocks).
-[... 515 more lines not kept]
+724	--- out:
+725	[methods] r = -0.037, p = 0.535 (paper: r = 0.08, p = 0.18 in the Results; r = -0.03, p = 0.53 in the legend); rats with nonzero wait time tau: 42
+726	[code] r = 0.111, p = 0.0589 (paper: r = 0.08, p = 0.18 in the Results; r = -0.03, p = 0.53 in the legend); rats with nonzero wait time tau: 289
+727	
+728	
+729	===== [34] markdown =====
+730	## fig2g-h-fast-slow-tau-groups
+731	
+732	> Rats split by fast or slow temporal integration of initiation times (tau below the 20th or above the 80th percentile) differ in their initiation time regression coefficients but not in their wait time coefficients.
+733	
+734	myTauShuffleTest.m: the rats below the 20th and above the 80th percentile of initiation tau; observed fits to each group's mean coefficients (D in [-10, 1], tau in [0, 10]); 500 shuffles of the labels, each half's mean coefficients times 10 refitted (D in [-3, 1], tau in [0, 50]); p = share of shuffles with |tau difference| above the observed, divided by 2. The code passes all coefficients but the constant (initiation 1 to 10 back; wait time current and 9 back); the code reading of fig2e is used for the coefficients, and the Methods reading is shown too. Seeds: the claim's and +1000 to +4000.
+735	
+736	===== [35] code =====
+737	def tau_shuffle(B, first_q, last_q, rng, nshuf=500):
+738	    x = np.arange(1, B.shape[1] + 1)
+739	    sel = first_q | last_q
+740	    Bs = B[sel]; n = len(Bs)
+741	    perms = np.array([rng.permutation(n) for _ in range(nshuf)])
+742	    h = n // 2
+743	    g1 = Bs[perms[:, :h]].mean(1); g2 = Bs[perms[:, h:]].mean(1)
+[... 580 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Read**
 
-Notebook read; now the helper module.
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/a859c439-6c14-4d71-8ba9-94e5f498601c/tool-results/bet30p0tl.txt",
+ "offset": 1324,
+ "limit": 600
+}
+```
+
+```
+1324	
+1325	--- out:
+1326	<Figure size 800x300 with 2 Axes>
+1327	--- out:
+1328	plotted ranges: wait ratio 0.907 - 1.187 | initiation ratio 0.583 - 0.802
+1329	
+1330	
+1331	===== [59] markdown =====
+1332	## fig4c-initiation-previous-reward-stable
+1333	
+1334	> The effect of the previous reward on trial initiation times is comparable early and late in training.
+1335	
+1336	Per session, initiation time regressed on the previous reward (log2 offer times hit, 0 when unrewarded, as fig2c-d), smoothed and cleaned as in fig4a, averaged over rats.
+1337	
+1338	===== [60] code =====
+1339	Cp = smooth_clean(session_coefs(Z50, "prev"))
+1340	c = Cp.mean()
+1341	ce, cl = c.loc[0:9].mean(), c.loc[40:49].mean()
+1342	b = B[True].mean(); be, bl = b.loc[0:9].mean(), b.loc[40:49].mean()
+1343	rel_c, rel_b = abs(ce - cl) / abs(cl), abs(be - bl) / abs(bl)
+[... 554 more lines not kept]
+```
 
 **Agent calls Read**
 
@@ -166,38 +222,42 @@ Notebook read; now the helper module.
 ```
 
 ```
-1	"""Loading and measures for Mah, Schiereck, Bossio and Constantinople (2023) on DANDI:001169.
+1	"""Loading and shared measures for the reproduction of Mah et al. (2023) on DANDI:001169.
 2	
-3	Data access. Each NWB file holds one session of one rat. The analysis uses the table
-4	``intervals/processed_trials`` (the lab's per-rat "A struct", one row per trial, written by
-5	parse_data_from_mysql.m in github.com/constantinoplelab/published, rat_behavior) and, from the
-6	raw Bpod table ``intervals/trials``, only the catch probability of each session. Each file is
-7	streamed from the archive's S3 bucket into memory (one HTTP GET per file, never written to disk)
-8	and opened with h5py; only the columns below are kept.
-9	
-10	Where parameters come from is said beside each one: "claim" (the claim's criterion, which cites
-11	the paper or its code), "paper" (a passage of the paper taken by the author, protocol step 1.6),
-12	"assumption", or "standard" (a choice that cannot change a result).
-13	"""
-14	from __future__ import annotations
-15	
-16	import hashlib
-17	import io
-18	import time
-19	from concurrent.futures import ThreadPoolExecutor
-20	
-[... 785 more lines not kept]
+3	Every NWB file of the pinned version is fetched over HTTPS into memory (no file is written to
+4	disk) and read with h5py. The files are about 1 MB each, so one request per file is much faster
+5	than range requests; the 23,033 files are read in parallel threads. Only the processed trials
+6	table, the subject, the session start time and the task argument `center_port_cue` are kept.
+7	
+8	Where each parameter comes from:
+9	- Volumes: female volumes 4, 8, 16, 32, 64 uL are treated as 5, 10, 20, 40, 80 uL (claims file
+10	  header; Methods, "Training for male and female rats").
+11	- Wait times: the dandiset's `wait_time` column, which already removes wait times above the
+12	  rat's pooled catch-trial mean + 1 SD (`wait_time_threshold`; Methods, "Statistical analyses",
+13	  paragraph 1). Only opt-out catch trials have a wait time (claims file header).
+14	- Trial initiation time: the dandiset's `inter_trial_interval` ("the time between the end of the
+15	  consummatory period and the time to initiate the next trial"), which is the paper's definition
+16	  (Results, paragraph 1: "the time from opting out or consuming reward to initiating a new
+17	  trial"). Values above the rat's pooled 99th percentile are removed (Methods, "Criteria for
+18	  including behavioral data"; claims file header).
+19	- z-scoring is within rat over the trials each analysis names (claims file header).
+20	"""
+[... 661 more lines not kept]
 ```
+
+**Agent**
+
+Notebooks and helper are read. Next I'm checking a few method details in the paper and running the fit helpers on synthetic data.
 
 **Agent calls Bash**
 
 ```bash
-cd paper; grep -n -i "trial history effects\|previous offer\|smaller or larger\|20 μL\|N = 16\|pre-initiation\|291" 10.1038-s41467-023-43250-x.txt | head -60
+cd paper; grep -n -i -E "previous offer|smaller or larger|post-20|variance of prior|Equation 10|G_t|dynamic learning rate|repeated|violation" 10.1038-s41467-023-43250-x.txt | head -40
 ```
 
 ```
 <persisted-output>
-Output too large (69.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/3f929ca4-de27-4fc9-99f3-eaa27192c49f/tool-results/bxwu33vgm.txt
+Output too large (76.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/a859c439-6c14-4d71-8ba9-94e5f498601c/tool-results/b7h4t4mnt.txt
 
 Preview (first 2KB):
 7:pmc Nat Commun Nat Commun 2873 ncomms 101528555 Nature Communications 2041-1723 Nature Publishing Group PMC10663503 PMC10663503.1 10663503 10663503 37989741 10.1038/s41467-023-43250-x 43250 1 Article Distinct value computations support rapid sequential decisions Mah Andrew 1 Schiereck Shannon S. 1 Bossio Veronica 1 2 http://orcid.org/0000-0003-4435-4460 Constantinople Christine M. [removed: an e-mail address] 1 1 https://ror.org/0190ak572 grid.137628.9 0000 0004 1936 8753 Center for Neural Science, New York University, New York, NY 10003 USA 2 https://ror.org/00hj8s172 grid.21729.3f 0000 0004 1936 8729 Present Address: Zuckerman Institute, Columbia University, New York, NY 10027 USA 21 11 2023 2023 14 425248 7573 3 8 2023 3 11 2023 21 11 2023 21 11 2023 27 01 2024 © The Author(s) 2023 https://creativecommons.org/licenses/by/4.0/ Open Access This article is licensed under a Creative Commons Attribution 4.0 International License, which permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if changes were made. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by/4.0/ . Distinct value computations support rapid sequential decisions 2 8 2023 2023.03.14.532617 bioRxiv 
@@ -206,132 +266,102 @@ Preview (first 2KB):
 
 **Agent**
 
-Long lines; split into sentences.
+Text is on long lines; I'll pull snippets around keywords.
 
 **Agent calls Bash**
 
 ```bash
-cd paper; tr '\n' ' ' < 10.1038-s41467-023-43250-x.txt | sed 's/\. /.\n/g' > $TMPDIR/sent.txt; grep -n -i "trial history effects\|preceded by\|previous rewards that were\|pre-initiation cue\|N = 16\|z-scored\|detrend" $TMPDIR/sent.txt | cut -c1-600 | head -50
+cd paper; python3 - <<'EOF'
+import re
+s=open('10.1038-s41467-023-43250-x.txt').read()
+for kw in ["were preceded by rewards that were smaller","sensitivity to previous offers","trial initiation times following","Trial history effects","reduced the uncertainty","G t","dynamic learning rate","violation trials","inter-trial interval","from opting out or consuming"]:
+    for m in re.finditer(re.escape(kw),s):
+        print('==',kw,':',s[max(0,m.start()-500):m.start()+700].replace('\n',' '))
+        print()
+EOF
 ```
 
 ```
-122:Indeed, for almost all rats (87%), wait times for 20 μL offers in mixed blocks were not significantly different if they were preceded by rewards that were smaller or larger than 20 μL ( p > 0.05, Wilcoxon rank-sum test, N = 253/291).
-127:To control for these effects, we regressed out initiation times against trial number in order to detrend the slow changes over the course of a session.
-128:However, there was no qualitative change in any of our results, including the dynamics at block transitions, if we did not detrend (Supplementary Fig.
-232:d Overshoot in trial initiation time (difference between maximum z-scored trial initiation time and trial initiation time at trial 20 post-transition) was more prominent in last 10 sessions (red) compared to first 10 sessions (maroon).
-260:a Schematic of pre-initiation cue experiment.
-261:b Trial initiation time varied as a function of offered volume for rats that trained on the original task (black) before transitioning to pre-initiation cue task (pink) and for rats that trained exclusively on the pre-initiation cue task.
-262:c Trial initiation times were still sensitive to previous reward (behavior on trials offering 20μL conditioned on the previous reward offer) after training on the pre-initiation cue task.
-264:d Trial initiation times in mixed blocks depended on previous block type in pre-initiation cue task.
-479:To assess block effects across the population, we first z-scored each rat’s wait time on all catch trials and trial initiation time on all trials.
-480:For wait times, we computed the average z-scored wait time on catch trials offering 20 μL in high and low blocks for each rat, and compared across the population using a paired Wilcoxon sign-rank test.
-481:Similarly for trial initiation times, we averaged all z-scored trial initiation times for high and low blocks for each rat, and compared across the population using a paired Wilcoxon sign-rank test.
-484:Block transition dynamics To examine behavioral dynamics 
-[... 17 more lines not kept]
+<persisted-output>
+Output too large (35.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/a859c439-6c14-4d71-8ba9-94e5f498601c/tool-results/bzv1pkiza.txt
+
+Preview (first 2KB):
+== were preceded by rewards that were smaller :  in temporal integration for trial initiation times, but not wait times, for these groups (Fig. 2g, h trial initiation time p < 0.05, wait time p = 0.1, permutation test, N = 116). Collectively, these data suggest that within a block, wait times use a fixed estimate of the value of the environment, whereas trial initiation times are sensitive to previous rewards (Fig. 2c, d ). Indeed, for almost all rats (87%), wait times for 20 μL offers in mixed blocks were not significantly different if they were preceded by rewards that were smaller or larger than 20 μL ( p > 0.05, Wilcoxon rank-sum test, N = 253/291). However, for 89% of rats, trial initiation times were significantly modulated by previous rewards, suggesting fixed and incrementally updated estimates of the value of the environment, respectively ( p < 0.05, Wilcoxon rank-sum test, N = 256/291, Fig. 2i–l ). One factor that could in principle influence initiation times is satiety. However, satiety effects were small, and modestly apparent as a gradual increase in trial initiation times over the session. To control for these effects, we regressed out initiation times against trial number in order to detrend the slow changes over 
+
+...
+</persisted-output>
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n '475,535p' $TMPDIR/sent.txt | cut -c1-700
+cd paper; python3 - <<'EOF'
+import re
+s=open('10.1038-s41467-023-43250-x.txt').read()
+for kw in ["Trial history effects","reduced the uncertainty","dynamic learning rate","from opting out or consuming", "Fig. 2k","Equation 10","(10)"]:
+    for m in list(re.finditer(re.escape(kw),s))[:3]:
+        print('==',kw,':',s[max(0,m.start()-200):m.start()+900].replace('\n',' '))
+        print()
+EOF
 ```
 
 ```
-2 ), consistent with previous studies showing that response outcomes gate behavioral strategies 27 , 28 .
-Specifically, following rewarded trials, there was a weak positive correlation between reward magnitude and trial initiation time, in contrast to the strong negative correlation we observed following unrewarded trials.
-We interpret the positive correlation as potentially reflecting micro-satiety effects.
-However, as these effects were weak, most of the variance in the trial initiation times were driven by those following unrewarded trials.
-To assess block effects across the population, we first z-scored each rat’s wait time on all catch trials and trial initiation time on all trials.
-For wait times, we computed the average z-scored wait time on catch trials offering 20 μL in high and low blocks for each rat, and compared across the population using a paired Wilcoxon sign-rank test.
-Similarly for trial initiation times, we averaged all z-scored trial initiation times for high and low blocks for each rat, and compared across the population using a paired Wilcoxon sign-rank test.
-To assess the effects of catch probability on wait times, we trained cohorts of rats with different catch probabilities.
-The cohorts varied in size: N = [3, 183, 61, 151, 39] for catch probability = [0.1, 0.15, 0.2, 0.25, 0.35], respectively.
-Block transition dynamics To examine behavioral dynamics around block transitions, for each rat, we first z-scored wait times for catch trials of each volume separately in order to control for reward volume effects.
-We then computed the difference in z-scored wait times for each volume, relative to the average z-scored wait time for that volume, in each time bin (trial relative to block transition), before averaging the differences over all volumes (Δ z-scored wait time).
-For trial initiation times, we z-scored all trial initiation times.
-In order to remove satiety effects, for each session individually, we regressed trial initiation time against z-sc
-[... 48 more lines not kept]
+== Trial history effects :  -values for the observed differences in parameters: the area under this distribution evaluated at the actual difference of parameter values (between high and low λ rats) was treated as the p -value. Trial history effects To assess wait time sensitivity to previous offers, we focused on 20 μL catch trials in mixed blocks only. We z-scored the wait times of these trials separately. Next, we averaged wait times depending on whether the previous offer was greater than or less than 20 μL. For trial initiation times, we used all 20 μL trials in mixed blocks. We averaged z-scored trial initiation times depending on whether the previous offer was greater or less than 20 μL. For both wait time and trial initiation time, we defined the sensitivity to previous offers as the difference between average wait time (trial initiation time) for trials with a previous offer less than 20 μL and trials with a previous offer greater than 20 μL. We compared wait time and trial initiation time sensitivity to previous offers across rats using a paired Wilcoxon signed-rank test. To capture longer timescale s
+
+== reduced the uncertainty : ve because the rats’ subjective beliefs about the inferred state have more uncertainty before they hear the reward offer. Model simulations of a Bayes’ optimal observer did show that the reward offer reduced the uncertainty of subjective beliefs about the hidden state (comparing variance of prior to variance of posterior, p ≪ 0.001, Wilcoxon sign-rank test). To test this hypothesis, we modified the task for a randomly selected subset of rats in which the reward cue was presented before they initiated the trial, when the center light turned on; they heard the tone again at trial initiation, as in the standard task (Fig. 5a ). Their trial initiation times became sensitive to the offered reward (Fig. 5b ). However, trial initiation times for 20μL in mixed blocks were still modulated by the previous reward, consistent with the use of 
+[... 10 more lines not kept]
 ```
-
-**Agent**
-
-Notebook and helper read. Now checking the archive metadata for the blocked Fig. 4 claims, and testing helper functions on synthetic data.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/001169/versions/0.260825.1909/ -o meta.json; python3 -c "
-import json;d=json.load(open('meta.json'))
-print(d.get('name'));print(d.get('description')[:3000]);print(json.dumps(d.get('assetsSummary'),indent=0)[:1500])
-for k in ['keywords','protocol','wasGeneratedBy','relatedResource']:
-  print(k, json.dumps(d.get(k))[:1500])
-"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/001169/versions/0.260825.1909/assets/?page_size=5&glob=sub-M045*" -o a.json; python3 -c "
-import json;d=json.load(open('a.json'));print(d['count']);a=d['results'][0];print(a)
-" ; AID=$(python3 -c "import json;print(json.load(open('$TMPDIR/a.json'))['results'][0]['asset_id'])"); curl -s "https://api.dandiarchive.org/api/assets/$AID/" | python3 -c "
-import json,sys;d=json.load(sys.stdin)
-for k in ['wasGeneratedBy','wasAttributedTo','variableMeasured','description']: print(k, json.dumps(d.get(k))[:2500])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  python3 -c "
-import numpy as np, mah2023 as m
+cd  python3 - <<'EOF'
+import numpy as np, mah2023 as M
 rng=np.random.default_rng(0)
 x=np.arange(1,10)
-for D,t in [(-0.03,2.0),(-0.05,0.7),(-0.02,6)]:
-  y=D*np.exp(-x/t)+rng.normal(0,1e-4,9)
-  print('fit',D,t,m.fit_exp_decay(x,y,[-10,0],[0,10]))
-print('zeros', m.fit_exp_decay(x,np.zeros(9),[-10,0],[10,10]))
-# wait-time shuffled bounds with current coef
-y=10*np.r_[0.21,np.zeros(9)]
-print('wt shuffle bounds', m.fit_exp_decay(np.arange(1,11),y,[-3,0],[1,50]), 'obs bounds', m.fit_exp_decay(np.arange(1,11),y/10,[-10,0],[1,10]))
-b=np.array([.5,.4,.01,.3,0.2,1.]);ci=np.c_[b-.1,b+.1];ci[2]=[-.1,.1]
-print('zero', m.zero_after_first_ns(b,ci))
-print('smooth', m.matlab_smooth(np.arange(10.),10), )
-# lognormal
-mu=np.full(200000,2.0); z=m.lognormal_noise(mu,4,rng); print('lognorm mean var',z.mean(),z.var())
-# transition codes
-blk=np.r_[[1]*45,[2]*40,[1]*40,[3]*40,[1]*40]; d=dict(block=blk,first=np.r_[True,np.zeros(len(blk)-1,bool)],trial=np.arange(len(blk)))
-c=m.transition_codes(d); print({int(i):int(c[i]) for i in np.flatnonzero(c)})
-"
+Y=np.array([-0.3*np.exp(-x/2.5), 2*np.exp(-x/0.7), np.zeros(9)])
+print(M.fit_exp_decay(x,Y,(-10,0),(10,10)))
+xs=np.arange(-20,21)
+Y=np.array([M.logistic4(xs,-0.2,0.3,0.73,2.3), M.logistic4(xs,0.1,-0.2,-1.37,-4.2)])
+print(M.fit_logistic(xs,Y))
+# tie frequency in grid logistic differences under noise
+Yn=M.logistic4(xs,-0.1,0.1,0.5,0)[None]+rng.normal(0,0.03,(1000,41))
+P=M.fit_logistic(xs,Yn)
+d=P[:500,2]-P[500:,2]
+print("share of shuffle C diffs exactly equal to |1.0|:",np.mean(np.isclose(np.abs(d),1.0)), "distinct values", len(np.unique(np.round(d,6))))
+print("share at C grid edge +-8:", np.mean(np.abs(P[:,2])>=7.99))
+# belief filter: prior/post var
+pr,po=M.infer_blocks(rng.integers(0,5,2000), np.r_[True,np.zeros(1999,bool)])
+print(np.nanmean(np.var(pr,1)),np.nanmean(np.var(po,1)))
+EOF
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import numpy as np, mah2023 as m
+  File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls ~/.venv* /opt 2>/dev/null | head; which -a python3 python; pip list 2>/dev/null | grep -i -E "numpy|scipy" ; uv --version 2>/dev/null
+cd  ls; which -a python3 python; ls ~/.venv* /opt 2>/dev/null | head; pip --version 2>&1 | head -1; uv --version 2>&1|head -1
 ```
 
 ```
-/opt:
-actionarchivecache
-az
-containerd
-google
-hca
-hostedtoolcache
-microsoft
-pipelinesagent-cache
-pipx
+bunfig.toml
+mah-2023.yaml
+mah2023.py
+models_mah_2023.ipynb
+node_modules
+package-lock.json
+package.json
+paper
+pnpm-lock.yaml
+reproduce_mah_2023.ipynb
+scripts
+yarn.lock
 /opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
 /usr/bin/python3
 /bin/python3
@@ -339,180 +369,153 @@ pipx
 /opt/hostedtoolcache/Python/3.13.18/x64/python
 /usr/bin/python
 /bin/python
-uv 0.13.7 (x86_64-unknown-linux-gnu)
+/opt:
+[... 11 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q v && uv pip install -q -p v/bin/python numpy scipy pandas h5py requests 2>&1 | tail -2; v/bin/python -c "import numpy,scipy;print(numpy.__version__,scipy.__version__)"
+cd  for p in /usr/bin/python3; do $p -c "import numpy, scipy, pandas; print('$p ok')" 2>&1|tail -1; done; uv venv -q $TMPDIR/v && VIRTUAL_ENV=$TMPDIR/v uv pip install -q numpy scipy pandas numba h5py 2>&1 | tail -2; $TMPDIR/v/bin/python -c "import numpy,numba;print('ok')"
 ```
 
 ```
-2.5.4 1.18.1
-Shell cwd was reset to
+ModuleNotFoundError: No module named 'numpy'
+ok
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  $TMPDIR/v/bin/python -c "
-import numpy as np, mah2023 as m
+cd  $TMPDIR/v/bin/python - <<'EOF'
+import numpy as np, mah2023 as M
 rng=np.random.default_rng(0)
 x=np.arange(1,10)
-for D,t in [(-0.03,2.0),(-0.05,0.7),(-0.02,6)]:
-  y=D*np.exp(-x/t)+rng.normal(0,1e-4,9)
-  print('fit',D,t,m.fit_exp_decay(x,y,[-10,0],[0,10]))
-print('zeros', m.fit_exp_decay(x,np.zeros(9),[-10,0],[10,10]))
-y=10*np.r_[0.21,np.zeros(9)]
-print('wt shuffle bounds', m.fit_exp_decay(np.arange(1,11),y,[-3,0],[1,50]), 'obs bounds', m.fit_exp_decay(np.arange(1,11),y/10,[-10,0],[1,10]))
-b=np.array([.5,.4,.01,.3,0.2,1.]);ci=np.c_[b-.1,b+.1];ci[2]=[-.1,.1]
-print('zero', m.zero_after_first_ns(b,ci))
-print('smooth', m.matlab_smooth(np.arange(10.)**2,10))
-mu=np.full(200000,2.0); z=m.lognormal_noise(mu,4,rng); print('lognorm mean var',z.mean(),z.var())
-blk=np.r_[[1]*45,[2]*40,[1]*40,[3]*40,[1]*40]; d=dict(block=blk,first=np.r_[True,np.zeros(len(blk)-1,bool)],trial=np.arange(len(blk)))
-c=m.transition_codes(d); print({int(i):int(c[i]) for i in np.flatnonzero(c)})
-# overshoot bias of pure noise curve
-OFF=np.arange(-20,21); ov=[]
-for _ in range(2000):
-  h=m.matlab_smooth(rng.normal(0,0.05,41),15); ov.append(h[(OFF>=1)&(OFF<=20)].max()-h[OFF==20][0])
-print('overshoot of flat noisy curve: mean',np.mean(ov),'share>0',np.mean(np.array(ov)>0))
-"
+Y=np.array([-0.3*np.exp(-x/2.5), 2*np.exp(-x/0.7), np.zeros(9)])
+print(M.fit_exp_decay(x,Y,(-10,0),(10,10)))
+xs=np.arange(-20,21)
+Y=np.array([M.logistic4(xs,-0.2,0.3,0.73,2.3), M.logistic4(xs,0.1,-0.2,-1.37,-4.2)])
+print(M.fit_logistic(xs,Y))
+Yn=M.logistic4(xs,-0.1,0.1,0.5,0)[None]+rng.normal(0,0.03,(1000,41))
+P=M.fit_logistic(xs,Yn)
+for j,nm in [(2,'C'),(3,'x0')]:
+    d=np.abs(P[:500,j]-P[500:,j])
+    vals,c=np.unique(np.round(d,6),return_counts=True)
+    print(nm,"distinct |diff| values",len(vals),"max share of a single value",c.max()/500)
+print("share at C grid edge +-8:", np.mean(np.abs(P[:,2])>=7.99))
+pr,po=M.infer_blocks(rng.integers(0,5,2000), np.r_[True,np.zeros(1999,bool)])
+print("prob-vector var prior/post",np.nanmean(np.var(pr,1)),np.nanmean(np.var(po,1)))
+EOF
 ```
 
 ```
-fit -0.03 2.0 [-0.03007412  1.99078074]
-fit -0.05 0.7 [-0.04952723  0.70974041]
-fit -0.02 6 [-0.01990709  6.01312765]
-zeros [0.00000000e+00 1.01574588e-06]
-wt shuffle bounds [1.         2.42830601] obs bounds [1.         0.61060679]
-zero [0.5 0.4 0.  0.  0.  1. ]
-smooth [ 0.          1.66666667  6.         13.         22.66666667 31.66666667
- 40.         51.         64.66666667 81.        ]
-lognorm mean var 2.001630932847073 4.0297808849536025
-{45: 1, 85: -1, 125: 2, 165: -2}
-overshoot of flat noisy curve: mean 0.030081001266968874 share>0 0.663
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n -i "learning rate\|alpha 0\|α 0\|retrospective model\|unsigned\|initial value" $TMPDIR/sent.txt | cut -c1-900 | head -30
-```
-
-```
-14:Moreover, value estimates interacted via a dynamic learning rate.
-149:g Example opportunity cost and wait time dynamics from low (blue) or high (red) blocks to mixed block from retrospective model.
-150:h Retrospective model can qualitatively capture trial initiation time behavior in low (blue) and high (red) blocks.
-151:i Retrospective model captures conditional trial initiation time trend across rats ( N = 291 fits).
-152:j Model comparison using Δ BIC prefers inferential model compared to retrospective model when fit to wait time data ( p = 1.07 × 10 −37 , two-tailed Wilcoxon Signed-rank test, N = 291).
-173:A static learning rate was unable to capture the rats’ behavior (Supplementary Fig.
-175:Previous work has shown that animals adjust their learning rates depending on the volatility in the environment, since it is advantageous to learn faster in dynamic environments 36 – 38 .
-176:Therefore, our model scaled the learning rate by the trial-by-trial change in the inferential model’s beliefs about the hidden state (derivative of the posterior, see “Methods”).
-177:The retrospective model captured several key features of rats’ trial initiation times, which we modeled as inversely proportional to the value of the environment 2 (Fig.
-179:First, with a sufficiently small learning rate ( < 0.1, Fig.
-181:Second, the dynamic learning rate captured the rapid behavioral dynamics at block transitions.
-185:We explored versions of the dynamic learning rate that did not reflect inference, including using the unsigned reward prediction error or a running average of reward prediction errors 38 .
-189:In other words, while trial initiation and wait times reflect distinct value computations, those computations interact when states are uncertain via a dynamic learning rate.
-236:The modest increase in trial initiation time block sensitivity over training is consistent with the gradual use of a dynamic learning rate that reflected learned knowledge of the blocks.
-237:A hallmark of the 
-[... 15 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -c "^- id:" mah-2023.yaml; grep -n -i "subset of rats\|further 16" mah-2023.yaml $TMPDIR/sent.txt | cut -c1-200
-```
-
-```
-33
-mah-2023.yaml:41:# rats for 0.1, 0.15, 0.2, 0.25 and 0.35. A further 16 rats ran a pre-initiation cue task (Fig. 5;
-mah-2023.yaml:811:    initiation time, we ran a subset of rats on a variation of the task where we cued reward offer
-/tmp/claude-1001/sent.txt:249:To test this hypothesis, we modified the task for a randomly selected subset of rats in which the reward cue was presented before they initiated the trial, when the cente
-/tmp/claude-1001/sent.txt:421:Including H 0 as an additional free parameter did not improve the performance of the wait time model evaluated on held-out test data in a subset of rats, so H 0 was treat
-/tmp/claude-1001/sent.txt:524:Pre-initiation cue task To modulate the subjective uncertainty in the rat’s estimate of state (block) before trial initiation time, we ran a subset of rats on a variation
+(array([-0.29994529,  2.00224421,  0.        ]), array([2.50063016, 0.69948237, 0.01      ]))
+[[ 0.30369768 -0.19854606 -0.7         2.5       ]
+ [-0.19790987  0.1010414   1.4        -4.        ]]
+C distinct |diff| values 27 max share of a single value 0.168
+x0 distinct |diff| values 7 max share of a single value 0.418
+share at C grid edge +-8: 0.001
+prob-vector var prior/post 0.1543380295998782 0.16585461001340734
 ```
 
 **Agent**
 
-**Verification report, round 1: Mah et al. 2023 on DANDI:001169 (0.260825.1909)**
+Finding: the logistic fit in the helper can't tell the sign of the slope apart, which undermines the fig3l test. Checking how often it flips.
 
-The claims file has 33 claims (32 from the paper plus the link claim). The notebook tests 25 and blocks 8.
+**Agent calls Bash**
 
-### A. Outcomes
+```bash
+cd  $TMPDIR/v/bin/python - <<'EOF'
+import numpy as np, mah2023 as M
+rng=np.random.default_rng(1)
+xs=np.arange(-20,21)
+for C in [0.3,0.5,1.0]:
+    Yn=M.logistic4(xs,-0.1,0.1,C,0)[None]+rng.normal(0,0.02,(400,41))
+    P=M.fit_logistic(xs,Yn)
+    print(f"true C {C}: share fitted C<0 {np.mean(P[:,2]<0):.2f}; share 'D' (right asymptote param) < A {np.mean(P[:,1]<P[:,0]):.2f}")
+EOF
+```
 
-| claim | my outcome | reason |
+```
+true C 0.3: share fitted C<0 0.60; share 'D' (right asymptote param) < A 0.60
+true C 0.5: share fitted C<0 0.65; share 'D' (right asymptote param) < A 0.65
+true C 1.0: share fitted C<0 0.57; share 'D' (right asymptote param) < A 0.57
+```
+
+**Agent**
+
+Confirmed: for a rising curve the fit returns a negative slope with the asymptotes swapped about 60% of the time. Now a quick archive check for the Figure 4 data question.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/001169/versions/0.261120.1450/info/" | $TMPDIR/v/bin/python -c "import json,sys;d=json.load(sys.stdin);m=d['metadata'];print(d['asset_count'],m['assetsSummary'].get('numberOfSubjects'),m['assetsSummary'].get('numberOfFiles'));print(m.get('description','')[:300])"; curl -s "https://api.dandiarchive.org/api/dandisets/001169/versions/" | $TMPDIR/v/bin/python -c "import json,sys;print([v['version'] for v in json.load(sys.stdin)['results']])"
+```
+
+Result: the fetched text is not kept.
+
+**Agent**
+
+## A. Outcomes (33 claims in the claims file; the notebooks test all 33 and mark none as blocked)
+
+| Claim | Outcome | Reason |
 |---|---|---|
-| cohort-size | reproduced | Cell 13 finds 291 rats, a median of 33,493 trials and 71 sessions, all exact. |
-| fig1e-wait-time-increases-with-reward | reproduced | Cell 15: the mixed-block means are 10.45, 10.77, 11.11, 13.03 and 13.81 s, rising at every step. |
-| fig1f-wait-time-block-effect | reproduced | Cell 17: the mean ratio is 0.894 (0.90 ± 0.025 expected). The signed-rank p is 4.6e-47 z-scored and 8.2e-47 raw. 244 rats have per-rat p < 0.05. |
-| fig1i-initiation-block-effect | reproduced | Cell 19: the mean ratio is 0.56. p is 1.82e-49 z-scored and 1.84e-49 raw (paper 1.82e-49). |
-| suppfig2-initiation-block-effect-after-unrewarded | reproduced | Cell 21: after unrewarded trials p is 1.8e-49 two-tailed and 9.0e-50 one-tailed, faster in high blocks for 291 of 291 rats. After rewarded trials the one-tailed p is 1. The two-tailed p (3.9e-9) points the opposite way (high slower), which the criterion allows. The paper's p = 1 fits the code's one-tailed test. |
-| suppfig3-wait-time-not-affected-by-previous-outcome | reproduced | Cell 23: the ratios are 0.899 after rewarded and 0.897 after unrewarded trials, both below 1. The difference test gives p = 0.64. |
-| fig2a-wait-time-converges-in-mixed-blocks | reproduced | Cell 25: the relative gap is 0.33 (1..20) and 0.08 (10..20) for wait times, against 2.0 to 2.4 for initiation times under both detrend readings. Part (2) gives p = 1.8e-49 with 291 of 291 rats higher after high blocks, on concatenated and within-session readings. |
-| suppfig5-mixed-to-adaptation-transitions | reproduced | Cell 27: the pre-transition initiation gap is +0.062 (pooled) and +0.049 (per session). The relative gap is 0.134 for wait times against 0.244 and 0.204 for initiation times. |
-| fig2c-d-regression-on-previous-rewards | reproduced | Cell 29: the current-offer wait time coefficient is 0.211, CI [0.204, 0.218], larger than any previous coefficient. Initiation lags 1 to 3 are negative and shrink, under 9 and 10 lags, zeroed and raw. |
-| fig2e-tau-differ | reproduced | Cell 31: p = 1.7e-45 (Methods) and 2.3e-44 (code). Mean tau is 2.06 for initiation times against 0.07 for wait times. |
-| fig2f-tau-uncorrelated | reproduced | Cell 33: r = −0.032, p = 0.59 (Methods) and r = +0.023, p = 0.69 (code). Both p ≥ 0.05; the first is close to the legend's r = −0.03. |
-| fig2g-h-fast-slow-tau-groups | reproduced, with a caveat | Cell 35: initiation p = 0.000 and wait time p = 0.151 or 0.214, with N = 116. The wait-time part is an absence claim resting on a test whose null is fitted under a different D bound than the observed fit (problem 3). |
-| fig2j-wait-time-not-sensitive-to-previous-offer | reproduced | Cell 37: 38 of 291 rats have p < 0.05 (38 ± 4 expected). The population rank-sum gives p = 0.71. |
-| fig2k-initiation-sensitive-to-previous-offer | reproduced | Cell 39: the code reading gives 255 rats, all slower after smaller offers, p = 9e-97 (rank-sum) and 1.8e-49 (signed-rank). The Methods reading gives 265 rats, p ≤ 1e-24. Under that reading only 202 of the 265 are in the claimed direction (see problem 7). |
-| fig2l-sensitivity-greater-for-initiation | reproduced | Cell 41: p = 6.09e-38 (code; paper 6.21e-38) and 2.2e-8 (Methods). Initiation time sensitivity exceeds wait time sensitivity under both. |
-| suppfig6-results-without-detrending | reproduced | Cell 43: without detrending the post-high mean is +0.147 and the post-low mean −0.109, with 291 of 291 rats ordered. Part (2) is computed without detrending. |
-| fig3c-wait-time-by-catch-probability | reproduced | Cell 45: cohorts are 3, 188, 61, 151 and 40 rats, all within tolerance. Wait times fall from 0.15 to 0.2 to 0.25 at 5 of 5 offers. |
-| fig3i-retrospective-model-captures-initiation | partially_reproduced | Cell 47: the Equation 10 model shows both an overshoot and a gap, and in cell 48 the model is higher after smaller offers in 290 of 291 rats. The alternatives do not lack one feature at every alpha_0: vanilla at 0.8 and RPE at 0.4 and 0.8 show both. Even without noise, RPE at 0.4 shows both (+0.074 and +0.025). |
-| bayes-observer-offer-reduces-uncertainty | reproduced | Cell 50: the posterior is less uncertain in 291 of 291 rats under both variance readings and both transition matrices, with p = 1.8e-49 across rats. The test over trials is run for J004 only (p ≤ 5e-257). |
-| suppfig12-no-sex-differences | reproduced | Cell 52: 184 males and 107 females. p = 0.238 (wait time ratio) and 0.557 (initiation ratio); the paper gives 0.23 and 0.59. |
-| suppfig14-contextual-effects-without-threshold | reproduced | Cell 54: unthresholded, p = 1.0e-43, and the unthresholded mean is longer in all 11 offer-block cells. |
-| fig3j-inferential-beats-retrospective-for-wait-times | blocked (too_large, overstated; also methods_underspecified) | Cell 64 estimates 162 h. That figure rests on a pure-Python per-trial loop and an assumed 200 evaluations per start (problem 5). The fitting code, free parameters and folds are not in the paper's repository. |
-| suppfig8-belief-state-not-distinguished | blocked (too_large / methods_underspecified) | Needs the fits of fig3j. |
-| fig3f-inferential-model-not-sensitive-to-previous-offer | blocked, but partly testable | It needs only the inferential fit on all data. By cell 64's own timing that is about 0.4 h, within the 1 h limit. |
-| suppfig9-wait-times-reflect-misinferences | blocked (too_large / methods_underspecified) | Needs cross-validated inferential fits, about 2.3 h by cell 64's own timing; the folds are unspecified. |
-| fig3l-lambda-groups-wait-time-dynamics | blocked (too_large / methods_underspecified) | Needs a fit of the sub-optimal model. For that model the belief depends on lambda, so cell 64 understates its cost. |
-| fig4a-wait-time-block-sensitivity-emerges | blocked (data_missing) | Confirmed on the archive: the dandiset's `relatedResource` says it IsDerivedFrom Zenodo 10031483, the A structs, which hold only included sessions. Cell 8 finds a positive slope in 87% of sessions. A partial run on the included sessions was possible but not attempted. |
-| fig4c-initiation-previous-reward-stable | blocked (data_missing) | Same as fig4a. |
-| fig4d-overshoot-grows-with-training | blocked (data_missing) | Same as fig4a. Comparing the first and last 10 included sessions was possible as a stated deviation. |
-| fig5b-pre-cue-initiation-sensitive-to-offer | reproduced | Cell 58: the pre-cue means fall at every step under both readings. 14 of 16 rats (date) and 11 of 11 (after 30 sessions) reach ANOVA p < 0.05, against 0 of 12 on the original task. |
-| fig5c-pre-cue-initiation-still-sensitive-to-previous-reward | partially_reproduced | Cell 60, code reading by date: 13 of 16 rats, p = 1.9e-6, which passes. Methods reading (20 uL trials, as the Fig. 5c legend says): 14 of 16 rats but rank-sum p = 0.068 by date and 0.47 after 30 sessions, which fails. The after-30-session reading has only 11 rats, so the count cannot reach 13 ± 1. |
-| fig5d-pre-cue-initiation-depends-on-previous-block | reproduced | Cell 62: higher after high blocks in every rat under all 4 readings, p = 3e-5 (date) and 1e-3 (after 30 sessions). |
-| pre-cue-session-link | partially_reproduced | Cell 56 links 14 of 16 rats; S042 (p = 0.15) and S050 (p = 0.60) are not. The rule was written after a first look at the same check. |
+| cohort-size | reproduced | 291 rats, median 33,493 trials and 71 sessions per rat (cell 7), exact. |
+| fig1e-wait-time-increases-with-reward | reproduced | Population means are 10.45, 10.77, 11.11, 13.03 and 13.81 s, rising at every step (cell 9). |
+| fig1f-wait-time-block-effect | reproduced | Mean ratio 0.894, inside 0.90 ± 0.025. Signed-rank p = 4.6e-47 (z-scored) and 8.2e-47 (raw) (cell 11). |
+| fig1i-initiation-block-effect | reproduced | Mean ratio 0.568. p = 1.8e-49 under both readings (cell 13). |
+| suppfig2-initiation-block-effect-after-unrewarded | reproduced | After unrewarded trials: one-tailed p = 9.02e-50 (paper 9.07e-50), high faster. After rewarded trials the one-tailed p = 1. The two-tailed p of 8.45e-10 there points the opposite way (high slower), so the claimed direction is not reached (cell 15). |
+| suppfig3-wait-time-not-affected-by-previous-outcome | reproduced | Mean ratios 0.899 after rewarded and 0.897 after unrewarded, both below 1 (cell 17). |
+| fig2a-wait-time-converges-in-mixed-blocks | reproduced | Part 1 holds under all 4 combinations (wait-time gap 0.34 or 0.09 against initiation 1.9 to 2.5). Part 2 p = 1.8e-49 (cell 23). |
+| suppfig5-mixed-to-adaptation-transitions | reproduced | Initiation curve before low minus before high = +0.046 and +0.059. Wait-time ratio 0.125 against initiation 0.197 and 0.239 (cell 25). |
+| fig2c-d-regression-on-previous-rewards | reproduced | Current-offer wait coefficient 0.212 (CI 0.205 to 0.219), larger than every previous coefficient (largest 0.013). Initiation coefficients at lags 1 to 3 are negative and shrink, for 9 and 10 lags (cell 29). |
+| fig2e-tau-differ | reproduced | Methods reading: tau 1.875 (initiation) against 0.065 (wait), p = 3.5e-45. Code reading: p = 2.7e-35 (cell 31). |
+| fig2f-tau-uncorrelated | reproduced | Methods reading r = -0.037, p = 0.535, which matches the legend's r = -0.03, p = 0.53. Code reading r = 0.111, p = 0.059. Both have p ≥ 0.05 (cell 33). |
+| fig2g-h-fast-slow-tau-groups | reproduced | Initiation p = 0.000 and wait time p = 0.20 to 0.39 under all seeds and both readings; 58 + 58 = 116 rats (cell 35). |
+| fig2j-wait-time-not-sensitive-to-previous-offer | reproduced | 38 rats significant (expected 38 ± 4). Population rank-sum p = 0.575 (cell 37). |
+| fig2k-initiation-sensitive-to-previous-offer | partially_reproduced | Code reading (all mixed trials) passes: 256 rats, p = 9.9e-97, slower after small offers. Methods reading (20 µL trials, the Methods' own wording) fails: 276 rats are significant but only 17 in the claimed direction, and the population is faster after small offers (-0.161 against -0.094) (cell 39). |
+| fig2l-sensitivity-greater-for-initiation | partially_reproduced | Code reading passes: +0.239 against -0.009, p = 1.6e-36. Methods reading fails: initiation sensitivity -0.067 is below the wait time value of -0.009 (cell 41). |
+| suppfig6-results-without-detrending | reproduced | Ordering +0.246 and part 2 p = 1.8e-49 without detrending (cell 27). |
+| fig3c-wait-time-by-catch-probability | reproduced | Reading A cohorts 3, 188, 61, 151 and 40, all within tolerance; 5 of 5 offers decrease from 0.15 to 0.25 (cell 43). Reading B's counts miss, but the paper's counts sum to 437 rats, so reading A is the right one. |
+| fig3j-inferential-beats-retrospective-for-wait-times | reproduced | BIC, AIC and cross-validated nLL all give p ≤ 5.6e-44, with the inferential model better under all 5 seeds (models notebook, cell 10). |
+| suppfig8-belief-state-not-distinguished | reproduced (fragile) | Claim's seed: p = 0.163, 0.163 and 0.569. At seed +3000, BIC and AIC give p = 0.0305, so the result depends on fit noise (models notebook, cell 12). |
+| fig3f-inferential-model-not-sensitive-to-previous-offer | not_reproduced | Model sensitivity +0.048 with rank-sum p = 3.8e-5 at the claim's seed; p < 0.05 in 4 of 5 draws. The rats' own value is -0.009, p = 0.575 (models notebook, cell 14). |
+| suppfig9-wait-times-reflect-misinferences | reproduced | 10.85 s labelled high against 11.90 s labelled low, p = 9.7e-23 (models notebook, cell 16). |
+| fig3l-lambda-groups-wait-time-dynamics | partially_reproduced (provisional) | 20/80 split: wait time mixed-to-low slope p = 0.009; mixed-to-high slope p = 0.026 passes the Results reading, but right asymptote p = 0.12 fails the legend reading; initiation all p ≥ 0.10. 40/60 split: wait time mixed-to-low slope p = 0.39 fails. The fit behind every one of these p-values is flawed (problem 1), so none should be relied on. |
+| fig3i-retrospective-model-captures-initiation | partially_reproduced | The Equation 10 model shows both the overshoot (+0.20) and the gap (+1.40), and the Fig. 3i dependence on previous rewards holds (p ≤ 8e-16). The static and |δ| alternatives at α0 = 0.4 and 0.8 also show both features (overshoot +0.0002 to +0.006, gap about +0.1), so the "each alternative lacks one" rule fails (models notebook, cell 18). |
+| bayes-observer-offer-reduces-uncertainty | reproduced | Reading (ii), variance of block value: 0.104 prior against 0.082 posterior, p = 1.8e-49, and 291 of 291 rats p < 0.001. Reading (i) passes only because the notebook reads a larger variance of the probability vector as "less uncertain" (problem 6). |
+| fig4a-wait-time-block-sensitivity-emerges | partially_reproduced | Run on the Zenodo deposit, not the dandiset. (1) First-pair initiation ratio 0.80, p = 5.8e-16, holds. (3) Block coefficient grows from -0.43 to -0.71, holds. (2) First-pair wait ratio 1.187 sits farther from 1 (0.187) than pairs 16 to 25 (0.064), so it fails (cell 58). |
+| fig4c-initiation-previous-reward-stable | reproduced | Zenodo data. Same sign (-0.588 and -0.469); relative change 0.25 against 0.39 for the block coefficient (cell 60). |
+| fig4d-overshoot-grows-with-training | reproduced | Zenodo data. Overshoot 0.025 in the first 10 sessions, 0.046 in the last 10 (cell 62). |
+| pre-cue-session-link | partially_reproduced | 14 of 16 rats linked; S042 and S050 fail (ANOVA p = 0.15 and 0.60) (cell 47). |
+| fig5b-pre-cue-initiation-sensitive-to-offer | partially_reproduced | Reading b (Figure5.m dates) passes: monotonic, 14 rats with ANOVA p < 0.05 against 0. Reading a (Methods' 30-session offset, 11 rats) fails monotonicity at 5 to 10 µL (0.016 to 0.024) (cell 49). |
+| fig5c-pre-cue-initiation-still-sensitive-to-previous-reward | partially_reproduced | Only sessions b with all mixed trials passes: 12 of 16 rats, p = 4.7e-6, right direction. The 20 µL readings have p = 0.34 and 0.39, wrong direction. Sessions a with all trials gives 9 of 11 rats, outside 13 ± 1 (cell 51). |
+| fig5d-pre-cue-initiation-depends-on-previous-block | reproduced | Higher after high blocks in 16 of 16 rats, p = 3e-5 (sessions b) and 1e-3 (sessions a) (cell 53). |
+| suppfig12-no-sex-differences | reproduced | p = 0.238 and 0.343; 184 males and 107 females (cell 19). |
+| suppfig14-contextual-effects-without-threshold | reproduced | p = 1.5e-44 unthresholded; the unthresholded mean is longer in 11 of 11 offer-block cells (cell 21). |
 
-### B. Problems
+Tally: 21 reproduced (one fragile), 11 partially_reproduced (fig3l provisional), 1 not_reproduced, 0 blocked. No claim states a chance level.
 
-1. **[affects a conclusion]** fig3i, cell 47. "Overshoot" is the maximum of a noisy, smoothed curve over trials 1..20 minus its value at trial 20. That measure is positive even on a flat noisy curve. On synthetic flat noise with 15-point smoothing it averaged +0.03 and was positive 66% of the time, the same size as the alternatives' "overshoots" (0.02 to 0.08). It also exceeds the Equation 10 model's own value at noise 8 (+0.016). The "both present" test has no threshold, so gaps of +0.004 or +0.012 count as present. As run, the test cannot separate the models; under the criterion as written the alternatives still fail.
-2. **[affects a conclusion]** fig5c, cell 60. The Fig. 5c legend analyses 20 uL trials, which is the Methods reading, and under that reading the population test fails. On the pre-cue task the code reading (all mixed-block trials) is confounded: post-violation trials repeat the previous offer (Methods, Pre-initiation cue task), and on this task the current cued offer drives initiation time. The notebook reports both readings but does not mention this confound.
-3. **[may affect a conclusion]** fig2g-h, `tau_shuffle_test` with `BW = b_wt`. The wait-time coefficients include the current offer, about 0.21. In the shuffled fits that becomes 2.1 after the ×10 scaling, against a D bound of 1; the observed fits are not scaled. On a synthetic test the same vector gives tau 2.43 under the shuffle bounds and 0.61 under the observed bounds. The null is therefore not on the observed scale, which pushes p towards absence. The Methods reading (previous 9 coefficients only) was not run for the test; the Methods taus were used only to form the groups.
-4. **[does not affect a conclusion]** Claims file header, misreading. It says "A further 16 rats ran a pre-initiation cue task", but the paper says "a subset of rats" (Methods; Results). The dandiset's 291 rats include all 16, among them M045 to M048, who trained only on the pre-cue task. The exact match of the trial and session medians suggests the paper's 291 included them too. As a result, the Fig. 1 and Fig. 2 analyses include pre-cue sessions; 16 of 291 rats cannot change those outcomes.
-5. **[affects the blocked status]** Cell 64. The 155 h retrospective estimate times the Python loop in `retrospective_kappa` (8.7 ms per evaluation) and assumes 200 evaluations per start; a compiled loop would be orders of magnitude faster. The "inferential" evaluation timed there is an ad hoc formula, not the model. fig3f (inferential fit on all data, about 0.4 h by this cell's own numbers) and an inferential-only part of fig3j were feasible. The more defensible block reason is methods_underspecified.
-6. **[does not affect a conclusion]** Blocked Fig. 4 claims. A partial test on the included sessions was possible as a stated deviation and was not run.
-7. **[does not affect a conclusion]** fig2k, Methods reading, cell 39. 63 of the 265 significant rats are significant in the opposite direction, and only 202 are significant and slower, which is below 256 − 26. The paper's wording ("significantly modulated") is non-directional, so the criterion passes.
-8. **[does not affect a conclusion]** `regress_wt` and `regress_iti` use the raw female volumes (log2 of 4, 8, 16…), citing the code. The claims file's common method says to use male volumes. This is only a shift of log2(0.8), but it does not cancel in `regress_iti`, where unrewarded trials are 0.
-9. **[does not affect a conclusion]** Smaller points, none of which can move a conclusion:
-   - In `wt_by_previous` and `iti_by_previous`, `prev_vol` crosses session and block boundaries.
-   - `wt_dynamics` windows cross sessions, while `lat_dynamics` windows do not.
-   - `wt_by_pcatch` uses catch trials without the opt-out filter.
-   - The bayes test over trials is run for J004 only, not pooled over rats.
-10. **[does not affect a conclusion]** fig5b is not independent of pre-cue-session-link: the link is validated with the same ANOVA that fig5b then reports. The dates do come from Figure5.m, not from the data.
+## B. Problems
 
-Helper checks on synthetic inputs:
-- `fit_exp_decay` recovers tau of 0.7, 2 and 6 accurately.
-- `zero_after_first_ns` behaves as specified.
-- `transition_codes` gives the right codes and positions.
-- `lognormal_noise` gives the right mean and variance.
-- `matlab_smooth` shrinks its window at the ends, like MATLAB's `smooth`.
+1. [affects a conclusion] `mah2023.fit_logistic`, used by the models notebook cell 21 (fig3l). The grid allows C < 0, and A + (D−A)/(1+e^{−C(x−x0)}) is the same curve with A and D swapped and C negated. In synthetic tests, a rising logistic came back with C < 0 and A/D swapped in 57 to 65% of fits. So "C" and "D (right asymptote)" do not mean the same thing across groups or shuffles. The grid steps (C 0.1, x0 0.5) also cause ties, and ties are not counted by the strict ">" in `lam_test`: up to 17% of shuffle |ΔC| and 42% of |Δx0| fell on a single value. The observed differences of exactly -1.000 and -1.900 fit this. Every fig3l p-value is unreliable.
+2. [affects a conclusion] fig2k cell 39, Methods reading. On the standard task the offer is unknown before initiation, so restricting to 20 µL trials should give the same result as all trials. Cell 49 supports this: initiation time does not depend on the current offer on the original task (0 of 12 rats). Yet the sign reverses for 276 rats, and the notebook leaves this unexplained. A likely cause is post-violation trials (41% of trials are violations), for example if the offer repeats after a violation. That was never checked. It decides the Methods readings of fig2k, fig2l and fig5c.
+3. [affects a conclusion] fig3i, models notebook cell 18. The overshoot test has no magnitude floor, so overshoots of +0.0002 to +0.006 (against +0.20 for the Equation 10 model) count as "present". This is the criterion's own rule, applied as written, but no noise level is reported to judge such values against. `simulate_iti` also replaces 50 log-normal simulations with a normal approximation.
+4. [affects a conclusion] Models notebook cell 8 (`fit_all`, nstarts=2) against the paper's 100 fmincon starts, with bounds chosen by the author. suppfig8's absence result flips at seed +3000 (p = 0.03). fig3f also depends on the fitted κ_high/κ_low gap, which sits at a bound in 2 to 8 rats.
+5. [affects a conclusion] Cells 55 to 62 (fig4a/c/d) use the Zenodo `A_Structs_all`, outside data. Sessions are taken "in file order" with no check that this order is chronological. The fig4a wait ratio is a mean of per-rat ratios over few 20 µL catch trials (244 rats in pair 1); no median is printed, so the value of 1.187 may be noise-inflated.
+6. [does not affect a conclusion] bayes, cell 45. Reading (i) reverses the claim's "posterior variance below prior variance"; the posterior variance of the probability vector is higher (0.169 against 0.157), and the notebook treats this as less uncertainty. Reading (ii) passes on its own.
+7. [does not affect a conclusion] fig3c, cell 43, drops each rat's first 1000 deposited trials. The per-trial `trials_in_stage` counter is loaded and would allow dropping the first 1000 stage 8 trials as Figure3.m does. A 0.3 cohort (8 rats) exists in the data but not in the paper.
+8. [does not affect a conclusion] `RatModel` builds the belief sequence from the thresholded `wait_time`, so opt-outs above threshold drop out of the inference sequence. It also uses one C per rat, although 149 rats ran at several catch probabilities.
+9. [does not affect a conclusion, claims-file issue reported per instructions] pre-cue-session-link. The statement says "nothing in the files marks" pre-cue sessions, but the `center_port_cue` task argument is True in exactly these 16 rats (cell 47). Pairing the first 16 of Figure5.m's 20 dates with the rats (the claims file's reading) leaves S042 and S050 with first flagged days of 2023-01-24 and 2023-02-01, close to dates 19 and 20 (2023-01-23 and 01-25). This suggests the pairing reading is wrong for these two rats, which are the two that fail the link. fig5b reading a counts its "30 sessions" over dated sessions, some unflagged, for example S042 with 25 dated and 13 flagged.
 
-### C. What I could not check
+## C. What I could not check
 
-- **Paper's MATLAB code.** Its scripts were not available to me. That leaves unverified the per-script D scalings (×25, ×10, ×15) and initial kappas, the 10-draw averaging for the vanilla model, and whether the retrospective model uses offered or received rewards. It also leaves open whether myTauShuffleTest includes the current wait-time coefficient and whether FigureS4 detrends.
-- **Notebook outputs that would have settled points above:**
-  - fig2g-h: the shuffle test on the previous-only wait-time coefficients, plus the share of shuffled wait-time fits that hit D = 1.
-  - fig3i: overshoot computed with a noise-only control, or on noise-free curves with an unsmoothed endpoint, and the full curves for each alternative.
-  - fig5c: the per-rat table under the Methods reading, and the code reading with post-violation trials removed.
-  - Blocked model claims: a timing of a vectorised or compiled retrospective evaluation, and an actual inferential-only fit for fig3f.
-  - fig4: the first session date in the dandiset against each rat's stage 8 start, to show directly that early sessions are missing.
-  - bayes: the test over trials pooled across all rats.
+- Whether offers repeat after violations, and how post-violation trials enter fig2k. Per-rat means for the Methods reading with post-violation trials excluded, plus the share of trials with vol(t) = vol(t−1) after violations, would settle problem 2.
+- fig3l under a fit constrained to C > 0 (or with A as left asymptote enforced) and continuous parameters. That output would give a usable verdict.
+- The chronological order of Zenodo sessions. Printing any date field in `A_Structs_all`, or matching its per-session trial counts to the dandiset's session dates, would confirm it. The fig4a first-pair wait ratio as a median and as a ratio of pooled means would also help.
+- A noise floor for the fig3i overshoot, such as the spread of overshoot across the 50 simulations or across seeds for the alternatives.
+- The archive: version 0.261120.1450 has 23,033 assets and 291 subjects, consistent with included sessions only (median 71 per rat against 95 in Zenodo). So fig4a/c/d could not be tested on the dandiset alone (data_missing); they rest on the Zenodo deposit. I did not download any files to confirm the `inter_trial_interval` alignment or the `center_port_cue` values.
 
 ## End of run
 
-18 turns, 5 minutes, $1.89 at API prices, result: success.
+17 turns, 5 minutes, $2.14 at API prices, result: success.

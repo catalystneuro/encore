@@ -1,21 +1,22 @@
-No outcome changed. The round-2 verifier agreed with all 22, and none needed a `proposed` change. The fixes below are corrections to the text and the record. I re-ran the entry twice with `python tools/entry.py all entries/000070-churchland-2012`; the check showed 0 errors, both runs passed, and the second run printed the same numbers as the first.
+No outcome changed. The verifier agreed with all 22, and I found nothing that called for a `proposed` change. The entry was re-run with `python tools/entry.py all entries/churchland-2012`. It passed in 19.5 minutes, every number is the same as before, and the checks report 0 errors.
 
-**Corrected**
-- **fig3-phase-from-prep-state (cell 34 and the record notes):** The verifier saw 0.614, 0.726 and 6 of 10 where the text said 0.615, 0.727 and 8 of 10. The text was not out of date. Both of my re-runs print 0.615 and 0.727, with 8 of 10 shuffle 3 runs reaching the J-array value. The code and seeds are fixed, so the gap with the verifier's copy comes from small numerical differences between runs. The J-array count is sensitive to these because several shuffle 3 runs sit within 0.02 of the data. The text now:
-  - gives the shuffle 3 medians (0.628 and 0.649);
-  - says the J-array count can move between runs;
-  - adds the phase-score counts (9 of 10 in J-array, none in N-array).
+**Sentences corrected** (in the notebook, the README and the record):
+- **Complex kinematic model** (result cell 56 and the record's notes): the other readings give not reproduced under the claim's own seed. The exception is no lead with the falling preparatory term, which gives partially reproduced under every seed. No lead with a persisting term now reads as partially reproduced under three of the five seeds, with its peaks listed.
+- **Question to the paper's authors about the model**: it now gives the peaks for both no-lead readings: −0.08π and 0.08π with the falling term, 0.25π and 0.36π with a persisting one. The old text said "near 0 in both".
+- **suppfig5-m1-faster**: M1 is 2.39 times faster than PMd in J-array and 1.53 times in N-array under the main reading, and 1.41 to 2.39 times across the four readings. The old "1.5 to 2.4" held for the main reading only.
+- **Velocity model**: the stricter peak test now names the one reading it changes, no lead with the falling term. Result cell 54 also says that one seed of five gives partially reproduced with a persisting term and a 100 ms lead.
+- **README**: the runtime now reads "about twenty minutes", where it said sixteen.
 
-  I also took the fixed count out of the round-1 response.
-- **rotation-frequency (cell 54):** The word "only" now applies to the variants in cell 52. The text also says the -150 to +50 ms window reaches the range (1.31 Hz).
-- **fig6-velocity-model (round-1 response):** It no longer says the angle failure comes from choices made here. It now says the peak depends on the model's open choices, and that no setup that keeps the preparatory tuning peaks within π/4 of zero in both datasets.
-- **README:** The run time now reads 10 to 15 minutes. These runs took 9.6 and 9.7 minutes; the verifier's copy printed 14.4.
-- **Round-1 reasons in the record:** I added the verifier's remark that shuffle 2 also scores high (fig3-phase-from-prep-state). I attached the point about the missing PC smoothing (B8) to fig3ef-same-direction.
+**Finding ratings:**
+- **Finding 4** (the two movement-onset columns): raised from minor to major, as the verifier rated it. Its statement now says that the choice changes five outcomes.
+- **Finding 3** (two sessions missing the condition columns): I kept it at major and recorded why. The rating is about harm to someone using the dataset, not to this paper's analysis. In those sessions the trials cannot be grouped by condition, which the protocol's table rates major.
 
-**Added:** The round-2 entry under `verifications` in `attempts/000070-churchland-2012-01.yaml`, covering all 22 claims. Each gives `agrees: true`, the verifier's outcome, its reason paraphrased from the report, and my `response`.
+No finding is rated critical, and the verifier saw none that should be.
 
-**Not done:**
-- I did not pin down the exact source of the run-to-run differences. It does not affect any outcome, and the text now says the count can move.
-- Nothing is committed, as instructed.
+**Recorded:** round 2 is now under `verifications`. Each claim has the verifier's agreement, outcome and reason in its own words, plus my response. The round's `findings` entries cover the two ratings above.
 
-The working tree also has untracked files I did not create and did not touch, such as `.bashrc`, `.idea` and `scripts`.
+**Not done, and why:**
+- The points the verifier says still bear on conclusions were already referred in round 1, so I added nothing new for them. Its round-1 problems 2, 3 and 6 are questions for a reader in `questions/churchland-2012.yaml`. The onset column and the model assumptions (problem 4) are questions for the paper's authors in the record's findings. The verifier reported no new misreadings of the paper, so no question was added.
+- I did not change the model assumptions behind the velocity-model outcome. The verifier found them reasonable and only noted that the J-array pass is thin (6-D ratio 0.517 to 0.590 against a 0.6 limit).
+
+Nothing was committed or pushed.

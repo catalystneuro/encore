@@ -1,0 +1,871 @@
+# Claims for Costabile, Balakrishnan, Schwinn & Haesemeyer (2023), "Model discovery to link neural
+# activity to behavioral tasks", eLife 12:e83289, tested on DANDI:000235, 000236, 000237 and 000238.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-25,
+# protocol as stated in docs/protocol.md (version pilot-19, Reader).
+#
+# Text read. The version of record (eLife, published 6 June 2023), paper/10.7554-elife.83289.txt,
+# extracted from the publisher PDF (also under paper/): main text, the legends of Figures 1 to 7,
+# Table 1, Methods, Data availability. The PDF was opened only to read Figure 6 (panels F and G)
+# and Figure 7 (panel E), whose values the text does not give. eLife's figure supplements
+# (Figure 1, 2, 3, 4, 5, 6 and 7, figure supplement 1) are online only: neither their panels nor
+# their legends are in the PDF or the text. The Results state what each of them shows, and the
+# claims that rest on them (region enrichments, Figure 6, figure supplement 1D, E, G to I;
+# Figure 7, figure supplement 1A to E) are written from those Results sentences and from the
+# code that draws them. Supplementary file 1 (Z-Brain region abbreviations) and the MDAR checklist
+# are not under paper/; neither holds results.
+#
+# Code read. github.com/haesemeyer/mine_pub at commit 368d75650a1de92d9dd6c7dd1aadff24be6ba379,
+# the revision the paper archives (Software Heritage, Haesemeyer 2023). It holds the CNN
+# (model.py), the Taylor routines (taylorDecomp.py), the MINE interface (mine.py), the simulation
+# scripts for Figures 1 to 4 (cnn_fit_test.py, cnn_nonlin_test.py, cnn_sta_test.py, mine_edf.py,
+# perf_nlc_nonlin.py), the mouse analysis (processMusall.py, plotMusall.py), the zebrafish fitting
+# (rwave_data_fit.py), decomposition (rwave_decompose.py), classification (rwave_build_main.py)
+# and figure code (rwave_plot_panels.py), the backfill analysis (rspinal_build_main.py,
+# rspinal_plot_panels.py), anatomical clustering (AnatomyClustering.py) and helpers
+# (utilities.py). It reads the lab's own hdf5 experiment files (experiment.py), not the NWB files
+# on DANDI. The tail-processing code (bitbucket.org/jcostabile/2p) and CaImAn pipeline
+# (github.com/haesemeyer/imaging_pipeline) were not read.
+#
+# Zebrafish method fixed by the code where the Methods are silent (cited in the criteria as
+# "code"). Calcium signal, CaImAn's denoised trace (all_c), interpolated to 5 Hz, z-scored per
+# neuron and smoothed with a Gaussian of sigma 2.5 frames (rwave_data_fit.py); components with
+# average brightness below 0.1 skipped. Predictors at 5 Hz, in this order: temperature (laser
+# command converted to power and then to temperature with the heating model, alpha 0.8787 K/J,
+# beta 0.0356 per s, baseline 22 C), swim starts (bout count per bin), vigor and direction (the
+# tail metrics summed over each bout, placed at its start bin); the three behavior predictors
+# mean-subtracted, orthogonalized by modified Gram-Schmidt in that order, then each z-scored.
+# CNN as get_standard_model, 50 timepoints (10 s), 80 linear filters, two 64-unit swish layers,
+# dropout 0.5, L1 1e-3, Adam at 1e-3, batch 256, 100 epochs; trained on the first two-thirds of
+# each plane's frames and tested on the last third. Fit when the test correlation is at least
+# sqrt(0.5). Taylor metrics from expansions every 5 frames predicting 25 frames ahead, each with
+# 1000 bootstrap resamples of the timepoints; a metric counts when its bootstrap mean minus n
+# bootstrap SDs exceeds 0.1, where n is the smallest whole number of SDs whose two-sided normal
+# coverage exceeds 1 - 0.05/(number of fit neurons); a "behavior" metric removes all behavior
+# terms and behavior-behavior interactions together. Linearity and complexity from the expansion
+# at the mean of the training inputs, scored every 5 frames. The comparison linear model is a
+# Ridge regression (alpha 1e-4) on the four predictors shifted by 0 to 49 frames, fit on the same
+# training frames, identified at the same test correlation sqrt(0.5).
+#
+# Data the paper used, as it reports them. Zebrafish (Methods, Zebrafish experiments and
+# Processing of zebrafish data). 25 larval zebrafish, 5 to 7 days post fertilization, mitfa -/-;
+# elavl3-H2B:GCaMP6s +/-; vglut2a-mCherry, imaged on a two-photon microscope at 2.5 Hz,
+# 0.78 um per pixel, 30 planes 5 um apart per fish (750 planes). The brain was split into six
+# overlapping regions (two dorsoventral by three anterior-posterior). Each plane received 495 s of
+# a "random wave" heat stimulus (sine waves with periods of 13 to 200 s, 22 to 30 C) from a laser;
+# the code splits each plane's recording into three trials and rotates by one trial for the
+# control. The tail was tracked at 250 Hz; swim starts, vigor (summed absolute angular derivative
+# over a bout) and direction (summed tail-tip angle over a bout) were extracted. CaImAn found
+# 706,543 components, 432,882 after excluding dim ones. All stacks except the backfill ones were
+# registered to the Z-Brain atlas (CMTK to an internal reference, then ANTs). Excluded before
+# analysis: five fish died, eight could not be registered, six had failed tail tracking, four had
+# imaging artifacts. The paper's data list names DANDI:000235 "Thermoregulatory Responses
+# Forebrain", 000236 "Midbrain" and 000237 "Hindbrain", which together hold the 25 fish, and
+# 000238 "Thermoregulatory Responses Reticulospinal system", six fish (mitfa -/-;
+# elavl3-H2B:GCaMP6s) whose reticulospinal neurons were backfilled with Texas-Red dextran and
+# annotated by hand; these were not registered.
+#
+# Data outside the four dandisets. The simulations of Figures 1 to 4 are generated by the code
+# (data elsewhere). The mouse analysis of Figure 5 uses the widefield dataset of Musall et al.
+# 2019, CSHL repository doi:10.14224/1.38599, one session from each of 13 mice (data elsewhere).
+# The anatomical claims need the Z-Brain atlas masks (Randlett et al. 2015) and each neuron's
+# registered position; the paper deposits its processed data, which hold the Z-Brain centroids,
+# on Zenodo doi:10.5281/zenodo.7737788, and the fit CNN weights on doi:10.5281/zenodo.7738603 and
+# doi:10.5281/zenodo.7741542 (data with_inputs).
+schema_version: 2
+paper: doi:10.7554/elife.83289
+claims:
+- id: fig1f-mine-fits-ground-truth
+  statement: On simulated ground-truth responses MINE's CNN predicts held-out data for every
+    response type, while a simple linear regression fails in most types and an expanded linear
+    model (calcium-kernel convolution and pairwise interactions) fails on the time derivative of
+    an input and on some nonlinear transformations.
+  source: Results, A model discovery approach to identify task-relevant neurons, paragraphs 2 and
+    3; Figure 1F
+  quote: a simple linear regression model fails to explain activity in most cases ... the expanded
+    linear model is poor in capturing some nonlinear transformations of predictors and fails to
+    capture responses that relate to the time derivative of an input
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_fit_test.py
+  criterion: As in cnn_fit_test.py (Methods, Ground-truth datasets), 20 simulations per response
+    type, first two-thirds for training, last third for test, squared correlation to test data.
+    The paper gives no number for "fails" or "poor"; it is read against MINE. Reproduced when (a)
+    for every response type MINE's mean test r2 is at least that of both linear models minus the
+    SD across the 20 runs, (b) the simple model's mean r2 is below MINE's by more than 0.2 in more
+    than half of the seven types other than noise (the i.i.d. noise type of Figure 1C, which no
+    model can predict, is left out of (b)), and (c) the expanded model's mean r2 for dS1/dt and for at least one
+    nonlinear type (|S1| or T(S2)) is below MINE's by more than 0.2. The 0.2 margin is set here
+    and is not the paper's; results at margins 0.1 and 0.3 are shown too.
+- id: fig2bcd-complexity-scores
+  statement: Mixing a nonlinear function (tanh squared of x cubed) into a response lowers both the
+    linear and the second-order Taylor approximation scores; mixing in the derivative lowers
+    neither; mixing in a rectified version lowers the linear score but not the second-order score.
+  source: Results, MINE characterizes computational complexity, paragraph 3; Figure 2B to 2D
+  quote: Increasing the contribution of an arbitrary nonlinear function ... leads to a marked
+    decrease in both of these ... increasing the contribution of a derivative of the predictor
+    indeed does not decrease either ... When increasing the contribution of a rectified linear
+    version of the predictor, the amount of variance explained by the linear truncation drops while
+    this is not the case for the truncation after the second-order term
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_nonlin_test.py
+  criterion: As in cnn_nonlin_test.py, linear (LAS) and second-order (SOS) scores of the
+    expansion at the data mean (Methods, equations 3 and 4) across the mixing fractions of each
+    series. Reproduced when, from the smallest to the largest mixing fraction, the tanh series
+    drops in both scores, the derivative series stays at or above 0.8 in both, and the softplus
+    series drops below 0.8 in LAS while SOS stays at or above 0.8. The 0.8 level is the paper's
+    linearity cutoff, used here also for SOS as the paper gives no level for "drops".
+- id: fig2e-linearity-roc
+  statement: As a classifier of nonlinear transformations, the linear approximation score ranks a
+    nonlinear transformation below a linear one in 99% of cases (AUC 0.99), and a cutoff of 0.8
+    gives false-positive and false-negative rates below 0.05.
+  source: Results, MINE characterizes computational complexity, paragraph 4; Figure 2E
+  quote: This analysis revealed that the ... value ranks a nonlinear transformation lower than a
+    linear one in 99% of cases (Figure 2E). Importantly, this metric allows disambiguating linear
+    and nonlinear processing with acceptable false-positive and false-negative rates
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_nonlin_test.py
+  expected:
+  - quantity: ROC AUC of the linear approximation score over 500 sets of linear and nonlinear
+      transformations
+    value: 0.99
+    tolerance: 0.099
+  - quantity: false-positive and false-negative rate at a linear score cutoff of 0.8 (each below)
+    value: 0.05
+    tolerance: 0.005
+  criterion: As in cnn_nonlin_test.py (Methods, Ground-truth datasets), 500 sets of five random
+    stimuli, two linear and two nonlinear responses each. Reproduced when the AUC is within
+    tolerance and both error rates at 0.8 are at most 0.055.
+- id: fig2s1-nonlinearity-metrics-agree
+  statement: On the networks of the ROC analysis, a lower linear approximation score goes on
+    average with a higher curvature metric and a higher nonlinearity coefficient.
+  source: Results, MINE characterizes computational complexity, paragraph 4; Figure 2, figure
+    supplement 1D and 1E
+  quote: Notably, a decrease in the explained variance by the linear truncation led on average to
+    increases in both these metrics of nonlinearity
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_nonlin_test.py
+  depends_on:
+  - fig2e-linearity-roc
+  criterion: Curvature metric (Methods, equation 5) and nonlinearity coefficient (equation 6) of
+    each network of the ROC analysis, averaged in 50 quantile bins of the linear approximation
+    score with 5000 bootstrap draws and 95% intervals (cnn_nonlin_test.py). The paper gives no
+    test. Reproduced when, for both metrics, the bin average in the lowest linear-score bin is
+    above the 95% interval of the highest bin, and the Spearman correlation of bin linear score
+    with bin average is negative; the rank correlation is set here.
+
+- id: fig3-receptive-fields-slow-stimuli
+  statement: With slowly varying stimuli MINE recovers a linear and a nonlinear receptive field
+    well, ordinary least-squares fits of the Volterra kernels fail, Ridge fits with high penalties
+    come close, and MINE's model predicts test data slightly better than the best Volterra fit.
+  source: Results, MINE characterizes neural receptive fields, paragraphs 2 and 3; Figure 3B, 3C,
+    3E and 3F
+  quote: Under these more naturalistic conditions, MINE still yielded well-fitting receptive fields
+    ... An ordinary regression fit of the Volterra kernels, on the other hand, failed to recover the
+    receptive fields ... for high penalties, the direct fit of the Volterra kernels yielded
+    receptive fields of almost comparable quality to MINE ... The CNN model fit by MINE also had
+    slightly higher predictive power compared to the best-fit Volterra model
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_sta_test.py
+  criterion: As in cnn_sta_test.py, 100 simulations per filter set, the best cosine similarity of
+    the eigenvectors of Q with the three largest eigenvalues to each true filter (Methods,
+    equation 17). Reproduced, for each of the two filter sets, when MINE's median similarity
+    exceeds the OLS fit's for both filters, the best Ridge penalty's median for each filter is no
+    more than 0.1 below MINE's (or above it), and MINE's median test correlation is at least that
+    of every Volterra fit. The 0.1 margin for "almost comparable" is set here.
+- id: fig3-effective-degrees-of-freedom
+  statement: Although the CNN has nearly 14,000 parameters, its effective degrees of freedom are
+    below 50, close to those of the Ridge models that recover the receptive fields.
+  source: Results, MINE characterizes neural receptive fields, paragraph 5; Figure 3, figure
+    supplement 1K
+  quote: in spite of having nearly 14,000 parameters, the effective degrees of freedom of the CNN
+    model are <50
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, mine_edf.py
+  expected:
+  - quantity: CNN parameters for one predictor and 50 timepoints
+    value: 14000
+    tolerance: 1400
+  criterion: Effective degrees of freedom of the CNN by equation 22 (Methods), estimated by
+    simulation as in mine_edf.py. Reproduced when the estimate is below 50 and the parameter
+    count is within tolerance.
+- id: fig3s1-white-noise-benchmark
+  statement: With Gaussian white noise input, both MINE and a direct fit of the Volterra kernels
+    recover receptive fields nearly indistinguishable from the true ones.
+  source: Results, MINE characterizes neural receptive fields, paragraph 2; Figure 3, figure
+    supplement 1A and 1B
+  quote: As expected, both MINE and directly fitting the Volterra kernels yielded receptive fields
+    that were nearly indistinguishable from the ground truth
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_sta_test.py
+  criterion: As in cnn_sta_test.py, main with white noise (stimulus drawn from N(0, 1), Methods),
+    the same filters and nonlinearities as Figure 3A, best cosine similarity of the eigenvectors of
+    Q with the three largest eigenvalues to each true filter (equation 17). The number of
+    simulations is open, (a) 100 (Methods, "All fits were repeated for 100 randomly generated
+    stimuli") or (b) 10 (the code's n_neurons for white noise). Reproduced when the median
+    similarity of MINE and of the OLS fit is at least 0.9 for both filters; the 0.9 level for
+    "nearly indistinguishable" is set here.
+- id: fig3s1-training-length
+  statement: As training data grow, the Ridge Volterra fit with the lower penalty predicts better
+    than MINE at small training sizes but gives no usable receptive fields, both Ridge fits give
+    worse receptive fields at large training sizes, and MINE is more robust to this.
+  source: Results, MINE characterizes neural receptive fields, paragraph 4; Figure 3, figure
+    supplement 1I and 1J
+  quote: The Ridge model with the lower penalty outperforms MINE for lower numbers of training
+    samples ... both Ridge models show a deterioration of extracted receptive fields for large
+    numbers of training samples ... MINE appears more robust to this effect
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_sta_test.py
+  criterion: As data_len_test in cnn_sta_test.py, 50 replicates of slowly varying stimuli of 93 s
+    times 1, 2, 4, 8, 16, 32 and 64 (two-thirds training), a separate validation stimulus,
+    MINE against Ridge Volterra fits with penalties 100 and 1000, filter quality as the dot product
+    of the extracted and true unit-norm filters. The paper gives no levels. Reproduced when (a)
+    the penalty-100 fit's mean validation correlation exceeds MINE's at the shortest length, (b)
+    for each Ridge fit the mean similarity of at least one filter at the longest length is below
+    its maximum over lengths by more than the SEM, and (c) MINE's drop from its maximum to the
+    longest length is smaller than each Ridge fit's for that filter. "Usable" receptive fields is
+    not judged.
+
+- id: fig4-taylor-metric-ranks-predictors
+  statement: On ground-truth data the full Taylor expansion predicts the change in network output
+    well, and the Taylor metric ranks the predictors and interactions that generate a response
+    above those that do not.
+  source: Results, Taylor analysis identifies predictors driving the response, paragraphs 2 and 3;
+    Figure 4B to 4E
+  quote: Sorting individual terms by this metric consistently ranks those that we expect to
+    contribute (Figure 4C–E, red bars) higher than those that should not
+  data: elsewhere
+  where: Not deposited; generated by the paper's simulation code, github.com/haesemeyer/mine_pub
+    at commit 368d756, cnn_fit_test.py
+  criterion: Taylor metrics as in Methods, Identifying contributing predictors by Taylor
+    decomposition (equations 23 to 34), 20 simulations per response type. Reproduced when, for the
+    M2, R(S1) x R(S2) and |S1| response types, every expected term's mean metric exceeds every
+    unexpected term's mean metric. The r2 of the full expansion (equation 26) is reported for
+    every response type; the paper gives no level for "high" (its example in Figure 4B is 0.98),
+    so it does not decide the claim.
+- id: fig5c-cortex-components-fit
+  statement: On the mouse widefield data, with a test correlation cutoff of 0.1, MINE fits more
+    than 91% of the temporal components per session on average.
+  source: Results, MINE characterizes cortical sensorimotor processing, paragraph 2; Figure 5B and 5C
+  quote: On average, this led to the identification of >91% of all components per session
+  data: elsewhere
+  where: CSHL repository doi:10.14224/1.38599 (Musall et al. 2019), one session from each of 13
+    mice; the paper's results are on Zenodo doi:10.5281/zenodo.7737788
+  expected:
+    quantity: mean over 13 sessions of the fraction of 200 components with test correlation of at
+      least 0.1
+    value: 0.91
+    tolerance: 0.091
+  criterion: As in processMusall.py and plotMusall.py, predictors shifted by 5 s, MINE with the
+    first two-thirds of each session for training. Reproduced when the mean fraction is at least
+    0.819 (the reported bound less 10%).
+- id: fig5d-cortex-largely-linear
+  statement: Only 3% of the fit cortical components have a linear approximation score below 0.8,
+    so the relationships between predictors and widefield activity are largely linear.
+  source: Results, MINE characterizes cortical sensorimotor processing, paragraph 2; Figure 5D
+  quote: only 3% of fit components have a linear approximation score <0.8
+  data: elsewhere
+  where: CSHL repository doi:10.14224/1.38599 (Musall et al. 2019), one session from each of 13
+    mice
+  depends_on:
+  - fig5c-cortex-components-fit
+  expected:
+    quantity: fraction of fit components with a linear approximation score below 0.8
+    value: 0.03
+    tolerance: 0.005
+  criterion: The tolerance is the rounding of a whole percent (2.5 to 3.5%), wider than 10%.
+    Fraction over all fit components of all 13 sessions, as plotMusall.py prints it.
+- id: fig5e-uninstructed-movements-dominate
+  statement: Across sessions, uninstructed movements have the largest Taylor metric in more than
+    half of the fit cortical components.
+  source: Results, MINE characterizes cortical sensorimotor processing, paragraph 3; Figure 5E
+  quote: uninstructed movements appear overrepresented sporting the largest Taylor metric in more
+    than half of the fit components
+  data: elsewhere
+  where: CSHL repository doi:10.14224/1.38599 (Musall et al. 2019), one session from each of 13
+    mice
+  depends_on:
+  - fig5c-cortex-components-fit
+  criterion: Taylor metrics significant when the bootstrap mean minus 3 standard errors exceeds 0
+    (plotMusall.py; the zebrafish cutoff of 0.1 is not used for the mouse data in the code).
+    Uninstructed movements are the predictors Figure 5E groups so (Piezo, Whisk, Nose, Pupil,
+    Face, Body). Reproduced when the predictor with the largest significant metric is one of them
+    in more than half of the fit components.
+- id: fig5fh-cortex-maps
+  statement: Per-pixel Taylor metrics place visual stimuli in visual cortex with a left-right
+    asymmetry, whisking in regions matching Musall et al., and instructed left and right grabs in
+    motor cortex with a left-right asymmetry, though not every session shows clear grab regions.
+  source: Results, MINE characterizes cortical sensorimotor processing, paragraph 3; Figure 5F to
+    5H and Figure 5, figure supplement 1
+  quote: visual stimuli are shown to contribute most strongly to responses in visual cortical areas
+    with the expected left–right asymmetry ... instructed left and right grab events largely
+    contribute to motor cortical regions, again with the expected left–right asymmetry
+  data: elsewhere
+  where: CSHL repository doi:10.14224/1.38599 (Musall et al. 2019), with the dataset's Allen CCF
+    alignment
+  depends_on:
+  - fig5c-cortex-components-fit
+  criterion: For the example session (the one plotMusall.py draws), maps of lVisStim minus
+    rVisStim and of lGrab minus rGrab per-pixel Taylor metrics. Reproduced when the visual
+    difference map has its positive and negative extremes in opposite posterior (visual) cortices
+    and the grab difference map has them in opposite anterior (motor) cortices. Which hemisphere
+    carries which sign is read from the figure, contralateral to the stimulus or limb. The whisk
+    map (Whisk minus the mean of the two visual maps, Figure 5G and plot_session_maps) and the
+    same maps for every session (Figure 5, figure supplement 1) are shown but do not decide the
+    claim; the paper judges the whisk map by eye against Figure 2 of Musall et al. 2019, and the
+    session maps only for "general agreement".
+- id: fig5i-cortex-receptive-fields
+  statement: Receptive fields of visual pixels are biphasic and lie entirely in the past, with
+    excitation stronger than inhibition, while grab receptive fields are sharper and extend up to
+    100 ms into the future, indicating preparatory activity.
+  source: Results, MINE characterizes cortical sensorimotor processing, paragraph 4; Figure 5I
+  quote: The visual receptive fields have essentially zero weight after the current time ... the
+    grab-related receptive fields contain coefficients different from baseline for up to 100 ms
+    into the future
+  data: elsewhere
+  where: CSHL repository doi:10.14224/1.38599 (Musall et al. 2019)
+  depends_on:
+  - fig5fh-cortex-maps
+  criterion: As in plotMusall.py (cluster_jacobian_map), pixels in the top 10% of the Taylor
+    metric for the visual or grab predictors, receptive fields split into two clusters by
+    spectral clustering. Receptive fields are at the mouse model's 15 Hz (150 timepoints for the
+    10 s history, processMusall.py). Reproduced when, for both the left and the right visual
+    predictor, (a) the excitatory cluster average has weights after time 0 below 10% of its peak,
+    (b) its peak absolute weight exceeds that of the inhibitory cluster average, and (c) both
+    cluster averages are biphasic, each with two peaks of its sign, one near time 0 and one 1.35
+    to 1.65 s before it (the paper's ~1.5 s widened by 10%); and when, for both grab predictors, (d) the excitatory cluster average departs from
+    baseline (by more than 10% of its peak) after time 0, its last such timepoint no later than
+    0.11 s plus one 15 Hz frame (the paper's 100 ms widened by 10%, plus the sampling step), and
+    (e) its width at half its peak is smaller than that of the excitatory visual cluster average
+    ("much sharper"). The 10% of peak levels and the half-peak width are set here; the paper reads
+    the figure by eye.
+- id: data-zebrafish-coverage
+  statement: The zebrafish dataset holds 750 imaging planes from 25 larvae, with 706,543 CaImAn
+    components of which 432,882 pass the brightness criterion.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 3; Methods,
+    Processing of zebrafish data, paragraph 2
+  quote: We imaged a total of 750 planes across 25 larval zebrafish ... The number of analyzed
+    components was thereby reduced from 706,543 to 432,882
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  expected:
+  - quantity: larvae
+    value: 25
+    tolerance: 0
+  - quantity: imaging planes
+    value: 750
+    tolerance: 0
+  - quantity: CaImAn components before the brightness criterion
+    value: 706543
+    tolerance: 70654
+  - quantity: components analyzed (average brightness at least 0.1)
+    value: 432882
+    tolerance: 43288
+  criterion: Counts over the three dandisets together. Fish and planes are counts of recordings
+    and must match exactly. The component counts depend on the segmentation the dandisets hold;
+    if they hold CaImAn's components, they are counted as stored.
+- id: figs6-shuffle-enrichment
+  statement: At the fit cutoff, real data yield 93 times more fit neurons than cyclically rotated
+    control data.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 4; Figure 6,
+    figure supplement 1D
+  quote: Using cyclic permutations of the data as a control revealed that this cutoff corresponds to
+    a 93-fold enrichment over control data
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  expected:
+    quantity: neurons with test correlation of at least sqrt(0.5), real over rotated
+    value: 93
+    tolerance: 9.3
+  criterion: Calcium traces rotated forward by a third of each plane's length with wrap-around
+    (Methods; rwave_data_fit.py, shuffle), CNNs fit to the rotated data as to the real data, ratio
+    of the counts at the cutoff (rwave_plot_panels.py).
+- id: fig6d-mine-identifies-more-than-lm
+  statement: Of the 432,882 active neurons, about 42,000 are identified by MINE or by the linear
+    comparison model; 40% only by MINE, 54% by both and 6% only by the linear model.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 5; Figure 6D
+  quote: At the designated cutoff, a total of ... neurons were identified using either MINE or
+    regression. 40% of these neurons, however, were exclusively identified by MINE
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  expected:
+  - quantity: neurons identified by MINE or the linear model
+    value: 42229
+    tolerance: 4223
+  - quantity: fraction identified only by MINE
+    value: 0.40
+    tolerance: 0.04
+  - quantity: fraction identified by both
+    value: 0.54
+    tolerance: 0.054
+  - quantity: fraction identified only by the linear model
+    value: 0.06
+    tolerance: 0.006
+  criterion: Both models fit per neuron as described in the opening comment (rwave_data_fit.py),
+    each counted as identifying a neuron at a test correlation of at least sqrt(0.5); fractions of
+    the union, as the Venn diagram in rwave_plot_panels.py.
+- id: figs6-mine-more-at-every-cutoff
+  statement: MINE identifies more neurons than the linear model whatever test-correlation cutoff
+    is used.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 5; Figure 6,
+    figure supplement 1E
+  quote: In fact, MINE consistently identifies more neurons regardless of the cutoff imposed on test
+    data
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6d-mine-identifies-more-than-lm
+  criterion: Counts of neurons with test correlation at or above each cutoff from 0 to 1 in steps
+    of 0.01, as in rwave_plot_panels.py. Reproduced when MINE's count is at least the linear
+    model's at every cutoff where either count is above zero.
+- id: figs6-train-test-uncorrelated
+  statement: Because stimulus and behavior are random, test and training data are largely
+    uncorrelated.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 4; Figure 6,
+    figure supplement 1B
+  quote: due to the random nature of both our stimulus and the elicited behavior, test and training
+    data were largely uncorrelated
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  criterion: As rwave_plot_panels.py, each plane's temperature, swim-start, vigor and direction
+    traces split into three equal trials, and the Pearson correlation of every pair of trials.
+    The paper gives no level for "largely uncorrelated"; the readings are (a) the median of each
+    predictor's inter-trial correlations below 0.2 in absolute value, (b) below 0.1. Reproduced
+    when all four predictors meet a reading; the distributions are shown.
+- id: fig6e-functional-classes
+  statement: Taylor analysis sorts the MINE-fit neurons into 33 functional classes, each found in
+    several fish.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 6; Figure 6E
+  quote: In total, we identified 33 functional neuron classes all of which were identified ... across
+    multiple fish (Figure 6E)
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6d-mine-identifies-more-than-lm
+  expected:
+    quantity: functional classes
+    value: 33
+    tolerance: 3.3
+  criterion: Each fit neuron gets six flags, nonlinear (linear approximation score below 0.8) and
+    a significant Taylor metric (above 0.1 at the corrected level, Methods) for temperature, the
+    combined behavior term, swim start, vigor and direction; interaction terms are left out
+    (Results). A class is a combination of flags held by at least 10 neurons (the UpSet plot's
+    minimum in rwave_plot_panels.py). The significance level is open between two readings, (a)
+    the code's whole number of bootstrap SDs (5 for about 40,000 fit neurons) and (b) the exact
+    one-sided normal quantile for p = 0.05 divided by the number of fit neurons. Classes with no
+    significant predictor (the gray bars) are counted, as the figure does; the count without them
+    is shown. Reproduced when the count is within tolerance under a reading and every class
+    counted is present in at least two fish.
+- id: fig6e-mixed-selectivity-exists
+  statement: Several functional classes have mixed selectivity, their activity driven jointly by
+    the temperature stimulus and behavior.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 6; Figure 6E
+    (blue bars)
+  quote: Across the brain, we identified multiple functional classes of neurons with mixed
+    selectivity, that is, neurons with activity jointly driven by the temperature stimulus and
+    behavioral outputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Classes as in fig6e-functional-classes. Reproduced when at least two classes with at
+    least 10 neurons each have both the temperature flag and a behavior flag, each found in more
+    than one fish.
+- id: fig6g-linear-model-bias
+  statement: Of the neuron types MINE identifies, the linear comparison model finds behavior
+    neurons most often and stimulus and mixed-selectivity neurons least often, a bias towards
+    behavior-related, low-complexity activity.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 6; Figure 6G
+  quote: Analyzing the success of the linear comparison model according to functional class revealed
+    a bias toward the identification of behavior-related activity ... Stimulus or mixed-selectivity
+    neurons, on the other hand, were underrepresented in the pool identified by the linear model
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6d-mine-identifies-more-than-lm
+  - fig6e-functional-classes
+  criterion: As rwave_plot_panels.py, for each fish the fraction of MINE-fit neurons of a type that
+    the linear model also identifies, averaged over the 25 fish (bootstrap standard errors).
+    Types are all fit neurons, nonlinear, complexity 2, stimulus (temperature only, no behavior
+    and no interaction term), behavior (behavior only, no temperature and no interaction), mixed
+    (temperature and behavior, or any significant interaction, as the code defines it). The
+    figure shows about 0.51 for all, 0.58 for behavior and 0.26 to 0.28 for stimulus, mixed and
+    complexity 2 (read from the PDF). Reproduced when behavior has the highest mean fraction,
+    stimulus and mixed are each below the all-neuron fraction by more than their bootstrap
+    standard errors, and complexity 2 is below the all-neuron fraction by more than its bootstrap
+    standard error (the "low computational complexity" part of the statement).
+- id: fig6f-reticulospinal-behavior
+  statement: Reticulospinal neurons labeled by spinal backfills in six fish are classified by MINE
+    as driven by behavioral features in the vast majority.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 6; Figure 6F
+  quote: As a control, we labeled reticulospinal neurons in six fish via spinal backfills and as
+    expected the vast majority of these neurons were classified by MINE to be driven by behavioral
+    features
+  datasets:
+  - "000238"
+  expected:
+    quantity: fraction of fit reticulospinal neurons in the behavior-only class
+    value: 0.86
+    tolerance: 0.086
+  criterion: The value is read from the bars of Figure 6F (about 390 behavior, 45 temperature, 10
+    mixed and 8 with neither); no sentence gives it. Fitting and Taylor analysis as for the
+    whole-brain data, with the Bonferroni count over the fit neurons of the six backfill fish
+    (rspinal_build_main.py). A neuron is reticulospinal when at least half of it lies in the
+    hand-annotated backfill mask (code). Behavior is any significant behavior metric (the Results);
+    rspinal_plot_panels.py, through an overwritten line, counts only the combined behavior term or
+    swim start, and is shown as a variant. Reproduced when the behavior-only fraction is within
+    tolerance under the Results reading, or at least 0.75 of the classified neurons are
+    behavior-driven (behavior-only or mixed) and behavior-only is the largest class. The 0.75 level
+    for "vast majority" is set here, not the paper's.
+- id: figs6-stimulus-neuron-regions
+  statement: Stimulus-driven neurons are enriched in telencephalic regions, the habenula and the
+    interpeduncular nucleus, and temperature-sensitive neurons are found in a medial zone of the
+    olfactory epithelium.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 7; Figure 6,
+    figure supplement 1G and 1I
+  quote: We found stimulus-driven neurons to be enriched in telencephalic regions, as well as the
+    habenula and its output region the interpeduncular nucleus ... with the exception of the
+    olfactory epithelium where we found temperature-sensitive neurons in a medial zone
+  data: with_inputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Needs each neuron's Z-Brain region (Z-Brain masks, Randlett et al. 2015, and the
+    registered centroids on Zenodo doi:10.5281/zenodo.7737788, or a re-registration). Enrichment
+    as Methods, Processing of zebrafish data, paragraph 6, with the code's details
+    (plot_region_enrichment) of regions holding at least 50 neurons of the population, 5000
+    simulated draws at the overall fraction, enriched when the region's fraction is above the
+    97.5th percentile, over the code's list of overview regions (regions_for_overview in
+    rwave_plot_panels.py). The population is open, (a) stimulus, behavior and mixed neurons
+    together (Methods) or (b) all fit neurons (code). Reproduced when, under one reading, at least
+    one telencephalic region (pallium, subpallium or telencephalic migrated area 4), the habenula
+    and the interpeduncular nucleus are enriched for stimulus neurons, and the olfactory
+    epithelium mask holds temperature-sensitive neurons. Which neurons those are is open, (a) pure
+    stimulus neurons (the code's Stim_Neuron_Loc_OlfEpith plot) or (b) any neuron with a
+    significant temperature metric (the Results cite panel 1I, the mixed-selectivity panel).
+- id: figs6-behavior-neuron-regions
+  statement: Behavior-driven neurons are enriched in hindbrain regions and in the nucleus of the
+    medial longitudinal fasciculus.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 7; Figure 6,
+    figure supplement 1H; Figure 6H
+  quote: As expected, behavior-driven neurons are enriched in hindbrain regions and the midbrain
+    nucleus of the medial longitudinal fasciculus
+  data: with_inputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Enrichment as in figs6-stimulus-neuron-regions, for behavior neurons. Reproduced when,
+    under one reading, the nucMLF and at least half of the rhombencephalic regions tested are
+    enriched.
+- id: figs6-mixed-neuron-regions
+  statement: Mixed-selectivity neurons are enriched in telencephalic area M4 and the
+    interpeduncular nucleus, shared with stimulus neurons, and strongly in the superior raphe, the
+    caudal hypothalamus and the torus longitudinalis.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 7; Figure 6,
+    figure supplement 1I
+  quote: Mixed-selectivity neurons occupy some regions shared with stimulus-driven neurons such as
+    telencephalic area M4 and the interpeduncular nucleus but are also strongly enriched in the
+    raphe superior as well as the caudal hypothalamus and the torus longitudinalis
+  data: with_inputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Enrichment as in figs6-stimulus-neuron-regions, for mixed neurons. Reproduced when,
+    under one reading, at least four of the five named regions are enriched; partially reproduced
+    for two or three.
+- id: fig7a-behavior-feature-regions
+  statement: Swim-start neurons are enriched in the dorsal thalamus and medial hindbrain, vigor
+    neurons in the ventral thalamus, forebrain and locus coeruleus, and turning neurons in mid- and
+    hindbrain regions.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 8 and
+    Computational features of thermoregulatory circuits, paragraph 1; Figure 7A and Figure 7,
+    figure supplement 1A to 1C
+  quote: Swim start neurons are enriched in the dorsal thalamus as well as the medial hindbrain,
+    while the ventral thalamus, the forebrain, and the locus coeruleus preferentially encode swim
+    speed ... encode turning are enriched in mid- and hindbrain regions
+  data: with_inputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Neurons with a significant vigor, direction or swim-start metric, made exclusive as
+    the code does (vigor first, then direction, then swim start); the population is the three
+    together (Methods, and code). Enrichment otherwise as in figs6-stimulus-neuron-regions.
+    "Medial hindbrain" and "forebrain" name no Z-Brain region. "Medial hindbrain" is read as any
+    rhombomere 1 to 7 or medial hindbrain stripe. "Forebrain" is open, (a) any telencephalic
+    region or (b) any telencephalic or diencephalic region other than the ventral thalamus, which
+    the sentence names separately. Reproduced when at least five
+    of the seven named sites are enriched for their type (dorsal thalamus and medial hindbrain
+    for swim start; ventral thalamus, forebrain and locus coeruleus for vigor; a mesencephalic
+    and a rhombencephalic region for direction); partially reproduced for three or four.
+- id: fig7b-receptive-field-clusters
+  statement: Clustering the temperature receptive fields of stimulus-driven neurons by cosine
+    similarity yields 15 clusters, each with neurons from at least 15 fish.
+  source: Results, Computational features of thermoregulatory circuits, paragraph 2; Figure 7B
+  quote: A clustering approach based on the cosine similarity of receptive fields (see ‘Methods’)
+    resulted in 15 clusters. For each of these clusters, neurons came from at least 15 fish across
+    our dataset
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  expected:
+  - quantity: receptive field clusters
+    value: 15
+    tolerance: 1.5
+  - quantity: fish contributing to the smallest-fish cluster (at least)
+    value: 15
+    tolerance: 1.5
+  criterion: Receptive field is the temperature part of the Jacobian at the data mean (Methods,
+    equation 35) of pure stimulus neurons, clustered by the greedy cosine method of Methods,
+    Clustering of neurons according to receptive field, at a similarity of 0.8, with clusters below
+    25 neurons dropped (rwave_build_main.py; the Methods give no size cut). Reproduced when the
+    count is within tolerance and every cluster has neurons from at least 14 fish.
+- id: fig7c-receptive-field-types
+  statement: Receptive field clusters differ in the temperature feature they extract and in where
+    they lie; clusters responding to slow heating and to slow cooling are enriched in the
+    forebrain, a cluster computing the rate of heating over short timescales lies almost only in
+    the hindbrain, and a cluster with only negative weights (excited by cold) lies mainly in hind-
+    and midbrain.
+  source: Results, Computational features of thermoregulatory circuits, paragraph 2; Figure 7B and
+    7C
+  quote: Clusters 1 and 4 are enriched in the forebrain (Figure 7B, right), and their receptive
+    fields suggest that they are most responsive to heating and cooling stimuli over slow
+    timescales ... Cluster 3, on the other hand, computes the rate of heating over shorter
+    timescales (Figure 7C) and is almost exclusively localized to the hindbrain ... Cluster 12
+    represents neurons that are excited by colder temperatures since the receptive field
+    exclusively has negative coefficients
+  data: with_inputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig7b-receptive-field-clusters
+  expected:
+  - quantity: neurons in the slow-heating cluster (cluster 1)
+    value: 1691
+    tolerance: 169
+  - quantity: neurons in the slow-cooling cluster (cluster 4)
+    value: 1675
+    tolerance: 168
+  - quantity: neurons in the fast heating-rate cluster (cluster 3)
+    value: 362
+    tolerance: 36
+  - quantity: neurons in the all-negative cluster (cluster 12)
+    value: 112
+    tolerance: 11
+  criterion: Cluster numbers depend on the order of the greedy method, so clusters are matched to
+    the paper's by the shape of their normalized mean receptive field (Figure 7C), one zero
+    crossing rising to positive weights near time 0 (1), one zero crossing falling to negative
+    weights (4), two zero crossings with a positive peak near time 0 (3), no crossing and all
+    negative (12). Fraction of each cluster in telencephalon, diencephalon, mesencephalon and
+    rhombencephalon as in rwave_plot_panels.py. "Enriched in the forebrain" is read as the
+    paper's sense of enrichment (Methods, Processing of zebrafish data), so each slow cluster's
+    forebrain fraction is above that of all pure stimulus neurons pooled. "Forebrain" is open,
+    (a) the telencephalon or (b) the telencephalon and diencephalon together. Reproduced when the
+    four shapes are found, both slow clusters are enriched in the forebrain under a reading, the
+    fast heating
+    cluster has more than 0.8 of its neurons in the rhombencephalon ("almost exclusively", level
+    set here), and the cold cluster has more than half in mesencephalon and rhombencephalon
+    together; the sizes are compared with the expected values.
+- id: fig7d-mixed-integration-modes
+  statement: Nonlinear neurons driven by both swim starts and temperature integrate the two in
+    diverse ways, some adding behavioral and thermosensory drive and others gated, their sensory
+    responsiveness scaled by swim drive.
+  source: Results, Computational features of thermoregulatory circuits, paragraph 3; Figure 7D and
+    Figure 7, figure supplement 1E
+  quote: Clustering neurons according to these response landscapes ... revealed diverse modes of
+    integration across 10 clusters. Some neurons appear to add behavioral inputs linearly with
+    thermosensory inputs ... Other neurons, however, show gating
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Neurons with significant temperature and swim-start metrics and classed nonlinear;
+    response landscapes from unit-norm receptive fields scaled from -10 to 10 in 100 steps, fed to
+    each neuron's CNN; similarity the maximum of the normalized 2D circular cross-correlation;
+    spectral clustering into 10 clusters (Methods; rwave_plot_panels.py). The number 10 is set in
+    the code, not found. The paper defines additive and gating by eye. Read here as, for each
+    cluster's mean landscape (and its exemplar, as in the figure), the response range across
+    sensory drive at swim drive +5 divided by that at -5; near 1 with a shifted curve is
+    additive, far from 1 is gating. Levels open, (a) additive within 0.8 to 1.25 and gating
+    outside 0.5 to 2, (b) within 0.67 to 1.5 and outside 0.33 to 3. Reproduced when under a
+    reading at least one cluster is additive and at least one is gating.
+- id: fig7e-complexity-by-cluster
+  statement: Computational complexity maps onto receptive field type; three clusters have lower
+    average complexity than expected, and one (cluster 6) has an average complexity above 1.
+  source: Results, Computational features of thermoregulatory circuits, paragraph 4; Figure 7E
+  quote: averaging the complexity score for different receptive field clusters reveals that three of
+    these clusters have lower complexity than expected ... One cluster (cluster 6) had an average
+    complexity score >1
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig7b-receptive-field-clusters
+  expected:
+  - quantity: clusters with average complexity below the bootstrap 95% interval
+    value: 3
+    tolerance: 0
+  - quantity: clusters with average complexity above 1
+    value: 1
+    tolerance: 0
+  criterion: Complexity 0 when the linear score is at least 0.8, 1 when it is below 0.8 and the
+    second-order score is at least 0.5, 2 otherwise (Methods). Interval per cluster as
+    boot_complexity in rwave_plot_panels.py, 1000 draws with replacement of the cluster's size
+    from all stimulus neurons' scores, 2.5th to 97.5th percentile. Counts are small integers, so
+    no tolerance; reproduced when exactly three clusters fall below their interval and exactly
+    one has a mean above 1 (the figure shows clusters 1, 2 and 9 below and cluster 6 at about
+    1.4); partially reproduced when two or four fall below and one or two exceed 1.
+- id: fig7f-complexity-anatomy
+  statement: Complexity classes are generally intermingled but regionalized; complexity 2 neurons
+    lie medially in rhombomeres 1 and 2, in the habenula and in the dorsal telencephalon, while
+    linear neurons are enriched in the posterior and medial hindbrain.
+  source: Results, Computational features of thermoregulatory circuits, paragraph 4; Figure 7F
+  quote: Within the hindbrain, neurons of complexity class 2 are found medially in rhombomeres 1 and
+    2 ... Prominent clusters of complexity 2 neurons can also be found in the habenula and dorsal
+    telencephalon ... Linear neurons, on the other hand, are enriched in the posterior and medial
+    hindbrain
+  data: with_inputs
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig7e-complexity-by-cluster
+  criterion: The Results cite "Figure 7G", which does not exist; the legend of Figure 7F is the
+    anatomical clustering by complexity, so 7F is meant. The paper shows this by anatomical
+    clustering (5 um radius, connected components,
+    clusters of 10 or more plotted) and reports no test. Read here with the enrichment method of
+    figs6-stimulus-neuron-regions over all fit neurons, complexity 2 against the rest and
+    complexity 0 against the rest. Reproduced when complexity 2 is enriched in rhombomere 1 or 2,
+    the habenula and the pallium, and complexity 0 is enriched in at least one of rhombomeres 5 to
+    7; the anatomical cluster maps are shown.
+- id: lm-recovers-fewer-clusters
+  statement: The linear model identifies neurons in every receptive field cluster, but fewer than
+    five in four clusters, and clustering only the neurons it identifies recovers 4 of the 15
+    receptive field clusters.
+  source: Discussion, Novel insight into biological circuits, paragraph 4; Figure 7, figure
+    supplement 1D
+  quote: in four clusters the linear model identified less than five neurons ... applying our
+    clustering on the neurons identified by the linear model only recovers 4 instead of the 15
+    unique receptive field clusters that are obtained with MINE
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig7b-receptive-field-clusters
+  expected:
+  - quantity: receptive field clusters with fewer than five linear-model neurons
+    value: 4
+    tolerance: 0
+  - quantity: clusters recovered when clustering only linear-model neurons
+    value: 4
+    tolerance: 0
+  criterion: The code at the cited commit does not hold this analysis. For the first count, the
+    neurons of each MINE cluster that the linear model also identifies. For the second, the
+    readings are (a) the greedy clustering (similarity 0.8, minimum 25 neurons) run on the MINE
+    receptive fields of the stimulus neurons the linear model also identifies, counting clusters
+    that match a MINE cluster at cosine similarity of at least 0.8, and (b) the number of MINE
+    clusters holding at least 25 linear-model neurons, the size cut of the clustering. Reproduced
+    when the first count is exactly 4 and the second is 4 under one reading; partially reproduced
+    when one of the two holds or the counts are 3 or 5.
+- id: temperature-nonlinear-behavior-linear
+  statement: Most temperature-driven neurons are classified as nonlinear while most behavior-driven
+    neurons are classified as linear.
+  source: Discussion, Characterizing the model implemented by the CNN, paragraph 2
+  quote: In our zebrafish dataset, the majority of temperature-driven neurons were classified as
+    nonlinear while most behavior-driven neurons were classified as linear
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6e-functional-classes
+  criterion: Temperature-driven read as (a) pure stimulus neurons or (b) all neurons with a
+    significant temperature metric; behavior-driven as (a) pure behavior neurons or (b) all with a
+    significant behavior metric. Reproduced when, under a reading, more than half of the
+    temperature-driven neurons have a linear score below 0.8 and more than half of the
+    behavior-driven neurons have one of at least 0.8.
+- id: interaction-terms-small
+  statement: Interaction terms between predictors have very small Taylor metrics in the zebrafish
+    data, so there is little evidence of multiplicative interactions.
+  source: Results, Functional characterization of thermoregulatory circuits, paragraph 6; Discussion,
+    Characterizing the model implemented by the CNN, paragraph 1
+  quote: Since interaction terms had very small Taylor metrics, we ignored them for neuron
+    classification purposes ... we found little evidence of multiplicative interactions in the
+    biological data
+  datasets:
+  - "000235"
+  - "000236"
+  - "000237"
+  depends_on:
+  - fig6d-mine-identifies-more-than-lm
+  criterion: The paper gives no number. Over MINE-fit neurons, the Taylor metrics of the six
+    pairwise interaction terms. Reproduced when the median of every interaction metric is below
+    the 0.1 cutoff for a contributing predictor (Methods) and below the median of the
+    temperature and the combined behavior metrics, and fewer than 5% of fit neurons have any
+    interaction metric significant at the corrected level; the 5% level is set here and the
+    fraction is reported.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1f-mine-fits-ground-truth. Part (b) counted the i.i.d. noise type among the types where the simple model "fails"; no model can predict noise (Figure 1C), so (b) now counts the seven other types.
+  - fig3-receptive-fields-slow-stimuli. "Within 0.1 of MINE's or below it" was met by any Ridge median below MINE's, so it did not test "almost comparable"; it now requires the best Ridge median to be no more than 0.1 below MINE's for each filter.
+  - fig4-taylor-metric-ranks-predictors. The statement says the full expansion predicts the change in output well, which the criterion did not cover; the full-expansion r2 is now reported and named as not deciding, since the paper gives no level.
+  - fig5fh-cortex-maps. The statement names the whisk map and the all-session maps, which the criterion did not cover; both are now shown and named as not deciding, as the paper judges them by eye or against Musall et al. 2019.
+  - fig5i-cortex-receptive-fields. The criterion tested neither "biphasic", "excitation stronger than inhibition" nor "much sharper", which the statement and Results paragraph 4 state, and it allowed a future lag of 0.2 s where the paper says up to 100 ms. Added tests for all three (the ~1.5 s second peak widened by 10%) and set the lag to 100 ms widened by 10% plus one frame of the model's 15 Hz rate (processMusall.py, 150 timepoints for 10 s).
+  - fig6f-reticulospinal-behavior. The 0.75 level of the alternative test is not the paper's; now said so.
+  - fig6g-linear-model-bias. The statement says the linear model favors low complexity (Results, paragraph 6), which the criterion did not test; added the complexity 2 fraction against the all-neuron fraction.
+  - figs6-stimulus-neuron-regions. The code restricts the enrichment to regions_for_overview; now said. The olfactory epithelium finding cites panel 1I (the mixed panel) and says "temperature-sensitive", while the code plots pure stimulus neurons there; both readings are now named.
+  - fig7a-behavior-feature-regions. "Forebrain" was fixed to the telencephalon; forebrain also covers the diencephalon, so both readings are now named.
+  - fig7c-receptive-field-types. "Enriched in the forebrain" was judged as the largest telencephalic fraction among four chosen clusters, a comparison the paper does not make. It is now the paper's sense of enrichment (Methods, Processing of zebrafish data), above the fraction of all pure stimulus neurons, with telencephalon or telencephalon plus diencephalon as readings.
+  - fig7f-complexity-anatomy. The Results cite "Figure 7G", which does not exist; the criterion now says Figure 7F (complexity clustering, per its legend) is meant.
+  - Added fig2s1-nonlinearity-metrics-agree (Figure 2, figure supplement 1D and E), fig3s1-white-noise-benchmark (Figure 3, figure supplement 1B) and fig3s1-training-length (Figure 3, figure supplement 1I and J). These are findings stated in the Results that had no claim. Their methods come from cnn_nonlin_test.py and cnn_sta_test.py at the cited commit, and the levels set here are named.
+  - Checked, unchanged. Every quote and source against the text. The code details the criteria cite (sigma rule for the Bonferroni level, which gives 5 SDs for about 39,700 fit neurons and matches the printed 1.26e-6; UpSet minimum of 10 and six barcode columns; greedy clustering at 0.8 with minimum 25; enrichment over all fit neurons with 5000 draws; boot_complexity with 1000 draws; motor-type exclusivity; reticulospinal mask at 0.5 and the overwritten barcode line; mouse significance at 3 SE; top 10% pixels and two spectral clusters; 10 response-landscape clusters; LM threshold sqrt(0.5)). Checked at github.com/haesemeyer/mine_pub commit 368d756, which also confirms that the code lacks the analysis of lm-recovers-fewer-clusters.
+  - Open. The PDF could not be rendered in this run, so the values the writer read from figures (Figure 6F bar counts behind 0.86, Figure 6G fractions, Figure 7E clusters 1, 2 and 9 below and cluster 6 near 1.4, the Figure 6E fish counts) were not checked.
+  - Open. Figure supplements are online only and not under paper/; the claims on them rest on the Results sentences and the code.
+  - Open. Several criteria use levels set in this file where the paper gives none (0.2 margin in fig1f, 0.8 in fig2bcd, 0.1 in fig3, 10% of peak in fig5i, 0.2 and 0.1 in figs6-train-test-uncorrelated, ratio bands in fig7d, 0.8 in fig7c, 5% in interaction-terms-small, 0.9 in fig3s1-white-noise-benchmark); each says so.

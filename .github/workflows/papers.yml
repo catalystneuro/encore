@@ -1,23 +1,13 @@
 name: Paper run
 run-name: "Paper run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('/{0}', inputs.replicate) || '' }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
 
-# One reader run on a target (docs/protocol.md, "Reader"): writing the claims file from the
-# paper (`claims`), checking it against the paper (`claims-check`), or answering an attempt's
-# questions (`answer`); or, before them, judging whether each paper the archive names is the paper
-# behind the data (`paper-match`, docs/pipeline.md step 1), which runs an agent only for the papers
-# the cheap checks of tools/paper_match.py leave open. Started by hand from the Actions tab or with
-#   gh workflow run papers.yml -f dataset=000147 -f role=paper-match
-#   gh workflow run papers.yml -f paper=guan-2022 -f role=claims
-#
-# These are the only runs that write the claims file, and the paper match papers/match/<folder>.yaml. The job runs in the `papers` environment,
-# whose deploy key reads the private paper store (catalystneuro/registry-papers); the environment
-# can be used only from main. Before the agent starts, tools/get_papers.sh copies the dataset's
-# papers to paper/ and deletes the key and the store's checkout. A run commits only
-# claims/<folder>/ and questions/<folder>.yaml, and its transcript leaves out everything under
-# paper/ (tools/transcript.py). The attempt's other runs (attempt.yml) read the papers the same way.
-#
-# Otherwise the same as attempt.yml: a fresh runner, the subscription token, credentials
-# stripped from the agent's commands, and a second job that commits to attempt/<folder>.
+# Starts one reader run: the paper match, the claims, their check, or the answers to an author's
+# questions (docs/protocol.md). The run itself is
+# encore-protocol's papers.yml, at the version protocol.lock names; this workflow only takes the inputs, by hand
+# from the Actions tab or from the queue runner, as
+#   gh workflow run papers.yml -f paper=guan-2022 -f role=...
+# The version here, in attempt-sequence.yml and in protocol.lock must agree (tests/test_protocol_pin.py).
+# A reusable workflow's version cannot come from a file, so it is written out in each.
 
 on:
   workflow_dispatch:
@@ -51,338 +41,24 @@ on:
       replicate:
         description: "For a replicate's answer run (docs/replicates.md): its name, r1, r2, ... Empty otherwise"
         default: ""
-  # Called by attempt-sequence.yml, before the author.
-  workflow_call:
-    inputs:
-      dataset:
-        type: string
-        default: ""
-      paper:
-        type: string
-        default: ""
-      dandiset:
-        type: string
-        default: ""
-      role:
-        type: string
-        required: true
-      model:
-        type: string
-        default: claude-opus-5-5
-      account:
-        type: string
-        default: verified
-      replicate:
-        type: string
-        default: ""
-    secrets:
-      CLAUDE_CODE_OAUTH_TOKEN:
-        required: true
-      CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED:
-        required: false
-      ANTHROPIC_API_KEY_CREDITS:
-        required: false
 
 permissions:
-  contents: read
-
-concurrency:
-  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('-{0}', inputs.replicate) || '' }}
-  cancel-in-progress: false
-
-env:
-  DATASET: ${{ inputs.dataset || inputs.dandiset }}
-  PAPER: ${{ inputs.paper }}
-  ROLE: ${{ inputs.role }}
-  MODEL: ${{ inputs.model }}
-  ACCOUNT: ${{ inputs.account || 'verified' }}
-  REPLICATE: ${{ inputs.replicate }}
-  CLAUDE_CODE_VERSION: 2.1.284
-  # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
-  # Code forces permission mode `default`, so this list and --permission-prompts none decide what
-  # runs: anything else is refused.
-  TOOLS: Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite
-  # Tools that only make sense in a session someone comes back to. In a headless run, ending the
-  # turn ends the run, so an agent that schedules a wakeup or watches a background job loses it.
-  NOT_TOOLS: ScheduleWakeup,CronCreate,CronDelete,CronList,Monitor,RemoteTrigger,Workflow
+  contents: write   # the called workflow's commit job pushes to the attempt's branch
+  # id-token and attestations: the called workflow's submit job, which signs a run's results, runs only for
+  # encore-runner (input `registry`), but GitHub checks every job's permissions against these.
+  id-token: write
+  attestations: write
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
-    environment: papers
-    timeout-minutes: 180
-    outputs:
-      started: ${{ steps.agent.outputs.started || steps.checks.outputs.started }}
-      folder: ${{ steps.start.outputs.folder }}
-      flagged: ${{ steps.flag.outputs.flagged }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          fetch-depth: 1   # no step reads history, and all of it is ~930 MB (two jobs a run, eleven runs a chain)
-
-      - name: Start from the attempt's branch if it exists
-        id: start
-        run: |
-          # The paper match is on a dataset, named by its folder (000147 for DANDI, <archive>-<id> otherwise); the
-          # other roles are on a paper, named by its key (docs/paper-first.md). The name names the files and branch.
-          if [ "$ROLE" = paper-match ]; then
-            FOLDER=$(python3 tools/datasets.py folder "$DATASET") || { echo "::error::Not a dataset: $DATASET"; exit 1; }
-            TDIR="match/$FOLDER"
-          else
-            FOLDER=$PAPER
-            [[ "$FOLDER" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || { echo "::error::Not a paper key: '$PAPER'"; exit 1; }
-            TDIR=$FOLDER
-          fi
-          BRANCH="attempt/$FOLDER"
-          # A replicate's questions are answered on its own branch (docs/replicates.md); only the answer role runs there.
-          if [ -n "$REPLICATE" ]; then
-            [[ "$REPLICATE" =~ ^r[0-9]+$ ]] && [ "$ROLE" = answer ] || { echo "::error::A replicate takes a name r1, r2, ... and only the answer role"; exit 1; }
-            BRANCH="replicate/$FOLDER/$REPLICATE"
-          fi
-          { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; echo "TDIR=$TDIR"; } >> "$GITHUB_ENV"
-          echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
-          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
-            git fetch --depth 1 origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
-            # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
-            # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
-            git restore --worktree --source "$GITHUB_SHA" -- tools
-          elif [ "$ROLE" != claims ] && [ "$ROLE" != paper-match ]; then
-            echo "::error::No branch $BRANCH; run claims first"; exit 1
-          fi
-          git log --oneline -1
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install Claude Code and the registry's tools
-        run: |
-          # The credential scrub runs the agent's commands in a sandbox built on bubblewrap and
-          # socat. Bubblewrap needs unprivileged user namespaces; Ubuntu 24.04 restricts them.
-          # The runner's DNS can fail for a few minutes (2026-11-11: six author runs stopped here in an hour, on
-          # "Temporary failure resolving archive.ubuntu.com"). Each download is tried again, then the whole install.
-          for try in 1 2 3 4; do
-            sudo apt-get install -y -q -o Acquire::Retries=3 bubblewrap socat && break
-            [ $try = 4 ] && { echo "::error::could not install bubblewrap and socat (the network?)"; exit 1; }
-            sleep $((try * 30)); sudo apt-get update -q || true
-          done
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
-          bwrap --ro-bind / / --unshare-all true && echo "bubblewrap works"
-          npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
-          pip install --no-cache-dir uv pyyaml jsonschema nbformat
-
-      - name: Write the prompt
-        run: |
-          python tools/agent_run.py prompt "$ROLE" "$FOLDER" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
-          # The workflow's own tools, copied before the agent can change the checkout.
-          cp tools/transcript.py tools/progress.py tools/flagged.py "$RUNNER_TEMP/"
-
-      - name: Put the papers under paper/
-        env:
-          PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
-        run: |
-          # The paper match reads the dataset's papers; the other roles, the paper's, from each of its datasets.
-          if [ "$ROLE" = paper-match ]; then tools/get_papers.sh "$FOLDER" paper
-          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper \
-                 "$(python tools/paper_records.py doi "$FOLDER")"; fi
-
-      - name: Run the paper match's cheap checks
-        id: checks
-        if: ${{ inputs.role == 'paper-match' && !inputs.papers_only }}
-        run: |
-          # Writes papers/match/<folder>.yaml. When the checks settle every paper there is nothing for the agent.
-          need=$(python tools/paper_match.py checks "$FOLDER" paper)
-          cat "papers/match/$FOLDER.yaml"
-          echo "need=$need" >> "$GITHUB_OUTPUT"
-          if [ "$need" = done ]; then echo "started=true" >> "$GITHUB_OUTPUT"; fi
-
-      - name: Check that the unverified account has a token
-        if: ${{ inputs.account == 'unverified' && steps.checks.outputs.need != 'done' }}
-        env:
-          HAS_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED != '' }}
-        run: |
-          # The runner reads this message and repeats the run on the verified account.
-          [ "$HAS_TOKEN" = true ] || { echo "::error::UNVERIFIED-UNAVAILABLE: no CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED secret"; exit 1; }
-
-      - name: Check that the api account has its key
-        if: ${{ inputs.account == 'api' && steps.checks.outputs.need != 'done' }}
-        env:
-          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY_CREDITS != '' }}
-        run: |
-          [ "$HAS_KEY" = true ] || { echo "::error::API-UNAVAILABLE: no ANTHROPIC_API_KEY_CREDITS secret"; exit 1; }
-
-      - name: Check the token, the permission mode and the agent's shell
-        if: ${{ !inputs.papers_only && steps.checks.outputs.need != 'done' }}
-        env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.account != 'api' && (inputs.account == 'unverified' && secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED || secrets.CLAUDE_CODE_OAUTH_TOKEN) || '' }}
-          ANTHROPIC_API_KEY: ${{ inputs.account == 'api' && secrets.ANTHROPIC_API_KEY_CREDITS || '' }}
-          CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
-          DISABLE_AUTOUPDATER: '1'
-          DISABLE_TELEMETRY: '1'
-        run: |
-          set +e -uo pipefail
-          cd "$RUNNER_TEMP"
-          # The agent runs one shell command that counts how many of the two credential variables its commands can
-          # see, by name, without reading a value (0 when the scrub removed them), and prints a marker that shows
-          # the sandboxed shell started. On 2026-11-06 the model often declined the earlier command, which read the
-          # values, so the prompt says what the check is for, the command reads names only, and it is tried 3 times.
-          for try in 1 2 3; do
-            claude -p 'Before your task, this is the workflow'"'"'s own self-test that the credentials of this job are hidden from your shell. Use the Bash tool to run exactly this command, which prints only how many of two variable names are set in your shell, never a value: printf "%s:" "$(env | cut -d= -f1 | grep -c -x -e CLAUDE_CODE_OAUTH_TOKEN -e ANTHROPIC_API_KEY)"; echo shell-ok. Then reply with only the line it printed.' \
-              --model "$MODEL" --max-turns 3 \
-              --output-format stream-json --verbose --permission-prompts none --allowedTools "$TOOLS" \
-              > preflight.jsonl 2> preflight.err
-            mode=$(jq -r 'select(.type=="system" and .subtype=="init") | .permissionMode' preflight.jsonl)
-            result=$(jq -r 'select(.type=="result") | .result' preflight.jsonl)
-            echo "try $try: permission mode: $mode; reply: $result"
-            case "$result" in
-              *"Failed to authenticate"*|*"Invalid API key"*) echo "::error::The $ACCOUNT account's secret did not authenticate: $result"; exit 1;;
-            esac
-            [[ "$result" =~ [0-9]+:shell-ok ]] && break
-          done
-          tail -c 1000 preflight.err
-          [[ "$result" =~ [0-9]+:shell-ok ]] || { echo "::error::The agent did not run the self-test in 3 tries; its reply: $result"; exit 1; }
-          [[ "$result" =~ (^|[^0-9])0:shell-ok ]] || { echo "::error::The token is visible to the agent's commands"; exit 1; }
-          [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
-
-      - name: Run the agent
-        if: ${{ !inputs.papers_only && steps.checks.outputs.need != 'done' }}
-        id: agent
-        # Shorter than the job's limit, so that the transcript is still exported when it is reached.
-        timeout-minutes: 300
-        env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.account != 'api' && (inputs.account == 'unverified' && secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED || secrets.CLAUDE_CODE_OAUTH_TOKEN) || '' }}
-          ANTHROPIC_API_KEY: ${{ inputs.account == 'api' && secrets.ANTHROPIC_API_KEY_CREDITS || '' }}
-          CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
-          CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1'
-          DISABLE_AUTOUPDATER: '1'
-          DISABLE_TELEMETRY: '1'
-          # Commands run in the foreground until they finish: a notebook run can take many minutes.
-          CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: '1'
-          BASH_DEFAULT_TIMEOUT_MS: '3600000'
-          BASH_MAX_TIMEOUT_MS: '7200000'
-        run: |
-          set +e -uo pipefail     # keep going when claude fails, to report how
-          echo "started=true" >> "$GITHUB_OUTPUT"
-          claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
-            --model "$MODEL" \
-            --output-format stream-json --verbose --forward-subagent-text \
-            --permission-prompts none --allowedTools "$TOOLS" --disallowedTools "$NOT_TOOLS" \
-            2> "$RUNNER_TEMP/stderr.txt" | tee "$RUNNER_TEMP/run.jsonl" | python "$RUNNER_TEMP/progress.py"
-          status=$?
-          echo "claude exited with $status"
-          tail -c 2000 "$RUNNER_TEMP/stderr.txt" || true
-          # What the run cost at API prices, which the pacer adds up for an account with a budget (pools.yaml).
-          cost=$(jq -r 'select(.type=="result") | .total_cost_usd // empty' "$RUNNER_TEMP/run.jsonl" 2>/dev/null | tail -n 1)
-          echo "ENCORE_COST_USD=${cost:-unknown} account=$ACCOUNT"
-          exit $status
-
-      - name: Check whether the account flagged the run
-        id: flag
-        if: always() && steps.agent.outputs.started == 'true' && env.ACCOUNT != 'verified'
-        run: |
-          # On an account other than the verified one, a run its safety checks flagged (a refusal, or a switch
-          # to another model) is not kept: the job fails with FLAGGED, and the runner repeats it on the verified
-          # account, or leaves the dataset when it has no fallback.
-          if reason=$(python "$RUNNER_TEMP/flagged.py" "$RUNNER_TEMP/run.jsonl" "$RUNNER_TEMP/stderr.txt" --model "$MODEL"); then
-            echo "not flagged"
-          else
-            echo "flagged=true" >> "$GITHUB_OUTPUT"
-            echo "::error::FLAGGED on the $ACCOUNT account: $reason"
-            echo "Flagged on the $ACCOUNT account: $reason. Not committed; repeat on the verified account." >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
-
-      - name: Export the transcript and collect the changes
-        if: always() && (steps.agent.outputs.started == 'true' || steps.checks.outputs.started == 'true') && steps.flag.outputs.flagged != 'true'
-        run: |
-          set -euo pipefail
-          out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$TDIR"
-          tool="$RUNNER_TEMP/transcript.py"
-          name="$FOLDER · $ROLE · run ${{ github.run_id }}"
-          # The reader's changes first, so that nothing in the transcript can lose them. Only the
-          # paper's claims: never paper/.
-          if [ "$ROLE" = paper-match ]; then paths=("papers/match/$FOLDER.yaml")
-          else paths=("claims/$FOLDER.yaml"); [ ! -e "questions/$FOLDER.yaml" ] || paths+=("questions/$FOLDER.yaml"); fi
-          git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
-          git diff --cached --stat
-          # No transcript when the paper match's checks settled every paper and no agent ran.
-          [ -e "$RUNNER_TEMP/run.jsonl" ] || exit 0
-          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$TDIR/$ROLE.md" --omit paper/ \
-            --report "$out/transcripts/$TDIR/$ROLE-report.md" --title "$name"
-          rm -f "$RUNNER_TEMP/run.jsonl"
-          cat "$out/transcripts/$TDIR/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          # Named for the dataset and role: in a pipeline, several datasets run inside one
-          # workflow run, and an artifact name shared between them made a commit job pick up
-          # another dataset's results.
-          name: agent-run-${{ env.FOLDER }}-${{ inputs.role }}
-          path: ${{ runner.temp }}/out
-          retention-days: 14
-          if-no-files-found: ignore
-
-  commit:
-    needs: run
-    # Whenever the agent was started, also when the run was cancelled or failed, so that its
-    # transcript and partial work are kept; the commit message says how the run ended.
-    if: always() && needs.run.outputs.started == 'true' && needs.run.outputs.flagged != 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      FOLDER: ${{ needs.run.outputs.folder }}
-      BRANCH: ${{ inputs.replicate && format('replicate/{0}/{1}', needs.run.outputs.folder, inputs.replicate) || format('attempt/{0}', needs.run.outputs.folder) }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1   # no step reads history, and all of it is ~930 MB (two jobs a run, eleven runs a chain)
-
-      - uses: actions/download-artifact@v4
-        with:
-          # Named for the dataset and role: in a pipeline, several datasets run inside one
-          # workflow run, and an artifact name shared between them made a commit job pick up
-          # another dataset's results.
-          name: agent-run-${{ needs.run.outputs.folder }}-${{ inputs.role }}
-          path: out
-
-      - name: Commit to the attempt's branch
-        run: |
-          set -euo pipefail
-          # Take the archiving script from the workflow's own ref: a branch made before it existed lacks it.
-          cp tools/archive_transcripts.sh "$RUNNER_TEMP/"
-          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
-            git fetch --depth 1 origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
-          else
-            git checkout -b "$BRANCH"
-          fi
-          # Refuse anything that is not this run's: a guard against results being mixed up.
-          # `|| true`: grep finds nothing in a run that is all this one's, and fails, which `set -e` would stop on.
-          if [ "$ROLE" = paper-match ]; then
-            others=$({ ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER"; } || true)
-          else others=$(ls out/transcripts | grep -vx "$FOLDER" || true); fi
-          others=$(echo "$others" | grep . || true)
-          [ -z "$others" ] || { echo "::error::Transcripts for other datasets or papers: $others"; exit 1; }
-          # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.
-          if [ "$ROLE" = claims ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"; fi
-          if [ -s out/changes.patch ]; then
-            allowed="^(claims/$FOLDER\.yaml$|questions/$FOLDER\.yaml$|papers/match/$FOLDER\.yaml$)"
-            stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
-            [ -z "$stray" ] || { echo "::error::Changes outside dataset $FOLDER: $stray"; exit 1; }
-            git apply --index out/changes.patch
-          fi
-          # A transcript with nothing but its title means the agent never started; keep it out.
-          for f in out/transcripts/*/*.md out/transcripts/match/*/*.md; do [ -e "$f" ] || continue; [ "$(wc -l < "$f")" -gt 2 ] || rm "$f"; done
-          cp -r out/transcripts . && git add transcripts
-          if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
-          git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
-            commit -m "Agent run on $FOLDER: $ROLE (${{ needs.run.result }})" \
-            -m "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            -m "Account: $ACCOUNT"
-          git push origin "$BRANCH"
+  papers:
+    uses: encorescience/encore-protocol/.github/workflows/papers.yml@v0.1.6
+    with:
+      dataset: ${{ inputs.dataset }}
+      paper: ${{ inputs.paper }}
+      dandiset: ${{ inputs.dandiset }}
+      role: ${{ inputs.role }}
+      papers_only: ${{ inputs.papers_only }}
+      model: ${{ inputs.model }}
+      account: ${{ inputs.account }}
+      replicate: ${{ inputs.replicate }}
+    secrets: inherit

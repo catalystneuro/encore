@@ -1,7 +1,7 @@
 name: Paper manifest
 run-name: "Paper manifest"
 
-# Keeps papers/manifest.yaml in step with the private paper store (catalystneuro/registry-papers). The manifest
+# Keeps papers/manifest.yaml in step with the private paper store (encorescience/registry-papers). The manifest
 # says, for each target's papers, whether the store has the full text; the pipeline page counts a target whose
 # papers it does not list as waiting on a person, and the claims-only queue (tools/runner/describe.py
 # next-claims) skips it. It used to be written by hand, and by 2026-11-10 was nine days behind: 91 targets
@@ -21,7 +21,7 @@ on:
     paths:
       - "targets/**"
       - "papers/triage.yaml"
-      - "tools/papers_manifest.py"
+      - "protocol.lock"   # tools/papers_manifest.py comes with the protocol
   workflow_dispatch:
 
 permissions:
@@ -42,6 +42,9 @@ jobs:
         with:
           ref: main
 
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: bash tools/protocol.sh
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -56,7 +59,7 @@ jobs:
           printf '%s\n' "$PAPERS_DEPLOY_KEY" > "$key"; chmod 600 "$key"
           # The texts and the names of the files beside them are enough: the PDFs stay as LFS pointers.
           GIT_LFS_SKIP_SMUDGE=1 GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
-            git clone -q --depth 1 git@github.com:catalystneuro/registry-papers.git "$RUNNER_TEMP/store"
+            git clone -q --depth 1 git@github.com:encorescience/registry-papers.git "$RUNNER_TEMP/store"
           rm -f "$key"
           git -C "$RUNNER_TEMP/store" log -1 --format='the store at %h, %cI'
 

@@ -1,386 +1,445 @@
-# 002014 · author-revise-2 · run 38754296818
+# choi-2025 · author-revise-2 · run 45516661000
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat transcripts/002014/verifier-2-report.md; echo ----; sed -n '/step 6/,/step 7/p' docs/protocol.md | head -100; ls entries/002014-choi-2025 entries/002014-choi-2025/*
+date -u; ls; ls entries/choi-2025 transcripts/choi-2025 questions 2>/dev/null | head -50
 ```
 
 ```
-**1. Outcomes**
-
-The claims file has 13 claims. The attempt record gives 5 tested outcomes and 8 blocked (data_missing). I agree with all 13.
-
-- **fig8a-single-trial-dopamine, reproduced.** Agree. It is a weak test: 64% of the 889 trials with a reference also exceed 1, and trial 133 ranks above 76.9% of them (cell 21).
-- **fig8b-dopamine-large-vs-small, reproduced.** Agree. p = 0.0035, and the within-block permutation gives p = 0.0045 (cell 24).
-- **fig9a-spikes-task-aligned, reproduced.** Agree. Modulation is 0.49 against a null 95th percentile of 0.06 (cell 27). This depends on the 11812.11 s offset, which cell 14 supports.
-- **fig9bc-unit-waveform-isi, reproduced.** Agree by the criterion only. The criterion can hardly fail, and the notebook now says so.
-- **fig9d-beta-suppression-large, partially_reproduced.** Agree. Medians are −0.158 and −0.125, p = 0.108, block permutation p = 0.19 (cell 33).
-- **The 8 blocked claims** (recordings-two-monkeys, scfe-functional-yield, scfe-background-yield, mcfe-functional-yield, dopamine-signal-yield, asepsis-cultures, fig6-drainage-volume, fig7-bone-growth-margins): agree, data_missing.
-
-**2. Text against the printed outputs**
-
-Cell numbers below are the current notebook's; they differ from round 1. Every number in the Result cells (22, 25, 28, 31, 34), the Summary (35), the README and the attempt-record notes matches the printed outputs, except for these:
-
-- **Cell 17:** "with no run of |t| above 3 before it (largest 2.04)". Cell 16 prints "largest |t| before V: 2.06".
-- **Cell 31 (Result), cell 13 and the fig9bc notes in the attempt record:** "every spike exceeds the 40 µV threshold". Cell 12 checks only the first 20000 of 101733 spikes (`max_spikes=20000`) and prints 1.000 at three decimals. Cell 30 loads all the waveforms but never prints this fraction.
-- **Cell 15:** "nearly every spike's trough lies between -7.4 and -6.9 ms". Its source, cell 14, prints the 10th and 90th percentiles, so 20% of troughs lie outside that r
-[... 53 more lines not kept]
+Wed Nov 25 00:19:02 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+[... 61 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n -i "hand over\|^#" docs/protocol.md | head -50; ls attempts* 2>/dev/null; git ls-files | grep 002014
+cat transcripts/choi-2025/verifier-2-report.md; ls transcripts/choi-2025 attempts | grep -i choi; ls attempts | head
+```
+
+```
+**Round 2 verifier report: choi-2025-02 (DANDI:002014 version 0.261120.0528)**
+
+**1. Outcomes**
+
+The claims file has 13 claims. The attempt record has 13 outcomes: 5 tested and 8 blocked (data_missing). No outcome carries `assumed: true`.
+
+| Claim | Agree? | Basis (cell) |
+|---|---|---|
+| fig8a-single-trial-dopamine | Yes, reproduced | Cell 10: ratio 2.025 for row 132 and 2.199 for row 133. Either reading is above 1. |
+| fig8b-dopamine-large-vs-small | Yes, reproduced | Cell 14: V to RW difference 0.758, p = 0.0028, n = 448/498, 4 dropped. |
+| fig9a-spikes-task-aligned | Yes, reproduced | Cell 18: every trial has a spike (fraction 1.0). Variance 0.4807 against a 95th percentile of 0.0574 to 0.0607; no null draw reaches it. |
+| fig9bc-unit-waveform-isi | Yes, reproduced | Cell 22: 0 intervals under 1 ms; peak/SD ratio 4.79. |
+| fig9d-beta-suppression-large | Yes, partially_reproduced | Cell 26: median large −0.156, small −0.125, p = 0.112. No variant reaches p < 0.05. |
+| The 8 blocked claims | Yes, blocked (data_missing) | Cell 30: the only subject is sub-Monkey-T, and the Zenodo record holds no yield, culture, drainage or imaging data. |
+
+I found no place where the claims file misreads the paper. The paper never says "single unit"; that wording is the claims file's own, and the attempt flags it (cell 24, fig9bc notes).
+
+**2. Sentences the printed outputs do not support**
+
+- **Cell 16 and the fig8b notes: "1.32 to 1.68 from 5 to 8 s".** In cell 7 the +5 to +8 s bins are 1.57, 1.68 and 1.64. The value 1.32 is the +4 to +5 s bin. The range should read 1.57 to 1.68.
+[... 57 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n "" docs/protocol.md | sed -n '1,40p'; grep -n "^#" docs/protocol.md
 ```
 
 ```
 1:# Protocol for an attempt
-19:## Author
-21:### 1. Establish what can be tested
-145:### 2. Check the data against its description
-160:### 3. Write the entry
-208:### 4. Lock, check and run
-219:### 5. Record the attempt
-246:  verification round, with its `reason` (see "Hand over for verification").
-266:### 6. Hand over for verification
-278:After the first round, fix what it found, re-run, and hand over the full
-298:## Repeat attempts
-311:## Verifier
-315:### Round 1: without the author's conclusions
-329:### Round 2: with the author's conclusions
-340:### Round 3: proposed changes
-000006-economo-2018-01.yaml
-000035-scala-2021-01.yaml
-000127-chowdhury-2020-01.yaml
-000130-sohn-2019-01.yaml
-000147-guan-2022-01.yaml
-[... 24 more lines not kept]
+2:
+3:Version: `pilot-18`. Record this version in the attempt's provenance.
+4:
+5:This is what agents, or people, do to attempt a target and deposit the
+6:result. A target is a dataset in a public archive and a paper it names. How
+7:each archive's datasets are named, versioned and read is in
+8:[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9:([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+10:
+11:An attempt has three roles, each a separate run with a separate context:
+12:
+13:- The **reader** reads the paper and writes the claims file: every finding,
+14:  and how each is to be tested, taken from the paper. A second reader checks
+15:  it against the paper. Readers never see the dataset's data.
+16:- The **author** tests the claims on the dataset. It reads the paper to
+17:  understand the claims, but the claims file binds it: it cannot change a
+18:  claim's statement, expected values or criterion. A method detail the file
+19:  lacks it takes from the paper, citing the passage, and it asks a reader
+20:  only when it believes the file misreads the paper.
+[... 41 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 219,345p docs/protocol.md; cat attempts/002014-choi-2025-01.yaml
+sed -n 199,215p docs/protocol.md; sed -n 490,640p docs/protocol.md; sed -n 755,800p docs/protocol.md
 ```
 
 ```
+## Author
+
+The workflow puts the paper under `paper/`, as for the reader. Read it to
+understand the claims, their data and their figures. The claims file still
+decides what is tested: do not change a claim's statement, expected values or
+criterion. A method detail the claims file lacks is taken from the paper
+(step 6).
+
+**Time.** An author run is stopped five hours after it starts, and whatever
+is not recorded by then is lost. The prompt says when the run started and the
+time by which to finish. Check the clock (`date -u`) between steps. When that
+time comes, stop analysing and finish: record each claim not yet tested as
+blocked, `too_large` where the computation is what stopped it, saying how far
+it got, then write the attempt record and run the entry's checks. A record
+with some claims blocked for time is worth more than a run that is cut off.
+
+### 1. Establish what can be tested
 ### 5. Record the attempt
 
-Write `attempts/<entry name>-<nn>.yaml`.
-
-- **One outcome per claim**, including blocked ones. The outcome describes the
-  result, not the method:
-  - `reproduced`: the result matches the claim.
-  - `partially_reproduced`: the effect is present but weaker, or holds only in
-    part.
-  - `not_reproduced`: the analysis ran and the result differs.
-  - `blocked`: the claim could not be tested; give `blocked_by` and say why.
-    When the paper states a chance level or false-positive rate for a
-    selection, compute it with your procedure. If yours is far from the
-    paper's, the procedures differ, and the outcome is `blocked` with
-    `methods_underspecified` even though the analysis ran.
-
-  The criterion decides the outcome. Where the claim's statement says more
-  than the criterion tests (a p-value, a second condition), the notes say
-  whether that part holds.
-- **`deviations`**: every way the test differed from the paper's method or
-[... 412 more lines not kept]
+Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
+[... 173 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002014-choi-2025; python -c "
+cat attempts/choi-2025-02.yaml
+```
+
+```
+schema_version: 3
+id: choi-2025-02
+datasets:
+- archive: dandi
+  id: "002014"
+  version: 0.261120.0528
+  doi: 10.48324/dandi.002014/0.261120.0528
+  relation: primary
+paper: doi:10.1016/j.jneumeth.2025.110467
+date: '2026-11-24'
+entry: choi-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+[... 315 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/choi-2025; cat README.md; python -c "
 import json;nb=json.load(open('reproduce_choi_2025.ipynb'))
 for i,c in enumerate(nb['cells']):
-  if i in (5,7,12,13,14,15,16,17,29,30,31,35,36):
-    print('=====',i,c['cell_type']);print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-      print('--out--');print(''.join(o.get('text',''))[:3000])
-"; cat README.md
+  print('=====',i,c['cell_type']); print(''.join(c['source'])[:3000])
+"
 ```
 
 ```
-===== 5 code
-counts = chamber.raw_event_counts(f)
-print("Events as stored and after removing repeats:")
-print(counts.to_string(index=False))
-print("\nTrials:", len(trials), "; trial windows", np.unique(np.round(trials.stop_time - trials.start_time, 6)), "s;",
-      "trial-start events matching the trials' midpoint_time:",
-      int(np.sum([np.min(np.abs(events["intended trial start"] - m)) < 1e-6 for m in trials.trial_start])))
-tags = f["intervals/trials/tags"][()]
-print("Trial tags:", pd.Series([t.decode() for t in tags]).value_counts().to_dict())
-print("Trials with more than one V:", int((trials.n_V > 1).sum()))
-print("\nTrial outcomes (first error event, or the reward size):")
-print(pd.crosstab(trials.error.fillna("none"), trials.reward.fillna("no reward")).to_string())
-succ = trials[trials.success]
-print("\nSuccessful trials: large", int((succ.reward == "large").sum()), ", small", int((succ.reward == "small").sum()))
-print("Successful trials by side and reward:")
-print(pd.crosstab(succ.side, succ.reward).to_string())
-lat = pd.DataFrame({"V - trial start": succ.V - succ.trial_start, "RW - V": succ.RW - succ.V})
-print("\nLatencies in successful trials (s):")
-print(lat.describe(percentiles=[0.05, 0.5, 0.95]).round(3).to_string())
-===== 7 markdown
-[... 320 more lines not kept]
+<persisted-output>
+Output too large (36.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/9adad0ba-8654-459b-8c6c-31b2bb67dd83/tool-results/b6nkekdcd.txt
+
+Preview (first 2KB):
+# Choi et al. (2025) from dandiset 002014
+
+Tests the findings of [Choi et al. (2025)](https://doi.org/10.1016/j.jneumeth.2025.110467) on
+[DANDI:002014](https://dandiarchive.org/dandiset/002014/0.261120.0528), one session of monkey T
+(09/27/2024), the session of the paper's Figures 8 and 9 (`reproduce_choi_2025.ipynb`). The
+paper's lists of large and small successful trials, from its Zenodo record
+[14825992](https://doi.org/10.5281/zenodo.14825992), are used to check the trial classes.
+
+| Claim | Outcome |
+|---|---|
+| Single-trial dopamine fluctuates more after the value cue (Fig. 8A) | Reproduced |
+| More dopamine for large than small reward between cue and reward (Fig. 8B) | Reproduced |
+| Spikes at c5d aligned to the value cue (Fig. 9A) | Reproduced |
+| Spike waveform and interspike intervals (Fig. 9B, C) | Reproduced |
+| Beta power suppressed more after large than small reward cues (Fig. 9D) | Partially reproduced (p = 0.112) |
+| Recordings in two monkeys; electrode yields; cultures; drainage; bone growth | Blocked: not in the dandiset |
+[... 18 more lines not kept]
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-cd  grep -n -i "edge\|independen\|Plexon\|cell 27\|1 under\|39" transcripts/002014/verifier-1-report.md | head -40
-```
-
-```
-11:| fig9d-beta-suppression-large | partially_reproduced | Median log-ratio is −0.158 for large and −0.125 for small trials (both below 0, large lower), Mann-Whitney p = 0.108, no trials dropped (cell 27). No variant reaches p < 0.05; the 0–0.3 s window reverses the sign (+0.001). |
-23:1. [affects a conclusion] Cell 25 / fig9bc criterion cannot really fail. The shortest ISI is 1.562 ms, about the length of the 48-sample (1.5 ms) waveform, so the detector's dead time rules out ISIs under 1 ms. The 40 µV threshold also all but forces |mean| > 2 SD at the peak sample. The "single unit" reading is unsupported. Only 54,411 of 90,912 Plexon spikes fall within 0.2 ms of a thresholded spike (cell 10), and thresholded unit 1 has 101,733 spikes, so it likely includes multi-unit crossings. The Plexon unit has 1 ISI under 1 ms and 39 under 2 ms.
-25:3. [does not affect a conclusion] Cell 21 and cell 27 run Mann-Whitney tests that treat trials as independent. Dopamine and LFP drift slowly within the session, which inflates significance. The fig8b effect is p = 0.089 in the first half and p = 0.0098 in the second.
-26:4. [does not affect a conclusion] The cell 27 plot is distorted at its edges. `band_power_around` filters 6 s segments and the plot runs to +3 s, the last sample. On synthetic white noise I get normalized power of 2.3 at +3 s and a minimum of 0.41 at 2.98 s, against about 1.1 mid-segment. The printed plotted minimum of 0.059 is probably this artefact. The windows used in the test (±1 s) are not affected.
-27:5. [does not affect a conclusion] `reference_at`: when the sample at V is NaN, the fallback averages samples within ±0.2 s, and floating-point edges can make that window asymmetric. On a synthetic linear ramp this gave a 0.13 offset. It only applies to trials where V itself falls on a NaN sample.
-31:9. [does not affect a conclusion] Cell 27 tests the median of per-trial log ratios. The paper's Fig. 9D shows trial-averaged power. The notebook prints no number for th
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002014-choi-2025; python - <<'EOF'
-import json
-p='reproduce_choi_2025.ipynb'
-nb=json.load(open(p))
-C=nb['cells']
-def sub(i,a,b):
-    s=''.join(C[i]['source']); assert a in s,(i,a); s=s.replace(a,b); C[i]['source']=s.splitlines(True)
-sub(30,'''print(f"\\nDetector dead time''','''amp_all = np.abs(wf_all).max(1)
-print(f"All {len(wf_all)} spikes: fraction whose largest |value| exceeds 40: {np.mean(amp_all > 40):.6f}; smallest largest |value| {amp_all.min():.1f}")
-print(f"\\nDetector dead time''')
-sub(14,'''print("Per-spike trough lag (ms), 10th/50th/90th percentile:", np.round(np.percentile(per_spike, [10, 50, 90]), 2))''',
-'''print("Per-spike trough lag (ms), 10th/50th/90th percentile:", np.round(np.percentile(per_spike, [10, 50, 90]), 2))
-print(f"Per-spike trough lag within 0.5 ms of {lag_ms[k_min]:.2f} ms: {np.mean(np.abs(per_spike - lag_ms[k_min]) <= 0.5):.1%} of {len(per_spike)} spikes")''')
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-git diff --stat; head -c 300 reproduce_choi_2025.ipynb; git diff | tail -5
-```
-
-```
-entries/002014-choi-2025/reproduce_choi_2025.ipynb | 3 +++
- 1 file changed, 3 insertions(+)
+```json
 {
- "cells": [
-  {
-   "cell_type": "markdown",
-   "id": "1d4f526e",
-   "metadata": {},
-   "source": [
-    "# Reproducing Choi et al. (2025) from dandiset 002014\n",
-    "\n",
-    "**Paper.** Choi J, Amjad U, Murray R, Shrivastav R, Teichert T, Goodell B, Olson M, Schaeffer DJ, Oluoch JK,\n",
-    "Sch+    "amp_all = np.abs(wf_all).max(1)\n",
-+    "print(f\"All {len(wf_all)} spikes: fraction whose largest |value| exceeds 40: {np.mean(amp_all > 40):.6f}; smallest largest |value| {amp_all.min():.1f}\")\n",
-     "print(f\"\\nDetector dead time: shortest ISI of thresholded unit {main_unit} {dead * 1000:.3f} ms; the stored waveform spans \"\n",
-     "      f\"{wf_all.shape[1]} samples ({wf_all.shape[1] / 32:.2f} ms)\")\n",
-     "plx_isi = np.diff(plx_spk)\n",
-```
-
-**Agent**
-
-Formatting preserved. Now re-running the entry.
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py all entries/002014-choi-2025 2>&1 | tail -30
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/9adad0ba-8654-459b-8c6c-31b2bb67dd83/tool-results/b6nkekdcd.txt"
+}
 ```
 
 ```
-Installed kernelspec registry-002014-choi-2025 in executed/002014-choi-2025/.venv/share/jupyter/kernels/registry-002014-choi-2025
-0 error(s)
-pass  reproduce_choi_2025.ipynb  (90 s)
+1	# Choi et al. (2025) from dandiset 002014
+2	
+3	Tests the findings of [Choi et al. (2025)](https://doi.org/10.1016/j.jneumeth.2025.110467) on
+4	[DANDI:002014](https://dandiarchive.org/dandiset/002014/0.261120.0528), one session of monkey T
+5	(09/27/2024), the session of the paper's Figures 8 and 9 (`reproduce_choi_2025.ipynb`). The
+6	paper's lists of large and small successful trials, from its Zenodo record
+7	[14825992](https://doi.org/10.5281/zenodo.14825992), are used to check the trial classes.
+8	
+9	| Claim | Outcome |
+10	|---|---|
+11	| Single-trial dopamine fluctuates more after the value cue (Fig. 8A) | Reproduced |
+12	| More dopamine for large than small reward between cue and reward (Fig. 8B) | Reproduced |
+13	| Spikes at c5d aligned to the value cue (Fig. 9A) | Reproduced |
+14	| Spike waveform and interspike intervals (Fig. 9B, C) | Reproduced |
+15	| Beta power suppressed more after large than small reward cues (Fig. 9D) | Partially reproduced (p = 0.112) |
+16	| Recordings in two monkeys; electrode yields; cultures; drainage; bone growth | Blocked: not in the dandiset |
+17	
+18	A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+19	reasoning and the differences from the paper's method.
+20	
+[... 537 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls executed/002014-choi-2025/; python -c "
-import json;nb=json.load(open('executed/002014-choi-2025/reproduce_choi_2025.ipynb'))
-for i in (12,14,16,30,36):
-  for o in nb['cells'][i].get('outputs',[]): print('==',i);print(''.join(o.get('text','')))
+cd  ls executed/choi-2025; python -c "
+import json;nb=json.load(open('executed/choi-2025/reproduce_choi_2025.ipynb'))
+for i in [7,8,10,31]:
+  c=nb['cells'][i]
+  print('=====',i)
+  if c['cell_type']=='code':
+    for o in c.get('outputs',[]): print(''.join(o.get('text','')))
+  else: print(''.join(c['source']))
 "
 ```
 
 ```
 reproduce_choi_2025.ipynb
 result.json
-== 12
-Thresholded table description: EPhys captured and thresholded spike data from site c5d. Each row contains the initial time stamp for the waveform, the unit ID (-1 indicates a poor-quality spike), followed by the detected waveform samples (48) points long sampled at 32000.0 Hz).
-Electrodes of its units: [2, 2]
-  thresholded unit 0: 3 spikes, 9589.894 to 13183.096 s, sorted True
-  thresholded unit 1: 101733 spikes, 0.011 to 18335.951 s, sorted True
-  Plexon unit 0: 90912 spikes, 0.011 to 18335.951 s, sorted False, decreasing steps 3
-Plexon spikes within 0.2 ms of a spike of thresholded unit 1: 54411 of 90912; within 1 us: 52625
+===== 7
+dopamine, large minus small, by 1 s window relative to V (referenced at V):
+-5..-4s   -0.14
+-4..-3s   -0.19
+-3..-2s    0.08
+-2..-1s    0.27
+-1..+0s    0.12
++0..+1s   -0.16
++1..+2s    0.33
++2..+3s    1.15
++3..+4s    1.44
++4..+5s    1.32
++5..+6s    1.57
++6..+7s    1.68
++7..+8s    1.64
 
-== 12
-Waveforms: 48 samples; unit attribute 'volts'; mean waveform -52.9 to 37.4 as stored; fraction of spikes whose largest |value| exceeds 40: 1.000
-Datasets: waveforms (4883328, 1) , waveforms_index (101736,) , spike_times (101736,) , spike_times_index (2,) ; waveform samples per spike (index steps) [48]
-Raw ephys duration 18335.99 s; spikes 0.011 to 18335.951 s
-
-== 14
-Raw c7b minus c5c at 60-90 s, searched in the whole stored LFP: best at offset 11812.1030 s, r = 0.9973
-Stored LFP segments searched in the raw signal within 60 s of that offset:
- trial_clock_time   raw_time    offset      r  best_r_1s_away
-       12184.9931   372.8901 11812.103 0.9887          0.3275
-[... 63 more lines not kept]
+dopamine by 1 s window relative to RW (referenced at RW): large, small, large minus small
+         large  small  large-small
+[... 49 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -- "-7.4\|every stored spike\|every spike\|up to five\|two minutes\|2.04\|first 20000" entries/002014-choi-2025/README.md entries/002014-choi-2025/reproduce_choi_2025.ipynb attempts/002014-choi-2025-01.yaml claims/002014/*.yaml
+cat questions/choi-2025.yaml; ls schemas; grep -n "verifications" -A80 schemas/*attempt* | grep -n -i -E "findings|severity|agrees|response|proposed|reason" | head -40; cat executed/choi-2025/result.json | head -30
 ```
 
 ```
-entries/002014-choi-2025/README.md:25:- `reproduce_choi_2025.ipynb`: the analysis. It takes about two minutes, most of it streaming the file.
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:31:    "6edf72904a64d92f3b6d9268d38a31ffab95f36e (`choi_2025` and the interfaces it uses). It sets the layout of the\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:405:    "of about -53 over the first 20000 spikes) are microvolts: every spike exceeds 40 in absolute value, which fits the 40 µV threshold\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:473:    "stored LFP does not. Raw c5d shows a spike at every stored spike time, but about 7 ms before it: the\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:474:    "spike-triggered trough is at -7.1 ms, and nearly every spike's trough lies between -7.4 and -6.9 ms.\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:566:    "before it (largest 2.04). Both are\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:684:    "134) the ratio is 2.04, with 36% and 46% of its samples NaN. The test says little: of the 889 successful trials\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:956:    "dead time excludes ISIs under 1 ms; and every spike exceeds the 40 µV threshold, which nearly forces the mean\n",
-entries/002014-choi-2025/reproduce_choi_2025.ipynb:1112:    "- The event table repeats each event once per overlapping 60 s trial window (up to five copies, unsorted).\n",
-attempts/002014-choi-2025-01.yaml:28:    is 2.04, with 36% and 46% of samples NaN. The test is weak. Of the 889 successful trials with a reference
-attempts/002014-choi-2025-01.yaml:78:    detector's dead time excludes ISIs under 1 ms, and every spike exceeds the 40 µV threshold, which nearly
-attempts/002014-choi-2025-01.yaml:156:    c5d (per-spike trough lags of -7.4 to -6.9 ms).
-attempts/002014-choi-2025-01.yaml:204:      no NaN in either window, and index 133 gives 2.04. This is a weak test, as 60% of successful trials also
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002014-choi-2025; python - <<'EOF'
-import json
-p='reproduce_choi_2025.ipynb'
-nb=json.load(open(p))
-C=nb['cells']
-def sub(i,a,b):
-    s=''.join(C[i]['source']); assert a in s,(i,a); s=s.replace(a,b); C[i]['source']=s.splitlines(True)
-sub(13,"every spike exceeds 40 in absolute value, which fits","in all 101733 spikes the largest absolute value exceeds 40 (the smallest is 40.3, printed in the fig9bc section), which fits")
-sub(15,"""Raw c5d shows a spike at every stored spike time, but about 7 ms before it: the
-spike-triggered trough is at -7.1 ms, and nearly every spike's trough lies between -7.4 and -6.9 ms.""",
-"""In one 300 s segment (1633 spikes), raw c5d shows a spike about 7 ms before the stored spike times: the
-spike-triggered trough is at -7.1 ms, the per-spike troughs lie between -7.4 and -6.9 ms from the 10th to
-the 90th percentile, and 98.8% lie within 0.5 ms of -7.1 ms.""")
-sub(17,"(largest 2.04)","(largest 2.06)")
-sub(31,"and every spike exceeds the 40 µV threshold,","and every one of the 101733 spikes exceeds the 40 µV threshold (smallest peak 40.3 µV),")
-sub(35,"(up to five copies, unsorted)","(about five copies on average: 7221 stored trial-start events for 1412 distinct ones; unsorted)")
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-sed -i 's/It takes about two minutes, most of it streaming the file./It takes a little over a minute (1.2 min in the last run), most of it streaming the file./' README.md
-git diff --stat
-```
-
-```
-entries/002014-choi-2025/README.md                 |  2 +-
- entries/002014-choi-2025/reproduce_choi_2025.ipynb | 16 ++++++++++------
- 2 files changed, 11 insertions(+), 7 deletions(-)
+dandiset: "002014"
+paper: doi:10.1016/j.jneumeth.2025.110467
+questions:
+- claim: fig9bc-unit-waveform-isi
+  asked: 2026-11-25
+  question: The statement says the interspike interval distribution is "consistent with a single
+    unit", but the legend of Figure 9B and 9C only describes the average waveform and the ISI
+    histogram, and the paper nowhere calls the spikes at c5d a single unit. Should the statement
+    drop "consistent with a single unit", and should the criterion still include a refractory
+    test, given that the thresholded spikes have no interval shorter than the waveform window?
+  passage: B. Average spike waveform + /− standard deviation. C. Interspike interval (ISI)
+    histogram showing the distribution of the timing between spikes detected. Bin widths are 1
+    ms. (Figure 9 legend)
+  why: The verifier (round 1) found the refractory test cannot fail, as the shortest interval
+    (1.562 ms) is about the 1.5 ms waveform window, and threshold-selected spikes tend to pass the
+    waveform test. The outcome, reproduced, then says little about a claim the paper may not make.
+    A statement limited to what the legend shows would be reproduced as well; a statement about a
+    single unit would need a test the data can fail.
+- claim: fig8b-dopamine-large-vs-small
+  asked: 2026-11-25
+[... 35 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat executed/002014-choi-2025/result.json | head -60; python -c "
-import json;nb=json.load(open('executed/002014-choi-2025/reproduce_choi_2025.ipynb'))
-for i in (21,24,27,33):
-  for o in nb['cells'][i].get('outputs',[]): print('==',i);print(''.join(o.get('text',''))[:2500])
-"
+cd  sed -n 380,520p schemas/attempt.schema.json; grep -n '"proposed"' -A40 schemas/attempt.schema.json | head -60
 ```
 
 ```
-{
- "entry": "002014-choi-2025",
- "python": "3.13",
- "results": [
-  {
-   "notebook": "reproduce_choi_2025.ipynb",
-   "ok": true,
-   "seconds": 90,
-   "error": null
-  }
- ]
-}
-== 21
-trial id 133 (1-based): reward large, error nan, V at 1.90 s, RW at 4.78 s from V; SD ratio after/before 2.02 (NaN after 0%, before 0%)
-index 133 (trial id 134): reward small, error nan, V at 1.72 s, RW at 4.73 s from V; SD ratio after/before 2.04 (NaN after 36%, before 46%)
-
-== 21
-Reference, 889 of 951 successful trials with a ratio (the others have no reference at V): median ratio 1.27, 5th-95th percentile 0.43 to 3.30, above 1 in 64%
-Trial 133's ratio 2.02 is above 76.9% of these 889 ratios
-Plotted range: -18.32 to 13.59
-[... 73 more lines not kept]
+},
+            "then": {
+              "required": [
+                "deviations"
+              ],
+              "properties": {
+                "deviations": {
+                  "minItems": 1
+                },
+                "outcome": {
+                  "not": {
+                    "const": "blocked"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+[... 162 more lines not kept]
 ```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -l "verifier-2\|round 2\|second" attempts/*.yaml | head; grep -n -A6 "^- date" attempts/001616-gerken-2025-01.yaml | head -40
-```
-
-```
-attempts/000006-economo-2018-01.yaml
-attempts/000035-scala-2021-01.yaml
-attempts/000127-chowdhury-2020-01.yaml
-attempts/000130-sohn-2019-01.yaml
-attempts/000147-guan-2022-01.yaml
-attempts/000207-zheng-2022-01.yaml
-attempts/000582-sargolini-2006-01.yaml
-attempts/000625-geiller-2020-01.yaml
-attempts/001097-liu-2024-01.yaml
-attempts/001453-fouke-2025-01.yaml
-341:- date: '2026-10-14'
-342-  kind: agent
-343-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-344-  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
-345-    module and the claims file, with the paper's full text. The verifier listed the version's assets,
-346-    and tested wilcoxon_simes, split, kappa, ranking, threshold_unit and the L1 setting of fit_logreg on
-347-    synthetic inputs.
---
-513:- date: '2026-10-15'
-514-  kind: agent
-[... 5 more lines not kept]
-```
-
-**Agent**
-
-Outputs are unchanged apart from the new lines. Now updating the attempt record.
 
 **Agent calls Bash**
 
 ```bash
 cd  python - <<'EOF'
-p='attempts/002014-choi-2025-01.yaml'
-s=open(p).read()
-def sub(a,b):
-    global s; assert s.count(a)==1,a; s=s.replace(a,b)
-sub("""detector's dead time excludes ISIs under 1 ms, and every spike exceeds the 40 µV threshold, which nearly""",
-"""detector's dead time excludes ISIs under 1 ms, and every one of the 101733 spikes exceeds the 40 µV threshold
-    (smallest peak 40.3 µV), which nearly""")
-sub("""c5d (per-spike trough lags of -7.4 to -6.9 ms).""",
-"""c5d (in one 300 s segment of 1633 spikes, per-spike trough lags of -7.4 to -6.9 ms from the 10th to the 90th
-    percentile, 98.8% within 0.5 ms of -7.1 ms).""")
-# round-1 reasons: add omitted points
-sub("""90,912 Plexon spikes fall within 0.2 ms of a thresholded spike, so unit 1 likely includes multi-unit
-      crossings. It asked""","""90,912 Plexon spikes fall within 0.2 ms of a thresholded spike, so unit 1 likely includes multi-unit
-      crossings. The Plexon unit has 1 ISI under 1 ms and 39 under 2 ms. It asked""")
-sub("""shows a spike"""if False else """p = 0.108, no trials dropped; no variant reaches p < 0.05 and the 0 to 0.3 s window reverses the sign. The
-      plot runs to the last sample of each 6 s filtered segment and is distorted there, and""",
-"""p = 0.108, no trials dropped; no variant reaches p < 0.05 and the 0 to 0.3 s window reverses the sign. The
-      Mann-Whitney test treats trials as independent while the LFP drifts slowly within the session. The
-      plot runs to the last sample of each 6 s filtered segment and is distorted there, though the ±1 s windows
-      used in the test are not affected, and""")
-s=s.rstrip('\n')+'\n'+open('/dev/stdin').read()
-open(p,'w').write(s)
+import json
+p='entries/choi-2025/reproduce_choi_2025.ipynb'
+nb=json.load(open(p))
+s=''.join(nb['cells'][8]['source'])
+s=s.replace("""Xs, Ys, best = [], [], []""","""Xs, Ys, best, best_da, best_da_iox = [], [], [], [], []""")
+s=s.replace("""    best.append((int(np.argmax(cc)) - 50) / 10)
+""","""    best.append((int(np.argmax(cc)) - 50) / 10)
+    d = fscv["da"][i]
+    if not np.isnan(d).any():
+        cd = [np.corrcoef(signal.detrend(d), signal.detrend(np.interp(tt_ + l / 10, st, cur)))[0, 1] for l in range(-50, 51)]
+        best_da.append((int(np.argmax(cd)) - 50) / 10)
+        ci = [np.corrcoef(signal.detrend(d)[50:-50], signal.detrend(y)[50 + l:len(y) - 50 + l])[0, 1] for l in range(-20, 21)]
+        best_da_iox.append((int(np.argmax(ci)) - 20) / 10)
+""")
+s=s.replace("""print(f"r of the fitted kernel""","""print(f"da, {len(best_da)} of these trials without NaN: lag of the best correlation of detrended da with the raw current "
+      f"at time + lag: median {np.median(best_da):+.1f} s, range {min(best_da):+.1f} to {max(best_da):+.1f} s; "
+      f"with iox at time + lag: median {np.median(best_da_iox):+.1f} s, range {min(best_da_iox):+.1f} to {max(best_da_iox):+.1f} s")
+print(f"r of the fitted kernel""")
+nb['cells'][8]['source']=s.splitlines(keepends=True)
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+git diff --stat 2>/dev/null; tail -c 200 entries/choi-2025/reproduce_choi_2025.ipynb | od -c | tail -3; python -c "
+import json;print(''.join(json.load(open('entries/choi-2025/reproduce_choi_2025.ipynb'))['cells'][8]['source']))"
+```
+
+```
+0000260  \n       "   n   b   f   o   r   m   a   t   _   m   i   n   o
+0000300   r   "   :       5  \n   }  \n
+0000310
+# (4) trial-aligned iox against the raw FSCV current near 0.6 V (anodic sweep, samples 57 to 66)
+fsd = f["acquisition/fscv_response_series/data"]
+print("excitation at the samples used (V):", np.round(v_scan[57:67], 2).tolist())
+K = 40  # lags of -4 to +4 s at 10 Hz
+Xs, Ys, best, best_da, best_da_iox = [], [], [], [], []
+for i in np.linspace(5, 1405, 36).astype(int):
+    m = trials.start[i]
+    k0, k1 = np.searchsorted(scan_t, [m - 36, m + 36])
+    cur = fsd[k0 * 214:k1 * 214].reshape(-1, 214)[:, 57:67].mean(1)
+    st = scan_t[k0:k1]
+    y = fscv["iox"][i]; tt_ = td_ + m
+    if np.isnan(y).any():
+        continue
+    cc = [np.corrcoef(signal.detrend(y), signal.detrend(np.interp(tt_ + l / 10, st, cur)))[0, 1] for l in range(-50, 51)]
+    best.append((int(np.argmax(cc)) - 50) / 10)
+    d = fscv["da"][i]
+    if not np.isnan(d).any():
+[... 16 more lines not kept]
+```
+
+**Agent**
+
+Added a check of whether `da` lags the raw scans the way `iox` does. Running the entry now (about 3 min last time).
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; time python tools/entry.py all entries/choi-2025 2>&1 | tail -30
+```
+
+```
+Wed Nov 25 00:20:03 UTC 2026
+Installed kernelspec registry-choi-2025 in executed/choi-2025/.venv/share/jupyter/kernels/registry-choi-2025
+0 error(s)
+pass  reproduce_choi_2025.ipynb  (166 s)
+
+real	2m58.615s
+user	2m37.774s
+sys	0m7.299s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json;nb=json.load(open('executed/choi-2025/reproduce_choi_2025.ipynb'))
+for i in [8]:
+  for o in nb['cells'][i].get('outputs',[]): print(''.join(o.get('text','')))
+"
+```
+
+```
+excitation at the samples used (V): [0.54, 0.56, 0.58, 0.59, 0.61, 0.62, 0.64, 0.66, 0.67, 0.69]
+
+36 trials; lag of the best correlation of detrended iox with the raw current at time + lag: median -1.5 s, range -2.5 to -0.8 s
+kernel from the raw current's changes at time + lag to iox's changes (x1e4), lags -4 to +4 s by 0.2 s:
+{'-4.0': -0.8, '-3.8': -1.4, '-3.6': -0.5, '-3.4': 0.5, '-3.2': 0.0, '-3.0': -0.6, '-2.8': 0.2, '-2.6': 1.3, '-2.4': 2.1, '-2.2': 4.1, '-2.0': 8.5, '-1.8': 11.4, '-1.6': 12.6, '-1.4': 15.5, '-1.2': 18.2, '-1.0': 18.6, '-0.8': 18.3, '-0.6': 19.0, '-0.4': 21.7, '-0.2': 28.3, '+0.0': 30.2, '+0.2': 15.3, '+0.4': -2.0, '+0.6': -10.4, '+0.8': -13.6, '+1.0': -15.1, '+1.2': -14.2, '+1.4': -12.9, '+1.6': -11.1, '+1.8': -7.9, '+2.0': -5.9, '+2.2': -6.4, '+2.4': -6.0, '+2.6': -4.8, '+2.8': -3.8, '+3.0': -3.2, '+3.2': -3.2, '+3.4': -3.7, '+3.6': -4.5, '+3.8': -3.6, '+4.0': -1.9}
+da, 13 of these trials without NaN: lag of the best correlation of detrended da with the raw current at time + lag: median -3.1 s, range -5.0 to -1.2 s; with iox at time + lag: median -0.3 s, range -0.4 to -0.1 s
+r of the fitted kernel: 0.413
+```
+
+**Agent**
+
+The `da` check worked: in the 13 sampled trials with no NaN, `da` trails `iox` by a further 0.1 to 0.4 s, so it carries at least the same delay. Updating the text now.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+p='entries/choi-2025/reproduce_choi_2025.ipynb'
+nb=json.load(open(p))
+def rep(i, a, b):
+    s=''.join(nb['cells'][i]['source'])
+    assert s.count(a)==1, (i,a)
+    nb['cells'][i]['source']=s.replace(a,b).splitlines(keepends=True)
+rep(4, "over 36 trials spread over the session. (5)",
+ "over 36 trials spread over the session, and the lag at which `da` best matches the raw current and\n`iox` in those of the 36 trials with no NaN. (5)")
+rep(12, "Over the 950 successful trials the median ratio is 1.259 and 62.7% are above 1; trial 133 lies at the 0.775 quantile.",
+ "Over the 941 successful trials with a ratio (9 of 950 are NaN) the median ratio is 1.259 and 62.7% are above 1; trial 133 lies at the 0.775 quantile.")
+rep(12, "the paper gives no values to compare with.",
+ "the paper gives no values to compare with. The trial-aligned FSCV lags the raw scans: `iox` best matches the raw current about 1.5 s earlier, and `da` follows `iox` by a further 0.1 to 0.4 s (data check, 13 trials), so part of the rise after V may come from changes in the raw current just before V.")
+rep(16, "and 1.32 to 1.68 from 5 to 8 s (RW is 4.72 to 5.50 s after V).",
+ "1.32 from 4 to 5 s and 1.57 to 1.68 from 5 to 8 s (RW is 4.72 to 5.50 s after V).")
+rep(16, """The statement's "especially between the value cue display and reward" does not hold in these data: the difference after RW is as large as or larger than before it.""",
+ """On the statement's "especially between the value cue display and reward": the difference arises between V and RW, rising from 0.33 at 1 to 2 s after V to 1.44 at 3 to 4 s, before RW, and then stays at about 1.6. Referenced at RW, it grows by only 0.19, 0.48 and 0.25 in the 1 s windows over 0 to 3 s after RW. The RW to RW + 3 s window is referenced at V, so it carries the difference built up before RW. The difference thus builds between V and RW and is then held; only its level is as large after RW as before. The trial-aligned FSCV lags the raw scans by about 1.5 s or more (data check), so the null 0 to 2 s variant may in part reflect this delay.""")
+rep(31, """The trial-aligned oxidation current follows the raw current near 0.6 V as a smoothing over about the preceding 2.4 s: the fitted kernel is positive from -2.4 to +0.2 s, largest at -0.2 to 0 s, and negative from +0.4 s, so it is tied to the scans with no shift of more than a few tenths of a second; this smoothing is not documented.""",
+ """The trial-aligned oxidation current follows the raw current near 0.6 V as a smoothing over about the preceding 2.8 s: the fitted kernel is positive from about -2.8 to +0.2 s, largest at -0.2 to 0 s, and negative from +0.4 s. Its peak is at lag 0, but the detrended oxidation current matches the raw current best about 1.5 s earlier (0.8 to 2.5 s), so responses in it appear late; the PCA dopamine estimate follows the oxidation current by a further 0.1 to 0.4 s. This smoothing is not documented.""")
+rep(31, "The dopamine difference between large and small trials is 0.33 or less until 2 s after V and grows after,",
+ "The dopamine difference between large and small trials is 0.33 or less until 2 s after V, grows before RW and is then held,")
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
 ```
 
@@ -391,172 +450,380 @@ EOF
 **Agent calls Bash**
 
 ```bash
-cd  cat >> attempts/002014-choi-2025-01.yaml <<'EOF'
-- date: '2026-10-15'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The full executed notebook of the revision with its conclusions and summary, the helper module, the
-    claims file, the README and this record.
-  results:
-  - claim: fig8a-single-trial-dopamine
-    agrees: true
-    outcome: reproduced
-    reason: A weak test, as 64% of the 889 trials with a reference also exceed 1, and trial 133 ranks above 76.9%
-      of them. The criterion is inherently weak and was written after trial 133's values had been printed; this
-      is now disclosed but not removable.
-    response: No change; the weakness and the timing of the criterion are stated in the conclusion, notes and
-      summary.
-  - claim: fig8b-dopamine-large-vs-small
-    agrees: true
-    outcome: reproduced
-    reason: p = 0.0035, and the within-block permutation gives p = 0.0045. Cell 17 says the largest |t| before V
-      is 2.04 while cell 16 prints 2.06. The Summary says the event table holds up to five copies of each event,
-      while 7221 stored trial-start events for 1412 distinct ones is 5.1 on average, so some events have more.
-    response: Corrected cell 17 to 2.06, and the Summary to about five copies on average, with the counts.
-  - claim: fig9a-spikes-task-aligned
-    agrees: true
-    outcome: reproduced
-    reason: Modulation is 0.49 against a null 95th percentile of 0.06. This depends on the 11812.11 s offset,
-      which cell 14 supports. Cell 15's "nearly every spike's trough lies between -7.4 and -6.9 ms" rests on the
-      10th and 90th percentiles, so 20% lie outside, and "Raw c5d shows a spike at every stored spike time" was
-      checked on only 1633 spikes in one 300 s segment. The finding's "-7.4 to -6.9 ms" reads as the full range.
-    response: Added the share of per-spike trough lags within 0.5 ms of the spike-triggered trough (98.8% of 1633).
-      Cell 15 and the finding now say the check covers one 300 s segment and that -7.4 to -6.9 ms is the 10th to
-      90th percentile.
-  - claim: fig9bc-unit-waveform-isi
-    agrees: true
-    outcome: reproduced
-    reason: Agree by the criterion only. The criterion can hardly fail, given the 1.562 ms dead time and the
-      40 µV threshold, and the data do not show a single unit (only 54411 of 90912 Plexon spikes coincide with
-      unit 1; the ISI ratio of 0.106 shows reduced but not absent short intervals), so "reproduced" carries
-      little evidence. "Every spike exceeds the 40 µV threshold" is checked on only the first 20000 of 101733
-      spikes, printed at three decimals; cell 30 loads all waveforms but never prints this fraction.
-    response: Cell 30 now prints the fraction over all 101733 spikes (1.000000, smallest peak 40.3 µV). Cells 13
-      and 31 and the notes cite it. Outcome unchanged, as the criterion decides it.
-  - claim: fig9d-beta-suppression-large
-    agrees: true
-    outcome: partially_reproduced
-    reason: Medians are -0.158 and -0.125, p = 0.108, block permutation p = 0.19. The result depends on choices
-      of band, windows and test that the paper does not state.
-    response: No change; the choices are listed under deviations.
-  - claim: recordings-two-monkeys
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: scfe-functional-yield
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: scfe-background-yield
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: mcfe-functional-yield
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: dopamine-signal-yield
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: asepsis-cultures
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: fig6-drainage-volume
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-  - claim: fig7-bone-growth-margins
-    agrees: true
-    outcome: blocked
-    reason: Agree, data_missing.
-    response: No change.
-EOF
-git diff attempts/ | head -60; python tools/entry.py check entries/002014-choi-2025 2>&1 | tail -5
+cd  grep -n -E "2\.4 s|-2\.4|1\.32|few tenths|does not hold|950 successful trials the median" entries/choi-2025/*.ipynb entries/choi-2025/README.md entries/choi-2025/entry.yaml attempts/choi-2025-02.yaml questions/choi-2025.yaml | cut -c1-250
 ```
 
 ```
-diff --git a/attempts/002014-choi-2025-01.yaml b/attempts/002014-choi-2025-01.yaml
-index d30b886..8064a3c 100644
---- a/attempts/002014-choi-2025-01.yaml
-+++ b/attempts/002014-choi-2025-01.yaml
-@@ -75,7 +75,8 @@ outcomes:
-   notes: The criterion holds, but the evidence for a single unit is weak. No ISI is under 1 ms (9 of 101732 under
-     2 ms), and the mean waveform's trough of -56.4 µV is 4.79 times the SD across spikes at that sample. Neither
-     part could easily fail. The shortest ISI, 1.562 ms, just exceeds the 48-sample (1.50 ms) waveform, so the
--    detector's dead time excludes ISIs under 1 ms, and every spike exceeds the 40 µV threshold, which nearly
-+    detector's dead time excludes ISIs under 1 ms, and every one of the 101733 spikes exceeds the 40 µV threshold
-+    (smallest peak 40.3 µV), which nearly
-     forces the trough above twice the SD. Above the dead time, ISIs per ms at 1.56 to 3 ms are 0.106 times those
-     at 10 to 30 ms (Plexon unit 0.204), which fits a refractory period in most spikes but does not rule out
-     other units. Only 54411 of the Plexon unit's 90912 spikes lie within 0.2 ms of a spike of thresholded unit 1
-@@ -153,7 +154,8 @@ findings:
-     samples (18336 s).
- - kind: other
-   statement: The stored spike times of the thresholded units are about 7.1 ms after the spike troughs in raw
--    c5d (per-spike trough lags of -7.4 to -6.9 ms).
-+    c5d (in one 300 s segment of 1633 spikes, per-spike trough lags of -7.4 to -6.9 ms from the 10th to the 90th
-[... 41 more lines not kept]
+entries/choi-2025/reproduce_choi_2025.ipynb:546:    "**Result: reproduced.** From V to RW the dopamine trace, referenced at V, averages 1.853 in 448 large and 1.095 in 498 small trials (difference of means 0.758, Mann-Whitney p = 0.0028; 4 trials dro
+entries/choi-2025/reproduce_choi_2025.ipynb:847:    "What was found about the dataset. The dandiset holds one session of monkey T, the session of Figures 8 and 9; the surgical, culture, drainage and yield results and monkey J are not in it. All strea
+attempts/choi-2025-02.yaml:51:    minus small difference is 0.33 or less until 2 s after V, 1.15 to 1.44 from 2 to 5 s and 1.32 to 1.68 from 5
+attempts/choi-2025-02.yaml:53:    "especially between the value cue display and reward" does not hold in these data, as the difference after
+attempts/choi-2025-02.yaml:162:    current near 0.6 V with no shift of more than a few tenths of a second (a fitted kernel over 36 trials is
+attempts/choi-2025-02.yaml:163:    positive from -2.4 to +0.2 s and largest at -0.2 to 0 s); the large minus small dopamine difference appears
+attempts/choi-2025-02.yaml:165:    reported by the claims file for an earlier version does not hold in this one (r -0.12 to -0.02 at that
+attempts/choi-2025-02.yaml:208:    from 2.4 s before to 0.2 s after each sample, largest at -0.2 to 0 s, and negative from +0.4 s, and the
+attempts/choi-2025-02.yaml:245:      part does not hold, and a question to a reader asks whether the criterion should test it. The iox
+attempts/choi-2025-02.yaml:247:      of more than a few tenths of a second, smoothed over about 2.4 s; new finding), and the dopamine aligned to
+questions/choi-2025.yaml:29:    (RW to RW + 3 s, 1.546, p = 0.00012; 1.32 to 1.68 in 1 s windows from 5 to 8 s after V). A
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python tools/entry.py all entries/002014-choi-2025 2>&1 | tail -3; python -c "
-import json;nb=json.load(open('executed/002014-choi-2025/reproduce_choi_2025.ipynb'))
-for i in (14,16,30,36):
-  for o in nb['cells'][i].get('outputs',[]):
-    t=''.join(o.get('text',''))
-    for l in t.splitlines():
-      if any(k in l for k in ('within 0.5','largest |t|','All 101733','ran in')): print(l)
-"
+cd  sed -n 847p entries/choi-2025/reproduce_choi_2025.ipynb | grep -o -E ".{60}(2\.4 s|-2\.4|1\.32|few tenths|does not hold).{60}"
 ```
 
 ```
-Installed kernelspec registry-002014-choi-2025 in executed/002014-choi-2025/.venv/share/jupyter/kernels/registry-002014-choi-2025
-0 error(s)
-pass  reproduce_choi_2025.ipynb  (83 s)
-Per-spike trough lag within 0.5 ms of -7.12 ms: 98.8% of 1633 spikes
-Dopamine: first time from V at which |t| (large against small) exceeds 3 for 5 samples running: 2.5 s; largest |t| before V: 2.06
-All 101733 spikes: fraction whose largest |value| exceeds 40: 1.000000; smallest largest |value| 40.3
-Notebook ran in 1.2 min
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 847p entries/choi-2025/reproduce_choi_2025.ipynb | grep -o -E ".{0,60}(2\.4 s|-2\.4|1\.32|few tenths|does not hold).{0,60}"
+```
+
+```
+ersion's release notes mention eye tracking, which the file does not hold.\n"
 ```
 
 **Agent**
 
-No outcome changed. The verifier agreed with all 13 in round 2: fig8a, fig8b, fig9a and fig9bc reproduced, fig9d partially reproduced, and 8 blocked for missing data. I found no reason to propose a change, so there is no `proposed` entry. I re-ran the entry with `python tools/entry.py all entries/002014-choi-2025` after the last edit: 0 errors, the notebook passes, and every number cited in the text matches the printed output.
+Now the attempt record and question file.
 
-**New outputs:**
-- **Cell 30:** it now checks the 40 µV threshold on all 101733 spikes, where before only the first 20000 were checked. Every spike exceeds it; the smallest peak is 40.3 µV. Cells 13 and 31 and the fig9bc notes now cite this.
-- **Cell 14:** it now prints the share of per-spike trough lags within 0.5 ms of the -7.12 ms spike-triggered trough: 98.8% of 1633 spikes.
+**Agent calls Bash**
 
-**Text corrected:**
-- **Cell 17:** the largest |t| before V is 2.06, not 2.04.
-- **Cell 15 and the spike-lag finding:** they now say the check covers one 300 s segment (1633 spikes), and that -7.4 to -6.9 ms is the 10th to 90th percentile, not the full range. I dropped the claim that raw c5d shows a spike at every stored spike time.
-- **Summary (cell 35):** "up to five copies" is now "about five copies on average", with the counts (7221 stored trial-start events for 1412 distinct ones).
-- **README:** the run time now says a little over a minute (1.2 min in the last run), not about two minutes.
+```bash
+cd  python - <<'EOF'
+p='attempts/choi-2025-02.yaml'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert s.count(a)==1,a
+    s=s.replace(a,b)
+rep("""Over the 950 successful trials
+    the median ratio is 1.259""","""Over the 941 successful trials
+    with a ratio (9 of 950 are NaN) the median ratio is 1.259""")
+rep("""    before V and rises to 13.59 about 1.9 s after. The paper gives no values to compare with.
+""","""    before V and rises to 13.59 about 1.9 s after. The paper gives no values to compare with. The trial-aligned
+    FSCV lags the raw scans (iox best matches the raw current about 1.5 s earlier, and da follows iox by a further
+    0.1 to 0.4 s in 13 trials), so part of the rise after V may come from changes in the raw current just before V.
+""")
+rep("""1.15 to 1.44 from 2 to 5 s and 1.32 to 1.68 from 5
+    to 8 s (RW is 4.72 to 5.50 s after V). The criterion tests the V to RW window only. The statement's
+    "especially between the value cue display and reward" does not hold in these data, as the difference after
+    RW is as large as or larger than before it; a question to a reader asks whether the criterion should test
+    this part. The paper reports no test.""","""1.15 to 1.44 from 2 to 4 s, 1.32 from 4 to 5 s
+    and 1.57 to 1.68 from 5 to 8 s (RW is 4.72 to 5.50 s after V). The criterion tests the V to RW window only.
+    On the statement's "especially between the value cue display and reward", the difference arises between V
+    and RW (from 0.33 at 1 to 2 s after V to 1.44 at 3 to 4 s) and is then held at about 1.6; referenced at RW
+    it grows by only 0.19, 0.48 and 0.25 per 1 s window over 0 to 3 s after RW, and the RW to RW + 3 s window
+    is referenced at V, so it carries the difference built up before RW. Only the level of the difference is as
+    large after RW as before. A question to a reader asks whether the criterion should test this part. The
+    trial-aligned FSCV lags the raw scans by about 1.5 s or more (data check), so the null 0 to 2 s variant may
+    in part reflect this delay. The paper reports no test.""")
+rep("""the trial-aligned oxidation current follows the raw
+    current near 0.6 V with no shift of more than a few tenths of a second (a fitted kernel over 36 trials is
+    positive from -2.4 to +0.2 s and largest at -0.2 to 0 s); the large minus small dopamine difference appears
+    only after V;""","""the trial-aligned oxidation current follows the raw
+    current near 0.6 V (a fitted kernel over 36 trials is positive from about -2.8 to +0.2 s and largest at -0.2
+    to 0 s), though smoothed so that it matches the raw current best about 1.5 s earlier (finding 9); the large
+    minus small dopamine difference appears only after V;""")
+rep("""- kind: metadata_insufficient
+  severity: minor
+  statement: The trial-aligned oxidation current (iox) is a smoothed version of the raw current near 0.6 V, and
+    the file does not say so. A linear kernel from the raw current to iox, fitted over 36 trials, is positive
+    from 2.4 s before to 0.2 s after each sample, largest at -0.2 to 0 s, and negative from +0.4 s, and the
+    detrended correlation peaks with the raw current 0.8 to 2.5 s earlier (median 1.5 s). Responses in the
+    trial-aligned series are therefore spread over about 2 s after the raw change. How the PCA components were
+    derived from the scans, and whether they are smoothed the same way, is not documented.""","""- kind: metadata_insufficient
+  severity: major
+  statement: The trial-aligned oxidation current (iox) is a smoothed version of the raw current near 0.6 V, and
+    the file does not say so. A linear kernel from the raw current to iox, fitted over 36 trials, is positive
+    from about 2.8 s before to 0.2 s after each sample, largest at -0.2 to 0 s, and negative from +0.4 s, and
+    the detrended correlation peaks with the raw current 0.8 to 2.5 s earlier (median 1.5 s). The PCA dopamine
+    estimate (da) follows iox by a further 0.1 to 0.4 s (median 0.3 s, 13 trials with no NaN), so it carries at
+    least the same delay. Responses in the trial-aligned series are therefore spread over about 2 s after the
+    raw change, and a latency measured on them comes out late by about 1.5 s or more. How the PCA components
+    were derived from the scans is not documented.""")
+open(p,'w').write(s)
 
-**Attempt record:**
-- I added the round-2 verification, with the verifier's reason and my response for each of the 13 claims.
-- I filled in the three points the verifier said were missing from my round-1 paraphrase of its reasons:
-  - for fig9bc, the Plexon unit's ISI counts;
-  - for fig9d, that the trials are not independent;
-  - for fig9d, that the edge distortion does not reach the ±1 s test windows.
+q='questions/choi-2025.yaml'
+s=open(q).read()
+rep("""  why: The criterion holds (difference 0.758, p = 0.0028), but the difference is larger after RW
+    (RW to RW + 3 s, 1.546, p = 0.00012; 1.32 to 1.68 in 1 s windows from 5 to 8 s after V). A
+    criterion that tested the "especially" part would give partially reproduced.""","""  why: The criterion holds (difference 0.758, p = 0.0028). The difference arises between V and RW
+    (1 s windows from V, 0.33 at 1 to 2 s, 1.44 at 3 to 4 s; RW is 4.72 to 5.50 s after V) and is
+    then held (1.57 to 1.68 from 5 to 8 s after V; RW to RW + 3 s referenced at V, 1.546, p =
+    0.00012). Whether the "especially" part holds depends on whether it means where the
+    difference arises or where it is largest, which the criterion does not say.""")
+open(q,'w').write(s)
+EOF
+grep -n "verifier-2\|round" attempts/choi-2025-02.yaml | head
+```
 
-**Not done:**
-- **Remaining weaknesses:** these cannot be fixed in this attempt, and the text already discloses them. fig8a's criterion is weak and was written after trial 133's values had been printed. fig9bc passes a criterion that could hardly fail. fig9d depends on band, window and test choices the paper does not state.
-- **Figures:** the verifier said it saw no figures, so the shapes of the panels have not been compared with the paper's Figures 8 and 9. The notebook prints numbers for each plot, but this comparison is still open.
+```
+44:    be compared, as the background-subtracted voltammograms of the trial are not in the file.
+64:    place of the paper's background subtraction of the voltammograms at V.
+127:  notes: The background current and noise of each implanted electrode are not in the dandiset or the Zenodo
+129:- claim: scfe-background-yield
+132:  notes: As for scfe-functional-yield, the per-electrode background currents and noise levels are not public.
+311:    reason: The single session has 4 electrodes. There are no per-electrode yield or background/noise data for the
+314:  - claim: scfe-background-yield
+```
 
-Nothing is committed, as instructed.
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+p='entries/choi-2025/reproduce_choi_2025.ipynb'
+nb=json.load(open(p))
+s=''.join(nb['cells'][16]['source'])
+a="1.15 to 1.44 from 2 to 5 s, 1.32 from 4 to 5 s"
+assert s.count(a)==1
+nb['cells'][16]['source']=s.replace(a,"1.15 to 1.44 from 2 to 4 s, 1.32 from 4 to 5 s").splitlines(keepends=True)
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+cat >> attempts/choi-2025-02.yaml <<'EOF'
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the first revision, with its conclusion cells and summary, the
+    attempt record, the helper module, the claims file and the paper.
+  results:
+  - claim: fig8a-single-trial-dopamine
+    agrees: true
+    outcome: reproduced
+    reason: Cell 10, ratio 2.025 for row 132 and 2.199 for row 133; either reading is above 1. The notes' "Over
+      the 950 successful trials the median ratio is 1.259" is minor, as cell 10 prints "NaN 9", so the statistics
+      cover 941 trials. If da is smoothed like iox, which lags the raw current by about 1.5 s (cell 8), part of
+      fig8a's "after V" fluctuation could come from just before V, and the notes should mention this when they
+      interpret timing.
+    response: The notes and the result cell now say 941 trials (9 of 950 NaN). The data check now also measures
+      the lag of da: in the 13 of the 36 sampled trials with no NaN, da follows iox by a further 0.1 to 0.4 s, so
+      it carries at least the iox delay. The notes and result cell say that part of the rise after V may come
+      from changes in the raw current just before V. Outcome unchanged.
+  - claim: fig8b-dopamine-large-vs-small
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, V to RW difference 0.758, p = 0.0028, n = 448/498, 4 dropped. In cell 7 the +5 to +8 s bins
+      are 1.57, 1.68 and 1.64, and 1.32 is the +4 to +5 s bin, so "1.32 to 1.68 from 5 to 8 s" should read 1.57 to
+      1.68. The sentence that "especially between the value cue display and reward" does not hold goes too far,
+      as did its own round-1 point B6. The RW to RW+3 s window (1.546) is referenced at V, so it includes the
+      difference built up before RW; referenced at V the difference rises from 0.33 to about 1.4 between V+1 s
+      and V+4 s, before RW, and stays at about 1.6 after; referenced at RW its further growth over 0 to 3 s is only
+      0.19, 0.48 and 0.25 per 1 s bin. So the difference arises between V and RW and is then held, and "does not
+      hold" is true only of its level. This does not change the outcome, as the criterion tests V to RW only. If
+      da is smoothed like iox, the null 0 to 2 s variant could be partly a filter delay.
+    response: The range now reads 1.57 to 1.68 from 5 to 8 s (1.32 from 4 to 5 s). The notes and result cell now
+      say the difference builds between V and RW and is then held, with the numbers above, and that only its
+      level is as large after RW. They say the null 0 to 2 s variant may in part reflect the delay of the
+      trial-aligned FSCV, which the new da check shows da shares. The question to a reader is kept, with its
+      reasoning corrected to the same effect. Outcome unchanged.
+  - claim: fig9a-spikes-task-aligned
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18, every trial has a spike (fraction 1.0); variance 0.4807 against a 95th percentile of 0.0574
+      to 0.0607, and no null draw reaches it. Its round-1 requests (phase of V within the scan cycle, the claims
+      file's 11812.1 s offset) are resolved.
+    response: No change.
+  - claim: fig9bc-unit-waveform-isi
+    agrees: true
+    outcome: reproduced
+    reason: Cell 22, 0 intervals under 1 ms; peak/SD ratio 4.79. The paper never says "single unit"; that wording
+      is the claims file's own, and the attempt flags it.
+    response: No change.
+  - claim: fig9d-beta-suppression-large
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 26, median large -0.156, small -0.125, p = 0.112. No variant reaches p < 0.05. The spectra
+      (cell 5) resolve its round-1 point on the stored LFP.
+    response: No change.
+  - claim: recordings-two-monkeys
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the only subject is sub-Monkey-T.
+    response: No change.
+  - claim: scfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: scfe-background-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: mcfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: dopamine-signal-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the only subject is sub-Monkey-T and the Zenodo record holds no yield data.
+    response: No change.
+  - claim: asepsis-cultures
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no culture data.
+    response: No change.
+  - claim: fig6-drainage-volume
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no drainage data.
+    response: No change.
+  - claim: fig7-bone-growth-margins
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no imaging data.
+    response: No change.
+  findings:
+  - finding: 2
+    agrees: true
+    reason: No finding is rated critical, and it would rate none critical; the clock offset does not hold in this
+      version (cell 5). It noted that "no shift of more than a few tenths of a second" is true of the kernel's
+      peak (lag 0), while cell 8 also shows the detrended correlation peaking with the raw current 1.5 s earlier
+      (median; range 0.8 to 2.5 s), and that the kernel is positive from about -2.8 s (cell 8 prints +0.2 at
+      -2.8 s and +1.3 at -2.6 s), not from -2.4 s.
+    response: The statement now gives the kernel as positive from about -2.8 s and says in the same place that
+      the oxidation current matches the raw current best about 1.5 s earlier (finding 9). The summary says the
+      same. Severity unchanged (none).
+  - finding: 5
+    agrees: true
+    reason: The thresholded and Plexon units share the same spikes; two detections of the same channel are
+      visible as such in the file (cell 3, 0.9949 overlap), so minor is right.
+    response: No change.
+  - finding: 9
+    agrees: false
+    severity: major
+    reason: It would rate the iox smoothing major for any analysis of response latency, because it is
+      undocumented and only shows up when compared with the raw scans; for the criteria tested here, minor is
+      acceptable.
+    response: Raised to major, as the rating is about harm to a user of the dataset and a latency measured on the
+      trial-aligned FSCV comes out late by about 1.5 s. The statement now adds that da follows iox by a further
+      0.1 to 0.4 s, so it carries at least the same delay, and gives the kernel as positive from about -2.8 s.
+EOF
+date -u
+```
+
+```
+Wed Nov 25 00:24:16 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py all entries/choi-2025 2>&1 | tail -8; python tools/entry.py check entries/choi-2025 2>&1 | tail -8
+```
+
+```
+error: attempts/choi-2025-02.yaml: not valid YAML: mapping values are not allowed in this context
+  in "<unicode string>", line 359, column 20
+1 error(s)
+error: attempts/choi-2025-02.yaml: not valid YAML: mapping values are not allowed in this context
+  in "<unicode string>", line 359, column 20
+1 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 355,362p attempts/choi-2025-02.yaml; grep -n -E "^\s+[a-z_]+: .*: " attempts/choi-2025-02.yaml questions/choi-2025.yaml | cut -c1-150
+```
+
+```
+cover 941 trials. If da is smoothed like iox, which lags the raw current by about 1.5 s (cell 8), part of
+      fig8a's "after V" fluctuation could come from just before V, and the notes should mention this when they
+      interpret timing.
+    response: The notes and the result cell now say 941 trials (9 of 950 NaN). The data check now also measures
+      the lag of da: in the 13 of the 36 sampled trials with no NaN, da follows iox by a further 0.1 to 0.4 s, so
+      it carries at least the iox delay. The notes and result cell say that part of the rise after V may come
+      from changes in the raw current just before V. Outcome unchanged.
+  - claim: fig8b-dopamine-large-vs-small
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -i 's/the lag of da: in the 13 of the 36 sampled trials/the lag of da. In the 13 of the 36 sampled trials/' attempts/choi-2025-02.yaml; python -c "import yaml;yaml.safe_load(open('attempts/choi-2025-02.yaml'));yaml.safe_load(open('questions/choi-2025.yaml'))" && python tools/entry.py all entries/choi-2025 2>&1 | tail -5; python tools/entry.py check entries/choi-2025 2>&1 | tail -8
+```
+
+```
+Installed kernelspec registry-choi-2025 in executed/choi-2025/.venv/share/jupyter/kernels/registry-choi-2025
+0 error(s)
+pass  reproduce_choi_2025.ipynb  (163 s)
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json;nb=json.load(open('executed/choi-2025/reproduce_choi_2025.ipynb'))
+print([l for o in nb['cells'][8]['outputs'] for l in ''.join(o.get('text','')).splitlines() if l.startswith(('da,','36'))])
+print(''.join(nb['cells'][10]['outputs'][-1].get('text',''))[-150:])
+"; grep -c -E "—|rather" attempts/choi-2025-02.yaml questions/choi-2025.yaml entries/choi-2025/reproduce_choi_2025.ipynb
+```
+
+```
+['36 trials; lag of the best correlation of detrended iox with the raw current at time + lag: median -1.5 s, range -2.5 to -0.8 s', 'da, 13 of these trials without NaN: lag of the best correlation of detrended da with the raw current at time + lag: median -3.1 s, range -5.0 to -1.2 s; with iox at time + lag: median -0.3 s, range -0.4 to -0.1 s']
+, 1.18]
+reference, all 950 successful trials: median ratio 1.259, IQR 0.804 to 1.885, fraction above 1 0.627, NaN 9; trial 133's rank: 0.775 quantile
+
+attempts/choi-2025-02.yaml:0
+questions/choi-2025.yaml:0
+entries/choi-2025/reproduce_choi_2025.ipynb:0
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+p='attempts/choi-2025-02.yaml'
+s=open(p).read()
+a="""(median 0.3 s, 13 trials with no NaN), so it carries at
+    least the same delay."""
+assert s.count(a)==1
+s=s.replace(a,"""(median 0.3 s, 13 trials with no NaN), so it carries at
+    least the same delay; matched directly with the raw current, da peaks 1.2 to 5.0 s earlier (median 3.1 s,
+    with 5.0 s the edge of the search).""")
+open(p,'w').write(s)
+EOF
+python tools/entry.py check entries/choi-2025 2>&1 | tail -3; date -u
+```
+
+```
+0 error(s)
+Wed Nov 25 00:28:01 UTC 2026
+```
+
+**Agent**
+
+I went through every point in the round-2 report. No outcome changed and nothing is proposed: the verifier agreed with all 13. The entry was re-run with `python tools/entry.py all entries/choi-2025` (notebook passes, 0 errors), and `tools/entry.py check` passes on the final record. The re-run reproduced the earlier numbers.
+
+**Outcomes:** 5 tested and 8 blocked (`data_missing`), as before.
+- Reproduced: fig8a, fig8b, fig9a, fig9bc.
+- Partially reproduced: fig9d (p = 0.112).
+
+**Output added:** the verifier warned that `da` might be smoothed and delayed like `iox`, which would bear on timing. The `iox` check in the data check now also measures `da`'s lag.
+- In the 13 of the 36 sampled trials with no NaN, `da` follows `iox` by a further 0.1 to 0.4 s, so it carries at least the same delay of about 1.5 s.
+- Matched directly against the raw current, `da`'s best lag is 1.2 to 5.0 s earlier (median 3.1 s). The 5.0 s end is the edge of the search window, so that range is loose. I report it only in finding 9.
+
+**Corrections, in the notebook and the record:**
+- **fig8b, wrong range:** the 5 to 8 s values now read 1.57 to 1.68. The 1.32 belongs to the 4 to 5 s window.
+- **fig8b, "especially between cue and reward":** the claim that this part "does not hold" is withdrawn. The text now says the difference builds between the cue and reward and then holds, and that only its level is as large after reward. The question to a reader stays, with its reasoning corrected.
+- **Timing caveat:** the fig8a and fig8b notes now say the delay in the trial-aligned dopamine trace may explain part of the rise after the cue (fig8a) and the null result for 0 to 2 s (fig8b).
+- **fig8a count:** the reference statistics cover 941 trials, not 950 (9 are NaN).
+- **Finding 2 and the summary:** the smoothing kernel is positive from about −2.8 s, not −2.4 s. The ~1.5 s lag of `iox` behind the raw current is now stated in the same place as the claim that it is tied to the scans.
+- **Finding 9:** severity raised from minor to major, as the verifier suggested. A response latency measured on the stored trial-aligned dopamine data comes out about 1.5 s late, and nothing in the file says so.
+
+**Recorded:** round 2 is under `verifications`, with the verifier's reasons and my responses for all 13 claims. No finding is rated critical, so the round's `findings` list holds only the three the verifier commented on: 2, 5 and 9. Finding 9 is recorded as a disagreement, with my response.
+
+**Not done:** the verifier reported no misreading of the paper by the claims file, so no new question was added. I left the round-1 responses as they were written, since they record that round. Nothing was committed or pushed.
 
 ## End of run
 
-16 turns, 5 minutes, result: success.
+25 turns, 9 minutes, $1.18 at API prices, result: success.
