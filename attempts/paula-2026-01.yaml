@@ -21,12 +21,15 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/encorescience/encore-registry/actions/runs/45978330957
 inputs:
-- what: Definitions of the reference systems of Fig. 3a (correlated Gaussian noise, logistic, Ikeda and tent maps, 1/f^k
-    noise), used to generate synthetic series for fig3a-reference-systems; no data.
+- what: Definitions of the reference systems of Fig. 3a (correlated Gaussian noise, logistic, Ikeda and tent maps, 1/f^k noise),
+    used to generate synthetic series for fig3a-reference-systems; no data.
   source: doi:10.1103/wndc-k654, Supplemental Material Sec. I
 - what: The unit filter of the Allen Institute's Visual Behavior Neuropixels quickstart tutorial (snr > 1, isi_violations
     < 1, firing_rate > 0.1), used as the adopted unit selection; no data.
   source: https://github.com/AllenInstitute/AllenSDK at commit a56bd8ea7613a812334602b64746cdd30c325a96, doc_template/examples_root/examples/nb/visual_behavior_neuropixels_quickstart.ipynb
+- what: Parameter labels and marker positions of Fig. 3a, read by eye from the paper's PDF (page 6) to about 0.01, used to
+    compare the synthetic series of fig3a-reference-systems with the figure; no data.
+  source: doi:10.1103/wndc-k654, Fig. 3a
 outcomes:
 - claim: table1-sample
   outcome: not_reproduced
@@ -49,18 +52,18 @@ outcomes:
   notes: 'Under every unit reading and either session reading there are 153 sessions, not 102, since all 153 sessions have
     kept populations and the 289-s spontaneous epoch. Measured values are for ''vbn'' (adopted) and session reading a: populations
     VIS 875, TH 486, HP 526, MB 247; neurons 81 138, 31 458, 58 901, 24 203; windows 16 764 natural images, 76 796 active,
-    17 072 blanks, 4268 spontaneous. Scaled by 102/153, ''vbn'' gives area neuron counts 1.00, 1.02, 0.93 and 0.94 times
-    Table I''s, subregion ratios 0.79 to 1.21, populations 583, 324, 351 and 165 (Table I 586, 313, 363, 175) and neurons
-    per population 92.7, 64.7, 112.0 and 98.0 against 92.1, 65.6, 116.8 and 98.1. All units give 1.28 to 1.43 times and
-    ''qc'' 0.34 to 0.55 times (qc drops NOT); ''qc'' puts the four window counts within tolerance (11 613, 53 151, 11 816,
-    2954) because its fewer populations per session offset the excess of sessions. Of the count-only filters, ''good'' gives
-    1.04 to 1.19 times and ''good'' with presence ratio > 0.95 0.73 to 0.96 times.'
+    17 072 blanks, 4268 spontaneous. Scaled by 102/153, ''vbn'' gives area neuron counts 1.00, 1.02, 0.93 and 0.94 times Table
+    I''s, subregion ratios 0.79 to 1.21, populations 583, 324, 351 and 165 (Table I 586, 313, 363, 175) and neurons per population
+    92.7, 64.7, 112.0 and 98.0 against 92.1, 65.6, 116.8 and 98.1. All units give 1.28 to 1.43 times and ''qc'' 0.34 to 0.55
+    times (qc drops NOT); ''qc'' puts the four window counts within tolerance (11 613, 53 151, 11 816, 2954) because its fewer
+    populations per session offset the excess of sessions. Of the count-only filters, ''good'' gives 1.04 to 1.19 times and
+    ''good'' with presence ratio > 0.95 0.73 to 0.96 times.'
   deviations:
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
-  - The selection rule is applied to Table I's 26 subregions; other location labels that pass it (HPF, MB, TH, ZI under
-    'vbn') are not used.
+  - The selection rule is applied to Table I's 26 subregions; other location labels that pass it (HPF, MB, TH, ZI under 'vbn')
+    are not used.
 - claim: fig1c-cv-region-medians
   outcome: partially_reproduced
   notebook: reproduce_paula_2026.ipynb
@@ -76,15 +79,15 @@ outcomes:
   - 0.469
   notes: 'Active-behavior medians under ''vbn'': VIS 0.416 (VISam) to 0.615 (VISp), TH 0.281 (PIL) to 0.384 (LP), HP 0.256
     (CA1) to 0.491 (DG, the highest), MB 0.165 (APN) to 0.469 (NB); every median inside its widened range and every extreme
-    within tolerance. IQRs miss in 3 of 6 visual subregions (0.150 to 0.213 against 0.108 to 0.198) and 2 of 9 thalamic
-    ones, which the criterion makes partially reproduced. Under ''all'' the medians miss (DG 0.564, NB 0.564, PIL 0.306);
-    under ''qc'' LP 0.414 misses; both not reproduced.'
+    within tolerance. IQRs miss in 3 of 6 visual subregions (0.150 to 0.213 against 0.108 to 0.198) and 2 of 9 thalamic ones,
+    which the criterion makes partially reproduced. Under ''all'' the medians miss (DG 0.564, NB 0.564, PIL 0.306); under
+    ''qc'' LP 0.414 misses; both not reproduced.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -114,8 +117,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -126,18 +129,17 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig1d-surrogate-abolishes-cv-correlations
-  notes: Under 'vbn' all 325 subregion pairs share at least one session (median 35). Empirical correlations reach 0.798
-    (reading a) and 0.679 (reading b). Surrogate |r| exceeds 0.2 in 147 pairs (a) and 240 pairs (b), largest 0.890 and 0.708;
-    over the other four seeds the largest |r| is 0.889 to 0.900 (a) and 0.699 to 0.708 (b), with 143 and 235 to 241 pairs
-    above 0.2. The per-window ISI shuffle keeps each 100-s window's spike counts, so surrogate CV follows the population
-    rate, which co-varies across regions; a shuffle over the whole recording is not tested here. 'all' and 'qc' give the
-    same outcome.
+  notes: Under 'vbn' all 325 subregion pairs share at least one session (median 35). Empirical correlations reach 0.798 (reading
+    a) and 0.679 (reading b). Surrogate |r| exceeds 0.2 in 147 pairs (a) and 240 pairs (b), largest 0.890 and 0.708; over
+    the other four seeds the largest |r| is 0.889 to 0.900 (a) and 0.699 to 0.708 (b), with 143 and 235 to 241 pairs above
+    0.2. The per-window ISI shuffle keeps each 100-s window's spike counts, so surrogate CV follows the population rate, which
+    co-varies across regions; a shuffle over the whole recording is not tested here. 'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -154,16 +156,15 @@ outcomes:
   measured:
   - 0.478
   - 0.68
-  notes: Top 10% (32 of 325 pairs) under 'vbn'. Reading b, r 0.478 to 0.680, inside 0.50 +/- 0.05 to 0.67 +/- 0.067, 28
-    of 32 within one major area (visual pairs, thalamic nuclei, ProS-SUB and POST-SUB). Reading a, r 0.469 to 0.798 (high
-    end outside), 21 of 32 within an area. Under 'all' (reading b low end 0.450) and 'qc' (0.572 to 0.777) neither reading
-    passes.
+  notes: Top 10% (32 of 325 pairs) under 'vbn'. Reading b, r 0.478 to 0.680, inside 0.50 +/- 0.05 to 0.67 +/- 0.067, 28 of
+    32 within one major area (visual pairs, thalamic nuclei, ProS-SUB and POST-SUB). Reading a, r 0.469 to 0.798 (high end
+    outside), 21 of 32 within an area. Under 'all' (reading b low end 0.450) and 'qc' (0.572 to 0.777) neither reading passes.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -177,15 +178,17 @@ outcomes:
   output: claim:fig1e-dg-ca3-anticorrelation-hubs
   measured:
   - -0.247
-  notes: Most negative 10% (32 pairs) under 'vbn'. Reading b, DG is in 16 and CA3 in 14 of them, the two most frequent,
-    and the most negative value is -0.247, within -0.27 +/- 0.027. Reading a, CA3 and NB lead (8 each) and the most negative
-    value is -0.436. Under 'all' (reading b, -0.178) and 'qc' (-0.359) the value misses.
+  notes: Most negative 10% (32 pairs) under 'vbn'. Reading b, DG is in 16 and CA3 in 14 of them, the two most frequent, and
+    the most negative value is -0.247, within -0.27 +/- 0.027. Reading a, CA3 and NB lead (8 each) and the most negative value
+    is -0.436. Under 'all' (reading b, -0.178) and 'qc' (-0.359) the value misses. The most negative value is 0.004 inside
+    its bound. The 32 pairs reach +0.026, against the statement's upper end of -0.002; the criterion does not test that part,
+    and it does not hold.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -197,15 +200,15 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig1e-midbrain-weakest-cv-correlations
-  notes: Mean |r| by area under 'vbn', reading a MB 0.183, HP 0.187, TH 0.253, VIS 0.325; reading b MB 0.210, HP 0.252,
-    TH 0.313, VIS 0.360; the midbrain is lowest under both, but only 13 (a) and 3 (b) of its 115 pairs lie in -0.044 to
-    0.033. 'all' and 'qc' give the same outcome.
+  notes: Mean |r| by area under 'vbn', reading a MB 0.183, HP 0.187, TH 0.253, VIS 0.325; reading b MB 0.210, HP 0.252, TH
+    0.313, VIS 0.360; the midbrain is lowest under both, but only 13 (a) and 3 (b) of its 115 pairs lie in -0.044 to 0.033.
+    'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -228,15 +231,15 @@ outcomes:
   - 0.304
   - 0.484
   notes: Under 'vbn' all four condition readings put all twelve medians within tolerance; a/a VISp 0.615 active, 0.579 blanks,
-    0.299 spontaneous, 0.399 images; VISl 0.577, 0.485, 0.303, 0.475; VISal 0.561, 0.483, 0.304, 0.484. The order active
-    > images > spontaneous and blanks > spontaneous holds in the three areas under every reading. 'all' is reproduced (12
-    of 12 under a/a and b/a); under 'qc' 7 or 8 of 12 are within tolerance (partially reproduced).
+    0.299 spontaneous, 0.399 images; VISl 0.577, 0.485, 0.303, 0.475; VISal 0.561, 0.483, 0.304, 0.484. The order active >
+    images > spontaneous and blanks > spontaneous holds in the three areas under every reading. 'all' is reproduced (12 of
+    12 under a/a and b/a); under 'qc' 7 or 8 of 12 are within tolerance (partially reproduced).
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -254,14 +257,14 @@ outcomes:
   - 0.328
   - 0.225
   notes: Under 'vbn' LP 0.384 active and 0.277 to 0.282 spontaneous, LGd 0.328 and 0.225 to 0.226, within tolerance under
-    every reading. Active minus spontaneous is 0.102 to 0.107 (LP) and 0.102 to 0.103 (LGd), below VISp, VISl and VISal
-    (0.256 to 0.316). 'all' is reproduced; under 'qc' LP active 0.414 misses.
+    every reading. Active minus spontaneous is 0.102 to 0.107 (LP) and 0.102 to 0.103 (LGd), below VISp, VISl and VISal (0.256
+    to 0.316). 'all' is reproduced; under 'qc' LP active 0.414 misses.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -279,15 +282,15 @@ outcomes:
   - 0.51
   - 0.424
   notes: Under 'vbn' and every condition reading, DG 0.482 to 0.504 and CA3 0.406 to 0.415 across the visually driven conditions,
-    CA1 0.254 to 0.258, DG spontaneous 0.509 to 0.510 and CA3 spontaneous 0.424 to 0.429, all within tolerance, and the
-    spontaneous medians of DG and CA3 exceed their visually driven ones. Measured values for a/a (CA1 the value furthest
-    from 0.25). 'qc' is reproduced too; under 'all' DG (0.555 to 0.580) misses.
+    CA1 0.254 to 0.258, DG spontaneous 0.509 to 0.510 and CA3 spontaneous 0.424 to 0.429, all within tolerance, and the spontaneous
+    medians of DG and CA3 exceed their visually driven ones. Measured values for a/a (CA1 the value furthest from 0.25). 'qc'
+    is reproduced too; under 'all' DG (0.555 to 0.580) misses.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -307,8 +310,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -321,22 +324,22 @@ outcomes:
   - 8.46
   - 19.1
   notes: '32 combinations (4 condition readings, 50 or 100 bins, all-pair or adjacent sum, two percentage forms). None meets
-    the full rule; active against blanks is 3.12% to 11.24% in every combination. Four meet the partial rule (100 bins,
-    all-pair sum, |A - B| over the mean, each condition reading): active against blanks 8.46% to 9.05%, the closest pair,
-    and the other pairs 19.1% to 43.7%. Measured values for a/a in that combination (active against blanks, and the lowest
-    of the four pairs against images or spontaneous). ''all'' also meets the partial rule (active against blanks 0.32% to
-    0.53%); ''qc'' does not.'
+    the full rule; active against blanks is 3.12% to 11.24% in every combination. Four meet the partial rule (100 bins, all-pair
+    sum, |A - B| over the mean, each condition reading): active against blanks 8.46% to 9.05%, the closest pair, and the other
+    pairs 19.1% to 43.7%. Measured values for a/a in that combination (active against blanks, and the lowest of the four pairs
+    against images or spontaneous). ''all'' also meets the partial rule (active against blanks 0.32% to 0.53%); ''qc'' does
+    not.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
-  - JS divergences in bits from equal-width histograms over the pooled range of each pair (claims file); percentages do
-    not depend on the log base.
+  - JS divergences in bits from equal-width histograms over the pooled range of each pair (claims file); percentages do not
+    depend on the log base.
   assumed: true
 - claim: fig2b-hp-mb-summed-js-cv
   outcome: not_reproduced
@@ -347,14 +350,14 @@ outcomes:
   - 27.2
   notes: Under 'vbn' active against spontaneous is the largest hippocampal difference in every combination, as stated, but
     44.8% to 77.6% against 15% +/- 1.5%. The largest midbrain difference is 27.2% to 48.5%, against at most 7.7%, and the
-    midbrain has the smallest difference in at most 4 of 6 pairs. Measured values for a/a, 50 bins, all pairs, |A - B| /
-    B. 'all' and 'qc' give the same outcome.
+    midbrain has the smallest difference in at most 4 of 6 pairs. Measured values for a/a, 50 bins, all pairs, |A - B| / B.
+    'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -372,8 +375,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -390,14 +393,14 @@ outcomes:
   notes: 'Median divergence from the other 25 subregions under ''vbn'', a/a, 50 bins, bits (measured): DG spontaneous 0.713,
     CA3 spontaneous 0.443, DG blanks 0.345, CA3 blanks 0.216; over the readings DG spontaneous 0.700 to 0.774 and CA3 0.422
     to 0.540 in bits, lower in natural logs. Spontaneous activity gives the largest median for both. Against the other hippocampal
-    subregions only, DG spontaneous 0.736 to 0.791 (within tolerance with 100 bins), CA3 0.555 to 0.622, blanks DG 0.529
-    to 0.545 and CA3 0.333 to 0.356, not within tolerance. ''all'' and ''qc'' give the same outcome.'
+    subregions only, DG spontaneous 0.736 to 0.791 (within tolerance with 100 bins), CA3 0.555 to 0.622, blanks DG 0.529 to
+    0.545 and CA3 0.333 to 0.356, not within tolerance. ''all'' and ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -408,16 +411,16 @@ outcomes:
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig2b-legend-js-cv
   notes: 'Under ''vbn'', reading a (a subregion''s own CV distributions between conditions): 3 of 6 visual subregions exceed
-    0.44 in bits (0 in natural logs), at most 2 of 9 thalamic subregions exceed 0.33, DG and CA3 values 0.002 to 0.153,
-    mostly below 0.135; midbrain below 0.165 in 13 to 21 of 30. Reading b (row differences of the region-pair matrices):
-    no visual or thalamic subregion passes; DG and CA3 0.024 to 0.418; midbrain 21 to 26 of 30 below 0.165. ''all'' and
-    ''qc'' give the same outcome.'
+    0.44 in bits (0 in natural logs), at most 2 of 9 thalamic subregions exceed 0.33, DG and CA3 values 0.002 to 0.153, mostly
+    below 0.135; midbrain below 0.165 in 13 to 21 of 30. Reading b (row differences of the region-pair matrices): no visual
+    or thalamic subregion passes; DG and CA3 0.024 to 0.418; midbrain 21 to 26 of 30 below 0.165. ''all'' and ''qc'' give
+    the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -430,20 +433,26 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig3a-reference-systems
-  notes: D = 6, tau = 1, 10^5 points. White noise H 0.999, C 0.001; logistic r = 4 H 0.629, C 0.484; tent mu = 1.9999 H
-    0.630, C 0.485, inside C 0.36 to 0.55 and H 0.45 to 0.88. Sine at 10 000 points per period H 0.107, C 0.106, inside
-    its reading; at 1000 and 100 points C 0.113 and 0.165, outside. Ikeda (u = 0.9) at its chaotic parameter 0.4 shifted
-    by the map's 2 pi period (p = 6.683 and 12.966) H 0.81, C 0.355, just below 0.36; of the sweep p 5 to 17 only p = 6.5
-    is inside (H 0.794, C 0.367). Exponentially correlated walks with H in 0.27 to 0.66 (alpha 0.2 to 0.7, 4 of 8) have
-    C 0.233 to 0.334, two of them below 0.27. Fig. 3a's parameter values could not be read from the text.
+  notes: 'D = 6, tau = 1, 10^5 points. White noise H 0.999, C 0.001. At the parameters labelled in Fig. 3a (read from the
+    paper''s PDF, page 6) the series match 16 of the figure''s 18 markers within 0.03 in H and C (tent mu = 0.5 and Ikeda
+    p = 5.0, both periodic, differ by 0.051 and 0.035). The chaotic maps at the figure''s largest parameters (logistic r =
+    3.88 H 0.521, C 0.449; tent mu = 1.82 H 0.580, C 0.477; Ikeda p = 6.33 H 0.744, C 0.408) are inside C 0.36 to 0.55 and
+    H 0.45 to 0.88. Sine at 10 000 points per period H 0.107, C 0.106, inside its reading; at 1000 and 100 points C 0.113
+    and 0.165, outside; the figure places the sine at H about 0.11. The exponentially correlated walk fails: at the figure''s
+    alpha = 0.47 it lies at H 0.355, C 0.265, below 0.27, as does the figure''s own marker (C 0.266); alpha = 0.89 is at H
+    0.267, C 0.217 (figure 0.263, 0.220), and alpha = 0.16 at H 0.634, C 0.339. At the fully chaotic parameters the logistic
+    (r = 4) and tent (mu = 1.9999) maps are inside too, the Ikeda map (p = 6.683 and 12.966) at H 0.81, C 0.355 just below,
+    and the walks of the alpha sweep with H in 0.27 to 0.66 have C 0.233 to 0.334, two of four below 0.27. The correlated
+    walk misses under both parameter readings, so the outcome does not depend on them.'
   deviations:
   - Synthetic series only, from the definitions of Supplemental Material Sec. I; no recordings.
   - 'Assumed (step 1.6): near 1 is read as at least 0.9 and C near 0 as at most 0.05 (10% of 0 gives no tolerance); a sine
-    cannot have H below ln 2 / ln 720 = 0.105 at D = 6, so H near 0 is read as at most 0.155 (the floor plus 0.05), and
-    the sine is sampled at 100, 1000 and 10 000 points per period, the paper giving no sampling; the logistic and tent maps
-    are judged at r = 4 and mu = 1.9999 (the tent map at mu = 2 collapsing to 0 in floating point); the Ikeda map, whose
-    p repeats every 2 pi, at 0.4 + 2 pi and 0.4 + 4 pi; the 1/f^k noise is spectral synthesis with random phases. The reading
-    of H near 0 is asked of a reader (questions/paula-2026.yaml).'
+    cannot have H below ln 2 / ln 720 = 0.105 at D = 6, so H near 0 is read as at most 0.155 (the floor plus 0.05), and the
+    sine is sampled at 100, 1000 and 10 000 points per period, the paper giving no sampling; the correlated walk and the chaotic
+    maps are judged at the parameters Fig. 3a labels (alpha 0.16, 0.47 and 0.89; each map at its largest shown, logistic r
+    = 3.88, tent mu = 1.82, Ikeda p = 6.33), read from the figure in the second revision, with the fully chaotic parameters
+    (r = 4, mu = 1.9999, Ikeda 0.4 + 2 pi and 0.4 + 4 pi) and parameter sweeps shown; the 1/f^k noise is spectral synthesis
+    with random phases. The reading of H near 0 is asked of a reader (questions/paula-2026.yaml).'
   assumed: true
 - claim: fig3b-complexity-levels-by-region
   outcome: reproduced
@@ -454,16 +463,16 @@ outcomes:
   - 0.159
   - 0.108
   - 0.098
-  notes: 'Reading a (36 active windows) under ''vbn'': mean C over windows VIS 0.158, HP 0.159, TH 0.108, MB 0.098, each
-    within tolerance; the order MB < TH < VIS and HP holds at all 36 indices. Reading b (natural images, 8 indices): VIS
-    0.204, HP 0.107 and TH 0.118, the order at 0 of 8. Reading a is the one the claims file points to (point counts summing
-    to the active count). Measured values VIS and HP low and high, TH, MB. ''all'' and ''qc'' give the same outcome.'
+  notes: 'Reading a (36 active windows) under ''vbn'': mean C over windows VIS 0.158, HP 0.159, TH 0.108, MB 0.098, each within
+    tolerance; the order MB < TH < VIS and HP holds at all 36 indices. Reading b (natural images, 8 indices): VIS 0.204, HP
+    0.107 and TH 0.118, the order at 0 of 8. Reading a is the one the claims file points to (point counts summing to the active
+    count). Measured values VIS and HP low and high, TH, MB. ''all'' and ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -481,8 +490,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -496,15 +505,15 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig3d-th-ch-plane
-  notes: 17 493 TH windows under 'vbn' (paper 11 265). H 0.929 to 0.969, C 0.081 to 0.167 (2.5th to 97.5th), inside the
-    widened ranges; C span 0.087 against VIS 0.194; Mann-Whitney p 0 at printed precision, five seeds; per-population Wilcoxon
-    p 1.1e-43. Under the 0th to 100th span, C reaches 0.344, outside. 'all' and 'qc' give the same outcome.
+  notes: 17 493 TH windows under 'vbn' (paper 11 265). H 0.929 to 0.969, C 0.081 to 0.167 (2.5th to 97.5th), inside the widened
+    ranges; C span 0.087 against VIS 0.194; Mann-Whitney p 0 at printed precision, five seeds; per-population Wilcoxon p 1.1e-43.
+    Under the 0th to 100th span, C reaches 0.344, outside. 'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -518,15 +527,15 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig3e-hp-ch-plane
-  notes: 18 927 HP windows under 'vbn' (paper 13 059). H 0.858 to 0.967, C 0.086 to 0.298, inside the widened ranges; C
-    span 0.213, the widest (VIS 0.194, TH 0.087, MB 0.074); Mann-Whitney p 0 at printed precision, five seeds; per-population
-    Wilcoxon p 7.7e-86. The 0th to 100th span misses (H from 0.353, C to 0.441). 'all' and 'qc' give the same outcome.
+  notes: 18 927 HP windows under 'vbn' (paper 13 059). H 0.858 to 0.967, C 0.086 to 0.298, inside the widened ranges; C span
+    0.213, the widest (VIS 0.194, TH 0.087, MB 0.074); Mann-Whitney p 0 at printed precision, five seeds; per-population Wilcoxon
+    p 7.7e-86. The 0th to 100th span misses (H from 0.353, C to 0.441). 'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -540,16 +549,16 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig3f-mb-ch-plane
-  notes: 8888 MB windows under 'vbn' (paper 6296). H 0.938 to 0.971, C 0.075 to 0.150, inside the widened ranges; C span
-    0.074, the narrowest; Mann-Whitney p 2.1e-166, at most 8.4e-161 over the five seeds; per-population Wilcoxon p 8.9e-23;
-    empirical median C 0.093 against surrogate 0.088. Under the 0th to 100th span H starts at 0.808 and the C span is not
-    the narrowest. 'all' and 'qc' give the same outcome.
+  notes: 8888 MB windows under 'vbn' (paper 6296). H 0.938 to 0.971, C 0.075 to 0.150, inside the widened ranges; C span 0.074,
+    the narrowest; Mann-Whitney p 2.1e-166, at most 8.4e-161 over the five seeds; per-population Wilcoxon p 8.9e-23; empirical
+    median C 0.093 against surrogate 0.088. Under the 0th to 100th span H starts at 0.808 and the C span is not the narrowest.
+    'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -579,8 +588,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -597,16 +606,16 @@ outcomes:
   - 0.187
   notes: 'Medians under ''vbn'', reading a/a: natural images 0.158 to 0.258, spontaneous 0.094 to 0.098, active and blanks
     0.102 to 0.187, all inside the widened ranges under every reading. The order fails in VISp (images 0.174 below active
-    0.187, and close to blanks 0.175, Mann-Whitney p 0.77 to 0.83); the other five areas hold it and the other 35 of 36
-    pairwise tests give p < 0.001. The partial rule needs the order, so the claim is not reproduced. The legend''s ranges
-    for VISl, VISal and VISp are met. IQRs in visually driven states 0.024 to 0.118, against the legend''s 0.08 to 0.12.
-    ''all'' and ''qc'' give the same outcome.'
+    0.187, and close to blanks 0.175, Mann-Whitney p 0.77 to 0.83); the other five areas hold it and the other 35 of 36 pairwise
+    tests give p < 0.001. The partial rule needs the order, so the claim is not reproduced. The legend''s ranges for VISl,
+    VISal and VISp are met. IQRs in visually driven states 0.024 to 0.118, against the legend''s 0.08 to 0.12. ''all'' and
+    ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -621,19 +630,19 @@ outcomes:
   - 0.094
   - 0.098
   notes: 'Under ''vbn'' LGd and LP are modulated: Kruskal-Wallis p at most 6.4e-66 and 3.0e-64; each visually driven condition
-    against spontaneous p at most 3.2e-21 and 2.9e-19; visually driven medians 0.112 to 0.149 above spontaneous 0.094 to
-    0.098. LGd matches the legend''s values; LP''s spontaneous median (0.098 under every condition reading) falls just below
-    the legend''s 0.11 - 0.011, and neither matches the text''s (LGd active 0.121, LP active 0.123, below 0.126), so the
-    value part fails. Effects, form (i) LGd 0.054 to 0.056 and LP 0.044 to 0.045, below every visual area (0.062 to 0.163);
-    form (ii) LGd 0.032 to 0.034 above VISrl 0.028 to 0.030. Under ''all'' and ''qc'' LP''s spontaneous median is within
-    the legend''s range and the claim is reproduced, so the outcome turns on the unit reading. ''Only LGd and LP'' does
-    not hold under either test: MGd, SGN, MGm and MGv reach p < 0.001 under Kruskal-Wallis (claim fig4b-other-thalamus-not-modulated).'
+    against spontaneous p at most 4.5e-21 and 2.9e-19; visually driven medians 0.112 to 0.149 above spontaneous 0.094 to 0.098.
+    LGd matches the legend''s values; LP''s spontaneous median (0.098 under every condition reading) falls just below the
+    legend''s 0.11 - 0.011, and neither matches the text''s (LGd active 0.121, LP active 0.123, below 0.126), so the value
+    part fails. Effects, form (i) LGd 0.054 to 0.056 and LP 0.044 to 0.045, below every visual area (0.062 to 0.163); form
+    (ii) LGd 0.032 to 0.034 above VISrl 0.028 to 0.030. Under ''all'' and ''qc'' LP''s spontaneous median is within the legend''s
+    range and the claim is reproduced, so the outcome turns on the unit reading. ''Only LGd and LP'' does not hold under either
+    test: MGd, SGN, MGm and MGv reach p < 0.001 under Kruskal-Wallis (claim fig4b-other-thalamus-not-modulated).'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -649,23 +658,26 @@ outcomes:
   - 0.092
   - 0.107
   notes: 'Under ''vbn'' the medians of the seven nuclei are 0.092 to 0.107, inside 0.09 to 0.143, and the largest condition
-    difference per nucleus 0.002 to 0.006. Both test readings find modulation: Kruskal-Wallis p < 0.001 in MGd, SGN, MGm
-    and MGv (5.7e-08 to 7.3e-04); pairwise Mann-Whitney, a nucleus counted as modulated when any visually driven condition
-    differs from spontaneous at p < 0.001, in MGd, SGN and MGv (smallest p 1.6e-07, MGv images against spontaneous). The
-    lenient pairwise form (all three conditions significant) finds none, or SGN alone under b/a. All six pairwise p-values
-    per nucleus are printed. ''all'' and ''qc'' give the same outcome.'
+    difference per nucleus 0.002 to 0.006. Both test readings find modulation: Kruskal-Wallis p < 0.001 in MGd, SGN, MGm and
+    MGv (5.7e-08 to 7.3e-04); pairwise Mann-Whitney, a nucleus counted as modulated when any visually driven condition differs
+    from spontaneous at p < 0.001, in MGd, SGN and MGv (smallest p 1.6e-07, MGv images against spontaneous). The lenient pairwise
+    form (all three conditions significant) finds none, or SGN alone under b/a. All six pairwise p-values per nucleus are
+    printed. ''all'' and ''qc'' give the same outcome. The same tests on one median per population and condition (30 to 79
+    populations per nucleus), which do not treat windows as independent, find the same nuclei: Friedman p < 0.001 in MGd,
+    MGm and MGv under every condition reading and in SGN under two of four (SGN Friedman p 2.4e-07 to 2.8e-03), and a Wilcoxon
+    test of a visually driven condition against spontaneous p < 0.001 in MGd, MGm, MGv and SGN under every reading.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
   - 'Assumed (step 1.6): for this claim of absence the pairwise reading counts a nucleus as modulated when any of its three
-    visually driven conditions differs from spontaneous at p < 0.001, the verifier having found the form that needs all
-    three too lenient; the lenient form is shown.'
+    visually driven conditions differs from spontaneous at p < 0.001, the verifier having found the form that needs all three
+    too lenient; the lenient form is shown.'
   assumed: true
 - claim: fig4c-dg-ca3-complexity
   outcome: reproduced
@@ -681,15 +693,15 @@ outcomes:
   notes: 'Legend reading under ''vbn'', every condition reading: DG images 0.116, CA3 0.107, CA1 0.095 match the legend''s
     0.12, 0.11 and 0.10; in the other conditions DG 0.179 to 0.251, CA3 0.130 to 0.188, CA1 0.118 to 0.158, inside the legend''s
     widened ranges; POST, ProS and SUB 0.096 to 0.135, inside 0.09 to 0.143; DG and CA3 peak in spontaneous activity. The
-    text''s reading fails (CA3 inside its range in 2 of 4 conditions, CA1 0.095 below 0.099 in natural images). Measured
-    values: DG, CA3 (natural images apart) and CA1, POST, ProS, SUB (all conditions), reading a/a. ''all'' and ''qc'' give
-    the same outcome.'
+    text''s reading fails (CA3 inside its range in 2 of 4 conditions, CA1 0.095 below 0.099 in natural images). Measured values:
+    DG, CA3 (natural images apart) and CA1, POST, ProS, SUB (all conditions), reading a/a. ''all'' and ''qc'' give the same
+    outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -710,8 +722,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -728,8 +740,8 @@ outcomes:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -739,15 +751,15 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig4fg-js-complexity-active-blanks
-  notes: 'Under ''vbn'', bits: pairs of a visual and a subcortical subregion above 0.36, 0.38 in active behavior (median
-    0.259 to 0.265) and 0.31 to 0.34 in blanks (median 0.189 to 0.209); HP-HP pairs in active behavior within 0.18 to 0.44,
-    0.33 (0.13 in natural logs). ''all'' and ''qc'' give the same outcome.'
+  notes: 'Under ''vbn'', bits: pairs of a visual and a subcortical subregion above 0.36, 0.38 in active behavior (median 0.259
+    to 0.265) and 0.31 to 0.34 in blanks (median 0.189 to 0.209); HP-HP pairs in active behavior within 0.18 to 0.44, 0.33
+    (0.13 in natural logs). ''all'' and ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -757,17 +769,17 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:fig4h-js-complexity-spontaneous-converges
-  notes: 'Under ''vbn'', bits: mean of all pairs, spontaneous 0.282 to 0.353 against images 0.298 to 0.322, active 0.252
-    to 0.260, blanks 0.226 to 0.258, so not lowest. Mean VIS-to-other divergence is lowest in spontaneous activity (0.215
-    to 0.265 against 0.274 to 0.518), but 0.26 to 0.40 of those pairs lie in 0.18 to 0.44. MB-MB pairs below 0.22 in 0.2
-    to 0.3 of them in spontaneous activity in bits; in natural logs with 50 bins they are below 0.22 in most pairs in every
-    condition, but the other two parts still fail. ''all'' and ''qc'' give the same outcome.'
+  notes: 'Under ''vbn'', bits: mean of all pairs, spontaneous 0.282 to 0.353 against images 0.298 to 0.322, active 0.252 to
+    0.260, blanks 0.226 to 0.258, so not lowest. Mean VIS-to-other divergence is lowest in spontaneous activity (0.215 to
+    0.265 against 0.274 to 0.518), but 0.26 to 0.40 of those pairs lie in 0.18 to 0.44. MB-MB pairs below 0.22 in 0.2 to 0.3
+    of them in spontaneous activity in bits; in natural logs with 50 bins they are below 0.22 in most pairs in every condition,
+    but the other two parts still fail. ''all'' and ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -777,16 +789,16 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_paula_2026.ipynb
   output: claim:supp-robustness-parameters
-  notes: Under 'vbn' the pattern holds for 4 of 5 combinations (20 ms with D 5 tau 1 and D 6 tau 1; 50 ms with D 4 tau 2
-    and D 5 tau 3). With 20 ms, D 3, tau 4, natural images exceed spontaneous in 2 of 6 visual areas and the visual difference
-    is -0.0002. Window counts are those of the 50 ms analysis (images 16 764, active 76 796, blanks 17 072, spontaneous
-    4268) against the supplement's 20 ms counts 11 321, 51 452, 11 265 and 2856. 'all' and 'qc' give the same outcome.
+  notes: Under 'vbn' the pattern holds for 4 of 5 combinations (20 ms with D 5 tau 1 and D 6 tau 1; 50 ms with D 4 tau 2 and
+    D 5 tau 3). With 20 ms, D 3, tau 4, natural images exceed spontaneous in 2 of 6 visual areas and the visual difference
+    is -0.0002. Window counts are those of the 50 ms analysis (images 16 764, active 76 796, blanks 17 072, spontaneous 4268)
+    against the supplement's 20 ms counts 11 321, 51 452, 11 265 and 2856. 'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -804,17 +816,17 @@ outcomes:
   - 2.0
   - 0.391
   - 0.337
-  notes: 'Under ''vbn'' C rises with CV in the three visually driven conditions (Spearman 0.640, 0.844, 0.836; monotonic
-    under bins of 0.05 with at least 10 windows). Spans, bins of 0.1 without minimum (measured): images CV 0.20 to 1.40
-    and C to 0.329; active CV to 4.60, C to 0.381; blanks CV to 2.00, C to 0.391; spontaneous maximum 0.337. With at least
-    10 windows per bin the spontaneous maximum is 0.153, below 0.165, but the natural-image and blank spans miss (images
-    CV to 1.00, blanks C to 0.327 to 0.348). No reading matches all spans. ''all'' and ''qc'' give the same outcome.'
+  notes: 'Under ''vbn'' C rises with CV in the three visually driven conditions (Spearman 0.640, 0.844, 0.836; monotonic under
+    bins of 0.05 with at least 10 windows). Spans, bins of 0.1 without minimum (measured): images CV 0.20 to 1.40 and C to
+    0.329; active CV to 4.60, C to 0.381; blanks CV to 2.00, C to 0.391; spontaneous maximum 0.337. With at least 10 windows
+    per bin the spontaneous maximum is 0.153, below 0.165, but the natural-image and blank spans miss (images CV to 1.00,
+    blanks C to 0.327 to 0.348). No reading matches all spans. ''all'' and ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -825,14 +837,14 @@ outcomes:
   output: claim:fig5-th-weaker-coupling
   notes: Under 'vbn' least-squares slopes of C on CV, TH 0.129, 0.104 and 0.094 (images, active, blanks) against VIS 0.372,
     0.226 and 0.246, positive and shallower as stated. The TH spans exceed CV 0.18 to 0.88 and C 0.09 to 0.22 under every
-    reading (CV from 0.10 or 0.15; active behavior up to CV 1.05 to 1.50 and C 0.193 to 0.306). 'all' and 'qc' give the
-    same outcome.
+    reading (CV from 0.10 or 0.15; active behavior up to CV 1.05 to 1.50 and C 0.193 to 0.306). 'all' and 'qc' give the same
+    outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -846,14 +858,14 @@ outcomes:
   - 0.42
   notes: Under 'vbn' HP spontaneous bin means at CV 0.4 to 0.7 reach 0.227 to 0.239, within 0.25 +/- 0.025, but the HP maxima
     of the visually driven conditions are higher in active behavior (0.198 to 0.441) and not all within 0.19 +/- 0.019 (images
-    0.135 to 0.336, blanks 0.169 to 0.380). Measured values for bins of 0.1 without minimum (the visually driven maximum
-    is the active one). 'all' and 'qc' give the same outcome.
+    0.135 to 0.336, blanks 0.169 to 0.380). Measured values for bins of 0.1 without minimum (the visually driven maximum is
+    the active one). 'all' and 'qc' give the same outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -864,14 +876,14 @@ outcomes:
   output: claim:fig5-mb-flat
   notes: Under 'vbn' the MB slope is the smallest in absolute value of the four areas in all four conditions. Its bin means
     stay inside the bounds in natural images (0.090 to 0.135) and spontaneous activity (0.092 to 0.136), but in active behavior
-    and blanks they start at 0.084, below 0.09, under every reading (high ends 0.126 to 0.245). 'all' and 'qc' give the
-    same outcome.
+    and blanks they start at 0.084, below 0.09, under every reading (high ends 0.126 to 0.245). 'all' and 'qc' give the same
+    outcome.
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -884,17 +896,17 @@ outcomes:
   - 0.014
   - 0.055
   - 0.038
-  notes: 'Under ''vbn'' VIS medians of the mean pairwise correlation, active and blanks 0.014 to 0.055 (50 ms) and 0.007
-    to 0.031 (20 ms), below 0.072; images and spontaneous 0.009 to 0.038 (50 ms) and 0.005 to 0.023 (20 ms), 1 to 2 and
-    6 of 12 below 0.011. Midbrain medians vary across conditions by at most 0.009 except NOT (0.023 to 0.024 at 50 ms, 0.013
-    to 0.014 at 20 ms). Measured values: active and blanks low and high, images and spontaneous high (50 ms, a/a). ''all''
-    and ''qc'' give the same outcome.'
+  notes: 'Under ''vbn'' VIS medians of the mean pairwise correlation, active and blanks 0.014 to 0.055 (50 ms) and 0.007 to
+    0.031 (20 ms), below 0.072; images and spontaneous 0.009 to 0.038 (50 ms) and 0.005 to 0.023 (20 ms), 1 to 2 and 6 of
+    12 below 0.011. Midbrain medians vary across conditions by at most 0.009 except NOT (0.023 to 0.024 at 50 ms, 0.013 to
+    0.014 at 20 ms). Measured values: active and blanks low and high, images and spontaneous high (50 ms, a/a). ''all'' and
+    ''qc'' give the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -906,16 +918,16 @@ outcomes:
   notebook: reproduce_paula_2026.ipynb
   output: claim:complexity-separates-images-from-spontaneous
   notes: 'JS reading under ''vbn'': in all six visual subregions the natural-image against spontaneous divergence is larger
-    for C (0.437 to 0.837, a/a, 50 bins) than for CV (0.249 to 0.537) and mean correlation (0.189 to 0.479), under every
-    condition and histogram reading. IQR reading: 1 or 2 of 6, since the CV and correlation IQRs of the two conditions often
-    do not overlap either. The CV medians do differ between the two conditions (VISp 0.399 against 0.299). ''all'' and ''qc''
-    give the same outcome.'
+    for C (0.437 to 0.837, a/a, 50 bins) than for CV (0.249 to 0.537) and mean correlation (0.189 to 0.479), under every condition
+    and histogram reading. IQR reading: 1 or 2 of 6, since the CV and correlation IQRs of the two conditions often do not
+    overlap either. The CV medians do differ between the two conditions (VISp 0.399 against 0.299). ''all'' and ''qc'' give
+    the same outcome.'
   deviations:
   - 'Unit selection assumed (author, step 1.6): the unit filter of the Allen Institute''s Visual Behavior Neuropixels quickstart
     tutorial (snr > 1, ISI violations < 1, firing rate > 0.1 spikes/s; AllenSDK commit a56bd8ea). The paper states no unit
     filter. Scaled to the paper''s 102 sessions this filter gives 0.93 to 1.02 times Table I''s area neuron counts and neurons
-    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc''
-    (the claims file''s two readings), which are run as variants for every claim.'
+    per population within 5% of Table I''s, against 1.28 to 1.43 times with all units and 0.34 to 0.55 times with ''qc'' (the
+    claims file''s two readings), which are run as variants for every claim.'
   - All 153 ecephys sessions are used, against the paper's 102; the paper does not say how its sessions were chosen, every
     session meets both session readings of the claims file, and no grouping by genotype, image set, novelty or probe count
     gives 102.
@@ -925,9 +937,9 @@ findings:
   about: paper
   statement: The paper analyses 102 sessions and 1437 populations without saying how the sessions were chosen. The dandiset
     holds 153 ecephys sessions of 81 mice, every one with populations that pass the paper's rule (at least 30 units, subregion
-    in at least eight sessions) and with the gray-screen epoch, and no grouping by genotype (59, 49, 45), image set and
-    novelty (68, 10, 10, 65) or probe count (142 with six probes) gives 102, so the paper's selection cannot be rebuilt;
-    population and window counts here are about 1.5 times the paper's. Which 102 sessions were used?
+    in at least eight sessions) and with the gray-screen epoch, and no grouping by genotype (59, 49, 45), image set and novelty
+    (68, 10, 10, 65) or probe count (142 with six probes) gives 102, so the paper's selection cannot be rebuilt; population
+    and window counts here are about 1.5 times the paper's. Which 102 sessions were used?
 - kind: methods_unavailable
   statement: No unit selection is stated. Scaled to 102 sessions, all units give 1.28 to 1.43 times Table I's area neuron
     counts, and the Allen quality filters (ISI violations < 0.5, amplitude cutoff < 0.1, presence ratio > 0.9) 0.34 to 0.55
@@ -936,35 +948,39 @@ findings:
     adopted here; ten outcomes differ under one of the other two. Which units form a population?
 - kind: methods_unavailable
   statement: The ISI-shuffled surrogate is defined per analyzed window (Methods II.E). Shuffled within each 100-s window,
-    surrogate CV series stay correlated across regions (up to |r| 0.90, 143 to 241 of 325 pairs above 0.2), because each
-    window keeps its spike count; the paper says shuffling abolishes these correlations. Were the 10-s CV series of Fig.
-    1d computed from surrogates shuffled over a longer span, and where does the shuffled train start?
+    surrogate CV series stay correlated across regions (up to |r| 0.90, 143 to 241 of 325 pairs above 0.2), because each window
+    keeps its spike count; the paper says shuffling abolishes these correlations. Were the 10-s CV series of Fig. 1d computed
+    from surrogates shuffled over a longer span, and where does the shuffled train start?
 - kind: methods_unavailable
   statement: The JS divergences of Figs. 2b and 4e to 4h do not give their histogram bins or log base, the 'main diagonal
     of each submatrix' that is summed is zero for a region-pair matrix, and the percentage difference is not defined. The
-    results here depend on these choices (for example active against blanks 0.3% to 9.5% in visual cortex). What were they?
+    results here depend on these choices (for example active against blanks 3.1% to 11.2% in visual cortex under the adopted
+    unit filter, 0.3% to 9.5% with all units). What were they?
 - kind: methods_unavailable
   statement: The test of 'significant modulation across conditions' (Results III.D, paragraph 3) and of 'all pairwise comparisons'
-    (paragraph 2) is not named. For four of the seven 'unmodulated' thalamic nuclei a Kruskal-Wallis test gives p < 0.001
-    and pairwise Mann-Whitney tests do not, so the outcome of the claim depends on the test. Which test was used?
+    (paragraph 2) is not named, nor whether it is run on windows or on populations. For four of the seven 'unmodulated' thalamic
+    nuclei (MGd, SGN, MGm, MGv) a Kruskal-Wallis test on windows gives p < 0.001, and Mann-Whitney tests of each visually
+    driven condition against spontaneous activity find three of them (MGd, SGN, MGv); tests on one median per population find
+    the same four. Only a pairwise reading that needs all three conditions to differ from spontaneous activity finds none.
+    Which test was used?
 - kind: methods_unavailable
   statement: The Fig. 5 trajectories give no CV bin width or minimum count per bin, and the Fig. 3a reference systems give
-    no series length, sampling or parameter values in the text (the sine's position depends on its sampling; the Ikeda map
-    with u = 0.9 lies at C 0.355 at its usual chaotic parameter shifted into [5, 17], and inside the quoted range only near
-    p = 6.5). What were they?
+    no series length, transient or sine sampling (the sine's position depends on its sampling). Their parameter values are
+    not in the text but are labelled in the figure; at those values the series here match 16 of the figure's 18 markers within
+    0.03. What were the lengths and the sampling?
 - kind: methods_unavailable
-  statement: Methods II.A gives the blank series as about 240 s per image, which needs about 480 flashes per image. The
-    flash tables show each image 320 to 1056 times per session (median 572.5), so the series is about 286 s (median; 271
-    s without change flashes, 275 s when only gray screens followed by another flash are kept). How were the blank intervals
-    chosen (change flashes, omitted flashes, licks)?
+  statement: Methods II.A gives the blank series as about 240 s per image, which needs about 480 flashes per image. The flash
+    tables show each image 320 to 1056 times per session (median 572.5), so the series is about 286 s (median; 271 s without
+    change flashes, 275 s when only gray screens followed by another flash are kept). How were the blank intervals chosen
+    (change flashes, omitted flashes, licks)?
 - kind: other
   about: data
   severity: none
-  statement: Checks that passed. The 153 sessions each have an active block of 3599 to 3611 s, a 289-s gray screen after
-    it, eight images and 1103 to 3388 units; no two sessions share a spike-time fingerprint, total spike count, or subject
-    and start time. Visual cortex spikes rise after flash onsets in all 153 sessions (30 to 130 ms window minus the 100
-    ms before, 69 to 434 spikes per flash) and not after onsets shifted by 375 ms (-371 to 1.6); the true-onset response
-    also exceeds the one after omitted flashes in all 153, so the spike times share the stimulus table's clock.
+  statement: Checks that passed. The 153 sessions each have an active block of 3599 to 3611 s, a 289-s gray screen after it,
+    eight images and 1103 to 3388 units; no two sessions share a spike-time fingerprint, total spike count, or subject and
+    start time. Visual cortex spikes rise after flash onsets in all 153 sessions (30 to 130 ms window minus the 100 ms before,
+    69 to 434 spikes per flash) and not after onsets shifted by 375 ms (-371 to 1.6); the true-onset response also exceeds
+    the one after omitted flashes in all 153, so the spike times share the stimulus table's clock.
 - kind: other
   about: data
   severity: none
@@ -972,9 +988,15 @@ findings:
     paper's 26 subregions are all present as labels, and the generic labels are left out here as in Table I.
 - kind: methods_unavailable
   statement: Fig. 1d and 1e do not say how the CV correlations of a region pair are combined over the sessions that record
-    both. Concatenating the series gives a top-10% range of 0.469 to 0.798 and NB as the leading anticorrelation hub; averaging
-    the per-session correlations gives 0.478 to 0.680 with DG and CA3 as the hubs, which matches the paper and is adopted
-    here. Which was used?
+    both. Concatenating the series gives a top-10% range of 0.469 to 0.798 and CA3 and NB tied as the leading anticorrelation
+    hubs (8 pairs each; NB alone with all units); averaging the per-session correlations gives 0.478 to 0.680 with DG and
+    CA3 as the hubs, which matches the paper and is adopted here. Which was used?
+- kind: paper_inconsistency
+  statement: Results III.C places exponentially correlated processes at C 0.3 to 0.5 for H 0.3 to 0.6 and the sine at H near
+    0, but Fig. 3a shows the correlated Brownian motion at C 0.22 to 0.35 (alpha 0.89, 0.47 and 0.16, the middle one at H
+    0.35, C 0.27) and the sine at H about 0.11, which is close to the least H a sine can have at D = 6 (ln 2 / ln 720 = 0.105).
+    Series made here at the figure's parameters match its markers, so the figure and not the text gives the positions of these
+    systems.
 verifications:
 - date: '2026-11-27'
   kind: agent
@@ -992,22 +1014,21 @@ verifications:
       window counts match but the populations and neurons do not. Nothing in the asset list picks out the paper's 102 sessions.
     response: Neuron counts are now compared per population and scaled to 102 sessions for six filters, as asked, including
       quality 'good' and presence ratio > 0.95. The Allen tutorial filter (snr > 1, ISI violations < 1, firing rate > 0.1)
-      matches Table I (0.93 to 1.02 times, neurons per population within 5%) and is adopted; all units and qc are run as
-      variants for every claim. Sessions are broken down by genotype, image set, novelty and probe count; none gives 102.
-      Outcome unchanged.
+      matches Table I (0.93 to 1.02 times, neurons per population within 5%) and is adopted; all units and qc are run as variants
+      for every claim. Sessions are broken down by genotype, image set, novelty and probe count; none gives 102. Outcome unchanged.
   - claim: fig1c-cv-region-medians
     agrees: true
     outcome: not_reproduced
-    reason: 'All units: the medians of DG (0.564) and NB (0.564) fall outside the widened ranges, and the TH, HP and MB
-      extremes miss. qc: the TH maximum (0.414) misses.'
+    reason: 'All units: the medians of DG (0.564) and NB (0.564) fall outside the widened ranges, and the TH, HP and MB extremes
+      miss. qc: the TH maximum (0.414) misses.'
     response: Under the adopted 'vbn' filter every median and extreme matches and only the IQRs miss in 5 subregions, which
       the criterion makes partially reproduced. Outcome changed to partially_reproduced; all units and qc stay not reproduced.
   - claim: fig1c-cv-above-surrogate
     agrees: true
     outcome: partially_reproduced
     reason: Every Mann-Whitney test gives p at most 1.5e-73 with empirical higher, and the VIS surrogate medians are 0.225
-      to 0.243. The HP ratios for POST (1.32) and DG (3.01) fall outside 1.35 to 2.42 under all five seeds. This is the
-      claim's partial rule.
+      to 0.243. The HP ratios for POST (1.32) and DG (3.01) fall outside 1.35 to 2.42 under all five seeds. This is the claim's
+      partial rule.
     response: Under 'vbn' VISam (1.75), VISrl (1.78) and POST (1.29) fall outside; a per-population Wilcoxon test is added
       for the pseudo-replication point. Outcome unchanged.
   - claim: fig1d-surrogate-abolishes-cv-correlations
@@ -1021,31 +1042,31 @@ verifications:
     outcome: not_reproduced
     reason: 'Reading (a): top value 0.772, above 0.737. Reading (b): low end 0.450, just outside 0.50 +/- 0.05. Same-area
       fractions (66% and 81%) do hold.'
-    response: The claim has no partial rule, so a miss is not reproduced, as the verifier says. Under the adopted 'vbn'
-      filter reading (b) gives 0.478 to 0.680 with 28 of 32 pairs within an area, and reading (b) is adopted because reading
-      (a) mixes session-level differences (the verifier's point B8); the outcome is reproduced, resting on both assumptions.
-      All units and qc are not reproduced.
+    response: The claim has no partial rule, so a miss is not reproduced, as the verifier says. Under the adopted 'vbn' filter
+      reading (b) gives 0.478 to 0.680 with 28 of 32 pairs within an area, and reading (b) is adopted because reading (a)
+      mixes session-level differences (the verifier's point B8); the outcome is reproduced, resting on both assumptions. All
+      units and qc are not reproduced.
   - claim: fig1e-dg-ca3-anticorrelation-hubs
     agrees: false
     outcome: not_reproduced
-    reason: 'Reading (b): CA3 and DG are the hubs, but the most negative r is -0.178 (expected -0.27 +/- 0.027). Reading
-      (a): NB is the hub and the most negative r is -0.496.'
-    response: No partial rule, so a miss is not reproduced. Under 'vbn', reading (b) gives DG 16 and CA3 14 of 32 pairs
-      and a most negative r of -0.247, within tolerance; reproduced, resting on the unit and session-combination readings.
-      All units and qc are not reproduced.
+    reason: 'Reading (b): CA3 and DG are the hubs, but the most negative r is -0.178 (expected -0.27 +/- 0.027). Reading (a):
+      NB is the hub and the most negative r is -0.496.'
+    response: No partial rule, so a miss is not reproduced. Under 'vbn', reading (b) gives DG 16 and CA3 14 of 32 pairs and
+      a most negative r of -0.247, within tolerance; reproduced, resting on the unit and session-combination readings. All
+      units and qc are not reproduced.
   - claim: fig1e-midbrain-weakest-cv-correlations
     agrees: false
     outcome: not_reproduced
     reason: 'Reading (a): MB mean |r| (0.186) is above HP (0.179). Reading (b): only 2 of 115 MB pairs are near zero.'
-    response: Changed to not_reproduced, as the claim has no partial rule. Under 'vbn' MB is lowest under both readings
-      but only 13 and 3 of 115 pairs are near zero.
+    response: Changed to not_reproduced, as the claim has no partial rule. Under 'vbn' MB is lowest under both readings but
+      only 13 and 3 of 115 pairs are near zero.
   - claim: fig2a-vis-cv-by-condition
     agrees: true
     outcome: reproduced
-    reason: 12/12 medians within tolerance under readings a/a and b/a with all units. The values sit near the upper edge
-      of tolerance, and with qc only 8/12 are within.
-    response: Under 'vbn' 12 of 12 are within tolerance under all four condition readings; qc gives 7 or 8 of 12 and is
-      shown. Outcome unchanged.
+    reason: 12/12 medians within tolerance under readings a/a and b/a with all units. The values sit near the upper edge of
+      tolerance, and with qc only 8/12 are within.
+    response: Under 'vbn' 12 of 12 are within tolerance under all four condition readings; qc gives 7 or 8 of 12 and is shown.
+      Outcome unchanged.
   - claim: fig2a-thalamus-cv-by-condition
     agrees: true
     outcome: reproduced
@@ -1057,8 +1078,8 @@ verifications:
     outcome: not_reproduced
     reason: DG medians are 0.555 to 0.580, against 0.48 to 0.51 +/- 10%. This was not run with qc, where DG active is 0.481.
     response: Run under every unit reading. Under 'vbn' (and qc) all seven values are within tolerance and the spontaneous
-      medians are highest; outcome changed to reproduced, resting on the unit reading. All units are not reproduced, as
-      the verifier found.
+      medians are highest; outcome changed to reproduced, resting on the unit reading. All units are not reproduced, as the
+      verifier found.
   - claim: fig2a-midbrain-cv-invariant
     agrees: false
     outcome: not_reproduced
@@ -1069,8 +1090,8 @@ verifications:
     outcome: partially_reproduced
     reason: 'No combination is fully reproduced. Four of 32 meet the partial rule: active and blanks are the closest pair
       and every other pair differs by more than 15%. Active against blanks is 0.32 to 0.53%, below the 0.5% lower bound.'
-    response: Under 'vbn' four other combinations (100 bins) meet the partial rule; no combination is fully reproduced.
-      Outcome unchanged.
+    response: Under 'vbn' four other combinations (100 bins) meet the partial rule; no combination is fully reproduced. Outcome
+      unchanged.
   - claim: fig2b-hp-mb-summed-js-cv
     agrees: true
     outcome: not_reproduced
@@ -1079,8 +1100,8 @@ verifications:
   - claim: fig2b-visually-driven-js-cv-low
     agrees: false
     outcome: partially_reproduced
-    reason: The percentage form, which is the claim's statement, holds in 0/32 combinations. The legend's JS-value form
-      holds in all 8.
+    reason: The percentage form, which is the claim's statement, holds in 0/32 combinations. The legend's JS-value form holds
+      in all 8.
     response: 'Changed to partially_reproduced, as the verifier gives: the statement''s form fails and only the legend''s
       holds.'
   - claim: fig2b-dg-ca3-high-js-cv
@@ -1097,24 +1118,24 @@ verifications:
     agrees: true
     outcome: partially_reproduced
     reason: 'White noise, logistic (r = 4) and tent (mu about 2) fit, and so does the correlated walk at alpha 0.2 to 0.3.
-      The walk at alpha 0.5 to 0.7 has C 0.23 to 0.26, below range. The other two failures come from the notebook''s own
-      choices: the Ikeda map judged at p = 6 without a source, while p repeats every 2 pi and the textbook value 0.4 sits
-      at about 6.683 or 12.966; and the sine rule H at most 0.05, which cannot be met, as any sine gives H at least ln 2
-      / ln 720 = 0.105.'
+      The walk at alpha 0.5 to 0.7 has C 0.23 to 0.26, below range. The other two failures come from the notebook''s own choices:
+      the Ikeda map judged at p = 6 without a source, while p repeats every 2 pi and the textbook value 0.4 sits at about
+      6.683 or 12.966; and the sine rule H at most 0.05, which cannot be met, as any sine gives H at least ln 2 / ln 720 =
+      0.105.'
     response: The Ikeda map is now judged at 0.4 + 2 pi and 0.4 + 4 pi (H 0.81, C 0.355, just below 0.36; p = 6.5 is inside),
-      and the sine reading is H at most the floor plus 0.05, at 100, 1000 and 10 000 points per period (it matches at 10
-      000). The reading of H near 0 is asked of a reader. Outcome unchanged.
+      and the sine reading is H at most the floor plus 0.05, at 100, 1000 and 10 000 points per period (it matches at 10 000).
+      The reading of H near 0 is asked of a reader. Outcome unchanged.
   - claim: fig3b-complexity-levels-by-region
     agrees: true
     outcome: reproduced
-    reason: 'Reading (a): VIS 0.161, HP 0.163, TH 0.109, MB 0.101, and the order holds at 36/36 window indices. It also
-      holds with qc.'
+    reason: 'Reading (a): VIS 0.161, HP 0.163, TH 0.109, MB 0.101, and the order holds at 36/36 window indices. It also holds
+      with qc.'
     response: Same under 'vbn' (0.158, 0.159, 0.108, 0.098). Outcome unchanged.
   - claim: fig3c-vis-ch-plane
     agrees: false
     outcome: not_reproduced
-    reason: The C 2.5th percentile is 0.089, below the 0.090 bound, and the 0-100 span has H down to 0.462. The test (p
-      about 0) and the surrogate median (0.0955) pass. It is a narrow miss.
+    reason: The C 2.5th percentile is 0.089, below the 0.090 bound, and the 0-100 span has H down to 0.462. The test (p about
+      0) and the surrogate median (0.0955) pass. It is a narrow miss.
     response: Changed to not_reproduced (no partial rule). Spans are now compared unrounded; under 'vbn' the C 2.5th percentile
       is 0.0887. Under qc the claim passes, shown.
   - claim: fig3d-th-ch-plane
@@ -1146,23 +1167,23 @@ verifications:
   - claim: fig4b-thalamus-lgd-lp-modulated
     agrees: true
     outcome: reproduced
-    reason: Kruskal-Wallis p at most 3e-63, the visually driven medians are above spontaneous, and the values match the
-      legend's. The effect is smaller than in every VIS area only under effect form (i); form (ii) fails for LGd against
-      VISrl. The effect definition is the notebook's own; both forms were run and the outcome rests on (i).
-    response: Under the adopted 'vbn' filter LP's spontaneous median (0.098) falls just below the legend's range, so the
-      outcome changes to not_reproduced; under all units and qc it is reproduced, so the outcome turns on the unit reading.
-      The effect forms are kept, both shown.
+    reason: Kruskal-Wallis p at most 3e-63, the visually driven medians are above spontaneous, and the values match the legend's.
+      The effect is smaller than in every VIS area only under effect form (i); form (ii) fails for LGd against VISrl. The
+      effect definition is the notebook's own; both forms were run and the outcome rests on (i).
+    response: Under the adopted 'vbn' filter LP's spontaneous median (0.098) falls just below the legend's range, so the outcome
+      changes to not_reproduced; under all units and qc it is reproduced, so the outcome turns on the unit reading. The effect
+      forms are kept, both shown.
   - claim: fig4b-other-thalamus-not-modulated
     agrees: false
     outcome: partially_reproduced
-    reason: 'Medians are 0.093 to 0.108, inside the range. Kruskal-Wallis finds p < 0.001 in MGd, SGN, MGm and MGv. The
-      pairwise reading passes only as implemented: a nucleus counts as modulated only if all three visually driven conditions
-      differ from spontaneous, which for a claim of absence is too lenient, and the smallest pairwise p is not printed.'
-    response: All six pairwise p-values per nucleus are now printed. The pairwise reading counts a nucleus as modulated
-      when any visually driven condition differs from spontaneous; it then finds MGd, SGN and MGv (smallest p 1.6e-07),
-      and Kruskal-Wallis finds four, so both readings find modulation and the criterion gives not reproduced. Outcome changed
-      to not_reproduced, against the verifier's partially_reproduced, as the criterion says not reproduced when the test
-      finds modulation in any nucleus.
+    reason: 'Medians are 0.093 to 0.108, inside the range. Kruskal-Wallis finds p < 0.001 in MGd, SGN, MGm and MGv. The pairwise
+      reading passes only as implemented: a nucleus counts as modulated only if all three visually driven conditions differ
+      from spontaneous, which for a claim of absence is too lenient, and the smallest pairwise p is not printed.'
+    response: All six pairwise p-values per nucleus are now printed. The pairwise reading counts a nucleus as modulated when
+      any visually driven condition differs from spontaneous; it then finds MGd, SGN and MGv (smallest p 1.6e-07), and Kruskal-Wallis
+      finds four, so both readings find modulation and the criterion gives not reproduced. Outcome changed to not_reproduced,
+      against the verifier's partially_reproduced, as the criterion says not reproduced when the test finds modulation in
+      any nucleus.
   - claim: fig4c-dg-ca3-complexity
     agrees: true
     outcome: reproduced
@@ -1199,8 +1220,8 @@ verifications:
     agrees: false
     outcome: not_reproduced
     reason: The CV spans exceed the quoted ones, and the spontaneous maximum is at least 0.180, against < 0.165.
-    response: Changed to not_reproduced (no partial rule). Under 'vbn' the spontaneous maximum is 0.153 with at least 10
-      windows per bin, but the spans still miss.
+    response: Changed to not_reproduced (no partial rule). Under 'vbn' the spontaneous maximum is 0.153 with at least 10 windows
+      per bin, but the spans still miss.
   - claim: fig5-th-weaker-coupling
     agrees: false
     outcome: not_reproduced
@@ -1209,8 +1230,8 @@ verifications:
   - claim: fig5-hp-spontaneous-elevated
     agrees: true
     outcome: not_reproduced
-    reason: The spontaneous peak is 0.238 to 0.244, but the visually driven maxima are 0.17 to 0.41, not about 0.19, and
-      spontaneous does not exceed them.
+    reason: The spontaneous peak is 0.238 to 0.244, but the visually driven maxima are 0.17 to 0.41, not about 0.19, and spontaneous
+      does not exceed them.
     response: Same under 'vbn'. Outcome unchanged.
   - claim: fig5-mb-flat
     agrees: false
@@ -1228,3 +1249,243 @@ verifications:
     reason: 'JS reading: complexity has the larger JS in 6/6 VIS subregions under every reading. The IQR reading holds in
       only 1 to 2 of 6.'
     response: Same under 'vbn'. Outcome unchanged.
+- date: '2026-11-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the first revision, with its conclusions and summary, the attempt record,
+    the README, the helper module, the claims file and the paper''s full text (the attempt as of commit 84412ab). The verifier
+    also noted text faults outside the claims: the Summary said the visual cortex does not respond to omitted flashes, while
+    cell 6 shows omitted-flash contrasts up to 92.6 and only that the true-onset response is larger in 153 of 153 sessions
+    (corrected in the Summary), and the README''s run time of about 47 minutes could not be checked (now given as measured,
+    34 to 43 minutes). No finding was rated critical, and the verifier would rate none critical, so no finding is listed for
+    this round. Its ''finding 11'' is finding 10 of this record (the session combination of Fig. 1d and 1e).'
+  results:
+  - claim: table1-sample
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The 102 sessions remain unidentified, and every pooled result uses 153 sessions (about 1.5x the paper''s populations
+      and windows). This cannot be settled from the files. The ''vbn'' unit filter is reasonable and disclosed: neurons per
+      population are within 5% of Table I in every area, it is the closest of the six filters by largest |log ratio| (0.073),
+      and the choice uses counts only, not outcomes.'
+    response: No change possible from the files; the session selection stays a finding (finding 1). The presence-ratio cutoff
+      of the 'qc' reading stays a question for a reader (questions/paula-2026.yaml).
+  - claim: fig1c-cv-region-medians
+    agrees: true
+    outcome: partially_reproduced
+    reason: Moves from not reproduced to partially reproduced because of the new unit filter 'vbn'.
+    response: No change.
+  - claim: fig1c-cv-above-surrogate
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+      Cell 17: "''all'' and ''qc'' give the same outcome. The outcome rests on the adopted unit reading (''vbn'')". The two
+      sentences contradict each other; cell 136 gives partially reproduced under all three unit readings.'
+    response: Cell 17 now says that every unit reading gives the same outcome; the same contradiction in the fig2a-midbrain-cv-invariant
+      cell is corrected too.
+  - claim: fig1d-surrogate-abolishes-cv-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig1e-positive-cv-modules
+    agrees: true
+    outcome: reproduced
+    reason: Moves from not reproduced to reproduced because of the 'vbn' filter. Passes in 1 of the 6 unit and session combinations
+      (cell 22); a knife-edge outcome that rests on the 'vbn' reading and session reading (b), which are reasonable and stated.
+    response: No change; both readings are stated in the deviations.
+  - claim: fig1e-dg-ca3-anticorrelation-hubs
+    agrees: true
+    outcome: reproduced
+    reason: Moves from not reproduced to reproduced because of the 'vbn' filter. Most negative r -0.247 against -0.243, under
+      'vbn' with reading (b) only (cell 25). Also, the 32 "most negative" pairs reach +0.026, while the paper gives a range
+      up to -0.002. The criterion does not test that upper end.
+    response: The notes and the result cell now say that the value is 0.004 inside its bound and that the statement's upper
+      end (-0.002) does not hold (+0.026), a part the criterion does not test. Finding 10 (the verifier's 11), which named
+      NB as the leading hub of reading (a), now gives CA3 and NB tied at 8 pairs under 'vbn'.
+  - claim: fig1e-midbrain-weakest-cv-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig2a-vis-cv-by-condition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs. The
+      outcome depends on the unit reading.
+    response: No change.
+  - claim: fig2a-thalamus-cv-by-condition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs. The
+      outcome depends on the unit reading.
+    response: No change.
+  - claim: fig2a-hippocampus-cv-stable
+    agrees: true
+    outcome: reproduced
+    reason: Moves from not reproduced to reproduced because of the 'vbn' filter, and changes with the unit reading.
+    response: No change.
+  - claim: fig2a-midbrain-cv-invariant
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: The result cell's sentence saying the outcome rests on the unit reading is replaced, as every unit reading gives
+      the same outcome.
+  - claim: fig2b-vis-summed-js-cv
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs. Finding
+      4 gives "active against blanks 0.3% to 9.5% in visual cortex". That is the 'all' range. Under 'vbn' it is 3.12% to 11.24%
+      (cell 47).
+    response: Finding 4 now gives 3.1% to 11.2% under the adopted filter and 0.3% to 9.5% with all units.
+  - claim: fig2b-hp-mb-summed-js-cv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig2b-visually-driven-js-cv-low
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig2b-dg-ca3-high-js-cv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig2b-legend-js-cv
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+      Cell 60: "Most midbrain values are below 0.165 under most readings (13 to 26 of 30)". 13 of 30 is not most.'
+    response: Cell 60 now says that under 'vbn' 13 to 26 of the 30 midbrain values are below 0.165, more than half under 28
+      of the 32 readings.
+  - claim: fig3a-reference-systems
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Resolved: the Ikeda map is judged at 6.683 and 12.966, and the sine is judged against its floor reading. The
+      PDF figures were never compared, including the Fig. 3a parameters.'
+    response: Fig. 3a was read from the paper's PDF. Its labelled parameters are now run and compared with its markers (16
+      of 18 within 0.03), and the correlated walk and the chaotic maps are judged at the figure's parameters (Ikeda p = 6.33
+      is then inside); the walk at the figure's alpha = 0.47 lies at C 0.265, below 0.27, as does the figure's own marker,
+      so the outcome is the same under both parameter readings. A new finding (11) records that the figure places the correlated
+      walk and the sine outside the text's ranges.
+  - claim: fig3b-complexity-levels-by-region
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig3c-vis-ch-plane
+    agrees: true
+    outcome: not_reproduced
+    reason: Stays not reproduced under 'vbn'. C 2.5th percentile 0.0887 against 0.090. Reproduced under 'qc' (cell 70).
+    response: No change; the outcome under 'qc' is stated in the notes.
+  - claim: fig3d-th-ch-plane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig3e-hp-ch-plane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig3f-mb-ch-plane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig3-complexity-range-fractions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig4a-vis-complexity-by-condition
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs. The
+      Kruskal-Wallis and Mann-Whitney tests in fig4a and fig4b are still run on windows.
+    response: No change; the outcome fails on the order of the medians, not on a test.
+  - claim: fig4b-thalamus-lgd-lp-modulated
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Moves from reproduced to not reproduced because of the ''vbn'' filter: LP spontaneous median 0.098 against a
+      lower bound of 0.099 (cell 90). Reproduced under ''all'' and ''qc''. Cell 91 and the record''s notes: "every visually
+      driven condition against spontaneous p at most 3.2e-21 and 2.9e-19". LGd''s largest such p is 4.5e-21, under reading
+      b/b (cell 90).'
+    response: Corrected to 4.5e-21 in cell 91 and the notes.
+  - claim: fig4b-other-thalamus-not-modulated
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Accepts the move from partially reproduced to not reproduced because of the stricter pairwise test (cell 93):
+      Kruskal-Wallis finds MGd, SGN, MGm and MGv, the any-pair Mann-Whitney test finds MGd, SGN and MGv, and the criterion
+      says "not reproduced when the test finds modulation in any". The tests are still run on windows; for this claim of absence
+      the "modulation" comes from median differences of at most 0.0055 over thousands of non-independent windows, and a per-population
+      test might not reach p < 0.001. The paper appears to do the same, so the outcome stands under the claims file, but it
+      is fragile. Finding 5 is out of date.'
+    response: Added the same tests on one median per population and condition (Friedman, and Wilcoxon of each visually driven
+      condition against spontaneous; 30 to 79 populations per nucleus). They find MGd, MGm, MGv and SGN at p < 0.001 under
+      every condition reading (SGN by Friedman under two of four), so the modulation does not come from treating windows as
+      independent. Outcome unchanged. Finding 5 rewritten to the current test readings.
+  - claim: fig4c-dg-ca3-complexity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs. Judged
+      on the legend values, which is within the rules, as the claims file allows judging "under one reading".
+    response: No change.
+  - claim: fig4d-midbrain-complexity-invariant
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+      Cell 100: the sentence "The outcome rests on..." appears twice. This is cosmetic.'
+    response: The two sentences are merged into one.
+  - claim: fig4e-js-complexity-natural-images
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig4fg-js-complexity-active-blanks
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig4h-js-complexity-spontaneous-converges
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: supp-robustness-parameters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig5-vis-complexity-cv-coupling
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig5-th-weaker-coupling
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig5-hp-spontaneous-elevated
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: fig5-mb-flat
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: supp-fig6-mean-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs.
+    response: No change.
+  - claim: complexity-separates-images-from-spontaneous
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows from the claims-file criterion applied to the printed outputs. Judged
+      on the JS reading, which is within the rules, as the claims file allows judging "under one reading".
+    response: No change.

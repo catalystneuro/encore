@@ -25,4 +25,4 @@ adopted, as its neurons per population match Table I within 5% in each area; ten
 differ under one of the other two. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/paula-2026-01.yaml`](../../attempts/paula-2026-01.yaml).
 
-The notebook takes about 47 minutes, most of it reading the spike times from the archive.
+The notebook took 34 to 43 minutes in the runs of this attempt, most of it (33 to 42 minutes) reading the spike times from the archive.
