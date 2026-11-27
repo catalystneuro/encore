@@ -22,7 +22,7 @@ real-space renormalization exponents.
 | Exponents of the passive phase, and their differences from active | Not reproduced |
 | Exponents with non-natural images, and their differences | Not reproduced |
 | Static exponents approach trivial values from active to passive to non-natural | Partially reproduced |
-| Exponents stable with the kurtosis threshold | Not reproduced (assumed) |
+| Exponents stable with the kurtosis threshold | Partially reproduced (assumed) |
 | Kurtosis before coarse graining is a poor predictor of kurtosis after | Reproduced |
 | Firing rate ordered active < non-natural < passive and falls with the threshold | Reproduced (assumed) |
 | Hit rate below a firing-rate threshold is not monotonic | Reproduced |
@@ -38,8 +38,8 @@ the paper's kurtosis scale is not reached. The surrogate maximum here is set by 
 (34.29), which leaves the threshold ranges of five claims empty. Four of them are judged with the
 range started at every threshold below it and give the same outcome at every start. The fifth, the
 stability of the exponents, is judged from a few named starts, which disagree, and from the paper's
-value of about 7; a change of its outcome to partially reproduced, under a literal reading of its
-criterion, is proposed for a third verification round. Over the whole range of thresholds the hit rate over high-kurtosis
+value of about 7, from which it is partially reproduced (the exponent mu is not actually tested in
+the passive and non-natural image phases, as too few sessions have a fit). Over the whole range of thresholds the hit rate over high-kurtosis
 windows is below that over low-kurtosis windows, and the non-natural image phase has the highest
 kurtosis. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/cambrainha-2025-01.yaml`](../../attempts/cambrainha-2025-01.yaml).

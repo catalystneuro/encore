@@ -255,42 +255,36 @@ outcomes:
     signed-rank, 97 sessions), alpha exceeds the surrogate value by 0.413 and beta falls short of it
     by 0.208, p = 1.2e-17 for each.
 - claim: figs3-exponents-stable-with-threshold
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_cambrainha_2025.ipynb
   output: claim:figs3-exponents-stable-with-threshold
-  proposed:
-    outcome: partially_reproduced
-    reason: The criterion asks for stability "at every grid point with at least 10 sessions
-      contributing", which holds vacuously for an exponent with no such point; the verified outcome
-      counted such an exponent as not shown stable, a convention the criterion does not state. Read
-      literally, the grid from 7 (CV (a)) fails for NNI z alone (0.083 against an SD of 0.058), so
-      three of four exponents hold, which is partially reproduced (resting on CV (a) and the start of
-      7). Passive and NNI mu are then not tested, as no grid point has 10 sessions with a mu (at most
-      7 and 6; 1.7% of windows pass the r^2 rule). From the 99th percentile the literal reading gives
-      the same, from the 99.9th percentile and under CV (b) reproduced (notebook, the cell after the
-      figs3 verdicts). Raised by the verifier in round 2.
   notes: Under CV (a) and (c) the grid from kappa_surr_max (34.29) to 12 is empty. From the paper's
     value of 7 to 12 (CV (a), 101 points, every point evaluated), alpha and beta stay within one SD
     of their all-window values in every phase, mu in the active phase (largest departure 0.122
     against an SD of 0.197) and z in the active and passive phases. In NNI (a) z departs by 0.083
-    against an SD of 0.058, and mu has no point with 10 sessions in the passive and NNI phases. Two
-    exponents fail, so not reproduced. Read literally, the criterion holds vacuously for an exponent
-    with no evaluable point; that leaves z alone failing (partially reproduced; proposed above). At
-    most 7 passive and 6 NNI sessions have a mu at any point from 7, against 32 active. The 99th percentile start (6.51) gives the
-    same as 7; the 99.9th percentile start (10.43), and CV (b) from 8.55 and 10.30, fail for mu alone
-    (partially reproduced), as z stays within one SD there. On thresholds 4 to 12 in steps of 0.5
-    (CV (a)) NNI z departs by 0.083 against an SD of 0.056. Question for the authors, as for
-    fig3c-scaling-hit-rate-higher. What is kappa_surr_max, the start of the Figure S3 range?
+    against an SD of 0.058. In the passive and NNI phases mu has no grid point with 10 sessions
+    contributing (at most 7 and 6, against 32 active), so the criterion, which asks for stability
+    "at every grid point with at least 10 sessions contributing", holds vacuously there. Passive
+    and NNI mu are therefore not actually tested; only 1.7% of windows pass the r^2 rule. z alone
+    fails, so three of four exponents hold, which is partially reproduced. The NNI z failure is
+    narrow; its departure of 0.083 is the same at every start, and whether it fails depends only on
+    the SD at the start of the grid. The 99th percentile start (6.51) gives the same as 7; the 99.9th
+    percentile start (10.43), and CV (b) from 8.55 and 10.30, give reproduced, as z stays within one
+    SD there. On thresholds 4 to 12 in steps of 0.5 (CV (a)) NNI z departs by 0.083 against an SD of
+    0.056 (partially reproduced). Counting an exponent with no evaluable point as not shown stable
+    (the convention of rounds 1 and 2) would give not reproduced from 7 and from the 99th
+    percentile. Question for the authors, as for fig3c-scaling-hit-rate-higher. What is
+    kappa_surr_max, the start of the Figure S3 range?
   deviations:
   - The grid from kappa_surr_max (O6) is empty under CV (a) and (c). The grid starts disagree (7 and
-    the 99th percentile give not reproduced, the 99.9th percentile partially reproduced), so the
-    paper's value of about 7 for kappa_surr_max, read from Figures 3C, 3D and 4A (claims file, M4),
-    is adopted as an assumption.
+    the 99th percentile give partially reproduced, the 99.9th percentile reproduced), so the paper's
+    value of about 7 for kappa_surr_max, read from Figures 3C, 3D and 4A (claims file, M4), is
+    adopted as an assumption.
   - CV reading (a) is adopted as an assumption, as for fig3a-kurtosis-broader-than-surrogate.
-  - An exponent with no grid point where 10 sessions contribute is counted as not shown stable. This
-    is an assumption the outcome rests on; the literal reading of the criterion (the condition holds
-    vacuously) gives partially reproduced from 7, and a change to that outcome is proposed.
+  - The criterion is applied as written. An exponent with no grid point where 10 sessions
+    contribute meets the condition vacuously (round 3; the outcome was not reproduced in rounds 1
+    and 2, which counted such an exponent as not shown stable).
 - claim: figs4-initial-kurtosis-poor-predictor
   outcome: reproduced
   notebook: reproduce_cambrainha_2025.ipynb
@@ -771,3 +765,28 @@ verifications:
   - finding: 9
     agrees: true
     reason: Severity none is right. No session is deposited twice and the clocks agree.
+- date: 2026-11-27
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The change of outcome proposed for figs3-exponents-stable-with-threshold after round 2
+    and the notebook cells behind it (cells 81 to 83), with the claims file and the paper's full
+    text. Report in transcripts/cambrainha-2025/verifier-3-report.md.
+  results:
+  - claim: figs3-exponents-stable-with-threshold
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, provided it stays marked as assumed. Cell 81 applies the criterion as written
+      (SD across sessions at the grid start, at least 10 sessions per point, every phase). alpha and
+      beta hold in all three phases, active mu holds (0.122 against 0.197), active and passive z hold,
+      and NNI z fails (0.083 against 0.058). Passive and NNI mu have no point with 10 sessions (at
+      most 7 and 6), so the condition holds vacuously, and three of four exponents hold. The literal
+      reading came from the verifier's round-2 report, not from the author, and under it no start
+      gives not reproduced. The outcome still depends on the start of 7 and on CV (a), so `assumed`
+      must be kept. The notes should keep that passive and NNI mu are not actually tested (1.7% of
+      windows pass the r^2 rule) and that the NNI z failure is narrow, depending only on the SD at
+      the grid start. No misreading of the paper by the claims file.
+    response: Changed to partially_reproduced, `assumed` kept, `proposed` removed. The notes and
+      deviations now apply the criterion as written, say that passive and NNI mu are not actually
+      tested and that the NNI z failure depends only on the SD at the grid start. The notebook
+      conclusions and summary, the README and the attempt notes are updated to match.
