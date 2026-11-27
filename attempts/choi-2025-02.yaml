@@ -1,0 +1,555 @@
+schema_version: 3
+id: choi-2025-02
+datasets:
+- archive: dandi
+  id: "002014"
+  version: 0.261120.0528
+  doi: 10.48324/dandi.002014/0.261120.0528
+  relation: primary
+paper: doi:10.1016/j.jneumeth.2025.110467
+date: '2026-11-24'
+entry: choi-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45507101381
+inputs:
+- what: The paper's lists of large and small successful trials (1-based ids, files "09272024_nlx_c8c_value
+    object start_big rew and success_tr1-1411.mat" and "..._small rew and success_tr1-1411.mat", md5
+    d3199b1d6d5d7a2e4e2ce2b23d2cb8bb and 21b6ec1119ff8924a3dd98a8537bbb68), from the Zenodo record the paper's
+    Data availability statement names. Used only to check the trial classes built from the dandiset's events.
+  source: doi:10.5281/zenodo.14825992
+outcomes:
+- claim: fig8a-single-trial-dopamine
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig8a-single-trial-dopamine
+  notes: In trial id 133 (row 132, a large successful trial) the SD of the dopamine trace referenced at V is
+    4.414 over 0 to 5 s after V and 2.180 over the 5 s before, ratio 2.025. Under the other reading (row 133,
+    a small trial, with 17 and 22 NaN samples in the two windows) the ratio is 2.199. Over the 941 successful trials
+    with a ratio (9 of 950 are NaN) the median ratio is 1.259 (IQR 0.804 to 1.885), 62.7% are above 1, and trial 133 lies at the 0.775 quantile.
+    The referenced trace of trial 133 is printed from 5 s before to 5 s after V; it dips to -1.84 about 1.1 s
+    before V and rises to 13.59 about 1.9 s after. The paper gives no values to compare with. The trial-aligned
+    FSCV lags the raw scans (iox best matches the raw current about 1.5 s earlier, and da follows iox by a further
+    0.1 to 0.4 s in 13 trials), so part of the rise after V may come from changes in the raw current just before V.
+  deviations:
+  - The stored PCA estimate (`da`, units not given) is used; the paper's color plot of the voltammograms cannot
+    be compared, as the background-subtracted voltammograms of the trial are not in the file.
+- claim: fig8b-dopamine-large-vs-small
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig8b-dopamine-large-vs-small
+  notes: From V to RW the referenced dopamine averages 1.853 in 448 large and 1.095 in 498 small successful
+    trials, difference of means 0.758, two-sided Mann-Whitney p = 0.0028; 4 trials dropped as their window holds
+    only NaN. Variants, RW to RW + 3 s 1.546 (p = 0.00012); 0 to 2 s after V 0.091 (p = 0.57). V to RW in the
+    first half of the session 0.778 (p = 0.051) and in the second 0.745 (p = 0.018). By 1 s windows the large
+    minus small difference is 0.33 or less until 2 s after V, 1.15 to 1.44 from 2 to 4 s, 1.32 from 4 to 5 s
+    and 1.57 to 1.68 from 5 to 8 s (RW is 4.72 to 5.50 s after V). The criterion tests the V to RW window only.
+    On the statement's "especially between the value cue display and reward", the difference arises between V
+    and RW (from 0.33 at 1 to 2 s after V to 1.44 at 3 to 4 s) and is then held at about 1.6; referenced at RW
+    it grows by only 0.19, 0.48 and 0.25 per 1 s window over 0 to 3 s after RW, and the RW to RW + 3 s window
+    is referenced at V, so it carries the difference built up before RW. Only the level of the difference is as
+    large after RW as before. A question to a reader asks whether the criterion should test this part. The
+    trial-aligned FSCV lags the raw scans by about 1.5 s or more (data check), so the null 0 to 2 s variant may
+    in part reflect this delay. The paper reports no test.
+  deviations:
+  - The trace is referenced at V by subtracting the stored estimate's value there, as the criterion says, in
+    place of the paper's background subtraction of the voltammograms at V.
+  - Trials are classed from the events, leaving out the last row (id 1411), which has no next trial start and
+    which the paper's Zenodo lists leave out; this gives the lists exactly (451 large, 499 small).
+- claim: fig9a-spikes-task-aligned
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig9a-spikes-task-aligned
+  notes: All 950 successful trials have a spike from 1 s before to 3 s after V. The variance across the 40
+    bins of the PSTH is 0.4807 (spikes/s)^2; the 95th percentile over 200 random alignments is 0.0574 under the
+    claim's seed and 0.0574 to 0.0607 under the seed plus 1000 to 4000, and no random alignment reached the
+    observed value under any of the five seeds. The rate falls to 3.8 spikes/s 0.1 to 0.2 s after V and rises
+    to 7.7 to 7.8 spikes/s 0.3 to 0.5 s after V (baseline about 5.5). V falls at every phase of the FSCV scan
+    cycle (77 to 108 trials per 10 ms bin) and each 100 ms bin spans one whole cycle, so the spike-free gap of
+    each scan cannot make this fall and rise. The stored times (0.4697) and the Plexon unit (0.4829) give the
+    same result. The large and small PSTHs differ by at most 2.03 spikes/s in a bin, mean difference -0.050
+    spikes/s over -1 to 3 s; the paper states no difference, and none is judged.
+  deviations:
+  - Spike times are moved by the offset measured in the data check, 0.5 ms (raw ephys clock later than the
+    trial clock), not by the 11812.1 s the claims file's opening comment reports for an earlier version of the
+    dandiset; in this version every stream is on one clock.
+- claim: fig9bc-unit-waveform-isi
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig9bc-unit-waveform-isi
+  notes: None of the 101732 interspike intervals of thresholded unit 1 is shorter than 1 ms (shortest 1.562 ms,
+    fraction under 2 ms 0.00008). The mean waveform's largest absolute value is 56.36 uV (negative) at sample 10
+    of 48, 4.79 times the SD across spikes at that sample (11.76 uV); 4.78 and 5.05 in the two halves of the
+    session. The refractory test cannot fail on these spikes, as the shortest interval is about the waveform
+    length (1.50 ms), so the detector may not report a second spike within one waveform. The Plexon unit has 2
+    intervals under 1 ms (0.00002). Both tests of the criterion hold, so the outcome is reproduced; that the
+    unit is a single neuron is not shown by them, and the paper does not state it (the claim's statement does);
+    a question to a reader asks whether the statement and criterion should change.
+- claim: fig9d-beta-suppression-large
+  outcome: partially_reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig9d-beta-suppression-large
+  notes: Median log10 ratio of 13 to 30 Hz power over 0 to 0.5 s after V to the 0.5 s before is -0.156 in 451
+    large and -0.125 in 499 small trials, difference of medians -0.031, two-sided Mann-Whitney p = 0.112; no
+    trial dropped. Both medians are below 0 and large is lower, with p >= 0.05, which the criterion calls
+    partially reproduced. Variants with the N = 4 filter, 0 to 0.3 s -0.0001 (p = 0.59), 0 to 1 s -0.008 (p =
+    0.83), 1 s baseline -0.023 (p = 0.12), 15 to 30 Hz -0.027 (p = 0.066), 12 to 25 Hz -0.021 (p = 0.20). With
+    N = 2 the 15 to 30 Hz band gives -0.035 (p = 0.052) and the others p 0.11 to 0.81. First half of the session
+    -0.183 against -0.134 (p = 0.116), second half -0.126 against -0.115 (p = 0.545). The trial-averaged power
+    ratio dips lower for large trials (to 0.532, against 0.695; mean over 0 to 0.5 s 0.841, against 0.885),
+    which resembles the paper's figure; the criterion compares medians of the per-trial log ratios.
+  deviations:
+  - The 4th order Butterworth band-pass of the criterion is designed with N = 4 (scipy's and MATLAB's
+    convention, a standard choice); N = 2 is shown as a variant.
+  - The stored LFP is used, as the criterion says. It equals the raw c7b minus c5c except at the FSCV scan rate
+    (10 Hz) and its harmonics, which dominate the raw signal and are removed from the stored one (data check,
+    spectra); this is why it carries only 0.14 to 0.17 of the raw SD in 13 to 30 Hz. The beta band thus has gaps
+    at 20 and 30 Hz. The paper's preprocessing is not described; the Zenodo record calls it spectral
+    interpolation.
+- claim: recordings-two-monkeys
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds one session of monkey T, with dopamine (c8ds), spikes (c5d) and LFP (c7b-c5c), so
+    the monkey T part is present. No recording of monkey J is in it, in the paper's Zenodo record (one session
+    of monkey T), or in any other dandiset or Zenodo record of the lab found by searching both archives for
+    Schwerdt (dandiset 002013 is another study).
+- claim: scfe-functional-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The background current and noise of each implanted electrode are not in the dandiset or the Zenodo
+    record. The file holds one FSCV electrode (c8ds).
+- claim: scfe-background-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As for scfe-functional-yield, the per-electrode background currents and noise levels are not public.
+- claim: mcfe-functional-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The per-electrode functionality of the mCFEs is not in the dandiset or the Zenodo record.
+- claim: dopamine-signal-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Only one FSCV site (c8ds) of one monkey is in the dandiset; the 24 and 15 functional CFEs are not.
+- claim: asepsis-cultures
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The culture results are not in the dandiset or the Zenodo record.
+- claim: fig6-drainage-volume
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The aspirated volumes are not in the dandiset or the Zenodo record.
+- claim: fig7-bone-growth-margins
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The photographs of bone growth and chamber margins are not in the dandiset or the Zenodo record.
+findings:
+- kind: data_missing
+  severity: major
+  statement: The dandiset holds one session of monkey T (09/27/2024), the session of Figures 8 and 9. The
+    electrode yields, cultures, drainage volumes, bone growth and margin observations, and every recording of
+    monkey J are not in it, so 8 of the 13 claims cannot be tested. The version's release
+    notes state this gap.
+- kind: other
+  about: data
+  severity: none
+  statement: All streams share one clock. The stored bipolar LFP matches the raw c7b minus c5c in 1 to 8 Hz at
+    a lag of 0 to 1 ms (r 0.89 to 0.94 in four trials, over a search of 5 s either way); the raw c5d trough
+    falls 8 samples after the thresholded spike times, within 2 samples of the stored waveforms' trough (sample 10); the
+    spike-free gap sits 46 to 50 ms after each stored FSCV scan time throughout the session, consistent with
+    the stated mapping of scans to within one scan; the trial-aligned oxidation current follows the raw
+    current near 0.6 V (a fitted kernel over 36 trials is positive from about -2.8 to +0.2 s and largest at -0.2
+    to 0 s), though smoothed so that it matches the raw current best about 1.5 s earlier (finding 9); the large
+    minus small dopamine difference appears only after V; and the spike rate is modulated at V far beyond random alignments. The offset of 11812.1 s
+    reported by the claims file for an earlier version does not hold in this one (r -0.12 to -0.02 at that
+    offset, 0.89 to 0.94 at 0 to 1 ms).
+- kind: metadata_insufficient
+  severity: minor
+  statement: The PCA-extracted dopamine, pH and motion components and the oxidation current have no units, and
+    their reference window is not given (the file says so). The dopamine values range from -53.6 to 42.4, so
+    their size cannot be compared with the paper's concentration changes.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The bipolar LFP's preprocessing is described in the file as not documented, while the Zenodo record
+    it comes from calls it downsampled after spectral interpolation. The data show what it does to the signal.
+    The raw c7b minus c5c carries lines at the FSCV scan rate, 10 Hz, and its harmonics (440 to 2200 times their
+    neighbours at 10 to 40 Hz); the stored LFP has them removed and otherwise equals the raw signal (spectral
+    ratio 1.03 to 1.05 at 5 to 35 Hz between the lines).
+- kind: other
+  about: data
+  severity: minor
+  statement: The thresholded spikes have no interspike interval shorter than 1.562 ms, about the length of a
+    stored waveform (48 samples, 1.50 ms), so their interval distribution cannot show refractory violations.
+    The thresholded unit 1 and the Plexon unit ch75#1 hold the same spikes (99.5% of Plexon spikes within 0.1
+    ms of a thresholded one) and were counted once.
+- kind: other
+  about: data
+  severity: minor
+  statement: Classing trials from the events gives the paper's Zenodo lists of large (451) and small (499)
+    successful trials exactly, once the last row (id 1411, a large reward with no later trial start), which
+    the lists leave out, is left out. Every midpoint_time equals a trial-start event (code 128) exactly. The
+    first trial-start event (4640.33 s) has no row in the trials table, as the table's description says.
+- kind: metadata_error
+  severity: minor
+  statement: The version's release notes say the eye tracking was re-timed with the raw ephys, but the file
+    holds no eye tracking series.
+- kind: methods_unavailable
+  statement: The paper describes none of the analyses of Figures 8 and 9 beyond the legends and reports no test
+    of the large against small differences. For Figure 9D it gives no beta band, filter, power measure, baseline
+    or window for "the brief time window immediately following the cue". Questions for the authors, which band,
+    filter and windows were used, and was the difference in Figure 9D tested? Here the claims file's choices
+    (13 to 30 Hz, 0 to 0.5 s against the 0.5 s before V) give a smaller suppression for large than small trials
+    that is not significant (p = 0.112).
+- kind: metadata_insufficient
+  severity: major
+  statement: The trial-aligned oxidation current (iox) is a smoothed version of the raw current near 0.6 V, and
+    the file does not say so. A linear kernel from the raw current to iox, fitted over 36 trials, is positive
+    from about 2.8 s before to 0.2 s after each sample, largest at -0.2 to 0 s, and negative from +0.4 s, and
+    the detrended correlation peaks with the raw current 0.8 to 2.5 s earlier (median 1.5 s). The PCA dopamine
+    estimate (da) follows iox by a further 0.1 to 0.4 s (median 0.3 s, 13 trials with no NaN), so it carries at
+    least the same delay; matched directly with the raw current, da peaks 1.2 to 5.0 s earlier (median 3.1 s,
+    with 5.0 s the edge of the search). Responses in the trial-aligned series are therefore spread over about 2 s after the
+    raw change, and a latency measured on them comes out late by about 1.5 s or more. How the PCA components
+    were derived from the scans is not documented.
+- kind: metadata_insufficient
+  severity: minor
+  found: on_prompt
+  statement: The paper says the reward size depends on whether the target is at the top or bottom of the
+    screen. The events code left (117) and right (118) conditions, and both reward conditions occur on both
+    sides (left 233 trials with condition 1 and 499 with condition 2, right 250 and 429), and no event codes
+    the target's vertical position. The reward condition codes 41 and 40 are described as giving the big and
+    small reward, so each trial's reward size is known, but the target position that the paper says sets it is
+    not in the dandiset.
+verifications:
+- date: '2026-11-24'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text (PMC13250822). The verifier read the archive's versions and asset
+    lists through the DANDI API and tested the helpers on synthetic inputs (_first_in, _any_in, psth, da_times,
+    value_at, window_mean, lfp_segment, beta_suppression) and the thresholded_waveforms indexing by hand. It had
+    no attempt record and took the claims from the claims file.
+  results:
+  - claim: fig8a-single-trial-dopamine
+    agrees: true
+    outcome: reproduced
+    reason: Cell 9, the after/before SD ratio is 2.025 for trial id 133 (row 132, no NaN in either window) and
+      2.199 for row 133; the criterion needs either reading above 1. The median over all 951 successful trials is
+      1.257, 62.7% are above 1, and trial 133 sits at the 0.775 quantile. It could not check whether the trace
+      matches Figure 8A, as the paper gives no values, and asked for the trial-133 da samples from -5 to +5 s.
+    response: The trial-133 samples from -5 to +5 s after V are now printed. With the last row left out (see
+      fig8b), the reference over 950 trials is 1.259; the trial's ratios are unchanged. Outcome unchanged.
+  - claim: fig8b-dopamine-large-vs-small
+    agrees: true
+    outcome: reproduced
+    reason: V to RW window over all trials, large minus small = +0.751, Mann-Whitney p = 0.0031, n = 449/498, 4
+      trials dropped for NaN. The 0 to 2 s variant is null and the first half alone gives p = 0.051. Separately,
+      the last row (id 1411) has an open-ended span and is classed large although the paper's Zenodo list leaves
+      it out (does not affect a conclusion). The claim says the difference is largest "especially between V and
+      RW", but the criterion tests only V to RW > 0; the data show a larger difference after RW (RW to RW+3 s
+      +1.53, p = 0.00015), so the "especially" part is not supported and the claims file does not test it. The
+      FSCV is tied to the trial clock only through its stored start/stop times, and the iox cross-check was not
+      run in the notebook (does not affect a conclusion).
+    response: The last row is no longer classed (helper trial_table), so the classes match the Zenodo lists
+      exactly; every midpoint_time equals a code-128 event (largest difference 0.000000 s, now printed). V to RW
+      now gives +0.758, p = 0.0028, n = 448/498. The notes and the notebook say the "especially"
+      part does not hold, and a question to a reader asks whether the criterion should test it. The iox
+      cross-check now runs in the notebook (a kernel fitted over 36 trials ties iox to the raw scans with no shift
+      of more than a few tenths of a second, smoothed over about 2.4 s; new finding), and the dopamine aligned to
+      RW by condition and the mean traces by 0.5 s are printed. Outcome unchanged.
+  - claim: fig9a-spikes-task-aligned
+    agrees: true
+    outcome: reproduced
+    reason: Every successful trial has a spike in -1 to 3 s, and the PSTH variance is 0.4825 against a null 95th
+      percentile of 0.056 to 0.062 over 5 seeds x 200 random alignments, with no null draw reaching it; the
+      stored-time and Plexon variants agree. It could not check whether the PSTH dip at +0.1 s and the peak at
+      +0.3 to +0.5 s are free of the FSCV blanking and asked for the phase of V relative to the scan cycle.
+      Cell 5 measures a 0.5 ms offset between the raw ephys clock and the trial clock, while the claims file
+      reports 11812.1 s, probably from version 0.261012.0921; the notebook does not mention the discrepancy, but r
+      = 0.94 at lag 0 (1 to 8 Hz) shows the clocks agree in this version (does not affect a conclusion).
+    response: The phase of V within the scan cycle is now printed; it is uniform (77 to 108 trials per 10 ms
+      bin), and each 100 ms bin spans a whole cycle, so the blanking cannot make the dip or peak. The last row
+      no longer enters the random alignments, so the special span for it is gone; over 950 trials the variance is
+      0.4807 against a 95th percentile of 0.0574 to 0.0607. The data check now states the claims file's
+      11812.1 s offset and prints the correlation at it (r -0.12 to -0.02, against 0.89 to 0.94 at 0 to 1 ms), so
+      the 0.5 ms offset used holds for this version. Outcome unchanged.
+  - claim: fig9bc-unit-waveform-isi
+    agrees: true
+    outcome: reproduced
+    reason: No intervals under 1 ms (0 of 101,732); the peak of the mean waveform is 56.4 uV against an SD of
+      11.8 uV, a ratio of 4.79, and both halves agree. The shortest interval is 1.562 ms, about the length of the
+      1.5 ms waveform window, so "fewer than 1% of ISIs under 1 ms" probably holds by construction, and
+      threshold-selected spikes tend to pass the peak/SD > 2 test; the criterion is weak (claims file, does not
+      affect a conclusion).
+    response: The notes already said the refractory test cannot fail here. The paper does not call the spikes a
+      single unit, while the claim's statement does; a question to a reader asks whether the statement and
+      criterion should change. Outcome unchanged.
+  - claim: fig9d-beta-suppression-large
+    agrees: true
+    outcome: partially_reproduced
+    reason: Main measure with N=4, median large -0.158, median small -0.125, both below 0 and large lower, but p
+      = 0.109; of the 12 variants only one has p < 0.05 (15 to 30 Hz with N=2, p = 0.0496). The trial-averaged
+      power ratio plot shows a deeper dip for large (0.53) than small (0.70), like the paper's figure, but the
+      mean is outlier-sensitive and the criterion uses medians, so the outcome stays partial. In the 13 to 30 Hz
+      band the stored LFP correlates only weakly with raw c7b-c5c and has about 0.15 of its SD, likely from FSCV
+      interference at 20 and 30 Hz, which the notebook neither checks nor discusses; it asked for spectra of the
+      stored and raw signals marking 10, 20 and 30 Hz.
+    response: The spectra are now in the data check. The raw signal carries lines at 10 Hz and its harmonics
+      (440 to 2200 times their neighbours); the stored LFP has them removed and otherwise equals the raw signal
+      (ratio 1.03 to 1.05 between the lines), which accounts for the low SD ratio. The deviation and finding say
+      so. The mean power ratio over 0 to 0.5 s is now printed. With 451 large trials the main measure gives
+      -0.156 against -0.125, p = 0.112, and no variant reaches p < 0.05 (15 to 30 Hz with N = 2, p = 0.052).
+      Outcome unchanged.
+  - claim: recordings-two-monkeys
+    agrees: true
+    outcome: blocked
+    reason: Every version of the archive (draft, 0.261012.0921, 0.261120.0528) holds one asset,
+      sub-Monkey-T/...ses-09272024; monkey J is absent. The monkey T half is in effect shown by the five tested
+      claims and could have been marked as supported; only monkey J is missing.
+    response: Kept blocked, as the verifier's own outcome is. The claim is about two monkeys and has no
+      criterion for one; the notes already say the monkey T part is present.
+  - claim: scfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: The single session has 4 electrodes. There are no per-electrode yield or background/noise data for the
+      40 and 51 sCFEs, in the archive or in the 6 Zenodo files.
+    response: No change.
+  - claim: scfe-background-yield
+    agrees: true
+    outcome: blocked
+    reason: Same as scfe-functional-yield.
+    response: No change.
+  - claim: mcfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Same as scfe-functional-yield.
+    response: No change.
+  - claim: dopamine-signal-yield
+    agrees: true
+    outcome: blocked
+    reason: Needs every functional CFE in both monkeys. The file has one FSCV site (c8ds).
+    response: No change.
+  - claim: asepsis-cultures
+    agrees: true
+    outcome: blocked
+    reason: There are no culture records in the dandiset metadata or assets.
+    response: No change.
+  - claim: fig6-drainage-volume
+    agrees: true
+    outcome: blocked
+    reason: There are no drainage records.
+    response: No change.
+  - claim: fig7-bone-growth-margins
+    agrees: true
+    outcome: blocked
+    reason: There are no images or histology.
+    response: No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the first revision, with its conclusion cells and summary, the
+    attempt record, the helper module, the claims file and the paper.
+  results:
+  - claim: fig8a-single-trial-dopamine
+    agrees: true
+    outcome: reproduced
+    reason: Cell 10, ratio 2.025 for row 132 and 2.199 for row 133; either reading is above 1. The notes' "Over
+      the 950 successful trials the median ratio is 1.259" is minor, as cell 10 prints "NaN 9", so the statistics
+      cover 941 trials. If da is smoothed like iox, which lags the raw current by about 1.5 s (cell 8), part of
+      fig8a's "after V" fluctuation could come from just before V, and the notes should mention this when they
+      interpret timing.
+    response: The notes and the result cell now say 941 trials (9 of 950 NaN). The data check now also measures
+      the lag of da. In the 13 of the 36 sampled trials with no NaN, da follows iox by a further 0.1 to 0.4 s, so
+      it carries at least the iox delay. The notes and result cell say that part of the rise after V may come
+      from changes in the raw current just before V. Outcome unchanged.
+  - claim: fig8b-dopamine-large-vs-small
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, V to RW difference 0.758, p = 0.0028, n = 448/498, 4 dropped. In cell 7 the +5 to +8 s bins
+      are 1.57, 1.68 and 1.64, and 1.32 is the +4 to +5 s bin, so "1.32 to 1.68 from 5 to 8 s" should read 1.57 to
+      1.68. The sentence that "especially between the value cue display and reward" does not hold goes too far,
+      as did its own round-1 point B6. The RW to RW+3 s window (1.546) is referenced at V, so it includes the
+      difference built up before RW; referenced at V the difference rises from 0.33 to about 1.4 between V+1 s
+      and V+4 s, before RW, and stays at about 1.6 after; referenced at RW its further growth over 0 to 3 s is only
+      0.19, 0.48 and 0.25 per 1 s bin. So the difference arises between V and RW and is then held, and "does not
+      hold" is true only of its level. This does not change the outcome, as the criterion tests V to RW only. If
+      da is smoothed like iox, the null 0 to 2 s variant could be partly a filter delay.
+    response: The range now reads 1.57 to 1.68 from 5 to 8 s (1.32 from 4 to 5 s). The notes and result cell now
+      say the difference builds between V and RW and is then held, with the numbers above, and that only its
+      level is as large after RW. They say the null 0 to 2 s variant may in part reflect the delay of the
+      trial-aligned FSCV, which the new da check shows da shares. The question to a reader is kept, with its
+      reasoning corrected to the same effect. Outcome unchanged.
+  - claim: fig9a-spikes-task-aligned
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18, every trial has a spike (fraction 1.0); variance 0.4807 against a 95th percentile of 0.0574
+      to 0.0607, and no null draw reaches it. Its round-1 requests (phase of V within the scan cycle, the claims
+      file's 11812.1 s offset) are resolved.
+    response: No change.
+  - claim: fig9bc-unit-waveform-isi
+    agrees: true
+    outcome: reproduced
+    reason: Cell 22, 0 intervals under 1 ms; peak/SD ratio 4.79. The paper never says "single unit"; that wording
+      is the claims file's own, and the attempt flags it.
+    response: No change.
+  - claim: fig9d-beta-suppression-large
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 26, median large -0.156, small -0.125, p = 0.112. No variant reaches p < 0.05. The spectra
+      (cell 5) resolve its round-1 point on the stored LFP.
+    response: No change.
+  - claim: recordings-two-monkeys
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the only subject is sub-Monkey-T.
+    response: No change.
+  - claim: scfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: scfe-background-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: mcfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: dopamine-signal-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the only subject is sub-Monkey-T and the Zenodo record holds no yield data.
+    response: No change.
+  - claim: asepsis-cultures
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no culture data.
+    response: No change.
+  - claim: fig6-drainage-volume
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no drainage data.
+    response: No change.
+  - claim: fig7-bone-growth-margins
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no imaging data.
+    response: No change.
+  findings:
+  - finding: 2
+    agrees: true
+    reason: No finding is rated critical, and it would rate none critical; the clock offset does not hold in this
+      version (cell 5). It noted that "no shift of more than a few tenths of a second" is true of the kernel's
+      peak (lag 0), while cell 8 also shows the detrended correlation peaking with the raw current 1.5 s earlier
+      (median; range 0.8 to 2.5 s), and that the kernel is positive from about -2.8 s (cell 8 prints +0.2 at
+      -2.8 s and +1.3 at -2.6 s), not from -2.4 s.
+    response: The statement now gives the kernel as positive from about -2.8 s and says in the same place that
+      the oxidation current matches the raw current best about 1.5 s earlier (finding 9). The summary says the
+      same. Severity unchanged (none).
+  - finding: 5
+    agrees: true
+    reason: The thresholded and Plexon units share the same spikes; two detections of the same channel are
+      visible as such in the file (cell 3, 0.9949 overlap), so minor is right.
+    response: No change.
+  - finding: 9
+    agrees: false
+    severity: major
+    reason: It would rate the iox smoothing major for any analysis of response latency, because it is
+      undocumented and only shows up when compared with the raw scans; for the criteria tested here, minor is
+      acceptable.
+    response: Raised to major, as the rating is about harm to a user of the dataset and a latency measured on the
+      trial-aligned FSCV comes out late by about 1.5 s. The statement now adds that da follows iox by a further
+      0.1 to 0.4 s, so it carries at least the same delay, and gives the kernel as positive from about -2.8 s.
+reconciliation:
+  earlier: choi-2025-01
+  date: '2026-11-25'
+  blind: false
+  blind_note: The author saw no record, entry, questions, transcript or note of choi-2025-01; the audit lines
+    are links to the pilot notes and the repository's README. Two inputs the protocol gives the author carried
+    a summary of that attempt's results. The dandiset's release notes, read under step 1.1, list the
+    conversion fixes made after "a reproduction attempt" (one clock for all streams, events no longer stored
+    several times, Plexon timestamps, units), and the claims file's opening comment reports the 11812.1 s
+    clock offset found in the earlier data check. The author disclosed both in its report and tested the
+    offset, which does not hold on this version (its finding 2 and the fig9a deviation).
+  findings:
+  - finding: 1
+    status: fixed
+    note: The raw ephys now starts at 4612.10 s on the session clock and lines up with the stored LFP at a lag of
+      1 ms at the first and last trial (r 0.972 and 0.872, earlier_findings.ipynb); choi-2025-02 finds the same
+      over four trials (its finding 2).
+  - finding: 2
+    status: fixed
+    note: The raw samples now run from 10:06:44 to 15:12:20, ending 3.9 s before the Neuralynx header's close at
+      15:12:24, and their start 4612 s after the recording was opened accounts for the longer header span
+      (earlier_findings.ipynb).
+  - finding: 3
+    status: fixed
+    note: The raw c5d trough now falls 0.000 to 0.344 ms after the stored spike times on average at the start,
+      middle and end of the recording, close to the stored waveforms' trough at 0.312 ms (earlier_findings.ipynb);
+      the 7.1 ms lag is gone.
+  - finding: 4
+    status: fixed
+    note: The series is no longer described as beta-band, and it carries a conversion of 1.0 in volts (median
+      absolute value 24.2 uV, earlier_findings.ipynb). Its preprocessing, now described as not documented, is
+      choi-2025-02's finding 4, a new finding.
+  - finding: 5
+    status: fixed
+    note: The waveforms now hold volts (mean trough -5.636e-05), and the raw FSCV current carries a conversion of
+      1e-09 to amperes on values around 1000 (earlier_findings.ipynb).
+  - finding: 6
+    status: still_present
+    now: 3
+    note: The da, ph, m and iox columns still state "Units unknown" (choi-2025-02 finding 3), and `good` is still
+      true for all 1411 trials, which choi-2025-02 does not state (earlier_findings.ipynb).
+  - finding: 7
+    status: fixed
+    note: The subject, session and experiment descriptions and the keywords now describe this paper's chamber
+      implant and the 09/27/2024 session of monkey T (earlier_findings.ipynb).
+  - finding: 8
+    status: fixed
+    note: The event table now stores 14117 events, 1412 trial starts, with no repeated time and no decreasing
+      step within a label, and the Plexon spike times are sorted (earlier_findings.ipynb).
+  - finding: 9
+    status: still_present
+    now: 6
+    note: The trial tags are still "initial cue display" for all 1411 rows and the trials table has no trial type
+      column (earlier_findings.ipynb); choi-2025-02 rebuilds the classes from the events and finds the same match
+      with the Zenodo lists apart from trial 1411.
+  - finding: 10
+    status: still_present
+    now: 10
+    note: Left and right conditions still occur with both reward conditions and no event codes the target's
+      vertical position (earlier_findings.ipynb). The reward condition codes 41 and 40 are now described as the
+      big and small reward, so only the target position is missing.
+  - finding: 11
+    status: partly_fixed
+    now: 9
+    note: The raw FSCV now has a timestamp per sample, and the spike-free gap sits 46 to 50 ms after each scan
+      time throughout the session (choi-2025-02 finding 2), so its clock is established. The trial-aligned
+      oxidation current is now located in the raw scans, as a smoothed copy that matches the raw current best
+      about 1.5 s earlier, which the file does not document (finding 9).
+  - finding: 12
+    status: still_present
+    now: 1
+    note: The dandiset still holds only the 09/27/2024 session of monkey T, and the same 8 of 13 claims are
+      blocked with data_missing in both attempts (choi-2025-02 finding 1).
+  protocol: Between pilot-6 and pilot-18 the claims file gained quotes and statistics from the paper's full text
+    (pilot-8, added 2026-10-19), the protocol required methods taken from the paper and split the reader, who
+    writes the claims, from the author (pilot-9 and pilot-10), repeat attempts became blind with this
+    reconciliation (pilot-12), the notebook time limit rose to 60 minutes (pilot-13), records were filed by
+    paper (pilot-14), and findings about the data were given a severity (pilot-18, in docs/protocol.md; the
+    pilot notes have no section for pilot-15 to pilot-18). The claims file was not written again, so both
+    attempts applied the same criteria, whose method choices the earlier author made from the data check, and
+    all 13 outcomes agree. The changes show in the record, which carries severities on its findings, and in
+    the blind run, which saw the earlier attempt only through the release notes and the claims file's opening
+    comment.

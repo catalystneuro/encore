@@ -1,0 +1,919 @@
+schema_version: 3
+id: churchland-2012-02
+datasets:
+- archive: dandi
+  id: '000070'
+  version: 0.261122.2046
+  doi: 10.48324/dandi.000070/0.261122.2046
+  relation: primary
+paper: doi:10.1038/nature11129
+date: 2026-11-24
+entry: churchland-2012
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45507913066
+outcomes:
+- claim: array-dataset-composition
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:array-dataset-composition
+  measured:
+  - 108
+  - 108
+  - 192
+  - 192
+  notes: Both sessions are in the dandiset (sub-Jenkins ses-20090918 and sub-Nitschke ses-20100923), each
+    with 108 conditions among the 1980 and 2791 trials the Methods select. Each Units table has 192 rows,
+    outside 146 +- 14.6 and 218 +- 21.8. The files describe the rows as threshold crossings on each electrode,
+    not sorted (Blackrock unit code 0), one unit per electrode, so they are not the paper's isolations.
+  deviations:
+  - Trials flagged discard_trial are also left out, as the column's description says to do; no trial of
+    the two sessions is flagged.
+- claim: fig3ef-same-direction
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig3ef-same-direction
+  notes: Under the main reading 103 of 108 J-array conditions (95.4%) and 107 of 108 N-array conditions
+    (99.1%) rotate counter-clockwise from -50 to +150 ms; the median net rotation is 97 and 113 degrees.
+    Under the four readings the shares are 94.4 to 96.3% (J-array) and 99.1 to 100% (N-array), and 96.3%
+    and 99.1% with 24 ms smoothing. After shuffles 2 and 3 the median share stays at 93 to 98%, and after
+    shuffle 1 it is 58 to 61% (see suppfig3-shuffle-controls). The units are unsorted threshold crossings
+    (192 per session).
+  deviations:
+  - Units are the dandiset's 192 unsorted threshold crossings per session, where the paper used 146 and
+    218 sorted isolations, as the claims file says.
+  - The paper's custom smoothing step that discards features not shared across conditions is not applied;
+    the Methods say it had essentially no effect on the population analyses (Methods, "Computing average
+    firing rate as a function of time").
+  - Rates are aligned on movement onset only; the paper also aligned on target onset and the go cue, for
+    presentation.
+  - The trial table has two movement-onset columns, offline_move_onset_time ("calculated offline using
+    a robust algorithm") and move_begins_time, 25 ms (J-array) and 52 ms (N-array) apart at the median,
+    and the paper does not say which onset it used ("data are precisely aligned on movement onset", Results).
+    The window over which a unit's range is taken for the soft normalisation is not stated either; the
+    codepack takes it over all the times it is given. Both details are run under both readings (four in
+    all); here all four give the same outcome.
+- claim: fig3-independent-of-curvature
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig3-independent-of-curvature
+  notes: Under the main reading (offline onset), J-array has 34 clockwise-curving, 21 straight and 53
+    counter-clockwise-curving conditions, of which 88.2%, 100% and 98.1% rotate counter-clockwise; N-array
+    has 36, 18 and 54, at 100%, 100% and 98.1%. The clockwise class of J-array is below 90% and above
+    75%. Under the two move_begins readings, with the hand paths also aligned on move_begins_time, every
+    class is at 92.5% or more in both datasets (J-array clockwise class 93.8% of 32), which would make
+    the claim reproduced. The velocity-heading variant gives the same outcome as the main measure under
+    each reading (J-array clockwise class 89.7% under the main reading). In J-array a logistic fit finds
+    that reaches curving more clockwise are less likely to rotate counter-clockwise (slope 1.524 per 100
+    degrees of curvature, p = 0.029); in N-array it finds no relation (slope -0.175, p = 0.873). Four
+    of the five J-array conditions that do not rotate counter-clockwise (conditions 50, 51, 90 and 107)
+    curve clockwise, by 107 to 148 degrees, against a median of -106 degrees for the clockwise class;
+    the fifth (condition 28) curves counter-clockwise by 33 degrees.
+  deviations:
+  - The heading is undefined while the hand is at rest, at onset and when it stops. The net change of
+    heading is taken between the mean path's direction over 5 to 20% of its length and over 80 to 95%
+    of it, from movement onset to +500 ms (path smoothed with a 10 ms Gaussian). A variant takes the unwrapped
+    heading of the velocity where speed exceeds 10% of its peak. Both are choices made here, and they
+    agree on the outcome.
+  - Assumed, as the main reading, that the paper's movement onset is the trial table's offline_move_onset_time,
+    which the file describes as calculated offline with a robust algorithm and at which the hand speed
+    starts to rise (median 43 and 15 mm/s at it, under 6 mm/s 50 ms before). The paper says only that
+    the data were precisely aligned on movement onset. Under move_begins_time, with the hand paths aligned
+    on it too, the outcome would be reproduced. The file describes move_begins_time only as "movement
+    onset time"; at it the median hand speed is already 137 mm/s (J-array) and 160 mm/s (N-array).
+- claim: fig3-phase-from-prep-state
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig3-phase-from-prep-state
+  notes: The leave-one-condition-out R2 of the state at +150 ms predicted from the state at -50 ms by
+    one complex gain is 0.568 in J-array and 0.676 in N-array. The median over 20 shuffle-3 runs is 0.686
+    in J-array (0.678 to 0.688 over the five seeds) and 0.600 in N-array (0.586 to 0.600). The criterion
+    holds in N-array and not in J-array, where the shuffled data predict better. All four readings give
+    the same (J-array 0.568 to 0.634 against shuffle medians 0.680 to 0.686). The dividing point lies
+    before the analysed window, so under shuffle 3 the states at -50 and +150 ms carry the same reassigned
+    movement pattern; whether this reference tests the claim is asked of a reader (questions/churchland-2012.yaml).
+    Two variants, which do not decide the outcome, are shown. With the shuffle-3 runs projected onto the
+    original plane their medians are 0.429 (J-array) and 0.611 (N-array), below the data in both, which
+    would make the claim reproduced under all four readings. Predicting +150 ms from the state at the
+    dividing point in the original plane, the data reach 0.103 and 0.252 against shuffle-3 medians of
+    0.055 and 0.058, better than the shuffles but below 0.5, which would make it not reproduced.
+  deviations:
+  - The shuffle-3 runs are this claim's own, drawn from its seed, with the dividing point of suppfig3-shuffle-controls
+    (median go cue relative to movement onset plus 50 ms, -277 ms in J-array and -268 ms in N-array);
+    each shuffle's R2 is computed in its own jPCA plane.
+- claim: var-captured-jpc-plane
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:var-captured-jpc-plane
+  measured: 18.9
+  notes: Under the main reading the first jPCA plane captures 14.9% (J-array) and 22.9% (N-array) of the
+    variance, mean 18.9%; the mean is outside 28 +- 2.8% (reading a) and J-array is below 18% (reading
+    b). With the range over -1000 to +700 ms, 15.0% and 23.9%. Under the move_begins readings J-array
+    captures 18.7 to 19.0% and N-array 21.1 to 22.0%, all inside 18 to 38.5%, which would make the claim
+    reproduced under reading (b). With 24 ms smoothing, 15.6% and 23.3%. The units are unsorted threshold
+    crossings, which may hold less of the structure than sorted units. The range of reading (b), "typically
+    20-35%", is from the Supplementary Figure 5 legend, which is about the per-area analysis; whether
+    it applies here is asked of a reader (questions/churchland-2012.yaml). Under the main reading the
+    outcome does not depend on it.
+  deviations:
+  - Assumed the offline_move_onset_time column as the movement onset (see fig3-independent-of-curvature);
+    under move_begins_time the outcome would be reproduced.
+- claim: pc23-variance
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:pc23-variance
+  measured: 23.8
+  notes: Under the main reading PC2 and PC3 capture 19.2% (J-array) and 28.3% (N-array), mean 23.8%; the
+    mean and the J-array value are outside 29 +- 2.9%. The jPCA plane captures 0.78 (J-array) and 0.81
+    (N-array) as much variance as PC2 and PC3, so the 80% part fails in J-array. Under the move_begins
+    readings the ratios are 0.84 to 0.95, so the ratio part holds and the values part does not (means
+    22.5 and 22.9%), which would make the claim partially reproduced.
+  deviations:
+  - Assumed the offline_move_onset_time column as the movement onset (see fig3-independent-of-curvature).
+- claim: suppfig4-j-array-planes
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig4-j-array-planes
+  measured:
+  - 13.3
+  - 13.3
+  - 12.2
+  - 38.8
+  - 51.9
+  notes: With jPCA on the top 10 PCs of J-array, the first three planes capture 13.3%, 13.3% and 12.2%
+    (38.8% together), and the top six PCs 51.9%; only the third plane is within tolerance. The rotations
+    are coherent in each plane, with 98%, 97% and 92% of conditions counter-clockwise, at 1.63, 1.24 and
+    0.79 Hz. The four readings agree (three planes 37.7 to 38.8%, top six PCs 51.9 to 54.0%).
+  deviations:
+  - Planes are ordered by the magnitude of their M_skew eigenvalues (Methods, "the plane defined by the
+    eigenvectors associated with the largest two (complex-conjugate) imaginary eigenvalues"), and each
+    is oriented as the first.
+- claim: suppfig4-planes-range
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig4-planes-range
+  notes: In N-array the three planes capture 47.7% (19.6, 16.2 and 11.9%), inside 45 to 77%, with 97%
+    and 100% of conditions rotating in the first two planes (94% in the third). In J-array they capture
+    38.8%, below 45%, although 98% and 97% rotate. The four readings agree (J-array 37.7 to 38.8%, N-array
+    45.8 to 48.8%).
+- claim: fig6a-angle-peak
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6a-angle-peak
+  notes: The 36-bin histogram of the angle between the state and its derivative in the first plane (2160
+    angles per dataset) peaks at 0.528 pi in J-array and 0.639 pi in N-array under the main reading; under
+    the four readings at 0.528 to 0.583 pi and 0.639 pi. 69% (J-array) and 82% (N-array) of the angles
+    lie within 0.25 pi of pi/2.
+- claim: fig6b-skew-fit
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6b-skew-fit
+  notes: In 6-D, R2 is 0.415 for M and 0.381 for M_skew in J-array (ratio 0.918), and 0.580 and 0.527
+    in N-array (ratio 0.909). In the first plane the ratios are 0.946 and 0.953. Under the four readings
+    and with 24 ms smoothing, the 6-D ratios are 0.870 to 0.931 and the plane ratios 0.908 to 0.975. The
+    paper's figure shows 6-D ratios of about 0.75 to 0.9; the R2 values themselves are not stated in the
+    paper.
+  deviations:
+  - In the plane, M and M_skew are 2 x 2 matrices fitted to the projection onto the first plane (Figure
+    6b legend, "the rank 2 matrices that capture dynamics in the first jPCA plane").
+- claim: rotation-frequency
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:rotation-frequency
+  measured: 1.4
+  notes: The largest eigenvalue of M_skew is 8.44 rad/s (1.344 Hz) in J-array and 8.81 rad/s (1.402 Hz)
+    in N-array, inside 1.26 to 2.75 Hz; the measured value given is the larger. With the range over -1000
+    to +700 ms, 1.333 and 1.416 Hz. Under the move_begins readings J-array gives 1.063 to 1.098 Hz, below
+    the range, which would make the claim partially reproduced. With 24 ms smoothing, 1.290 and 1.372
+    Hz. The paper's own values for the array datasets are not stated.
+  deviations:
+  - Assumed the offline_move_onset_time column as the movement onset (see fig3-independent-of-curvature);
+    under move_begins_time the outcome would be partially reproduced.
+  - The derivative is the difference of samples 10 ms apart (Methods), so eigenvalues per sample are multiplied
+    by 100 to give rad/s.
+- claim: suppfig3-shuffle-controls
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig3-shuffle-controls
+  notes: Dividing points -277 ms (J-array) and -268 ms (N-array) from movement onset. In J-array the original
+    R2(M_skew) is 0.381; no shuffled run reaches it, and the medians are 0.01 (shuffle 1), 0.63 (shuffle
+    2) and 0.75 (shuffle 3, 0.745) of it, so all three shuffles meet the criterion. In N-array the original
+    is 0.527, and the medians are 0.01, 0.76 and 0.87 of it, so only shuffle 1 meets it. The partial outcome
+    (all three shuffles in one dataset) holds under each of the five seeds (J-array shuffle-3 medians
+    0.725 to 0.745 of the original, N-array 0.850 to 0.866). With the range over -1000 to +700 ms the
+    outcome is also partial (J-array shuffle 3 at 0.77, N-array shuffle 2 at 0.74); under the two move_begins
+    readings it is not reproduced, as J-array shuffle 3 is at 0.77 to 0.79 and N-array meets only shuffle
+    1. After shuffles 2 and 3 the median share of conditions rotating counter-clockwise stays at 93 to
+    98% and the R2 ratio at 0.86 to 0.94; after shuffle 1 it is 58 to 61% and 0.09 to 0.16. The claim's
+    statement that the shuffles largely remove the rotational structure holds for shuffle 1 only in N-array.
+    The Supplementary Figure 2 legend says shuffles 2 and 3 are not expected to remove all rotational
+    structure; whether R2(M_skew) is the right measure for them is asked of a reader (questions/churchland-2012.yaml).
+  deviations:
+  - Shuffle 1 inverts exactly half of the conditions (54 of 108) per unit, drawn at random (Supplementary
+    Figure 2 legend). Inversion reflects each rate after the dividing point about its value there, and
+    reassignment adds the other condition's change from its dividing-point rate to this condition's rate
+    at that point (legend, "simply appended to the final firing rate during the preparatory state, such
+    that there was no discontinuity").
+  - Assumed the offline_move_onset_time column as the movement onset (see fig3-independent-of-curvature);
+    under move_begins_time the outcome would be not reproduced.
+- claim: suppfig5-areas-variance
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig5-areas-variance
+  measured:
+  - 21.6
+  - 20.2
+  - 17.7
+  - 27.1
+  notes: With units split by electrode group (group 1 described as the PMd array, group 2 as M1, 96 units
+    each), the first plane captures 21.6% (PMd) and 20.2% (M1) in J-array and 17.7% and 27.1% in N-array;
+    only N-array M1 is within tolerance, and N-array PMd is below 18%, so the partial reading fails as
+    well. Each array rotates (96%, 99%, 91% and 97% of conditions counter-clockwise). The four readings
+    agree (N-array PMd 17.6 to 17.9%). The N-9-10-2010 variant (sub-Nitschke ses-20100910) gives 14.7%
+    (PMd) and 20.8% (M1) against 26% and 24%, with 94% rotating in each.
+- claim: suppfig5-m1-faster
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig5-m1-faster
+  notes: The first-plane frequency is 2.020 Hz for M1 against 0.844 Hz for PMd in J-array, and 1.488 against
+    0.973 Hz in N-array. Under the four readings M1 is higher by 1.059 to 1.176 Hz (J-array) and 0.433
+    to 0.523 Hz (N-array). The N-9-10-2010 variant agrees (1.659 against 1.063 Hz). The paper calls the
+    difference slight; here M1 is 2.39 (J-array) and 1.53 (N-array) times faster under the main reading,
+    and 1.41 to 2.39 times under the four readings.
+- claim: fig6-velocity-model
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6-velocity-model
+  notes: Under the main reading (rates lead the hand by 100 ms, preparatory term falling as the movement
+    term starts) M_skew fits the simulated population poorly in both datasets, with 6-D ratios of 0.590
+    (J-array) and 0.153 (N-array), below 0.6 and below the neural 0.918 and 0.909. The N-array angle distribution
+    peaks at 0.083 pi, below pi/4, and the J-array one at 0.472 pi, above it, so the criterion holds in
+    N-array only. All five seeds give partially reproduced (J-array 6-D ratios 0.517 to 0.590 and peaks
+    0.472 to 0.528 pi; N-array ratios 0.134 to 0.174 and peaks 0.083 to 0.139 pi). Under the main reading
+    28% (J-array) and 39% (N-array) of the simulated angles lie within pi/4 of zero, against 36% and 36%
+    within pi/4 of pi/2. The other readings differ. With the preparatory term falling around hand onset
+    (100 ms lead) the outcome is not reproduced (peaks 0.417 and 0.639 pi), as with a persisting term
+    and a 100 ms lead (0.639 and 0.417 pi; one seed of five gives partially reproduced) and with a persisting
+    term and no lead (0.250 and 0.361 pi); with no lead and the falling term it is reproduced under every
+    seed (peaks -0.083 to 0.028 pi and 0.028 to 0.083 pi). The stricter reading of the peak, 0 <= peak
+    < pi/4, changes only the reading with no lead and the falling term, to partially reproduced. The part of the statement that
+    M_skew fits poorly holds under every reading and seed (6-D ratios 0.056 to 0.590). The simulated population
+    is this attempt's construction from the Methods' description.
+  deviations:
+  - The Methods give the factors (velocity, speed; endpoint and peak speed for the preparatory activity),
+    uniform preferred directions, rates and trial counts matched to the recorded units, and gamma-interval
+    spiking of order 2. They do not give how far the rates lead the hand, the time course of the preparatory
+    term, or the factors' relative weights. Assumed a lead of 100 ms, the usual lead of motor cortical
+    activity over the hand in velocity-tuning models such as the one the paper cites (ref. 27), and a
+    preparatory term that falls to zero over 100 ms centred on the time the movement term starts (100
+    ms before hand onset), since in the model both terms are neural activity and preparatory activity
+    gives way when movement activity begins. The first version of this attempt centred the fall on hand
+    onset, which with the 100 ms lead overlaps the two terms inside the analysed window; it was changed
+    after round 1 of verification, before the new reading was run, and is kept as a reading. A lead of
+    0 ms and a persisting preparatory term are the other readings. Factors are scaled to unit SD and weighted
+    by uniform draws on 0 to 1 (Methods, "a random combination of the underlying factors").
+  - Each simulated unit's noiseless rate is scaled to the recorded unit's mean and range over -1000 to
+    +700 ms and rectified; the paper says only that firing rates were matched.
+  - Simulated with the condition-mean hand paths of the session (smoothed with a 20 ms Gaussian before
+    differentiating), under the main pipeline reading only.
+  - The criterion's "angle peak is below pi/4" is read as |peak| < pi/4, a peak near zero; a peak near
+    -pi, where the state and its derivative point in opposite directions, does not count. The stricter
+    0 <= peak < pi/4 is shown as well.
+- claim: fig6-complex-kinematic-model
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6-complex-kinematic-model
+  notes: 'Under the main reading M_skew fits poorly in both datasets (6-D ratios 0.074 in J-array and
+    0.060 in N-array, against the neural 0.918 and 0.909), but neither angle distribution peaks near zero:
+    the peaks are at -0.972 pi (J-array) and 0.806 pi (N-array), with 11% and 10% of the angles within
+    pi/4 of zero. All five seeds give not reproduced (J-array peaks of magnitude 0.528 to 0.972 pi, N-array
+    0.750 to 0.972 pi; 6-D ratios 0.071 to 0.078 and 0.060 to 0.069). Under the claim''s seed the other readings
+    give not reproduced, except no lead with the falling preparatory term, which gives partially reproduced
+    under every seed (J-array peaks 0.028 to 0.139 pi, N-array 0.250 to 0.306 pi). No lead with a persisting
+    term gives not reproduced under the claim''s seed and partially reproduced under three of the five
+    seeds (J-array peaks -0.917, -0.917, 0.083, 0.139 and 0.139 pi). The stricter reading of the peak, 0
+    <= peak < pi/4, gives the same outcomes. The part of the statement that M_skew fits poorly holds under
+    every reading and seed (6-D ratios 0.060 to 0.398). The first version of this attempt gave partially
+    reproduced, counting the J-array peak at -0.972 pi as below pi/4.'
+  deviations:
+  - Uses the Methods' sensitivities (25, 10, 1 and 0.05 spikes/s per m, m/s, m/s2 and m/s3 along the preferred
+    direction). The preparatory term, "sensitive to target endpoint", is given 25 spikes/s per m of endpoint
+    along a preparatory preferred direction, an assumption. The lead, the preparatory time course and
+    the reading of the angle peak are as for fig6-velocity-model.
+- claim: fig1-leech-and-walking
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The leech optical recordings and the walking-monkey recordings are not in the dandiset, which
+    holds only delayed-reach Utah-array sessions (all ten files were read). The paper says the leech data
+    were recorded by K. Briggman and W. Kristan and gives no public location for either.
+- claim: fig2-single-neuron-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 469 single-electrode isolations of monkeys A, B, J and N are not in the dandiset, whose ten
+    files are array sessions with unsorted threshold crossings.
+- claim: fig3abcd-single-electrode-datasets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The seven single-electrode datasets (A, B, J1 to J4 and N) are not in the dandiset.
+- claim: fig4-emg-no-rotation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no EMG; the paper recorded EMG only for the single-electrode datasets.
+- claim: fig5-generator-model
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The generator model is fitted to deltoid EMG, which is not in the dandiset; the paper says it
+    could not be simulated for the array datasets.
+- claim: fig6cd-speed-independent-frequency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The speed-task datasets of monkeys A and B are not in the dandiset.
+findings:
+- kind: data_missing
+  severity: major
+  statement: The Units tables of all ten files hold unsorted threshold crossings, one unit per electrode
+    (192 per session), as their description says, where the paper analysed 146 (J-array) and 218 (N-array)
+    sorted single and multi-unit isolations. The sorted isolations are not in the dandiset. On these units
+    the first jPCA plane captures 14.9% and 22.9% of the variance, against the paper's average of 28%.
+- kind: data_missing
+  severity: major
+  statement: The dandiset holds the paper's two array datasets (sub-Jenkins ses-20090918 and sub-Nitschke
+    ses-20100923) and eight further array sessions, one of which (sub-Nitschke ses-20100910) matches the
+    N-9-10-2010 session of Supplementary Figure 5. The seven single-electrode datasets, the EMG, the leech
+    and walking-monkey recordings and the J-11-06-2009 session of Supplementary Figure 5 are not in it.
+    Six of the paper's 22 claims cannot be tested.
+- kind: metadata_insufficient
+  severity: major
+  statement: Two sessions, sub-Nitschke ses-20100920 and ses-20100922, have no maze_condition, correct_reach,
+    trial_version, active_target, proto_trial, novel_maze or unhittable columns, which the other eight
+    files have, so their trials cannot be grouped by condition or selected for consistent reaches as in
+    the paper. The paper does not use these sessions.
+- kind: metadata_insufficient
+  severity: major
+  statement: The trial table has two movement-onset columns, move_begins_time (described only as "movement
+    onset time") and offline_move_onset_time ("movement onset time, calculated offline using a robust
+    algorithm"), which differ by a median of 25 ms in J-array and 52 ms in N-array. Nothing says which
+    one is the onset the paper aligned on, and several results change with it (the variance captured by
+    the jPCA plane, 14.9 against 18.7% in J-array, and its frequency, 1.344 against 1.098 Hz). The hand
+    speed starts to rise at offline_move_onset_time (median 43 and 15 mm/s); at move_begins_time it is
+    already 137 and 160 mm/s. The choice changes the outcomes of five claims.
+- kind: other
+  about: data
+  severity: none
+  statement: The spikes of both arrays are consistent with the clock of the trial table. Reach direction
+    decodes at chance from each array before target onset (0.12 to 0.17 against 0.14 to 0.17 with shuffled
+    labels) and above it after target onset (0.37 to 0.70). The lag between the arrays' movement-related
+    changes is constant across six blocks of each session (-4 to 11 ms in J-array, 25 to 32 ms in N-array,
+    M1 later), so there is no drift like that of the LFP's second, slower clock. After target onset, an
+    event that does not depend on the movement onset, the arrays respond nearly together (M1 lag -4 ms
+    in J-array and 9 ms in N-array, half-rise of the across-condition spread at 99 and 101 ms in N-array),
+    so a fixed offset of 25 ms or more between the N-array arrays' clocks is not supported; the later
+    M1 change around movement is consistent with a later M1 response.
+- kind: other
+  about: data
+  severity: none
+  statement: Checks that passed. No recording is deposited twice (the trial-interval and spike-count hashes
+    of the ten files all differ). Spike times are sorted within every unit and every analysis window lies
+    inside its trial. Hand position is in mm with a conversion to metres, its speed rises at offline_move_onset_time,
+    and the hand ends a median 9.1 mm (J-array) and 11.4 mm (N-array) from the hit target minus the cursor
+    offset. Electrode groups 1 and 2 are described as the PMd and M1 arrays, 96 units each.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which movement onset were the array datasets aligned on,
+    the rig's online detection (move_begins_time in the files) or the offline estimate (offline_move_onset_time),
+    and over which times was each neuron's firing-rate range taken for the soft normalisation? The paper
+    says the data were precisely aligned on movement onset. This attempt assumed the offline estimate
+    and the analysed window; with the online onset the outcomes of five claims would change (fig3-independent-of-curvature,
+    var-captured-jpc-plane, pc23-variance, rotation-frequency and suppfig3-shuffle-controls), while the
+    range window changes none.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For the velocity and complex kinematic models, how far
+    did the simulated rates lead the hand, what was the time course of the preparatory term (did it end
+    when the movement term began, at hand onset, or persist), and how were the factors weighted? With
+    a 100 ms lead and a preparatory term ending as the movement term begins, the simulated velocity population's
+    angle distribution peaks at 0.47 pi (J-array) and 0.08 pi (N-array); with the term ending at hand
+    onset at 0.42 and 0.64 pi; with no lead and the falling term near 0 in both (-0.08 and 0.08 pi);
+    with no lead and a persisting term at 0.25 and 0.36 pi. M_skew fits poorly under every choice.
+- kind: metadata_insufficient
+  severity: minor
+  found: on_prompt
+  statement: Nothing in the dandiset's metadata or its files says which of the ten sessions are the paper's
+    datasets. The dandiset description names only the areas, the arrays and the task, every session_description
+    is empty, and no file names J-array, N-array or any other dataset of the paper. The two array datasets
+    can be found only by their dates (sub-Jenkins ses-20090918 and sub-Nitschke ses-20100923), and the eight
+    other sessions (five 27-condition maze sessions, two without condition columns, and sub-Nitschke ses-20100910
+    with 108 conditions) are not described.
+verifications:
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1. The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper under paper/. The verifier read the
+    archive''s version and asset metadata through the DANDI API and tested jpca, freq_hz, the plane orientation,
+    fit_Mskew, gamma_spikes and shuffle_reassign on synthetic inputs. It had no attempt record and took
+    the claims from the claims file. Its report agreed with 21 of the 22 outcomes. Points it raised that
+    bear on no single outcome: the polarity check in jpca never fires, as v2 is the conjugate of v1 (problem
+    8; removed, with no change to any number), and it could not view the figures.'
+  results:
+  - claim: array-dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both sessions are present with 108 conditions each. Each has 192 units against 146 +- 14.6
+      and 218 +- 21.8 (cell 13). The units are unsorted threshold crossings, one per electrode (cell 6),
+      not the paper's isolations.
+    response: No change.
+  - claim: fig3ef-same-direction
+    agrees: true
+    outcome: reproduced
+    reason: '103/108 (95.4%) and 107/108 (99.1%) of conditions rotate counter-clockwise, and every reading
+      clears 90% (cell 15). Caveat: under shuffles 2 and 3 the median is still 93-98% counter-clockwise
+      (cell 34), so this measure does not separate real from shuffled data.'
+    response: No change; the notes already give the shuffle 2 and 3 shares (93 to 98%).
+  - claim: fig3-independent-of-curvature
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Main reading: J-array clockwise-curving class is 30/34 = 88.2% counter-clockwise, below the
+      90% bar. Every class in both datasets is at least 75% (cell 17). The move_begins_time readings give
+      reproduced, so the outcome rests on the onset column. In J-array, rotation direction depends on
+      curvature in the logistic fit (p = 0.029). With the move_begins_time readings the hand paths stay
+      aligned on offline_move_onset_time, so the curvature window is shifted 25-52 ms from the neural
+      alignment (problem 7).'
+    response: 'Under each reading the hand paths are now aligned on the same onset column as the neural
+      data (load_hand reads both). The move_begins readings still give reproduced (J-array clockwise class
+      93.8% of 32). The notebook now lists the J-array conditions that do not rotate counter-clockwise
+      with their curvature: four curve clockwise by 107 to 148 degrees, one counter-clockwise by 33 degrees.
+      The onset columns'' descriptions are printed (problem 5). Outcome unchanged.'
+  - claim: fig3-phase-from-prep-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cross-validated R2 is 0.568 (J) and 0.676 (N), both >= 0.5. J falls below its shuffle-3 median
+      of 0.686; N is above its 0.600. All four readings agree. The shuffle-3 reference is not a valid
+      null here (problem 2): the dividing point is -268 to -320 ms, so the whole analysis window lies
+      after it, the states at -50 and +150 ms both carry the same reassigned movement pattern, and predictability
+      survives by construction. The notebook follows the criterion, but the comparison does not test what
+      the paper says, that the preparatory state predicts the phase.'
+    response: Added the two outputs asked for, as variants that do not decide the outcome. Projected onto
+      the original plane, the shuffle-3 medians are 0.429 (J-array) and 0.611 (N-array), below the data
+      in both (reproduced under all four readings). Predicted from the state at the dividing point, the
+      data reach 0.103 and 0.252 against shuffle-3 medians of 0.055 and 0.058 (not reproduced, below 0.5).
+      The criterion is not changed; the question of its reference is added to questions/churchland-2012.yaml.
+      Outcome unchanged.
+  - claim: var-captured-jpc-plane
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Main reading: 14.9% and 22.9%, mean 18.9%, which misses 28 +- 2.8, and J is outside 18-38.5.
+      The move_begins_time readings pass reading (b) with J at 18.7-19.0%, so this depends on the onset
+      column. Reading (b) uses "typically 20-35%", which in the paper comes from the Supp. Fig. 5 legend,
+      about the per-area analysis, not the first plane of the full population (problem 6).'
+    response: Added to questions/churchland-2012.yaml as a question for a reader; the claim is not changed.
+      The onset columns' descriptions are now printed (move_begins_time is described only as "movement
+      onset time"). Outcome unchanged.
+  - claim: pc23-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: PC2+PC3 capture 19.2% (J) and 28.3% (N), mean 23.8%, outside 29 +- 2.9. The jPCA/PC2+3 ratio
+      for J is 0.78, below 0.8. The move_begins_time readings give partial (ratio part only).
+    response: No change.
+  - claim: suppfig4-j-array-planes
+    agrees: true
+    outcome: not_reproduced
+    reason: J-array planes 13.3, 13.3 and 12.2%, total 38.8% against 54 +- 5.4. Top six PCs 51.9% against
+      64 +- 6.4. All readings agree.
+    response: No change.
+  - claim: suppfig4-planes-range
+    agrees: true
+    outcome: partially_reproduced
+    reason: N-array passes (47.7%, first two planes 97% and 100% counter-clockwise). J-array fails at
+      38.8%, below 45. All readings agree.
+    response: No change.
+  - claim: fig6a-angle-peak
+    agrees: true
+    outcome: reproduced
+    reason: Peaks at 0.528 pi (J) and 0.639 pi (N) under the main reading, all readings within 0.3-0.7
+      pi.
+    response: No change.
+  - claim: fig6b-skew-fit
+    agrees: true
+    outcome: reproduced
+    reason: 6-D ratios 0.918 and 0.909; plane ratios 0.946 and 0.953. All readings and the 24 ms variant
+      pass.
+    response: No change.
+  - claim: rotation-frequency
+    agrees: true
+    outcome: reproduced
+    reason: 1.344 Hz (J) and 1.402 Hz (N), within 1.26-2.75 Hz. With move_begins_time, J drops to 1.06-1.10
+      Hz, which would give partial, so this rests on the onset column.
+    response: The onset columns' descriptions are now printed, with the hand speed at each (43 and 15
+      mm/s at the offline onset, 137 and 160 mm/s at move_begins_time), which supports the offline column
+      as the onset. Outcome unchanged, still resting on the assumption.
+  - claim: suppfig3-shuffle-controls
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'J-array meets the criterion for all three shuffles (shuffle 3 median 0.745 of the original,
+      against a 0.75 limit, holding over 5 seeds); N-array meets it for shuffle 1 only (shuffle 2 at 0.76,
+      shuffle 3 at 0.87). The move_begins_time readings give not_reproduced. This is borderline and partly
+      a criterion problem (problem 3): rotation strength is R2(M_skew), but the Supp. Fig. 2 legend says
+      shuffles 2 and 3 are "not expected to remove all rotational structure (most such structure is merely
+      sign-inverted)"; what they should disrupt is consistency and the link between phase and initial
+      state, so the criterion tests something the paper does not predict.'
+    response: Added to questions/churchland-2012.yaml as a question for a reader; the claim is not changed.
+      Outcome unchanged.
+  - claim: suppfig5-areas-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: J PMd 21.6% and M1 20.2% (expected 29), N PMd 17.7% (expected 32), N M1 27.1% (expected 28).
+      N PMd is also below the 18% floor for partial. All readings agree. In N-array M1 lags PMd by 25-32
+      ms in every block; whether that is physiological or a fixed offset between the arrays is not established,
+      and a fixed offset would distort the per-area results (problem 9).
+    response: 'Added the check asked for: aligned on target onset, the N-array arrays respond within 9
+      ms of each other (half-rise of the across-condition spread at 99 and 101 ms), and in J-array within
+      4 ms, so a fixed offset of 25 ms or more between the arrays'' clocks is not supported. The finding
+      on the clock check is updated. Outcome unchanged.'
+  - claim: suppfig5-m1-faster
+    agrees: true
+    outcome: reproduced
+    reason: 'M1 is faster than PMd in both datasets under all readings: J 2.02 vs 0.84 Hz, N 1.49 vs 0.97
+      Hz. The gap is large, not "slight" as the paper says.'
+    response: No change; the notes already say M1 is 1.5 to 2.4 times faster.
+  - claim: fig6-velocity-model
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, assumption-driven. The 6-D ratio passes everywhere (0.08-0.44). Under the
+      main model reading the angle peaks are 0.417 pi and 0.639 pi, above pi/4, and N rotates 87% counter-clockwise;
+      with a 0 ms lead it reproduces. simulate_population uses a preparatory term that ramps from preparatory
+      to movement tuning between -50 and +50 ms, inside the analysis window, and combined with the 100
+      ms lead it can manufacture a sweep of the state through the plane. Both, and the factor weighting,
+      are the author's own choices (stated as assumptions), and the outcome is set by them, not by the
+      data (problem 4).
+    response: The preparatory term now falls, in the main reading, over 100 ms centred on the time the
+      movement term starts (100 ms before hand onset), so that the change from preparatory to movement
+      tuning lies before the analysed window and the two neural terms do not overlap; the earlier reading
+      is kept as a reading. The choice was made from the model's construction before it was run. Every
+      reading is now run under the five seeds, with the share of angles within pi/4 of zero and the histograms
+      (main reading). Under the new main reading the criterion holds in N-array (peak 0.083 pi) and not
+      in J-array (0.472 pi), under all five seeds, so the outcome changes to partially reproduced, still
+      resting on the assumptions. The peak is now tested as |peak| < pi/4 (problem 1), which does not
+      change this claim. The 0 ms lead with the persisting term gives not reproduced under all five seeds.
+  - claim: fig6-complex-kinematic-model
+    agrees: false
+    outcome: not_reproduced
+    reason: The notebook gets partial only because J's angle peak of -0.972 pi counts as "below pi/4".
+      A peak near +-pi is not "slightly above zero"; sim_ok tests peak_over_pi < 0.25 without wrapping,
+      so any negative peak passes (problem 1). Corrected, both datasets fail on the angle peak under the
+      main reading, though the 6-D ratios are low (0.095 and 0.144) as the paper predicts.
+    response: 'Fixed: sim_ok now tests |peak| < pi/4, and 0 <= peak < pi/4 is shown as well. With the
+      new main reading of the preparatory term (see fig6-velocity-model) the peaks are -0.972 pi and 0.806
+      pi and the outcome is not reproduced under all five seeds, so the outcome changes to not reproduced
+      and is no longer seed sensitive. Under the earlier preparatory reading it is also not reproduced,
+      as the verifier found.'
+  - claim: fig1-leech-and-walking
+    agrees: true
+    outcome: blocked
+    reason: The archive metadata lists 2 subjects (Jenkins, Nitschke) and 10 Utah-array files. There are
+      no leech or walking-monkey data.
+    response: No change.
+  - claim: fig2-single-neuron-responses
+    agrees: true
+    outcome: blocked
+    reason: The single-electrode datasets (469 isolations, monkeys A, B, J, N) are not in the archive.
+      The array units are unsorted channels, so the claim's population cannot be tested.
+    response: No change.
+  - claim: fig3abcd-single-electrode-datasets
+    agrees: true
+    outcome: blocked
+    reason: The extra 27-condition Jenkins and Nitschke sessions are array recordings, not the single-electrode
+      J1-J4, A, B or N datasets.
+    response: No change.
+  - claim: fig4-emg-no-rotation
+    agrees: true
+    outcome: blocked
+    reason: The archive's variableMeasured lists ProcessingModule, SpatialSeries, Position, Units, ElectrodeGroup
+      and ElectricalSeries. There is no EMG.
+    response: No change.
+  - claim: fig5-generator-model
+    agrees: true
+    outcome: blocked
+    reason: No EMG. The paper itself says the generator model could not be built for the array datasets.
+    response: No change.
+  - claim: fig6cd-speed-independent-frequency
+    agrees: true
+    outcome: blocked
+    reason: The speed-task monkeys A and B are absent; both archived subjects did the maze task.
+    response: No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the revised run, with its conclusions and summary,
+    the helper module, the claims file and this record, with the paper under paper/ (verifier run 45527464568).
+    The verifier agreed with all 22 outcomes and found every assumption stated. It quoted five sentences
+    the outputs do not support: the complex-model sentence on the other readings (cell 56 and the notes),
+    "with no lead near 0 in both" in the methods_unavailable finding on the model, "1.5 to 2.4 times faster"
+    (true under the main reading only), the README''s "about sixteen minutes" against 19.7 min, and the
+    ambiguous "changes only the no-lead reading" in the velocity-model notes. Each is corrected in the
+    notebook, the README and this record, and the entry was re-run (19.5 min, the same numbers). It found
+    round-1 problems 1, 5, 7, 8 and 9 resolved, and the onset column and problems 2, 3, 4 and 6 still
+    bearing on conclusions; those are listed under the claims they bear on. No finding is rated critical,
+    and it saw none that should be.'
+  results:
+  - claim: array-dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig3ef-same-direction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig3-independent-of-curvature
+    agrees: true
+    outcome: partially_reproduced
+    reason: The onset assumption is stated and is now well supported. Cell 6 prints both descriptions ("calculated
+      offline using a robust algorithm" against just "movement onset time") and median hand speed of
+      43 and 15 mm/s at the offline onset against 137 and 160 mm/s at move_begins_time, so the hand is
+      already moving at the latter. The onset column still decides 5 outcomes; the assumption is reasonable,
+      but those outcomes are conditional on it.
+    response: No change. The outcome stays marked as resting on the assumption, and the question is with
+      the paper's authors (methods_unavailable finding). The finding on the two onset columns is now rated
+      major, as the verifier rated it.
+  - claim: fig3-phase-from-prep-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: Problem 2 (phase test against the shuffle-3 reference) is referred to a reader, with the criterion
+      unchanged. The two new variants point opposite ways. Projected onto the original plane, the claim
+      would be reproduced; predicting from the dividing point, it would be not reproduced (cell 22). The
+      partial outcome rests on a reference that does not test the claim.
+    response: No change. The criterion is the claims file's; the question of its reference is in questions/churchland-2012.yaml
+      for a reader, and both variants are in the notes.
+  - claim: var-captured-jpc-plane
+    agrees: true
+    outcome: not_reproduced
+    reason: The onset assumption is stated and well supported, but the outcome is conditional on it. Problem
+      6 ("20-35%" taken from the per-area legend) is referred to a reader. It does not decide the main
+      reading, but it is the only route by which the move_begins_time readings pass.
+    response: No change. The question on "20-35%" stays with a reader (questions/churchland-2012.yaml).
+  - claim: pc23-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: The onset assumption is stated and well supported, but the outcome is conditional on it.
+    response: No change.
+  - claim: suppfig4-j-array-planes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: suppfig4-planes-range
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig6a-angle-peak
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig6b-skew-fit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: rotation-frequency
+    agrees: true
+    outcome: reproduced
+    reason: The onset assumption is stated and well supported, but the outcome is conditional on it.
+    response: No change.
+  - claim: suppfig3-shuffle-controls
+    agrees: true
+    outcome: partially_reproduced
+    reason: The onset assumption is stated and well supported, but the outcome is conditional on it. Problem
+      3 (rotation strength measured by R2(M_skew) for shuffles 2 and 3) is referred to a reader. N-array
+      fails exactly on the shuffles the Supp. Fig. 2 legend says should not remove all structure.
+    response: No change. The question stays with a reader (questions/churchland-2012.yaml).
+  - claim: suppfig5-areas-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: Problem 9 is resolved. Aligned on target onset, M1 lags PMd by 9 ms in N-array, with half-rise
+      times of 99 and 101 ms; a fixed clock offset between the arrays is not supported.
+    response: No change.
+  - claim: suppfig5-m1-faster
+    agrees: true
+    outcome: reproduced
+    reason: '"Here M1 is 1.5 to 2.4 times faster" holds under the main reading (1.53 and 2.39). Under the
+      other readings N-array is 1.41x (1.491/1.058) and 1.42x (1.528/1.076) (cell 50). This is minor.'
+    response: The notes and the result cell now give 2.39 and 1.53 under the main reading and 1.41 to
+      2.39 under the four readings.
+  - claim: fig6-velocity-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the stated assumptions, with two cautions. The main reading of the preparatory
+      term was changed after round 1, and the change flipped the outcome from not_reproduced; the record
+      says so openly, and the new prep="lead" reading is no less reasonable than the old one, as the paper
+      says nothing about its time course. The J-array pass is thin; its 6-D ratio is 0.517 to 0.590 against
+      a 0.6 limit, and its angle peak is 0.472 pi with a plane ratio of 0.909, which looks rotation-like
+      (cell 53). The outcome remains decided by modelling choices (problem 4). "The stricter reading ...
+      changes only the no-lead reading" is ambiguous, as there are two no-lead readings and only the one
+      with the falling term changes.
+    response: The sentence now names the reading with no lead and the falling term. The result cell now
+      says that one seed of five gives partially reproduced with the persisting term and a 100 ms lead.
+      No change of outcome; it stays marked as resting on the model assumptions, which are asked of the
+      paper's authors (methods_unavailable finding), and the notes give every reading.
+  - claim: fig6-complex-kinematic-model
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced under all five seeds of the main reading (cell 55). "The other readings give
+      not reproduced, except no lead with the falling preparatory term, which gives partially reproduced
+      under every seed" holds for seed 0 only; the reading with no lead and a persisting term gives partially
+      reproduced for 3 of the 5 seeds. In the methods_unavailable finding on the model, "with no lead near
+      0 in both, as in Figure 6a" is wrong for the persisting term, whose peaks are 0.250 and 0.361 pi;
+      only the falling term gives peaks near 0 (-0.083 and 0.083 pi).
+    response: Both corrected. The notes and cell 56 now say that the other readings give not reproduced
+      under the claim's seed and that no lead with a persisting term gives partially reproduced under three
+      of the five seeds; the finding gives the peaks of each no-lead reading. The outcome, decided under
+      the main reading, is not changed.
+  - claim: fig1-leech-and-walking
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig2-single-neuron-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig3abcd-single-electrode-datasets
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig4-emg-no-rotation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig5-generator-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  - claim: fig6cd-speed-independent-frequency
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 22 stated outcomes.
+    response: No change.
+  findings:
+  - finding: 3
+    agrees: false
+    severity: minor
+    reason: No finding is rated critical. Finding 3 (two sessions missing the condition columns) would
+      be minor, not major. The paper does not use those sessions, and no main analysis is blocked.
+    response: 'Kept major. Severity rates the harm to someone who uses the dataset, not to this paper''s
+      analysis: in those two sessions the trials cannot be grouped by condition or selected for consistent
+      reaches, so the main analysis of the task is blocked for them, which the protocol''s table rates
+      major ("Trials, behaviour or a whole condition missing").'
+  - finding: 4
+    agrees: false
+    severity: major
+    reason: Finding 4 (the two onset columns) would be major, not minor. Nothing in the files settles which
+      column is the paper's onset, and the choice changes five outcomes (cells 20, 25, 28, 42, 45).
+    response: Changed to major, as the verifier rated it; the statement now says that the choice changes
+      the outcomes of five claims.
+reconciliation:
+  earlier: churchland-2012-01
+  date: '2026-11-25'
+  blind: false
+  blind_note: The author saw no record, entry, notebook, question or transcript of churchland-2012-01, and
+    tools/blind.sh audit finds only links to the pilot notes and the site in the protocol and README it was
+    given, and its own record. It did read the header of the claims file, which churchland-2012-01's author
+    wrote and which the protocol lets it keep. That header names two faults that attempt found in the files
+    (the wrapped first entry of spike_times_index and the clock resets of the 2010 file) and says that sub-Nitschke
+    ses-20090910 is consistent with the N-9-10-2010 dataset; the author said in its report that it could not
+    check either fault against that attempt and tested the clock itself. It saw none of the earlier outcomes
+    or numbers.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that the Units tables hold 192 units per session, one per electrode, and not the paper's
+      146 and 218 sorted isolations. The rest of the earlier finding (the single-electrode datasets, the EMG,
+      the leech and the walking-monkey data are not in the dandiset) is reported in finding 2.
+  - finding: 2
+    status: fixed
+    note: In earlier_findings.ipynb the first entry of spike_times_index is above 65536 in all ten files (257638
+      in J-array, the corrected end of unit 0 the earlier attempt gave), and units 0 and 1 are sorted and each
+      spans the trials of its session.
+  - finding: 3
+    status: fixed
+    note: In earlier_findings.ipynb no trial starts before the one before it and no two trials overlap in any
+      of the ten files, and units 0, 95, 96 and 191 of each file have no backward step in their spike times,
+      with all their spikes inside a trial.
+  - finding: 4
+    status: fixed
+    note: In earlier_findings.ipynb hand position is stated in meters with conversion 0.001 in all ten files.
+      The stored values (-210.4 to 150.1 over the first 300000 samples) are on the scale of the hit targets
+      (-144 to 145), and the converted 99th percentile speed is 0.692 to 0.903 m/s.
+  - finding: 5
+    status: fixed
+    note: The trial table now has a cursor_offset column, described as the offset in mm of the displayed cursor
+      from the hand, (0, 35) in J-array and (0, 60) in N-array. In earlier_findings.ipynb the hand ends a median
+      -35.2 and -53.3 mm from the target in y, and -0.2 and 6.7 mm from the target minus the offset.
+  - finding: 6
+    status: fixed
+    note: In earlier_findings.ipynb the Units table of every file is described as threshold crossings on each
+      electrode, not sorted (Blackrock unit code 0), one unit per electrode; finding 1 of the blind attempt
+      cites this description.
+  - finding: 7
+    status: still_present
+    now: 9
+    note: In earlier_findings.ipynb the dandiset description is unchanged from version 0.260528.0919, every
+      session_description is empty, and neither the dandiset metadata nor any file names J-array, N-array or
+      another dataset of the paper.
+  - finding: 8
+    status: fixed
+    note: The five Nitschke files named with 2009 at version 0.260528.0919 are now ses-20100812, 20100819, 20100910,
+      20100920 and 20100922, with session_start_time in 2010. In earlier_findings.ipynb ses-20100910 has the
+      same reached target as N-array in all 108 conditions, consistent with the N-9-10-2010 dataset.
+  outcomes:
+  - claim: var-captured-jpc-plane
+    earlier: reproduced
+    cause: dataset_changed
+    note: Version 0.261122.2046 adds the trial column offline_move_onset_time, which the blind attempt took
+      as movement onset; version 0.260528.0919 has only move_begins_time, which the earlier attempt used. On
+      move_begins_time the blind attempt's J-array plane captures 18.7 to 19.0%, inside 18 to 38.5% like the
+      earlier 20.0%, and the earlier attempt's code run here on the new version gives 19.98% in J-array on move_begins_time
+      and 16.67% on offline_move_onset_time.
+    confidence: high
+  - claim: pc23-variance
+    earlier: partially_reproduced
+    cause: dataset_changed
+    note: The value part fails in both. The ratio part turns on the onset column the new version adds; in J-array
+      the jPCA plane captures 0.78 of the PC2 and PC3 variance on offline_move_onset_time and 0.84 to 0.95 on
+      move_begins_time (earlier 0.93), and the earlier attempt's code on the new version gives 0.925 and 0.778.
+    confidence: high
+  - claim: rotation-frequency
+    earlier: partially_reproduced
+    cause: dataset_changed
+    note: J-array decides it. On the new offline_move_onset_time column the blind attempt gets 1.344 Hz, inside
+      1.26 to 2.75 Hz, and on move_begins_time 1.063 to 1.098 Hz, below it like the earlier 1.03 Hz; the earlier
+      attempt's code on the new version gives 1.033 Hz on move_begins_time and 1.447 Hz on offline_move_onset_time.
+    confidence: high
+  - claim: suppfig3-shuffle-controls
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: J-array shuffle 3 decides it. Aligned on the new offline_move_onset_time column its median is 0.745
+      of the original R2(M_skew), just inside the 0.75 limit (0.725 to 0.745 over five seeds), and on move_begins_time
+      0.77 to 0.79, outside it like the earlier 0.81, which makes the blind attempt's move_begins readings not
+      reproduced as well. The two attempts' shuffles follow the same legend, and the dividing points differ
+      only by the onset (-277 and -268 ms against -301 and -320 ms).
+    confidence: medium
+  - claim: suppfig5-areas-variance
+    earlier: partially_reproduced
+    cause: error
+    error_in: earlier
+    note: N-array PMd decides it against the 18% floor, at 18.1% in the earlier attempt and 17.6 to 17.9% under
+      the blind attempt's four readings. Run on the new version, the earlier code gives 18.16% on move_begins_time,
+      and 17.70% when the rates are computed over a longer span and the range is still taken over -800 to +500
+      ms, because earlier-entry/reach.py (condition_rates, then jpca) takes each unit's normalisation range over
+      the whole rate window, whose first and last bins are Gaussian-smoothed with mode nearest from single 1
+      ms bins.
+    supports: not_reproduced
+    confidence: medium
+  - claim: fig6-velocity-model
+    earlier: not_reproduced
+    cause: reading
+    choice: When the simulated preparatory term ends; the earlier attempt let it decay with a 100 ms time constant
+      from hand movement onset, and the blind attempt, in its main reading, let it fall to zero over 100 ms centred
+      on the start of the movement term, 100 ms before hand onset.
+    note: Both simulate rates leading the hand by 100 ms. Under the blind attempt's main reading the angle peaks
+      are 0.472 pi (J-array) and 0.083 pi (N-array), so the criterion holds in N-array; with the fall centred
+      on hand onset, its first reading, close to the earlier decay, they are 0.417 and 0.639 pi and the claim
+      is not reproduced, as in the earlier attempt (0.806 and 0.361 pi). The blind attempt changed its main
+      reading after round 1 of verification, as its record says.
+    confidence: high
+  protocol: The earlier attempt was made under pilot-7 and the blind one under pilot-18. docs/pilot-notes.md
+    has sections for pilot-8, 9, 10, 12, 13 and 14 and none for pilot-11 or pilot-15 to 18. pilot-8 added quotes
+    to claims; this claims file got them on 2026-10-19 and kept its criteria. pilot-9 and pilot-10 take every
+    method from the paper and give the claims file to a reader, so that the author may not change it, runs every
+    reading a detail allows and asks the open ones; the claims file here is still the one churchland-2012-01's
+    author wrote under pilot-7, so its criteria did not change, and the blind attempt ran four readings of the
+    onset column and the normalisation window, marked seven outcomes assumed, and asked three questions of a reader
+    and two of the paper's authors. pilot-12 made this attempt blind and added this block. pilot-13 raised the
+    notebook limit to 60 minutes; the blind notebook ran in about 20. pilot-14 files records by paper; this
+    paper rests on one dandiset, so only the layout changed. tools/entry.py adds that from pilot-15 a finding
+    of kind other says what it is about, from pilot-17 an attempt names the author notes it used (there are
+    none for this paper), and from pilot-18 a finding about the data gives its severity, which the blind attempt's
+    findings do and the earlier ones carry only in a later review. None of these rules changed an outcome;
+    the changed outcomes come from the new onset column, a choice of model and one implementation detail.

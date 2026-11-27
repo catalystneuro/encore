@@ -520,6 +520,7 @@ findings:
     ready4ephysrig and so on), on which every analysis of the paper selects sessions, is not in the
     files. It has to be recomputed from the trials, which leaves open details of the criteria.
 - kind: other
+  about: data
   statement: One recording is deposited twice, under two mice (CSHL_013 and CSHL_015, 2019-07-15,
     identical trials and start time).
 - kind: metadata_error
@@ -535,10 +536,12 @@ findings:
     no wheel series. In one session checked (ibl_witten_07), the wheel moves the opposite way to the
     choice on every trial.
 - kind: other
+  about: data
   statement: 257,021 trials (6%) have no stimulus onset time, and 185 sessions have none; 1,541
     trials in 220 sessions have a response time before the stimulus onset (down to -5,638 s). No
     proficiency window of this attempt fails for the missing onsets alone.
 - kind: other
+  about: data
   statement: One session (ZM_1367, 2019-06-11) uses contrasts of 4% and 8%, which the paper does
     not describe.
 - kind: paper_inconsistency
@@ -1072,3 +1075,33 @@ verifications:
     response: "No change of outcome. The record now says the per-day count includes days whose sessions
       lasted 90 minutes or more, and that the outcome is decided on the per-session count, with the same
       outcome either way."
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: major
+  - finding: 2
+    severity: major
+  - finding: 3
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_ibl_2021.ipynb cell 5 output prints one group of sessions with identical hash of choice, contrastLeft and stimOn_times: CSHL_015 (0ea61fbc) and CSHL_013 (5e45deab), both starting 2019-07-15T16:59:43, 562 trials, same protocol."
+  - finding: 4
+    severity: major
+  - finding: 5
+    severity: minor
+  - finding: 6
+    severity: major
+    confirmed: false
+    checked: 2026-11-19
+    note: "reproduce_ibl_2021.ipynb cell 7 output prints 16 files without a wheel series, 807 files with wheel data and timestamps of different length (example 181623 samples against 340799 timestamps), and agreement 0.000 for ibl_witten_07 (fa8c9e16) against 0.98 to 1.00 in the other 13 readable sessions of a 16-session sample. The length mismatch is evident on loading, and the sign reversal is shown for one session only, so major and not critical."
+  - finding: 7
+    severity: major
+  - finding: 8
+    severity: minor
+  - finding: 10
+    severity: minor

@@ -1,0 +1,34 @@
+schema_version: 1
+name: costabile-2023
+type: reproduction
+title: Model discovery to link neural activity to behavioral tasks (Costabile et al. 2023)
+description: Tests the zebrafish findings of Costabile, Balakrishnan, Schwinn and Haesemeyer (2023)
+  on dandisets 000235, 000236 and 000237 (25 larval zebrafish, forebrain, midbrain and hindbrain,
+  imaged during a random-wave heat stimulus) and 000238 (six fish with reticulospinal backfills).
+  It checks the files against the paper, counts the fish, planes and CaImAn components, applies
+  the brightness criterion, re-derives swim bouts from the tail tracking, tests that training and
+  test data are uncorrelated, fits the paper's linear comparison model to every component, and
+  fits the paper's CNN to a random subsample to estimate and size the analyses that rest on it.
+license: Apache-2.0
+python: "3.13"
+notebooks:
+- path: reproduce_costabile_2023.ipynb
+  title: Reproducing Costabile et al. (2023) from dandisets 000235 to 000238
+  runtime_minutes: 58
+- path: mine_fits_subsample.ipynb
+  title: MINE and the linear model on a random subsample of 600 components
+  runtime_minutes: 15
+helpers:
+- mine_data.py
+- mine_cnn.py
+related:
+- id: dandi:000235/0.230316.1600
+  relation: uses_data
+- id: dandi:000236/0.230316.2031
+  relation: uses_data
+- id: dandi:000237/0.230316.1655
+  relation: uses_data
+- id: dandi:000238/0.230316.1519
+  relation: uses_data
+- id: doi:10.7554/elife.83289
+  relation: reproduces

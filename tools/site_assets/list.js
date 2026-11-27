@@ -1,10 +1,19 @@
-// One list component for the Datasets, Claims and Findings pages.
+// One list component for the Papers, Datasets, Claims and Findings pages.
 //
 // The page embeds its configuration as JSON in #list-config:
 //   { kind, root, data, facets: [{key, label}], sorts: [{key, label}],
 //     labels: {facetKey: {value: text}}, outcomes: {key: [label, css, icon]} }
 // Rows are fetched from `data`. Filters, search, sort, page and page size are
 // kept in the URL query string, so every view is a link.
+// Text as the search compares it: lower case, without accents, and with the letters that have no
+// accent to drop written as their usual Latin spelling, so that "jerome" finds "Jérôme", "muller" finds
+// "Müller" and "lukasz" finds "Łukasz".
+const FOLDED = { 'ß': 'ss', 'æ': 'ae', 'œ': 'oe', 'ø': 'o', 'ł': 'l', 'đ': 'd', 'ð': 'd', 'þ': 'th', 'ı': 'i', 'ħ': 'h' };
+function fold(text) {
+  return String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[ßæœøłđðþıħ]/g, (c) => FOLDED[c]);
+}
+
 (async function () {
   const cfg = JSON.parse(document.getElementById('list-config').textContent);
   const root = cfg.root;
@@ -18,8 +27,13 @@
     return [v === null || v === undefined || v === '' ? '(none)' : String(v)];
   };
 
-  // On a narrow screen the filters sit above the results: start them closed.
-  if (matchMedia('(max-width: 820px)').matches) $('facets').open = false;
+  // On a narrow screen the filters sit above the results, closed under a bar that opens them. On a wide one they
+  // are a column beside the results with no bar, so they must be open: a window that starts narrow and is then
+  // widened (or a phone turned on its side) would otherwise show no filters and nothing to open them with.
+  const narrow = matchMedia('(max-width: 820px)');
+  const fitFilters = () => { $('facets').open = !narrow.matches; };
+  fitFilters();
+  narrow.addEventListener('change', fitFilters);
 
   let rows;
   try {
@@ -28,7 +42,9 @@
     $('results').innerHTML = '<p class="empty">The data could not be loaded.</p>';
     return;
   }
-  rows.forEach((r) => { r._text = JSON.stringify(r).toLowerCase(); });
+  // A list of part of the file: `only` names the values a row must have ({status: ['attempted']}).
+  if (cfg.only) rows = rows.filter((r) => Object.entries(cfg.only).every(([k, allowed]) => allowed.includes(r[k])));
+  rows.forEach((r) => { r._text = fold(JSON.stringify(r)); });
 
   // --- state <-> URL ---------------------------------------------------------
   const state = { q: '', sort: cfg.sorts[0].key, page: 1, size: 25, f: {} };
@@ -59,7 +75,7 @@
 
   // --- filtering -------------------------------------------------------------
   function matches(row, skipFacet) {
-    if (state.q && !row._text.includes(state.q.toLowerCase())) return false;
+    if (state.q && !row._text.includes(fold(state.q))) return false;
     for (const f of cfg.facets) {
       if (f.key === skipFacet) continue;
       const chosen = state.f[f.key];
@@ -112,27 +128,80 @@
     return `<span title="${n.toLocaleString()} files">${text} file${n === 1 ? '' : 's'}</span>`;
   };
   const tags = (list) => (list || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(' ');
+  // In the papers list most attempts are verified, so a verified one gets a quiet mark (its tier on hover) and only
+  // the exception, an attempt not yet verified, is spelled out.
+  const check = (r) => !r.tier ? ''
+    : r.tier === 'runs' ? '<span class="tier pending">Not yet verified</span>'
+    : `<span class="verified" title="${esc(label('tier', r.tier))}"><span aria-hidden="true">✓</span> Verified</span>`;
 
   const render = {
-    datasets(r) {
-      const href = r.page ? root + r.page : r.url;
+    papers(r) {
+      const href = root + r.page;
       const right = r.status === 'attempted'
-        ? `${tier(r)}<span class="small muted">${esc(r.date)}</span>`
+        ? `${check(r)}<span class="small muted">${esc(r.date)}</span>`
         : `<span class="tag">${esc(label('status', r.status))}</span>`;
-      return `<div class="row drow">
-        <div class="id"><a href="${href}">${esc(r.label)}</a></div>
-        <div><p class="title"><a href="${href}">${esc(r.name || r.paper_title)}</a></p>
-          <div class="meta">${tags(r.technique)} ${tags(r.species)}
-            ${size(r.size_gb)} ${files(r.files)}
-            <a href="https://doi.org/${esc(r.paper)}" title="${esc(r.paper_title || r.paper)}">Paper</a>
-            ${r.page ? `<a href="${root + r.page}#findings">Findings (${r.findings})</a>` : ''}</div>
+      const ds = r.datasets.map((d) => d.page ? `<a href="${root + d.page}">${esc(d.label)}</a>` : esc(d.label)).join(', ');
+      const reuse = r.relation.length === 1 && r.relation[0] === 'reuses' ? ' <span class="tag">Reused data</span>' : '';
+      const missing = r.missing ? ` <span class="tag warn" title="Datasets the paper rests on that the attempt could not use">${r.missing} dataset${r.missing === 1 ? '' : 's'} missing</span>` : '';
+      // The title is the row's link; the byline and journal sit above it, so that every title starts in one column.
+      return `<div class="row drow prow">
+        <div><p class="byline">${esc(r.byline)}<span class="sep" aria-hidden="true">·</span>${esc(r.journal)}</p>
+          <p class="title"><a href="${href}">${esc(r.title)}</a></p>
+          <div class="meta"><span>${ds}</span>${reuse}${missing}
+            <a href="https://doi.org/${esc(r.doi)}">doi</a></div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;
     },
+    // For a dataset's owner or a curator: the version tested and the open findings about the data, by kind.
+    datasets(r) {
+      const href = r.page ? root + r.page : r.url;
+      const n = r.findings || 0;
+      const kinds = Object.entries(r.found_counts || {}).map(([k, c]) =>
+        `<a class="tag" href="${href}#findings">${esc(label('found', k))}<span class="c">${c}</span></a>`).join(' ');
+      const versions = (r.versions || []).join('; ');
+      // The papers associated with the dataset: how many, how many of them tested when not all, then the first few
+      // by name (those tested first), each opening its page.
+      const ps = r.papers || [], SHOWN = 4, tested = ps.filter((q) => q.attempted).length;
+      const names = ps.slice(0, SHOWN).map((q) =>
+        `<a href="${root + q.page}">${esc(q.byline)}</a>`
+        + (q.attempted ? '' : ' <span class="muted">(not yet tested)</span>')).join(', ')
+        + (ps.length > SHOWN ? `, and ${ps.length - SHOWN} more` : '');
+      const papersLine = ps.length ? `<div class="meta"><span><strong>${ps.length}</strong> paper${ps.length === 1 ? '' : 's'}${
+        tested < ps.length ? `, ${tested} tested` : ''}:</span> <span>${names}</span></div>` : '';
+      return `<div class="row drow">
+        <div class="id"><a href="${href}">${esc(r.label)}</a></div>
+        <div><p class="title"><a href="${href}">${esc(r.name || r.paper_title)}</a></p>
+          <div class="meta">${versions ? `<span>Tested on ${esc(versions)}</span>` : ''}
+            ${size(r.size_gb)} ${files(r.files)}</div>
+          ${papersLine}
+          ${kinds ? `<div class="meta kinds" style="margin-top:6px">${kinds}</div>` : ''}</div>
+        <div class="right"><span class="open${n ? '' : ' none'}"><strong>${n}</strong> open finding${n === 1 ? '' : 's'}</span>
+          <span class="small muted">${esc(r.date)}</span></div></div>`;
+    },
+    // A person with an ORCID iD: the name opens their page; their papers here, each opening its own, and how
+    // many of the registry's datasets name them.
+    authors(r) {
+      // The first few papers, each opening its page, then how many more: the person's page has them all.
+      const SHOWN = 4;
+      const link = (q) => `<a href="${root + q.page}">${esc(q.byline)}</a>`;
+      const papers = r.papers.slice(0, SHOWN).map(link).join(', ')
+        + (r.papers.length > SHOWN ? `, and ${r.papers.length - SHOWN} more` : '');
+      const count = (n, noun) => n ? `${n} ${noun}${n === 1 ? '' : 's'}` : '';
+      const sets = r.n_datasets ? `<div class="meta"><span class="muted">${esc(r.datasets.slice(0, SHOWN).join(', '))}${r.n_datasets > SHOWN ? `, and ${r.n_datasets - SHOWN} more` : ''}</span></div>` : '';
+      return `<div class="row drow prow">
+        <div><p class="title"><a href="${root + r.page}">${esc(r.name)}</a></p>
+          ${papers ? `<div class="meta"><span>${papers}</span></div>` : ''}${sets}
+          ${r.counts ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}</div>` : ''}</div>
+        <div class="right"><span class="small">${[count(r.n_papers, 'paper'), count(r.n_datasets, 'dataset')].filter(Boolean).join(' · ')}</span>
+          <span class="small muted">${esc(r.id)}</span></div></div>`;
+    },
   }[cfg.kind];
 
+  // Each facet is a section the reader can open and close (an accordion): the first three start open, and any with a
+  // value chosen; what the reader opens or closes is kept while the list redraws.
+  const OPEN_FIRST = 3;
   function renderFacets() {
-    const html = cfg.facets.map((f) => {
+    const html = cfg.facets.map((f, idx) => {
       const counts = new Map();
       rows.forEach((r) => { if (matches(r, f.key)) values(r, f.key).forEach((v) => counts.set(v, (counts.get(v) || 0) + 1)); });
       const chosen = state.f[f.key] || new Set();
@@ -150,7 +219,10 @@
       }).join('');
       const more = entries.length > limit && !f._open
         ? `<button type="button" class="showmore" data-more="${esc(f.key)}">Show all ${entries.length}</button>` : '';
-      return `<fieldset class="facet"><legend>${esc(f.label)}</legend>${items}${more}</fieldset>`;
+      const open = f._shown !== undefined ? f._shown : idx < OPEN_FIRST || chosen.size > 0;
+      const picked = chosen.size ? ` <span class="picked">${chosen.size}</span>` : '';
+      return `<details class="facet" data-facet-box="${esc(f.key)}"${open ? ' open' : ''}><summary>${esc(f.label)}${picked}</summary>`
+        + `<div class="facet-values">${items}${more}</div></details>`;
     }).join('');
     $('facet-list').innerHTML = html;
   }
@@ -211,6 +283,11 @@
     box.checked ? set.add(box.value) : set.delete(box.value);
     state.page = 1; update(true);
   });
+  // 'toggle' does not bubble: listen in the capture phase, and remember the reader's choice for the next redraw.
+  $('facet-list').addEventListener('toggle', (ev) => {
+    const box = ev.target.closest && ev.target.closest('[data-facet-box]');
+    if (box) cfg.facets.find((f) => f.key === box.dataset.facetBox)._shown = box.open;
+  }, true);
   $('facet-list').addEventListener('click', (ev) => {
     const more = ev.target.closest('[data-more]');
     if (!more) return;

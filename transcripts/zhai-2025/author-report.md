@@ -1,54 +1,63 @@
-Done. I followed steps 1 to 5 of the protocol and ran `python tools/entry.py handover entries/001538-zhai-2025`. `check` reports 0 errors and the notebook runs from a clean environment in 248 s. Nothing is committed. I used the full text of the paper, which is open access (PMC12674127, CC BY). I pinned dandiset version 0.260527.1302: the paper cites no version, this is the only published one, and the draft holds the same 468 files.
+I've finished steps 1 to 5 and run the handover (step 6). The entry is at `entries/zhai-2025/` (notebook, `zhai.py`, README, locked requirements) and the record is `attempts/zhai-2025-03.yaml`. `entry.py check` reports 0 errors and `entry.py all` passes. I ran the notebook twice and both runs gave the same outputs.
 
-**1. Outcomes (44 claims)**
+## 1. Outcomes (45 claims)
 
-| Claim | Data | Outcome |
-|---|---|---|
-| link-somatic-cells | with_inputs | partially reproduced (73% of cells match exactly, the criterion asked for 80%) |
-| link-dendritic-cells | with_inputs | reproduced |
-| link-sr-cells | with_inputs | partially reproduced |
-| link-grab-rois | with_inputs | not reproduced |
-| link-aim-mice | with_labels | not reproduced |
-| fig1f rheobase on < off; fig1e F-I; fig1f SCH no change; fig1i dendritic on > off | dandiset | reproduced (4) |
-| fig1i SCH lowers the dendritic index | dandiset | partially reproduced (P = 0.066) |
-| fig3d, fig3c, fig3d sulpiride no change, fig3f | dandiset | reproduced (4) |
-| fig3f sulpiride does not change the dendritic index | dandiset | not reproduced (P = 0.0164; the paper reports 0.0545) |
-| fig5f off-state > unlesioned; off-state similar to 6-OHDA | dandiset | reproduced (2) |
-| fig6c, fig6d, fig7c, fig7f, fig9d | dandiset | reproduced (5) |
-| Sr2+-oEPSC claims (4), GRAB-ACh claims (3), AIM claims (2) | dandiset / with_labels | blocked, other (too few units for the paper's test) |
-| Spine density claims (6) | dandiset | blocked, not_runnable |
-| 8 claims on the paper's Zenodo tables (lesion groups, oxo-M, rotations, open field) | elsewhere | reproduced (8) |
+| Claim | Outcome |
+|---|---|
+| link-somatic-cells | partially reproduced: all 12 groups have the paper's n; 90/123 cells match exactly, 105/123 within 3 spikes |
+| link-dendritic-cells | reproduced: 10/10 groups have the paper's n; median difference from the paper's values 2.7% |
+| link-sr-cells | partially reproduced: 33/33 cells match an identifier; 21/33 within 25% (assumed) |
+| link-grab-rois | not reproduced: counts match, but only 16/34 regions within 0.05 |
+| link-aim-mice | not reproduced: Figure 10 matches (103/105 sessions); Figure 8 scores differ (12/90 sessions equal) |
+| fig1i-dspn-dendritic-sch-lower | not reproduced (P = 0.079; P = 0.034 without the cell whose first pair is missing) |
+| fig1f ×2, fig1e, fig1i-on, fig3d ×2, fig3c, fig3f ×2, fig6c, fig6d, fig7c, fig7f, fig9d | reproduced |
+| fig2h, fig2i, fig4g, fig4h (Sr2+-oEPSC) | reproduced, marked assumed (my own event detector). fig4h gives P = 0.064 using every sweep, but 0.049 with the first 10 sweeps per cell |
+| fig5f ×5 (GRAB-ACh) | reproduced |
+| fig8bc, fig10b (AIMs) | reproduced. For fig10b the F values equal the paper's for axial, limb and orolingual |
+| fig1-lesion ×2, fig3-lesion ×2, fig7e, fig8a, fig10a, fig10ef (paper's tables) | reproduced |
+| fig2bc, fig4bc, fig4k, fig6f, fig7h, fig9f (spines) | blocked, not runnable |
 
-**2. What was found about the dandiset**
-- **What is there:** the somatic and dendritic patch-clamp data are present for every group except the unlesioned control and 6-OHDA groups, and every cell count matches the paper's.
-- **What is missing:** the unlesioned control and 6-OHDA patch-clamp groups, the oxo-M data and the open-field data. All are in the paper's raw-data zip on Zenodo.
-- **Groups need `condition_subfolder`:** files named for SCH 23390 or sulpiride also hold baseline cells, and 11 cells in them are baseline only.
-- **Subsets too small for the paper's tests:**
-  - Sr2+-oEPSC: one cell per mouse, 14 of the paper's 33.
-  - GRAB-ACh: one region per mouse, 11 of 34.
-  - AIM: 7 of the paper's 44 mice, plus 2 mice that are not in the paper. The totals of the Figure 8 mice differ from the paper's in 20 of 25 sessions.
-- **Contradictory AIM genotypes:** the subject metadata, session names, the table's genotype column and the video files disagree with each other.
-- **Raw data without measurements:** there are spine image stacks and rotation videos, but no spine or rotation counts.
-- **Stimulus and background records:**
-  - Every dendritic stimulus series is all zero.
-  - The light-pulse trace is all zero in 69 of 140 Sr2+-oEPSC sweeps.
-  - The GRAB-ACh "zero-laser" background images are brighter than the signal.
-- **Identifiers and labels:** files cite the preprint and use its figure numbers, and patch-clamp subjects have no animal identifiers.
-- **Paper against its own tables:** the CDGI KO oxo-M test gives P = 0.47 on the paper's own table, where the paper reports 0.910.
+## 2. Dataset, assumptions, questions
 
-**3. Where the protocol was unclear, wrong or missing something**
-1. It does not say what to do when the dandiset has so few units that the paper's test cannot reach P < 0.05 whatever the data. I blocked those claims with `other` using a smallest-attainable-P rule, including the claims of absence, and showed their numbers under the link claims.
-2. It does not say how to grade a criterion that defines only "reproduced". For fig1i SCH I used partially_reproduced, because the effect has the stated direction but is not significant, and recorded this as a deviation.
-3. It does not cover a dandiset that holds the raw data but not the derived measurement. I kept the spine claims as `dandiset`, blocked as not_runnable, and tested the rotation claims as `elsewhere` on the paper's tables. These two choices are not fully consistent.
-4. For `elsewhere` claims it says to test on "those data". I used the paper's per-cell tables, not its 13 GB raw zip, and recorded that.
-5. Link claims are described as gates for claims that need outside data. Here most links gate nothing and serve only to check whether the dandiset holds the paper's cells. I counted them as with_inputs.
-6. The protocol allows the data check before the criteria, but my data check already showed group medians. I said so in the claims file header.
-7. Its clock-check recipes assume trial tables or continuous sessions. For sweeps I used within-sweep contrasts: spikes inside the step, Ca after the spikes, events after the light pulse and before/after the stimulus for GRAB-ACh.
-8. It does not say whether a conclusion may cite the paper's reported values, which are not printed numbers. I cited them as "the paper reports".
-9. No finding kind fits "the paper's reported P disagrees with its own deposited table". I used paper_inconsistency.
+What the dataset holds:
+- The dandiset has every cell of the off-state, on-state and drug groups for somatic, dendritic and Sr2+ recordings, and every GRAB region.
+- It does not have the control and 6-OHDA patch-clamp recordings, the open-field data, the confocal images, or any spine counts (only raw z-stacks). These are in the paper's raw-data deposit on Zenodo.
 
-**4. Runtime and failures**
-- The notebook takes about 4 minutes, mostly streaming files. The whole session took about 3 hours.
-- My first check for line-scan kymograph slices missed references of −1; after the fix it finds 53 of 997 sweeps without a slice. The data check also caught three wrong sentences in my prose, and I corrected them before the final run.
-- No run failed.
-- The repo root has untracked dotfiles (`.bashrc`, `.vscode`, `scripts/` and others) that I did not create or touch.
+Findings recorded about the data:
+- **Missing groups (major).** The control, 6-OHDA, open-field and confocal data above.
+- **Figure 8 AIM scores (major).** They differ from the published figure. Three mice in the dandiset are not in the paper, and five of the paper's mice are not in the dandiset.
+- **2019-04-11 cell 1 (major).** Only its second pair of dendritic sites is in the file. This changes the outcome of fig1i-dspn-dendritic-sch-lower.
+- **Spike counts (minor).** 33 of 123 cells differ from the paper's per-cell table.
+- **Sr2+ sweeps (minor).** Two cells hold 12 and 11 sweeps where the paper's frequencies imply 10.
+- **GRAB calibration (minor).** One region has no tetrodotoxin trial, several acetylcholine trials are too short for the script's window, and some regions hold more trials than the two the Methods give. The description says 2024-04-02 Slice1Roi2 has no acetylcholine trial, but its trial table lists two.
+- **No duplicate recordings** were found.
+
+Assumptions:
+- **Sr2+ event detector.** TaroTools with visual checking can't be run here, so I used my own detector: noise SD from the recorded trace, 500 to 900 ms after the flash.
+- **Sweeps.** I used every sweep of each Sr2+ cell.
+- **Repeated current steps.** I used the first sweep; using the last gives the same results.
+
+Questions for the paper's authors (recorded as `methods_unavailable` findings): which TaroTools settings and which sweeps were used, and how spines were counted.
+
+I asked readers no questions.
+
+## 3. Protocol points
+
+1. **Failed link and its dependents.** link-aim-mice fails under its criterion, but only because the Figure 8 scores differ; the mice and labels do link. The protocol says dependents are blocked when a link fails, and also tested when it holds only in part. I tested fig8bc and fig10b and explained why in the notes.
+2. **fig4k is mislabelled.** The claims file gives `data: dataset`, but the confocal data are public on Zenodo, so it should be `elsewhere`. I blocked it as not_runnable, which applies either way.
+3. **Claims without criteria.** fig2h/2i, fig4g/4h, fig5f-6ohda, d2-control and da-suppresses have none. I used the paper's default test (Mann-Whitney, or Wilcoxon when paired) at P < 0.05.
+4. **link-grab-rois unit.** The criterion matches "each mouse's vector", but the files hold several regions per mouse and the paper counts regions. I matched regions.
+5. **Unlisted Zenodo deposits.** Zenodo 17260198 (raw data) and 17307059 (tables) were deposited by the authors for this paper. The paper should be listed on both. I used 17307059 as an input.
+6. **fig7e data.** It is marked `elsewhere`, but the dandiset holds the naive oxo-M recordings. I ran those as a variant, and it agrees.
+7. **Blindness.**
+   - The claims file's opening comment describes an earlier author's data check. It names its helper and detector (`lid.py`, `lid.detect_events`) and a `condition_subfolder` column that is no longer in the files.
+   - The dandiset's own description gives the "90 of 123 cells" figure, which looks like an earlier check's result.
+   - I saw no earlier attempt's record, entry or outcomes.
+8. **Version.** 0.261124.1858 was asked for and is also the newest published version, so I didn't compare it with other versions.
+
+## 4. Runtime and failures
+
+- The session took about 1 h 05 min (16:08 to 17:14 UTC).
+- The notebook runs in about 7.5 min with 1.2 GB peak memory.
+- Zenodo returned one 504 error during development. I added retries to the helper, and a call that still fails raises an error.
+- Nothing else failed. Verification is for the separate verifier run, so nothing was committed and nothing was verified by me.

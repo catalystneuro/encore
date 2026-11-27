@@ -1,23 +1,22 @@
-I've worked through every point in the round-2 report. No outcome changed, and I proposed no changes. The entry re-ran cleanly with `python tools/entry.py all entries/000003-senzai-2017` (0 errors, 503 s), and every claim number came out the same as before.
+No outcome changed. I proposed a different block reason for the two blocked claims, and three more T-maze outcomes are now marked as resting on an assumption. The entry ran from a clean environment in 24 minutes, and `tools/entry.py check` reports 0 errors. Nothing is committed.
 
-**Outcomes:** All 31 stay as verified: 15 reproduced, 11 partially reproduced, 3 not reproduced and 2 blocked. Round 2 is recorded under `verifications` with the verifier's reasons in its own words and my changes under `response`.
+**Outcomes**
+- **All 31 are as verified.**
+- **pv-remap stays reproduced and seed sensitive**, as the verifier now accepts. The notes and the Result cell now say what the criterion leaves out: the claim's own Bonferroni post hoc test (GC against MC) holds at 5, 10 and 15 cells but not at 20 (P = 0.84). I asked a reader whether the criterion should include that test.
+- **gc-mc-distance and gc-backpropagation stay blocked as `metadata_insufficient`.** Under `proposed` they change to `methods_underspecified`, because the test the verifier suggested supports their reading: the DS2 profile is smoother in shank-list order than in random orders on 83% of the 261 shanks where it reverses, against 5% by chance, under all five seeds. That includes 71% of the shanks where amplitude falls along the list, so the lists are in depth order on most shanks, though which end is the top is not shown. What actually blocks both claims is that the claims file gives them no criterion. I asked a reader for one. Round 3 reviews the proposed change.
+- **tmaze-central-active, tmaze-peak-info and tmaze-splitters are now marked `assumed: true`.** They rest on starting each run at the mouse's last entry into the central arm, because the files do not mark the gate opening. Their deviations now say what was assumed and why.
 
-**Corrections to text the outputs did not support:**
-- **Recording days:** The README, the entry description and the notebook header now say 101 files from 94 recording days. The data check prints the 94. The unit-counts notes now say each of the 101 files is counted once.
-- **Wide-band signal:** The notebook header and the data check no longer say the signal is "not used".
-- **monosyn-gc-to-mc:** 5 of the 8 MC to GC pairs are also GC to MC pairs, not 4. Fixed in the conclusion, the notes and the round-1 response.
-- **remap-positive:** 145 CA3 place cells, of which 143 have a remapping index. Fixed in the notes and the conclusion.
-- **Probe sites:** The Methods give 8 sites per shank on the 8-shank probes and 10 on the 6-shank probes. Fixed in the gc-mc-distance notes and the blocked-claims cell.
-- **Stored waveforms finding:** The peak is cut off for 43% of GC, 67% of MC and 78% of CA3, not "most GC".
-- **Round-1 record:** The gc-mc-classification response now says padding applies to all 391 units of that variant. The optotag-drd2 reason now includes the verifier's point that pooled CA3 interneurons affect the nI/wI fractions.
+**Added or corrected**
+- **T-maze run variants:** the helper now also builds runs three other ways: starting at the lab's `arm_start`, dropping samples in the arm the mouse did not reach, and placing each side-arm sample on the arm its angle shows. Each variant gives the same outcome for central-active, multiple-fields, peak-info and splitters.
+- **Excursions into the other arm:** a new data check finds that 548 of 1,246 runs have some, and 100 of those go more than 10 cm in. They make up 39% of all side-arm samples, because a few runs wander for a long time, but the median run has none.
+- **Spike loss at light onset:** it does not reach the +2 to +15 ms window. The +1 ms bin falls to 0.25–0.39 of baseline, but the +2 ms bin is 0.97 for granule cells and 1.00 for narrow-waveform interneurons, which the light does not suppress.
+- **Two wrong sentences fixed:**
+  - Same-day files: the Summary, finding 11 and the round-1 response wrongly said that in the other pairs the match was no better than with another day. The round-1 response is now marked as corrected.
+  - first-stage-labels: the text now says that the stored waveforms of the 17 wide-band files meet the criterion in all three groups.
+- **Finding 1 rewritten:** it no longer says the DS2 profile does not settle the depth order. It now also notes that the probe description names 8 sites per shank, while six mice have 10 per shank and YutaMouse33's probe has 10 shanks. Its severity stays `major`.
+- **Questions file:** three new questions to a reader in `questions/senzai-2017.yaml`: the pv-remap post hoc test, the missing criteria for the two blocked claims, and the claims file contradicting itself about which files give each unit's shank.
+- **Round-2 record:** recorded under `verifications` for all 31 claims, with the verifier's reasons and my responses. No finding is rated `critical`, so the round has no `findings` list. The verifier agreed that `minor` is right for finding 11.
 
-**New outputs for the points the verifier left open:**
-- **Which side of the electrodes mismatch is wrong:** A new data-check cell pairs each unit's shank (`electrode_group`) and stored waveform channel with the wide-band column where its spike is largest. This gives one fixed map, the same in all 4 mice. Built from three mice, the map predicts the column for 78% to 89% of units in the fourth. That drops to 0% to 9% with the labels shuffled, and the electrodes table manages 5% to 13%. So `electrode_group` matches the signal and the table's map does not. The finding now says so.
-- **Depth order:** Along the stored channel order of that map, the dentate-spike (DS2) profile crosses zero once on 43 of the 51 shanks that cross. Its median |rho| is 0.88, against 0.35 along the table's site numbers. So the order is consistent with depth.
-- **Stored waveform filtering and scale:** They match the wide-band spike best after a 300 Hz high-pass (median correlation 0.987). Their gain is 5.08, close to 5.13, which is the inverse of the wide-band conversion of 0.195 µV per count. That fits waveforms stored in ADC counts and read as microvolts. I added this to the finding and gave `dg.py` the conversion factor it needed.
-
-**Not done:**
-- **The two blocked claims:** gc-mc-distance and gc-backpropagation stay blocked with no proposed change. The depth order now makes them testable on the 17 files. But they have no criteria, this attempt ran no test, and the protocol leaves a change that needs a new analysis to a new attempt. Their notes say this.
-- **Uncurated monosynaptic pairs (the verifier's B3):** This can't be settled from the dandiset, because the authors' curated pairs were not converted.
-
-The paper text is saved under `paper/`. Nothing was committed. `git status` also lists untracked dotfiles and a `scripts/` directory that I did not create, and I left them alone.
+**Not done**
+- I did not run the T-maze run variants for inheritance-tmaze. Its record says so, and its outcome was already marked as resting on an assumption.
+- In 21 runs the arm the mouse reached differs from the trial's left/right label, and only 9 of those are marked as error runs. I report this in the data check but did not look into it or make it a finding.

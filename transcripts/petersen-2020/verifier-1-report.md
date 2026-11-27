@@ -1,86 +1,86 @@
-**Verifier report, round 1: Petersen & Buzsaki 2020 on dandiset 000059 (0.250624.0444)**
+**A. Outcomes (46 claims in the claims file)**
 
-The claims file has 38 claims. The notebook reports 37 as tested and 1 as blocked. My outcomes: 12 reproduced, 15 partially reproduced, 10 not reproduced, 1 blocked. The paper text is the PMC author manuscript, saved as `paper/PMC7442698.txt`.
+Totals: 17 reproduced, 18 partially reproduced, 10 not reproduced, 1 blocked.
 
-### A. Outcomes
-
-| Claim | Outcome | Reason |
+| claim | outcome | reason |
 |---|---|---|
-| session-structure | reproduced | Cell 28: mean 143.8 trials, range 80–204, medians pre 39, cooling 47, post 44. All are inside the criterion's bounds. |
-| cooling-time-course | partially_reproduced | Cell 30: median time to minimum is 121 s against 60 ± 6 s. Duration until back within 1 C of baseline is 12.16 min, inside 9–13.2. The paper's Results say about 45 s, its Methods about 60 s. |
-| fig2g-theta-freq-temperature | reproduced | Cell 32: R = 0.789, P = 2.8e-43 (TEMP sessions). |
-| fig2h-theta-power-temperature | not_reproduced | Cell 34: R = −0.056 (P = 0.44) on TEMP and 0.123 (P = 0.085) on BEH. Neither is positive at P < 0.05. |
-| fig2j-frequency-consistent-across-animals | reproduced | Cell 36: frequency R is positive with P < 1e-22 in all four animals. Its range is 0.27 against 0.72 for power. MS10 has no recorded temperature, so it is absent. |
-| fig2i-theta-pre-cooling-post | partially_reproduced | Cell 38: frequency is lower during cooling than pre (P = 1.4e-12) and than post (P = 5.7e-14). Power is lower than pre only marginally (P = 0.048, 26 of 45 sessions) and not lower than post (P = 0.94). |
-| disc-theta-frequency-12-percent | partially_reproduced | Cell 40: decreases of 8.9%, 9.2% and 9.2%. All are decreases, none within 12 ± 1.2. |
-| fig6d-errors-increase | partially_reproduced | Cell 42: ratios 2.28, 2.31 and 2.53, all outside 3.0 ± 0.3. Over sessions P = 3e-7. MS22 (12 sessions) has P = 0.064. |
-| fig6e-errors-recover | reproduced | Cell 44: post against pre P = 0.84, median difference −0.13 points. |
-| fig6c-worst-trials-4-to-8 | reproduced | Cell 46: the error peak is at trial 7, and the temperature minimum is also at trial 7. This is fragile: each animal's own peak falls at trials 14–26. |
-| fig6f-errors-temperature | partially_reproduced | Cell 48: R = −0.84, −0.79 and −0.87, all with P < 1e-40. Negative, but far from −0.35. |
-| fig6g-errors-theta-frequency | partially_reproduced | Cell 50: R = −0.87 and −0.73. Negative, but outside tolerance. |
-| fig6h-errors-theta-power | partially_reproduced | Cell 52: only MS10 meets R < −0.3 with P < 0.01. One animal counts, against 2 expected. |
-| fig6i-errors-not-speed | not_reproduced | Cell 54: MS13, MS21 and MS22 have P < 0.05 (R = −0.49, 0.22, 0.25). |
-| fig4e-speed-decreases-within-session | reproduced | Cell 56: speed falls with trial number in 44 of 45 sessions, median rho −0.45, P = 4e-13. |
-| fig5-speed-control-cooling | not_reproduced | Cell 58: reading (a) gives 78.9 and 74.9 cm/s, both outside. Reading (b) gives control 79.6 (inside) and cooling 76.0 (just below 76.3). |
-| suppl2-place-cell-rates-decrease | partially_reproduced | Cell 62: decreases of 3.7–7.7% (within-field) and 5.3–6.7% (peak), P = 0.0024 and 0.0013. Both are significant, neither within tolerance, and neither reaches P < 0.001. |
-| disc-interneuron-rates-decrease | partially_reproduced | Cell 64: decrease 6.5% (median) or 9.1% (ratio of means), P = 0.0017. The 14% is not reached. |
-| fig4b-fp-flfp-decrease | reproduced | Cell 70: all six means are within the stated spreads (n = 361 fields against the paper's 365). Both fp and fLFP decrease during cooling, P < 1e-43. |
-| fig4c-fp-flfp-correlation | partially_reproduced | Cell 72: R = 0.23, 0.44 and 0.16, all positive with P < 0.003, all outside tolerance. |
-| fig4ac-fp-flfp-difference-preserved | not_reproduced | Cell 74: fp − fLFP is lower during cooling, P = 1.3e-4, median change −0.13 Hz. The mean change is mostly from MS12 (−1.03 Hz); the other animals are near 0. |
-| fig4a-frequency-temperature-slopes | partially_reproduced | Cell 76: fLFP R = 0.677 and slope 0.0714 are within tolerance, as is the fp slope (0.086). The fp R of 0.338 is just below 0.342. |
-| fig3c-field-size-correlated | reproduced | Cell 78: R = 0.8197 against a lower bound of 0.819, so it passes by 0.0007. The ≥100-spike variant (0.814) falls outside. |
-| fig3d-size-fp-negative | partially_reproduced | Cell 80: R = −0.31, −0.31 and −0.32, all with P < 3e-9. Negative, but outside tolerance. |
-| fig3e-model-field-size | partially_reproduced | Cell 82: pre R = 0.25 and cooling R = 0.34, both positive with P < 1e-5. Post is 0.33 against 0.11 expected. |
-| fig3f-information-unchanged | not_reproduced | Cell 84: pre against cooling P = 0.014 and pre against post P = 0.0064. Problem 3 may explain this. |
-| fig3hi-population-vector-unchanged | reproduced | Cell 86: P = 0.97 over n = 11 sessions, which gives the test low power. |
-| fig4d-precession-slope-decrease | partially_reproduced | Cell 88: on slope magnitude, cooling is flatter than post (P = 0.022) but not than pre (P = 0.83). The signed reading is not significant. |
-| fig4gh-fp-speed | reproduced | Cell 90: the fp slope (0.0136) is larger than the fLFP slope (0.0061), bootstrap interval 0.004–0.011. fp is lower during cooling in all 3 testable bins, which cover only 60–120 cm/s. |
-| fig5d-ccg-period | partially_reproduced | Cell 92: the period lengthens during cooling (8 of 9 sessions, P = 0.0195) and the phase period does not change (P = 0.59). The control period is 109 ms against 85 ± 8.5, and that value is biased by the estimator (problem 1). |
-| fig5cg-compression | not_reproduced | Cell 94: per-session decrease P = 0.0547, pooled pre compression 0.273 cm/ms against 0.54. Phase compression is unchanged (P = 0.43). |
-| fig5h-time-lags-increase | reproduced | Cell 96: time lags are longer during cooling under both readings. Over pairs, against pre P = 1.1e-6 and against post P = 1.3e-10; over sessions P = 0.023 and 0.016. |
-| fig5i-phase-lags-unchanged | not_reproduced | Cell 98: cooling against pre P = 0.0015 and against post P = 0.0043. |
-| fig5j-fraction-active-unchanged | not_reproduced | Cell 100: pooled rank-sum pre against cooling P = 1.5e-22. Over session means P = 0.73 (problem 4). |
-| fig5k-spikes-per-cycle-unchanged | not_reproduced | Cell 102: cooling against post and pre against post both have P ≈ 1e-52. Session means show no difference (problem 4). |
-| suppl1g-waveforms-unchanged | not_reproduced | Cell 68: trough-to-peak P = 4.9e-10 and amplitude P = 5.7e-4 (median +0.8%, n = 646). See problem 5. |
-| suppl2d-interneuron-oscillation-slows | reproduced | Cell 66: 9.55 to 8.66 Hz, lower in 105 of 114 units, P = 8.7e-16. The 9.4% decrease is close to the LFP's 8.8%. |
-| suppl1-hippocampal-temperature | blocked (data_missing) | See the archive check below. |
+| session-structure | partially_reproduced | Mean is 142.4 trials (allowed 135–165) and median pre is 39. Median cooling and post counts are in range under all three state readings. But MS10-170307 has 37 trials, outside 72–220 (cell 10). |
+| cooling-time-course | partially_reproduced | Median time to minimum is 109.7 s, outside 40.5–66 s. Under reading (a), duration is 11.7 min and 47.5 trials, both in range (cell 12). Two of three parts hold. |
+| fig2g-theta-freq-temperature | partially_reproduced | R is positive with tiny P under every reading, but none falls within 0.81±0.081: aligned 0.978 (n=120), bins 0.959, pooled 0.554 (cell 15). |
+| fig2h-theta-power-temperature | reproduced | Hilbert power over aligned trials gives R=0.495, P=8.9e-9, below the frequency R (cell 16). This is 1 matching reading out of 18 tried. |
+| fig2j-frequency-consistent-across-animals | reproduced | Frequency R is positive with P<0.05 in 4 of 4 testable rats. Its range and SD are smaller than for power (cell 18). MS10 has no measured temperature, so it could not be tested. |
+| fig2i-theta-pre-cooling-post | reproduced | With lab states and spectral theta, all four signed-rank tests show cooling lower at P≤3e-6 (cell 20). With Hilbert power, cooling is not lower than post. |
+| disc-theta-frequency-12-percent | reproduced | Only reading (c) is in range: 11.1% (Hilbert) and 12.9% (spectral). Readings (a) and (b) give 6.6–9.9% (cell 22). |
+| fig6d-errors-increase | partially_reproduced | P over sessions is below 1e-5, but the ratio is about 2.0–2.25, outside 3±0.3. MS13 gives P=0.23–0.44 (cell 25). |
+| fig6e-errors-recover | reproduced | Post against pre gives P=0.55, 0.80 and 0.97 under the three state readings; median difference −0.42 points (cell 27). |
+| fig6c-worst-trials-4-to-8 | reproduced | Unsmoothed, the error maximum is at trial 8. Minima are at trial 7 for temperature, 6–8 for frequency and 8 for power (cell 29). |
+| fig6f-errors-temperature | partially_reproduced | R is negative with P<0.01 under every reading, but none is within −0.35±0.035: −0.64, −0.87, −0.15, and per rat −0.20 to −0.52 (cell 32). |
+| fig6g-errors-theta-frequency | partially_reproduced | Same pattern as fig6f. Only MS13's per-rat R is in tolerance, and reading (c) needs every rat (cell 33). |
+| fig6h-errors-theta-power | reproduced | Normalised Hilbert power gives 2 of 5 rats (cell 34). This depends on the power reading: raw power gives 3 and normalised spectral power gives 1. |
+| fig6i-errors-not-speed | not_reproduced | MS10 (P=0.0023) and MS13 (P=0.00026) have significant, negative R (cell 35). |
+| suppl5j-errors-best-theta-frequency | partially_reproduced | With Hilbert theta, frequency is largest in both the correlations and partial correlations, but speed's partial P is 0.023. With spectral theta, temperature is largest (cell 37). |
+| fig4e-speed-decreases-within-session | reproduced | Aligned Spearman −0.87 (P=1e-38); 50 of 51 sessions negative; signed-rank P=7e-10 (cell 39). |
+| fig5-speed-control-cooling | reproduced | Speed is 80.3 (control) and 77.1 cm/s (cooling), both within the paper's spreads (cell 95). The sets are 23 sessions; the paper's 18 and 10 cannot be told apart. |
+| suppl2-place-cell-rates-decrease | partially_reproduced | Decreases are 0.4–6.8%, far from 11–12%. Both are significant only with 3 cm bins; at 5 cm/lab the within-field P is 0.12 (cell 43). |
+| suppl2ab-rates-correlated | reproduced | Within-field rate on a linear scale gives R=0.66, P=1e-147 (cell 45). |
+| disc-interneuron-rates-decrease | partially_reproduced | Decreases are 0.3–8.7%, none in 12.6–15.4%. Narrow interneurons, all frames, give P=0.023 (cell 73). |
+| suppl5gh-rates-follow-temperature | reproduced | On raw rates, both classes are lower in trials 1–5 (P=2e-6 and 6e-16). Both track temperature (R=0.81 and 0.53) (cell 75). The normalised reading fails. There are 1295 pyramidal cells, outside 1104±110. |
+| fig4b-fp-flfp-decrease | reproduced | All six means are within tolerance under every reading; P_fp 2e-75 (cell 47). That is 878 fields against the paper's 365. |
+| fig4c-fp-flfp-correlation | partially_reproduced | R pre is 0.21–0.36 (expected 0.61) and R cooling 0.39–0.49. All are positive with P<1e-11, and the SD of fp exceeds that of fLFP (cell 49). |
+| fig4ac-fp-flfp-difference-preserved | not_reproduced | fp − fLFP falls during cooling in every reading, P from 1e-6 to 0.0019 (cell 51). |
+| fig4a-frequency-temperature-slopes | partially_reproduced | Field-state values with fLFP over time give R=0.685 and slope 0.068, both in tolerance. fp gives R=0.30 and slope 0.067, both outside. All slopes are positive (cell 62). |
+| fig3c-field-size-correlated | not_reproduced | R is 0.41–0.49, below the 0.5 the partial outcome needs (cell 53). |
+| fig3d-size-fp-negative | partially_reproduced | R is −0.14 to −0.20, all negative with P<1e-4, but none in tolerance (cell 54). |
+| fig3e-model-field-size | not_reproduced | Pre R is about 0 (P≥0.06) in every reading (cell 55). |
+| fig3f-information-unchanged | not_reproduced | Pre against post is significant in every reading, e.g. P=0.0054 (cell 56). See problem 5. |
+| fig3hi-population-vector-unchanged | reproduced | Scale changes by −0.05 cm, P=0.73 over 23 sessions (cell 79). |
+| fig4d-precession-slope-decrease | not_reproduced | No comparison reaches P<0.05 (cell 58). The slope estimator is suspect (problem 1). |
+| suppl3e-precession-temperature | partially_reproduced | Reading (a) gives R=−0.0273, within tolerance, but P=1.2e-6, not below 1e-10. n=31617 against about 1e5 (cell 61). |
+| fig4f-speed-theta-power | reproduced | Raw Hilbert power over all trials gives R=0.071, P=2.7e-9 (cell 64). |
+| fig4gh-fp-speed | partially_reproduced | At the 10 cm/s main bins, the fp slope exceeds the fLFP slope (bootstrap interval [0.0044, 0.0076]). But cooling is lower in only 11 of 14 speed bins. The 20 cm/s variant has 8 of 8 (cell 66). |
+| suppl2e-trial-speed-theta-frequency | reproduced | R is positive in all states. The low-speed slope is larger in 2 of 3 states (Hilbert) and 3 of 3 (spectral), but from only 12–32 trials below 40 cm/s (cell 68). |
+| suppl3-theta-cycle-duration | partially_reproduced | State comparisons hold (cycles 117.6 ms pre, 130.4 cooling, 117.6 post; post against pre P=0.96), and cooling is longer in 100% of position bins. But duration correlates with speed in pre (P=0.005 and 0.009) (cell 70). |
+| fig5d-ccg-period | partially_reproduced | Cooling period is longer (P=0.005) and the phase period does not differ (P=0.305). The pre period is 108 ms (104.5 under pairing (b)), not 85±8.5 (cell 83). |
+| fig5e-phase-period-below-2pi | reproduced | Phase periods are 1.83–1.91 π, below 2π, in pre and cooling (cell 86). |
+| fig5cg-compression | not_reproduced | Low confidence. The surface fits mostly failed (NaN, R2 −0.14 and −0.43). Only 5 or 10 sessions were fitted per session test (P=0.81 and 1.0), and the least-squares variant gives P=0.67 and 0.36 (cell 93). See problem 2. |
+| fig5h-time-lags-increase | partially_reproduced | Cooling lags are longer than pre and post at P<1e-12. Pre against post gives P<0.05 in every reading on the signed-rank test; only the rank-sum variant gives 0.16 (cell 89). |
+| fig5i-phase-lags-unchanged | reproduced | Under lag reading (a), all P≥0.068. Reading (b) fails (cell 90). |
+| fig5j-fraction-active-unchanged | not_reproduced | Pre against cooling rank-sum P=1.6e-25, with cooling higher (cell 98). |
+| fig5k-spikes-per-cycle-unchanged | not_reproduced | All three rank-sum P are below 5e-7 (cell 99). |
+| suppl1g-waveforms-unchanged | not_reproduced | Trough-to-peak P=1e-9 and peak-to-peak P=0.026 over 263 units in 4 sessions (cell 101). |
+| suppl1-hippocampal-temperature | blocked (data_missing) | Confirmed on the archive (see problem 13). |
 
-Archive check for the blocked claim: the assets endpoint lists 100 files, all for the five behaving rats (sub-MS10 to sub-MS22). There is no subject or file for the MS-plus-hippocampus control experiment, and the dandiset metadata lists no temperature variable. The notebook read only the MS `Temperature` series and never printed the full list of series in `processing/behavior`. So "no second temperature channel inside the files" is stated (cell 8) but not shown. The claim's hippocampal part cannot be tested. Its MS onset part is covered by cooling-time-course.
+**B. Problems**
 
-No claim states a chance level, so that check does not apply.
+1. **[affects a conclusion]** `circ_lin_slope` (used in cells 58 and 60–61) searches slopes only within ±1 cycle per field, a range the paper does not give and the notebook does not state as an assumption. On synthetic data:
+   - a true slope of −1.25 cycles is returned as −1.0 in 99% of fields;
+   - a true slope of −1.0 lands on the boundary in 51% of fields;
+   - pure noise lands on ±2π in 26%.
 
-### B. Problems
+   The cell 58 outputs fit this: the median change in |slope| and in the signed slope is exactly 0.0000 under all three readings, which points to many fields pinned at −2π in both states. The non-significant results for fig4d, and possibly the R for suppl3e, may come from this saturation.
+2. **[affects a conclusion]** fig5cg, cells 92–93. `curve_fit` failed or fitted worse than a constant: pooled R2 is −0.135 and −0.429, the other pooled fits are NaN, and reading (b) of the equation fitted no session at all. The error messages are not printed. The per-session test therefore rests on 5 or 10 sessions with converged fits. Separately, the start value `a_start` (0.556 and 0.561 cm/ms) is close to the paper's 0.54, but it is not reported as a result. The least-squares variant regresses Ltr over all distances, where the main lag wraps across theta cycles; its R is −0.05, so it does not measure compression.
+3. **[affects a conclusion]** fig5h. The decisive pre-against-post test is over about 8,500 pairs, and median lags of 27 against 27 ms still give P=0.034. Only the rank-sum variant passes. The outcome depends on a variant, not the main test.
+4. **[does not affect a conclusion]** Several "reproduced" outcomes rest on the one matching reading out of many: fig2h (1 of 18), disc-12 (only reading c, the minimum of a noisy per-trial series, which favours larger decreases), fig6h (1, 2 or 3 rats depending on power normalisation) and fig4f (tiny R). The criteria allow this, but these results are fragile.
+5. **[affects a conclusion]** fig3f, cell 56. Skaggs information is biased upward when there is less data. Post has more trials than pre (median 46 against 39), so a pre-to-post fall in information could come from sampling alone. No equal-trial subsampling or shuffle correction was done, and the outcome turns on the pre-against-post test.
+6. **[does not affect a conclusion]** fig5d, cell 80. The period is taken as the largest Fourier component, while the criterion says peak spacing. On a synthetic 85 ms correlogram this method returns 85.0 ms, so it is probably equivalent, but peak spacing on the pooled sum was never printed.
+7. **[does not affect a conclusion]** Temperature cleaning in `load_session`. The code keeps 5–45 °C, but cell 4 prints "0 to 50 C". Rail values of about 5.0 °C (MS22-180623, MS22-180712) and 9.98 °C (MS22-180720) are kept as valid temperatures.
+8. **[does not affect a conclusion]** In `_theta_column`, the lab-tagged theta channel is used even where it is marked bad (MS13-171130, `theta_ch_bad` True in cell 4).
+9. **[does not affect a conclusion]** suppl5gh, cell 75. On normalised rates, trials 1–5 average 1.08 against a pre value of 0.996, yet the signed-rank test is "significant". The direction is not tested, and the outcome rests on raw rates.
+10. **[does not affect a conclusion]** suppl1g, `unit_waveforms`. Trough-to-peak is measured on raw 20 kHz samples without interpolation, and the median change is exactly one sample (0.05 ms). The test covers 4 sessions and a few 52 s blocks each, with pre and post blocks pooled as control.
+11. **[does not affect a conclusion]** Cell 7 says the aligned window −40 to 80 is where at least half the sessions contribute. For MEAS_L, cell 15 prints 11 to 31 sessions per trial, and 11 is fewer than half of 31.
+12. **[does not affect a conclusion]** The claims file's fig5d session readings, (a) all sessions and (b) sessions with pairs in every state, collapse to the same 23 sessions in this dataset. The paper's 18 and 10 cannot be recovered.
+13. **[does not affect a conclusion]** Blocked claim, checked on the archive API. There are 51 assets, all theta-maze/home-cage cooling sessions of MS10–MS22. `variableMeasured` lists no temperature at all, and no session description mentions the hippocampal-temperature control experiment. The MS-side quantities could be computed from the behavioural MS traces: cell 12 already gives a median fall of about 15.8 °C and a time to minimum of about 110 s. But they come from different experiments than Figure S1H–K, and both the reproduced and partial conditions need hippocampal temperature. So `data_missing` stands.
+14. **No chance level** is stated in the paper for any selection, so there was nothing to compare.
 
-1. **[affects a conclusion]** `pair_period` (used in cell 92 for fig5d) is biased upward. It takes the largest local maximum 60–200 ms from the main peak. When the period is under about 100 ms, that window holds both the first and the second neighbouring peak. If the correlogram envelope is centred away from zero (field peaks 15 cm or more apart), the second peak is often larger.
-   - Synthetic test: two cells oscillating at 10.6 Hz, true period 94 ms. For field separations ≥15 cm the function returned about 140 ms, the mean of a 94 ms and a 188 ms spacing. Separations of 0–10 cm returned 93–94 ms.
-   - The control value of 109 ms (above 1/fp ≈ 95 ms) is therefore not a valid test of "85 ms".
-   - Speed was lower during cooling (cell 58, P = 0.04), which spreads the envelope further in time, so part of the lengthening may also come from this bias.
-2. **[affects a conclusion]** `peak_lag` (window ±70 ms) is used for fig5cg, fig5h and fig5i. The theta period is about 110 ms, so the window often holds two candidate peaks. That ambiguity, plus noise in the x variable (tau), flattens the Ltr-on-tau slope: pooled R is only 0.195 and compression 0.273 against 0.54. The criterion fixes this method, but the compression magnitude cannot be judged from it.
-3. **[affects a conclusion]** fig3f, cell 84: Skaggs bits per spike are biased upward when there are fewer spikes. The pre state has fewer trials than cooling or post (medians 39, 47, 44). Information falls in order pre > cooling > post, which matches that bias. No subsampling to equal spikes or occupancy was done.
-4. **[affects a conclusion]** fig5j and fig5k, cells 100 and 102: rank-sum tests over theta cycles pooled across sessions are confounded by session make-up. Per-session means range from 0.16 to 0.32 (fraction active) and 18 to 91 (spikes), and states contribute different numbers of cycles from each session. Session-level tests give P = 0.73 (fraction active), 0.57 and 0.13 (spikes), which fits the paper's claims. The outcomes stay not_reproduced under the criterion, but they reflect the test, not a clear effect.
-5. **[may affect a conclusion]** suppl1g, `unit_session` / `waveforms_chunked`:
-   - Peak-to-peak amplitude of a mean waveform rises with noise when fewer spikes are averaged. The two windows can have different counts (rates fall during cooling; there is a 300-spike cap). The counts per window are never shown.
-   - The windows are also 7–30 minutes apart, so probe drift is mixed with the cooling effect.
-   - The +0.8% amplitude result may be artefactual. The trough-to-peak shift (higher in 294 units, lower in 143) is less easily explained this way.
-6. **[does not affect a conclusion]** cooling-time-course, cell 30: baselines in MS21-180622, -180623, -180720 and MS22-180621 come from artefact-contaminated traces (37–42 C). In MS21-180720 the onset was detected 413 s before the first cooling trial, with a "minimum" of 39 C. The median over 37 sessions is barely affected.
-7. **[does not affect a conclusion]** cooling-time-course: the minimum is the argmin over 5 minutes. A slowly drifting plateau pushes it late, so 121 s may not measure "peak effect". The criterion fixes this measure.
-8. **[does not affect a conclusion]** Cell 70: the "≥30 spikes" variant is the same as the main result, because `oscillation_frequency` returns NaN below 50 spikes. It tests nothing.
-9. **[does not affect a conclusion]** Cell 38: `out[(m, other)] = (p, lower < n - lower)` has its direction inverted. It is never used.
-10. **[does not affect a conclusion]** fig4a windows in `unit_session`: `range(0, n_tr - 20)` drops the last 20-trial window. The P value pools about 52,000 overlapping windows, which is pseudo-replication; the paper's code does the same.
-11. **[does not affect a conclusion]** `theta_from_lfp` computes the spectrogram on the 4–10 Hz filtered signal. On a synthetic sine of equal amplitude, power reads about 5% lower at 8.5 Hz than at 7.7 Hz, which partly masks a cooling power drop. I checked the paper's `calcInstantaneousTheta.m` (commit aec2f7e) and it does the same, so this is faithful to the paper. It matters only for reading fig2h, fig2i (power) and fig6h.
-12. **[does not affect a conclusion]** `stream_lfp` assumes LFP column *i* is electrode-table row *i*, without checking the LFP `electrodes` region. Theta slowing comes out as expected, so the channel is at least hippocampal.
-13. **[does not affect a conclusion]** `aligned_series` finds the end of the first block only as a Post-Cooling trial followed by Cooling on. A Cooling off → Cooling on transition would leave the second cooling block in the series.
+**C. What I could not check, and the output that would settle it**
 
-The other helpers behaved correctly on synthetic inputs: `oscillation_frequency` (7.7, 8.5, 10.6, 12 Hz came back as 7.75, 8.47, 10.87, 11.9), `gausswin`, `circ_lin_regression`, `skaggs_information`, the alignment to position 65, and the instantaneous theta frequency. Every number in the notebook comes from the loaded files. I found no train/test leakage; no claim involves a decoder.
+- **fig4d and suppl3e:** the fraction of precession slopes at ±2π in each state, and the result with a wider slope range.
+- **fig5cg:** the `curve_fit` exception text and how many fits converged in each condition, a plot of the pooled pre density with the fitted surface, and `a_start` reported per session.
+- **fig5d:** the peak-spacing period of the pooled summed cross-correlogram.
+- **fig3f:** Skaggs information with trials subsampled to equal numbers per state.
+- **suppl5gh:** the median of normalised early rates against pre.
+- **suppl1g:** trough-to-peak with interpolation, and spike counts per condition.
+- **fig2i, fig6c, fig6h and fig5i:** the results without the bad-tagged theta channel session (MS13-171130).
+- **Trial temperature:** a check of per-trial temperatures that fall below about 15 °C.
 
-### C. What I could not check, and the output that would settle it
-
-- **Per-pair period estimates (fig5d):** a histogram of per-pair periods and spacings, |Ltr| for each pair, and the fraction of pairs where the chosen neighbour sits near twice the period. The median period over pairs with |Ltr| < 10 cm would show whether 85 ms holds with the bias removed.
-- **Waveform spike counts (suppl1g):** `nwf_pre` against `nwf_cooling`, and the amplitude change for units at the 300-spike cap in both windows.
-- **Information with equal sampling (fig3f):** bits per spike recomputed with equal spike counts or equal trial counts per state.
-- **Cooling time course:** an onset-aligned mean MS temperature trace in seconds, and the time to reach 90% of the drop.
-- **Hippocampal temperature:** a listing of every TimeSeries in each file's `processing/behavior` (and `acquisition`), to confirm there is no hippocampal temperature series.
-- **Theta channel:** the LFP `electrodes` region indices against the `theta_reference` row.
-- **fig5j and fig5k:** session-level tests for all three comparisons, and mean cycle duration by state.
-- **fig6c:** the mean smoothed error series for trials 21–40 after onset, and the number of sessions contributing at each position.
-- **Second cooling blocks:** state sequences of the two-block sessions, to confirm where `aligned_series` cut each series.
+I did not re-run anything on the data.

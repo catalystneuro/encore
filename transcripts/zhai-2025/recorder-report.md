@@ -1,100 +1,19 @@
-I ran `python tools/readme_row.py 001538 --write`, which added the row to README.md with 15 (+1) reproduced, 0 (+2) partially, 3 (+1) not reproduced and 15 blocked. I added the subsection below at the end of `docs/pilot-notes.md`. Nothing is committed.
+I wrote both files and committed nothing. The summary is 119 words.
 
-### 001538, Zhai et al. 2025
+The outcome counts are taken from `python tools/readme_row.py zhai-2025`. These counts leave out the eight claims tested on the paper's own tables and the five link claims, so the notes give those separately.
 
-Fifteen claims reproduced, three not reproduced and fifteen blocked on the
-dandiset, none partially. With outside data, counted apart: one reproduced,
-two partially reproduced and one not reproduced. Nine claims on the paper's
-per-cell tables on Zenodo are reproduced. Round 1 gave its own outcome for
-each claim from the notebook with its conclusions removed and agreed with 44
-of the 45; it would call `fig1i-dspn-dendritic-sch-lower` not reproduced, as
-its criterion defines only the reproduced case and P is 0.066, and the author
-changed it from partially reproduced. The author also changed the reason for
-the six spine blocks from `not_runnable` to `methods_underspecified`, as round
-1 proposed. Round 2 agreed with all 45 and nothing was proposed, so there was
-no third round. The paper reports, in a mouse model of levodopa-induced
-dyskinesia, that dSPNs are more excitable in the on-state than in the
-off-state and iSPNs less, at the soma and in dendrites, that evoked ACh
-release is elevated in the off-state, that M1 receptors and CDGI underlie the
-off-state rise in iSPN dendritic excitability, and that deleting CDGI or iSPN
-M1 receptors attenuates dyskinesia. The links to the paper's tables, the
-somatic and dendritic excitability of dSPNs and iSPNs with SCH 23390,
-sulpiride, M1R antagonism, CDGI KO and M1R deletion, and two GRAB-ACh
-comparisons were tested on the dandiset. The four Sr2+-oEPSC claims, three
-GRAB-ACh claims and the two AIM claims are blocked as `other`, as the
-dandiset holds so few cells, regions or mice that the paper's test cannot
-reach P < 0.05 whatever the data, and the six spine claims are blocked as
-`methods_underspecified`, as counting used AutoQuant, NeuronStudio or Imaris
-with manual steps. `fig1i-dspn-dendritic-sch-lower` (P = 0.0662) and
-`fig3f-ispn-dendritic-sul-no-change` (P = 0.0097, paper 0.0545) are not
-reproduced, and each turns on one cell the dandiset holds only in part: with
-the paper's value for that cell the paper's P is recovered (0.0133 and
-0.0545). Some outcomes rest on weak ground: under the stricter basal-ratio
-rule (0.8 to 1.25) `fig3f-ispn-dendritic-on-lower` gives P = 0.0774 and the
-sulpiride claim P = 0.0663, which would reverse both; `fig5f-ach-off-elevated`
-is met at P = 0.0357, the smallest attainable for 3 against 5 mice; and the
-absence claims `fig3d-ispn-sul-no-change`, `fig5f-ach-off-like-6ohda` and
-`fig9d-m1r-crispr-somatic-unchanged` pass with little power. The author used
-the full text of the version of record in PubMed Central (PMC12674127), the
-paper's per-cell tables on Zenodo (doi:10.5281/zenodo.17307059) and its
-analysis scripts on Zenodo, read for method choices and not run.
+One source disagreement: `targets/dandisets.json` lists 0.260527.1302 as the published version. The author's report says the pinned 0.261124.1858 was both the version asked for and the newest published. The notes follow the author's report.
 
-The dandiset was converted by CatalystNeuro (catalystneuro/surmeier-lab-to-nwb).
-It holds no patch-clamp recordings from unlesioned control or 6-OHDA-lesioned
-mice (10, 12, 11 and 9 dSPNs; 21, 11, 14 and 9 iSPNs in the paper), nor the
-oxo-M line scans of Figure 7E or the open-field data of Figure 10, though the
-paper's raw data on Zenodo list folders for all of them. The Sr2+-oEPSC files
-hold one cell per mouse (14 of the paper's 33 cells), the GRAB-ACh files one
-region per mouse (11 of 34) and the AIM tables 7 of the paper's 44 mice plus
-two mice (4124, 5871) not in the paper, and the dandiset does not say that it
-holds a subset or how it was chosen. Session names state a drug (D1RaSch,
-D2RaSul) for files that also hold baseline on-state sweeps; 11 cells in such
-files have a baseline condition, 7 of them also recorded with the drug and 4
-baseline only, and the condition of each sweep is only in the
-RecordingsIndexTable column condition_subfolder. Two dendritic cells lack the
-sites the paper's values need: dSPN on+SCH 20190411 cell 1 has only its second
-pair of sites (0.584 against the paper's 0.228) and iSPN on+sul 20190508 cell
-3 only a distal site; reading these gaps as missing data is an inference from
-the recovered P values, as the paper does not list each cell's sites. Three
-dendritic site series hold six trials, two sites under one name, and split
-they give the paper's values for these cells; one series holds a single
-trial, one two and one four. The genotypes of the CDGI behaviour mice
-contradict each other across the subject metadata, the session names, the AIM
-table's genotype column and the video files, and the AIM session totals of the
-five Figure 8 mice differ from the paper's table in 20 of 25 sessions (mouse
-1945 session 1, 33.5 against 27.0), while the two Figure 10 mice agree in all
-sessions. The raw spine image stacks and rotation videos are there, but no
-spine or rotation counts (none of the 86 spine files has a processing module
-or analysis entry). Other findings: the stimulus series of every dendritic
-sweep is all zero, and the index table gives no kymograph slice for 53 of 997
-dendritic sweeps; the Sr2+-oEPSC light-pulse OptogeneticSeries is all zero in
-69 of 140 sweeps and the intracellular recordings table references no
-stimulus; the GRAB-ACh background images, described as taken at zero laser
-power, have a mean (381 to 525) above the signal (F0 179 to 355); the files
-cite the bioRxiv preprint and use its figure numbers for the behaviour data;
-patch-clamp subjects are named by recording date with no animal identifier, in
-185 subject folders; 18 somatic cells miss one or more current steps between
-20 and 300 pA and 14 repeat a step; and on the paper's own tables the oxo-M
-test in CDGI KO gives P = 0.47 where the paper reports 0.910, and the rotation
-test of Figure 8A 0.012 where the text reports 0.0092.
+**docs/pilot-notes/zhai-2025-03.md**
 
-The notebook ran in 248 s in the first clean run, about 10 minutes after round
-1 and 640 s after round 2. No run failed; the author's first check for
-kymograph slices missed references of -1, and the data check caught three
-wrong sentences, all corrected before the final run. Round 2 found statements
-the outputs did not support, among them mouse counts the wrong way round for
-the Figure 8A rotations, 11 baseline-only cells where 4 are, a sentence that
-the sulpiride outcome comes from one cell, which holds under the main
-basal-ratio rule only, and a subject count and dendrite count no output
-printed; these were corrected or printed. Untracked files in the repository
-root that the author did not create were left alone. The author's points on
-the protocol: no rule for a dandiset with so few units that the paper's test
-cannot reach P < 0.05; no grading for a criterion that defines only
-"reproduced"; no rule for raw data without the derived measurement, where the
-spine and rotation choices are not fully consistent; whether `elsewhere`
-claims may be tested on the paper's tables in place of its raw data; link
-claims that gate nothing and only check whether the dandiset holds the
-paper's cells; a data check that already showed group medians; clock-check
-recipes that assume trial tables or continuous sessions, not sweeps; whether a
-conclusion may cite the paper's reported values; and no finding kind for a
-reported P that disagrees with the paper's own deposited table.
+# zhai-2025, Zhai et al. 2025, third attempt
+
+Twenty-five claims reproduced on the dataset, none partially, one not reproduced and six blocked, all six as `not_runnable`; the eight claims tested on the paper's own tables in Zenodo (`data: elsewhere`) all reproduced and are counted apart, as are the five link claims, of which one reproduced, two partially and two not. Five outcomes, `link-sr-cells` and the four Sr2+-oEPSC claims, rest on an assumption, the attempt's own event detector standing in for TaroTools. The first verification round agreed with 44 of the 45 outcomes and would have given `fig4h-ispn-sr-frequency-unchanged` as partially reproduced; the author kept reproduced, and the second round agreed with all 45, so there was no third round. It pins version 0.261124.1858, the version asked for and the newest published. The paper, Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier, "State-dependent modulation of spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of Parkinson's disease" (doi:10.1126/sciadv.adv8224), reports that somatic and dendritic excitability and cortical Sr2+-oEPSC amplitude rise in dSPNs and fall in iSPNs in the levodopa on-state against the off-state, that evoked acetylcholine release (GRAB-ACh3.0) is elevated in the off-state, and that M1 muscarinic receptors and CDGI shape the off-state changes in iSPNs and the dyskinesia (AIMs). The somatic, dendritic, Sr2+-oEPSC, GRAB-ACh, M1R and CDGI claims reproduce, with `fig3f-ispn-dendritic-sul-no-change` at the paper's P = 0.0545 and `fig4h-ispn-sr-frequency-unchanged` fragile: P = 0.064 with every sweep, the last 10 or the 10 nearest the paper's counts, and 0.049 with the first 10. `fig1i-dspn-dendritic-sch-lower` is not reproduced (P = 0.066), as one cell's first site pair is missing from the file; without that cell P = 0.027. The six spine claims are blocked because the dataset holds raw 2PLSM z-stacks only and the paper counted spines in NeuronStudio after AutoQuant deconvolution and, for the confocal images, in Imaris 10. `fig8bc-cdgi-aims` was tested on the dataset's scores (F(1,19) = 31.24), although `link-aim-mice` fails for Figure 8, which the author's report names as going past the protocol's rule. The attempt was blind, though the claims file's opening comment names an earlier helper and the dataset description gives the "90 of 123 cells" figure. Against `zhai-2025-02` two outcomes differ: the fig1i SCH claim, reproduced there because that attempt left the incomplete cell out (`data_used`, high confidence), and `fig8bc-cdgi-aims`, blocked there, which the reconciliation calls an error in this attempt that supports blocked (medium confidence). Round 1 found that the red background was 161 in place of 55, that the last-sweep variant was a no-op, that fig4h was not tried with the last 10 sweeps, and that row reuse in the somatic link and the GRAB frame intervals were not reported; in reply all were fixed or added, no outcome changed, and a question on the link-grab-rois unit went to a reader in `questions/zhai-2025.yaml`. Round 2 found sentences the outputs did not support, on the count of claims on the paper's tables, the short acetylcholine trials, the somatic link and the support for the fig4h sweep reading, which were corrected, and three more reader questions were added. The author's run took about 1 h 05 min (16:08 to 17:14 UTC); the notebook ran in about 7.5 min with 1.2 GB peak memory, 396 s after round 1 and 439 s in the reconciliation run. Zenodo returned one 504 error during development, after which the helper retries. The reconciliation found the checkout to be a shallow clone and used the `earlier-entry/` copy of the earlier entry.
+
+The dataset was converted by CatalystNeuro (catalystneuro/surmeier-lab-to-nwb). It does not hold the somatic and dendritic recordings of the unlesioned control and 6-OHDA groups, the open-field data, the confocal images or any spine counts; the description says so and points to Zenodo 17260198, where these data are. The AIM scores of the Figure 8 mice differ from the published figure: of 90 session totals of the 18 mice in both, 12 are equal (median absolute difference 2.5, largest 19.5), mice 4123, 4124 and 5871 are not in the paper, and 2346, 2347, 7741, 7742 and 7744 are not in the dataset; the description says these sheets match the preprint, and the Figure 10 scores match (103 of 105 sessions). The dSPN of 2019-04-11 (cell 1) holds only its second pair of dendritic sites, with an index of 0.584 against the paper's 0.228, which decides the fig1i SCH outcome. These three are major. Spike counts match the paper's per-cell table exactly in 90 of 123 cells, with 14 cells holding a step more than once; two Sr2+-oEPSC cells hold 12 and 11 sweeps where the paper's frequencies imply 10, and the files do not say which were used; the GRAB-ACh3.0 ROI series is whole-frame brightness, one region has no tetrodotoxin trial, six have an acetylcholine trial ending before 4 s, six hold three or four single-pulse trials of a condition where the Methods give two, and 2024-04-02 Slice1Roi2 has two acetylcholine trials where the description says it has none; normalised areas match the paper's for 16 of 34 regions. Rechecked from the earlier attempt, mouse 7830 has identical AIM scores in sessions 4 and 5, subjects are defined by recording day and in four groups number fewer than the paper's mice, and the drug-named session files hold baseline cells (11 of 21). No duplicate recordings were found. In the paper, the per-cell Sr2+-oEPSC amplitudes labelled average are the median of each cell's events, and two P values do not recompute from its tables (Figure 7E KO 0.4697 against 0.910, Figure 8A 0.01198 against 0.0092). Two questions are put to the paper's authors: which TaroTools settings and sweeps were used, and how spines were counted.
+
+The author's points on the protocol: it blocks the dependents of a failed link and also tests them when a link holds in part, and fig8bc and fig10b were tested with the reason given; fig4k is `data: dataset` though its confocal data are public on Zenodo; seven claims have no criterion, and the paper's default test at P < 0.05 was used; the link-grab-rois criterion counts mice where the paper counts regions; the paper should be listed on Zenodo 17260198 and 17307059; fig7e is `elsewhere` though the dataset holds the naive oxo-M recordings, which were run as a variant; the claims file's opening comment and the dataset description carry an earlier check's helper and result; and the version asked for was the newest, so no versions were compared.
+
+**summaries/zhai-2025-03.md**
+
+Most of the paper's main findings held up in this data: the opposite shifts in excitability and cortical synaptic strength of direct and indirect pathway spiny projection neurons between levodopa on- and off-states, the elevated acetylcholine release in the off-state, and the roles of M1 receptors and CDGI in this plasticity and in dyskinesia. One did not: the D1 antagonist SCH 23390 did not significantly reverse the higher dendritic excitability of on-state dSPNs (P = 0.066), as one cell's site pair is missing from the files. The spine density changes could not be tested, since the dataset holds only raw image stacks and the paper's semi-manual counting cannot be repeated. The synaptic results rest on a stand-in event detector.

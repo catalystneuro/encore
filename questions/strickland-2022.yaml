@@ -1,0 +1,67 @@
+# Questions from attempt strickland-2022-01 (author-revise-1, 2026-11-13) about the claims file
+# claims/strickland-2022.yaml. Each was raised by the round-1 verifier and is asked under
+# docs/protocol.md, "Hand over for verification"; the claims are tested as written.
+questions:
+- claim: fig4b-phasic-network
+  asked: 2026-11-13
+  question: >-
+    The network part of this criterion, and of fig4b-tonic-network, takes the mean pairwise Pearson
+    correlation of the 80-value cluster profiles. The criterion for fig2e-cue-subnetwork, which rests
+    on the same Methods passage, runs both r and r squared because the Methods write "Pearson's
+    correlation coefficient (R2)". Should these two criteria also allow r squared? With r the mean
+    within k1 to k3 is -0.329 against 0.008 with k4 to k11, and within k6 to k9 -0.250 against
+    0.000, because k3 is anticorrelated with k1 and k2 (r = -0.85, -0.74), and k6 and k9 are
+    anticorrelated with k7 and k8 (k6 with k7 r = -0.88, k9 with k8 r = -0.79). With r squared the means are 0.539 against 0.076 and
+    0.505 against 0.110. outcomeAnalysis.m computes r (line 763) and plots its square (line 770), and
+    Fig. 4d is that plot.
+  passage: >-
+    Supplementary Methods, Correlated cluster firing, "The result was a 21 x 21 matrix of the
+    Pearson's correlation coefficient (R2) for each cluster comparison ... Correlated cluster firing
+    was also performed for the outcome period, for which cluster outcome firing was organized into an
+    1812 single unit x 80 column matrix". Results, paragraph 10, "Cluster-cluster firing correlations
+    revealed k1-k3 formed a phasic outcome network (Fig. 4d ...)" and "revealed k6-k9 formed a tonic
+    outcome network (Fig. 4d)".
+  why: >-
+    Every other part of both criteria holds under L1, so the coefficient decides the outcome. With r
+    both claims are partially reproduced; with r squared both would be reproduced.
+- claim: fig5e-no-anatomical-bias
+  asked: 2026-11-13
+  question: >-
+    The criterion's threshold, 4.48 points, is the largest absolute differential of Source Data Fig.
+    5e right, and that sheet is computed with phasic read as k1 to k5 (p-b). Under p-b the test
+    therefore passes whenever the data match Source Data, which they do exactly here, so it cannot
+    detect a bias. Should the threshold come from a reference that does not use the quantity being
+    tested, such as the differentials with the network labels permuted among units, and should the
+    claim be judged on the phasic network the Results define (k1 to k3, n = 265, p-a)? Under p-a the
+    largest differential is 9.82 (PMnR), above 1.5 x 4.48. With labels permuted 1000 times the 95th
+    percentile of the largest differential is 5.88 under p-a, which 9.82 exceeds in all but 0.001 of
+    permutations, and 4.64 under p-b, which 4.48 reaches in 0.058.
+  passage: >-
+    Results, paragraph 13, "Anatomical biases for phasic and tonic outcome network neurons were absent
+    (Fig. 5e)." Results, paragraph 10, "Cluster-cluster firing correlations revealed k1-k3 formed a
+    phasic outcome network". Source Data Fig. 5e left, row "1_3", holds 679 units, the size of k1 to
+    k5. The paper gives no test or threshold for Fig. 5e.
+  why: >-
+    Under p-b the claim is reproduced by construction; under p-a it is not reproduced. The attempt
+    judges on p-b, the paper's own computation for the figure, as the rule for claims of absence
+    asks, so a different threshold or reading could change the outcome.
+- claim: fig3c-subnetwork-lesion
+  asked: 2026-11-13
+  question: >-
+    The criteria for fig3c and fig3d compare PC weights between lesions (PC1's mean behaviour weight
+    after the subnetwork lesion against the intact value and against the supranetwork lesion, PC2's
+    probability weight against the intact value). PCA weights are unit-norm, so they carry the shape
+    of each PC and not its size, while the Results speak of signaling "left intact", "reduced" and
+    "diminished". Should these comparisons use loadings (weights times the square root of the PC's
+    variance), or weights times the percent variance? With the script's lesion (s-c) the mean PC1
+    behaviour weight is 0.264 after the subnetwork lesion against 0.268 after the supranetwork lesion,
+    so fig3c fails one part. With loadings it is 0.709 against 0.680 (intact 0.756), and the PC2
+    probability loading in the first cue second falls from 0.479 to 0.335, so every part holds.
+  passage: >-
+    Results, paragraph 8, "Lesioning the subnetwork left sustained behavior signaling intact (Fig. 3c,
+    PC1, middle), but reduced threat probability signaling, most apparent at cue onset (Fig. 3c, PC2,
+    bottom). By contrast, lesioning the supranetwork diminished sustained behavior signaling (Fig. 3d,
+    PC1, middle)".
+  why: >-
+    fig3c-subnetwork-lesion is partially reproduced on weights and would be reproduced on loadings;
+    fig3d-supranetwork-lesion is reproduced either way.

@@ -1,301 +1,594 @@
-# 000218 · author-revise-2 · run 38996541646
+# tingley-2019 · author-revise-2 · run 44402460427
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ======; cat transcripts/000218/verifier-2-report.md; ls entries/000218-tingley-2019 entries/000218-tingley-2019/*
+date -u; ls; ls entries/tingley-2019 transcripts/tingley-2019 questions 2>/dev/null; cat transcripts/tingley-2019/verifier-2-report.md
 ```
 
 ```
+Wed Nov 18 21:38:05 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+[... 267 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat docs/protocol.md | head -c 60000
+```
+
+```
+<persisted-output>
+Output too large (41.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/680a9361-0c66-40c9-8808-c6f6363d81b8/tool-results/boq243gp6.txt
+
+Preview (first 2KB):
 # Protocol for an attempt
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+Version: `pilot-16`. Record this version in the attempt's provenance.
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
+This is what agents, or people, do to attempt a target and deposit the
+result. A target is a dataset in a public archive and a paper it names. How
+each archive's datasets are named, versioned and read is in
+[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
+An attempt has three roles, each a separate run with a separate context:
 
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 408 more lines not kept]
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dataset's data.
+- The **author** tests the claims on the dataset. It reads the paper to
+[... 19 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep 000218; cat attempts/000218-tingley-2019-01.yaml; cat entries/000218-tingley-2019/README.md
+ls attempts | grep tingley; ls attempts/tingley-2019-02 2>/dev/null; find attempts -path '*tingley-2019*' | head
 ```
 
 ```
-<persisted-output>
-Output too large (42.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/412fc1a0-354c-432d-a2ab-ac0ca02d900f/tool-results/bg5p0jiol.txt
-
-Preview (first 2KB):
-000218-tingley-2019-01.yaml
-schema_version: 1
-id: 000218-tingley-2019-01
-dandiset: "000218"
-dandiset_version: 0.250624.0439
-paper: doi:10.1016/j.neuron.2019.10.012
-date: 2026-10-16
-entry: 000218-tingley-2019
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-7
-[... 33 more lines not kept]
+tingley-2018-01.yaml
+tingley-2018-02.yaml
+tingley-2019-02.yaml
+tingley-2021-01.yaml
+attempts/tingley-2019-02.yaml
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "attempts/000218-tingley-2019-01.yaml"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/680a9361-0c66-40c9-8808-c6f6363d81b8/tool-results/boq243gp6.txt"
 }
 ```
 
 ```
-1	schema_version: 1
-2	id: 000218-tingley-2019-01
-3	dandiset: "000218"
-4	dandiset_version: 0.250624.0439
-5	paper: doi:10.1016/j.neuron.2019.10.012
-6	date: 2026-10-16
-7	entry: 000218-tingley-2019
-8	provenance:
-9	  kind: agent
-10	  accountable:
-11	    name: CatalystNeuro
-12	  agent:
-13	    harness: Claude Code (GitHub Actions)
-14	    model: claude-opus-5-5
-15	    protocol: pilot-7
-16	inputs:
-17	- what: The detector bz_FindRipples.m and the EMG estimate bz_EMGFromLFP.m, read for the parameters
-18	    the Methods leave open (zero-phase filtering, 11-sample smoothing, 30 ms merging, the trough as
-19	    the event time, EMG exclusion at 0.9, the EMG window). No data are taken from it.
-20	  source: https://github.com/buzsakilab/buzcode at commit 5981194ee764436383269d5fbe09980ae852c6fe
-[... 658 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000218-tingley-2019; python -c "
-import json;nb=json.load(open('reproduce_tingley_2019.ipynb'))
-for i,c in enumerate(nb['cells']):
-  s=''.join(c['source']); print('=====',i,c['cell_type'],c.get('metadata',{}).get('tags'),len(s)); print(s[:300])
-"; wc -l ls_hfo.py; ls ../../executed/000218-tingley-2019/; cat entry.yaml
-```
-
-```
-===== 0 markdown None 3638
-# Reproducing Tingley and Buzsaki (2019) from dandiset 000218
-
-Paper: Tingley D, Buzsaki G (2019). Routing of hippocampal ripples to subcortical structures via the
-lateral septum. Neuron 105, 138-149. [doi:10.1016/j.neuron.2019.10.012](https://doi.org/10.1016/j.neuron.2019.10.012).
-The full text was
-===== 1 code None 334
-import collections
-import time
-import warnings
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from scipy import stats
-
-import ls_hfo
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_columns", 30)
-[... 503 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000218-tingley-2019; python -c "
-import json;nb=json.load(open('reproduce_tingley_2019.ipynb'))
-for i in [0,2,5,6,7,15,16,17,18,19,24,25,59,60,61,67,70,76]:
-  c=nb['cells'][i]; print('=====',i); print(''.join(c['source']))
-"; cat README.md
-```
-
-```
-<persisted-output>
-Output too large (31KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/412fc1a0-354c-432d-a2ab-ac0ca02d900f/tool-results/bdq5ey01c.txt
-
-Preview (first 2KB):
-/bin/bash: line 5: cd: entries/000218-tingley-2019: No such file or directory
-===== 0
-# Reproducing Tingley and Buzsaki (2019) from dandiset 000218
-
-Paper: Tingley D, Buzsaki G (2019). Routing of hippocampal ripples to subcortical structures via the
-lateral septum. Neuron 105, 138-149. [doi:10.1016/j.neuron.2019.10.012](https://doi.org/10.1016/j.neuron.2019.10.012).
-The full text was used: the accepted author manuscript in PubMed Central (PMC6952543). Its
-supplementary figures were not available, so claims on Figures S1 to S5 rest on the main text.
-
-Dandiset: [DANDI:000218 version 0.250624.0439](https://dandiarchive.org/dandiset/000218/0.250624.0439),
-98 NWB files (1.5 TB) from 6 rats, streamed from the archive. The paper cites no version (it says
-the data would go to CRCNS). There are two published versions, 0.220131.1608 and 0.250624.0439;
-they hold the same 98 files with the same blob ids (checked below) and differ only in contributor
-metadata, so the most recent one is pinned.
-
-The files hold the LFP at 1250 Hz on every channel, sorted units with a region label in most files,
-[... 16 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/412fc1a0-354c-432d-a2ab-ac0ca02d900f/tool-results/bdq5ey01c.txt"
-}
-```
-
-```
-1	/bin/bash: line 5: cd: entries/000218-tingley-2019: No such file or directory
-2	===== 0
-3	# Reproducing Tingley and Buzsaki (2019) from dandiset 000218
+1	# Protocol for an attempt
+2	
+3	Version: `pilot-16`. Record this version in the attempt's provenance.
 4	
-5	Paper: Tingley D, Buzsaki G (2019). Routing of hippocampal ripples to subcortical structures via the
-6	lateral septum. Neuron 105, 138-149. [doi:10.1016/j.neuron.2019.10.012](https://doi.org/10.1016/j.neuron.2019.10.012).
-7	The full text was used: the accepted author manuscript in PubMed Central (PMC6952543). Its
-8	supplementary figures were not available, so claims on Figures S1 to S5 rest on the main text.
-9	
-10	Dandiset: [DANDI:000218 version 0.250624.0439](https://dandiarchive.org/dandiset/000218/0.250624.0439),
-11	98 NWB files (1.5 TB) from 6 rats, streamed from the archive. The paper cites no version (it says
-12	the data would go to CRCNS). There are two published versions, 0.220131.1608 and 0.250624.0439;
-13	they hold the same 98 files with the same blob ids (checked below) and differ only in contributor
-14	metadata, so the most recent one is pinned.
-15	
-16	The files hold the LFP at 1250 Hz on every channel, sorted units with a region label in most files,
-17	sleep states, epochs and trials. They hold no detected events. LS high-frequency oscillations
-18	(HFOs) and CA1 ripples are detected here from the LFP, following the Methods and the buzcode
-19	detector they name (see `ls_hfo.py`). The paper's own code repository holds no analysis of this
-20	paper apart from the network model of Figure 8.
-[... 496 more lines not kept]
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 694 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -A25 "id: fig5d-lag" claims/000218/*.yaml; grep -n -B2 -A25 "id: fig1c-hfo-each-animal" claims/000218/*.yaml | head -50; grep -n -A20 "id: fig7e-ca1-depth" claims/000218/*.yaml; grep -n "def assets\|def run_all\|ElectricalSeries\|raw\|acquisition" entries/000218-tingley-2019/ls_hfo.py | head -40
+wc -l attempts/tingley-2019-02.yaml claims/tingley-2019.yaml questions/tingley-2019.yaml entries/tingley-2019/*; cat questions/tingley-2019.yaml; cat entries/tingley-2019/README.md entries/tingley-2019/entry.yaml
 ```
 
 ```
-276:- id: fig5d-lag
-277-  statement: LS HFOs are reliably coupled to CA1 ripples, with a median peak-to-peak lag of
-278-    6.4 +- 4.2 ms, CA1 leading LS.
-279-  source: Results, sixth paragraph; Figure 5D
-280-  expected:
-281-    quantity: median lag of LS HFO after CA1 ripple
-282-    value: 6.4
-283-    tolerance: 4.2
-284-    unit: ms
-285-  criterion: Tolerance is the paper's stated spread. The lag is the LS HFO time minus the time
-286-    of the nearest CA1 ripple within +-50 ms. Readings (a) the median over recordings of
-287-    per-recording medians, (b) the median over all pairs pooled. Reproduced when the lag is
-288-    within tolerance under one reading and the CA1-LS cross-correlogram peaks within +-25 ms
-289-    above the mean of its flanks (100 to 200 ms) by more than 3 SD of the flanks, pooled over
-290-    recordings.
-291-- id: fig5e-state-coupling
-292-  statement: HPC-LS coupling is stronger in NREM sleep than in waking; the fraction of LS HFOs
-293-    within +-25 ms of a CA1 ripple is 0.3 in NREM and 0.15 in WAKE (P < 6.6e-6).
-294-  source: Results, sixth paragraph; Figure 5E and inset
-295-  expected:
-[... 58 more lines not kept]
+851 attempts/tingley-2019-02.yaml
+   939 claims/tingley-2019.yaml
+    27 questions/tingley-2019.yaml
+    13 entries/tingley-2019/README.md
+    32 entries/tingley-2019/entry.yaml
+   445 entries/tingley-2019/fig7e_tingley_2019.ipynb
+   789 entries/tingley-2019/lfp_tingley_2019.ipynb
+  1808 entries/tingley-2019/reproduce_tingley_2019.ipynb
+     6 entries/tingley-2019/requirements.in
+   890 entries/tingley-2019/requirements.lock.txt
+   200 entries/tingley-2019/shanks_tingley_2019.ipynb
+   420 entries/tingley-2019/tingley2019.py
+  6420 total
+dandiset: "000218"
+paper: doi:10.1016/j.neuron.2019.10.012
+questions:
+- claim: fig7e-ca1-spikes
+  asked: 2026-11-18
+  question: The criterion counts a neuron when a two-sided t-test of the shuffled MSEs against the
+    actual MSE gives p < 0.05, which uses the standard error of the mean of the 100 shuffles. The
+[... 65 more lines not kept]
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-cd entries/000218-tingley-2019; sed -n 1,140p ls_hfo.py; grep -n "meta\[\|\"behavior\"\|def file_meta\|def load_meta\|h5\[" ls_hfo.py | head -60
-```
-
-```
-"""Loading and measures for dandiset 000218 (Tingley and Buzsaki 2019, lateral septum HFOs).
-
-The files hold LFP at 1250 Hz on every channel, sorted units with a region label (in most
-files), sleep states, epochs and trials. They hold no detected events, so LS high-frequency
-oscillations (HFOs) and CA1 ripples are detected here from the LFP.
-
-Where the parameters come from:
-
-- Event detection follows the paper's Methods (Ripple detection): 120-200 Hz Butterworth
-  band-pass of order 3, normalized squared signal, peak threshold 5 SD, start and stop at
-  2 SD, durations 15 to 250 ms. What the Methods leave open is taken from the code they
-  name, bz_FindRipples.m of buzcode at commit 5981194ee764436383269d5fbe09980ae852c6fe
-  (15 October 2019): zero-phase filtering (filtfilt), an 11-sample moving average of the
-  squared signal, z-scoring over the whole recording, merging events less than 30 ms
-  apart, the event time taken at the trough of the filtered signal, amplitude as the
-  peak normalized squared signal, and exclusion of events whose LFP-derived EMG at the
-  event start exceeds 0.9.
-- The EMG is computed as in bz_EMGFromLFP.m (same commit): the mean pairwise zero-lag
-  correlation of the 300-600 Hz band between channels on different shanks, in windows of
-  +-0.1 s every 0.1 s (the sampling bz_FindRipples asks for). One channel per shank is
-[... 136 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000218-tingley-2019; sed -n 150,260p ls_hfo.py
+```json
+{
+ "file_path": "attempts/tingley-2019-02.yaml"
+}
 ```
 
 ```
-return [(off, np.frombuffer(zlib.decompress(buf[bo - a:bo - a + sz]), dtype="<i2").reshape(ct, cc))
-                for off, bo, sz in group]
-
-    from concurrent.futures import ThreadPoolExecutor
-    with ThreadPoolExecutor(threads) as ex:
-        for res in ex.map(get, groups):
-            for (rr, c0), blk in res:
-                a, b = max(rr, r0), min(rr + ct, r1)
-                for j, c in enumerate(cols):
-                    if c0 <= c < c0 + cc:
-                        out[a - r0:b - r0, j] = blk[a - rr:b - rr, c - c0]
-    return out
-
-
-# --- metadata --------------------------------------------------------------------
-
-def metadata(f):
-    """Everything but the LFP samples: electrodes, units, states, epochs, trials."""
-    m = {"subject": _s(f["general/subject/subject_id"][()]),
-         "session_id": _s(f["general/session_id"][()]) if "general/session_id" in f else None}
-[... 90 more lines not kept]
+1	schema_version: 3
+2	id: tingley-2019-02
+3	datasets:
+4	- archive: dandi
+5	  id: 000218
+6	  version: 0.261110.1911
+7	  doi: 10.48324/dandi.000218/0.261110.1911
+8	  relation: primary
+9	paper: doi:10.1016/j.neuron.2019.10.012
+10	date: '2026-11-18'
+11	entry: tingley-2019
+12	provenance:
+13	  kind: agent
+14	  accountable:
+15	    name: CatalystNeuro
+16	  agent:
+17	    harness: Claude Code
+18	    model: claude-opus-5-5
+19	    protocol: pilot-16
+20	  runner:
+[... 832 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1,60p tools/entry.py | head -80; cat entries/000218-tingley-2019/requirements.in; ls .venv* 2>/dev/null | head; which python; python -c "import dandi; print(dandi.__version__)"
+cd entries/tingley-2019; python - <<'EOF'
+import json
+nb=json.load(open('reproduce_tingley_2019.ipynb'))
+for i,c in enumerate(nb['cells']):
+    s=''.join(c['source'])
+    print(f"--- [{i}] {c['cell_type']} {c.get('metadata',{}).get('tags','')} len={len(s)}")
+    print(s[:300])
+EOF
 ```
 
 ```
-Exit code 1
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
+--- [0] markdown  len=3394
+# Reproducing Tingley and Buzsaki (2019) from DANDI:000218: spikes and events
+
+Tingley D. and Buzsaki G. (2019). Routing of hippocampal ripples to subcortical structures via the lateral septum. Neuron 105, 138-149. doi:10.1016/j.neuron.2019.10.012.
+
+Dataset: DANDI:000218, version 0.261110.1911 (doi:
+--- [1] markdown  len=199
+## Setup
+Every file of the pinned version is streamed; from each, the spikes, units, event tables, sleep states,
+trials and electrode flags are read into memory. The LFP is not read in this notebook.
+--- [2] code  len=682
+import zlib, time, resource, collections, warnings
+import numpy as np, pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+import tingley2019 as T
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+pd.set_option("display.width", 200); pd.set_option("display.max_columns", 30)
+--- [3] markdown  len=218
+## Data check
+[... 372 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; python - <<'EOF'
+import json
+nb=json.load(open('reproduce_tingley_2019.ipynb'))
+for i in [11,44,45,46,47,72]:
+    print(f"=== [{i}]"); print(''.join(nb['cells'][i]['source']))
+EOF
+```
+
+```
+=== [11]
+**Result: dataset-composition, counts from spikes and tables.** Six animals have LS units (DT1, DT2, DT5, DT7, DT8, DT9), as in the paper. All LS units number 2551 (reading b; outside 1989 +- 198.9); reading (a) is in the LFP notebook. 48 recordings hold LS and hippocampal units: by the units' label 38 CA1 (within 37 +- 3.7) and 10 CA3 (outside 25 +- 2.5); by the `ca3_channel` flag 29 and 19, both outside. LS HFO rates come from 77 recordings with LSRipples and sleep states (80 with any LS table; 89 +- 8.9 needs at least 80.1), CA1 ripple rates from 47 with CA1Ripples (outside 53 +- 5.3) or 55 with ripplesALL as well (within). Recordings hold 8 to 74 LS units, mean 31.1 +- 15.5 (paper 8 to 74, 29.6 +- 15.5). The outcome is decided with reading (a) of the LS neuron count, in the LFP notebook.
+=== [44]
+## Figure 4: LS pairs during HFOs and on the maze
+Common to fig4b-pre-post-unchanged, fig4b-hfo-above-behav, fig4-sessions-few-change, fig4c-temporal-bias and fig4d-compression.
+Recordings with trials (for the epochs; see the helper's docstring for the PRE / BEHAV / POST assumption), LSRipples and LS
+units on at least two shanks. Pairs of LS neurons on different shanks. Spikes during LS HFOs (start to stop) in PRE and in
+POST; BEHAV spikes inside trials (reading iv-a) or anywhere from the first trial to the last (iv-b). CCGs in 1 ms bins over
++-200 ms. Inclusion (i): (a) the CCG holds more than 5 spike pairs within +-200 ms, (b) each neuron has more than 5 spikes
+with a partner spike within 200 ms; in every epoch.
+=== [45]
+def partner_counts(a, b, w=0.2):
+    """Spikes of a with a spike of b within w, and of b with one of a."""
+    if len(a) == 0 or len(b) == 0: return 0, 0
+    def k(x, y):
+        j = np.clip(np.searchsorted(y, x), 1, len(y) - 1) if len(y) > 1 else np.zeros(len(x), int)
+        d = np.minimum(np.abs(y[j] - x), np.abs(y[np.maximum(j - 1, 0)] - x))
+        return int((d <= w).sum())
+    return k(a, b), k(b, a)
+def epoch_spikes(s, units, kind, ev
+[... 134 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls -la executed/tingley-2019/; python - <<'EOF'
+import json
+nb=json.load(open('executed/tingley-2019/reproduce_tingley_2019.ipynb'))
+def out(i):
+    c=nb['cells'][i]
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text'])[:6000])
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:3000])
+for i in [8,45,49]:
+    print("=== ",i); out(i)
+EOF
+```
+
+```
+total 808
+drwxr-xr-x 3 runner runner   4096 Nov 18 21:21 .
+drwxr-xr-x 3 runner runner   4096 Nov 18 21:37 ..
+-rw-r--r-- 1 runner runner    818 Nov 18 21:21 .clean-run.json
+drwxr-xr-x 5 runner runner   4096 Nov 18 19:31 .venv
+-rw-r--r-- 1 runner runner  72162 Nov 18 21:06 fig7e_tingley_2019.ipynb
+-rw-r--r-- 1 runner runner 167523 Nov 18 20:42 lfp_tingley_2019.ipynb
+-rw-r--r-- 1 runner runner 548346 Nov 18 19:50 reproduce_tingley_2019.ipynb
+-rw-r--r-- 1 runner runner    483 Nov 18 21:21 result.json
+-rw-r--r-- 1 runner runner  13402 Nov 18 21:21 shanks_tingley_2019.ipynb
+===  8
+DT1 (DT1-rLS-20150723-1584um):
+  electrodes: {'ca1_channel': (34,), 'ca3_channel': (34,), 'channel_id': (34,), 'group': (34,), 'group_name': (34,), 'id': (34,), 'lfp_channel': (34,), 'location': (34,), 'ls_channel': (34,), 'ref_channel': (34,), 'region': (34,), 'ripple_detection_channel': (34,), 'shank_electrode_number': (34,), 'spike_group': (34,), 'theta_channel': (34,)}
+    location: 2 distinct values, e.g. ['lateral septal nucleus', 'unknown']
+  units: {'cluster': (74,), 'electrode_group': (74,), 'electrodes': (287,), 'electrodes_index': (74,), 'id': (74,), 'max_waveform_channel': (74,), 'raw_waveform': (74, 32), 'region': (74,), 'shank': (74,), 'spike_times': (876627,), 'spike_times_index': (74,), 'unit_name': (74,)}
+  extracellular_ephys groups: ['group1', 'group2', 'group3', 'group4', 'group5', 'group6', 'group7', 'group8', 'no_spike_group']
+
+DT2 (DT2-rPPC-rCCG-3036um-362um-201):
+  electrodes: {'ca1_channel': (128,), 'ca3_channel': (128,), 'channel_id': (128,), 'group': (128,), 'group_name': (128,), 'id': (128,), 'lfp_channel': (128,), 'location': (128,), 'ls_channel': (128,), 'ref_channel': (128,), 'region': (128,), 'ripple_detection_channel': (128,), 'shank_electrode_number': (128,), 'spike_group': (128,), 'theta_channel': (128,)}
+
+[... 80 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "fig4b-pre-post-unchanged" -A60 claims/tingley-2019.yaml | head -120; grep -n "dataset-composition" -A40 claims/tingley-2019.yaml | head -60
+```
+
+```
+332:- id: fig4b-pre-post-unchanged
+333-  statement: The co-activation of LS neuron pairs during HFOs (excess correlation) is not
+334-    modulated by waking experience on a familiar maze (PRE against POST, rank-sum P = 0.36).
+335-  source: Results, paragraph 3; Figure 4A, B and legend; STAR Methods, Excess correlation analysis
+336-  quote: It also suggested that the degree of co-activation observed is not modulated by waking
+337-    experience in a familiar environment (Figure 4B; rank-sum test; P = 0.36; PRE vs POST)
+338-  statistics:
+339-  - test: rank-sum test
+340-    p: 0.36
+341-    n: 7,172 pairs of LS neurons, 53 sessions
+342-  expected:
+343-    quantity: LS neuron pairs across different shanks
+344-    value: 7172
+345-    tolerance: 717.2
+346-  criterion: A claim of absence, judged on the paper's test, a rank-sum test of PRE against POST
+347-    excess correlations over all pairs, at p < 0.05 (the paper states no level for this test;
+348-    0.05 is the level of its Figure 7 and Figure S2 tests, and the stricter of the two levels it
+349-    uses). From the Methods and Results. Pairs of LS
+350-    neurons on different shanks; three CCGs per pair from spikes during LS HFOs in PRE, during
+351-    maze traversal (BEHAV) and during LS HFOs in POST; 1 ms bins over +-200 ms; each CCG
+[... 160 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls paper; grep -rn -i "more than 5 spikes\|within 200 milli" paper/*.txt paper/*.md 2>/dev/null | head;
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i ".\{700\}more than 5 spikes.\{400\}" paper/10.1016-j.neuron.2019.10.012.txt
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+nb=json.load(open('executed/tingley-2019/reproduce_tingley_2019.ipynb'))
+for i in [2,4]:
+    c=nb['cells'][i]; print(''.join(c['source']))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text'])[:1500])
+EOF
+grep -n "def " entries/tingley-2019/tingley2019.py | head -60
+```
+
+```
+import zlib, time, resource, collections, warnings
+import numpy as np, pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+import tingley2019 as T
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+pd.set_option("display.width", 200); pd.set_option("display.max_columns", 30); pd.set_option("display.max_rows", 200)
+KEY = "tingley-2019"
+def seed_of(claim): return zlib.crc32(f"{KEY}/{claim}".encode())
+t0 = time.time()
+A = T.list_assets()
+S = T.load_all(A, workers=8)
+print(f"{len(S)} files of dandiset {T.DANDISET} version {T.VERSION} loaded in {time.time()-t0:.0f} s; "
+      f"peak memory {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6:.2f} GB")
+98 files of dandiset 000218 version 0.261110.1911 loaded in 165 s; peak memory 2.42 GB
+
+def ls_ev(s, fallback=False):
+    """The lab's main LS HFO detection (LSRipples); with fallback, the earlier ls_ripples, then ripples_ls."""
+    for k in (["LSRipples", "ls_ripples", "ripples_ls"] if fallback else ["LSRipples"]):
+        if k in s.events and len(s.events[k]):
+[... 66 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "entries/tingley-2019/tingley2019.py",
+ "offset": 80,
+ "limit": 200
+}
+```
+
+```
+80	    event_desc: dict = field(default_factory=dict)
+81	    sleep: pd.DataFrame = None
+82	    trials: pd.DataFrame = None
+83	    electrodes: pd.DataFrame = None
+84	    units_desc: str = ""
+85	
+86	    @property
+87	    def has_trials(self):
+88	        return self.trials is not None and len(self.trials) > 0
+89	
+90	    def units_in(self, regions):
+91	        return np.flatnonzero(np.isin(self.unit_region, regions))
+92	
+93	    def epochs(self, behav="span"):
+94	        """PRE, BEHAV, POST intervals (see the module docstring for the assumption). behav='span'
+95	        gives BEHAV as one interval, first trial start to last trial stop; behav='trials' gives the
+96	        trial intervals themselves."""
+97	        if not self.has_trials:
+98	            return None
+99	        t0, t1 = float(self.trials.start_time.min()), float(self.trials.stop_time.max())
+[... 180 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd entries/tingley-2019; source ../../executed/tingley-2019/.venv/bin/activate 2>/dev/null; which python; mkdir -p $TMPDIR/dev; cat > $TMPDIR/dev/load.py <<'EOF'
+import sys, time, pickle, resource
+sys.path.insert(0, 'entries/tingley-2019')
+import tingley2019 as T
+A = T.list_assets()
+print(A.subject.value_counts())
+sub = A[A.subject.isin(["DT5", "DT9"])].head(10)
+t0=time.time(); S = T.load_all(sub, workers=8); print(time.time()-t0, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+pickle.dump(S, open(sys.argv[1], 'wb'))
+EOF
+python $TMPDIR/dev/load.py $TMPDIR/dev/S.pkl
+```
+
+```
+Wed Nov 18 21:39:30 UTC 2026
+executed/tingley-2019/.venv/bin/python
+subject
+DT5    20
+DT7    20
+DT8    17
+DT9    16
+DT2    13
+DT1    12
+Name: count, dtype: int64
+15.434922933578491 0.681112
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; source ../../executed/tingley-2019/.venv/bin/activate; cat > $TMPDIR/dev/var.py <<'EOF'
+import sys, time, pickle, json, collections
+sys.path.insert(0, 'entries/tingley-2019')
+import numpy as np, pandas as pd
+from scipy import stats
+import tingley2019 as T
+S = pickle.load(open(sys.argv[1], 'rb'))
+nb = json.load(open('reproduce_tingley_2019.ipynb'))
+src4 = ''.join(nb['cells'][4]['source']).split("HPC = list")[0]
+exec(src4)
+exec(''.join(nb['cells'][45]['source']))
+exec(open(sys.argv[2]).read())
+EOF
+cat > $TMPDIR/dev/cell.py <<'EOF'
+# Variant not named in the claims file (verifier round 2; asked of a reader in questions/tingley-2019.yaml): the inclusion
+# rule applied to all of each epoch's spikes, PRE and POST included, while the CCGs are still those of the spikes during LS HFOs.
+# STAR Methods, Excess correlation analysis: CCGs "for each epoch of the recording sessions (PRE, BEHAV, and POST)"; "Only
+# spike pairs where both neurons fired more than 5 spikes within 200 milliseconds of each other were included."
+def pair_counts_200(a, b, w=0.2):
+    """Spike pairs of a and b within +-w (inclusion a over a whole epoch)."""
+    if len(a) == 0 or len(b) == 0: return 0
+    return int((np.searchsorted(b, a + w, side="right") - np.searchsorted(b, a - w, side="left")).sum())
+t0 = time.time()
+for bm, lst in PAIRS.items():
+    for s, P in lst:
+        units = s.units_in(["ls"]); ep = s.epochs("trials" if bm == "trials" else "span")
+        wa, wb = P["inc_a_ep"]["BEHAV"].copy(), P["inc_b_ep"]["BEHAV"].copy()
+        for k in ["PRE", "POST"]:
+            es = T.restrict([s.spikes[u] for u in units], ep[k])
+            wa &= np.array([pair_counts_200(es[i], es[j]) > 5 for i, j in zip(P["I"], P["J"])], bool)
+            pc = np.array([partner_counts(es[i], es[j]) for i, j in zip(P["I"], P["J"])]).reshape(-1, 2)
+            wb &= (pc[:, 0] > 5) & (pc[:, 1] > 5)
+        P["inc_wa"], P["inc_wb"] = wa, wb
+print(f"Whole-epoch inclusion computed in {time.time()-t0:.0f} s")
+rows = []
+for bm, lst in PAIRS.items():
+    for inc in ["wa", "wb"]:
+        for kind in ["sd", "fwhm"]:
+            for nm in ["raw", "sqrt"]:
+                ex = {ep: [] for ep in ["PRE", "BEHAV", "POST"]}; nses = 0; sess_sig = [0, 0, 0]
+                for s, P in lst:
+                    m = P[f"inc_{inc}"]; nses += m.sum() > 0
+                    e = {}
+                    for ep in ex:
+                        c = P["ccg"][ep][m]
+                        if nm == "sqrt": c = c / P["norm"][ep][m][:, None]
+                        e[ep] = excess(c, kind) if len(c) else np.array([]); ex[ep].append(e[ep])
+                    if len(e["PRE"]) > 1 and stats.mannwhitneyu(e["PRE"], e["POST"]).pvalue < 0.01:
+                        sess_sig[0] += 1; sess_sig[1] += np.median(e["PRE"]) < np.median(e["POST"]); sess_sig[2] += np.median(e["PRE"]) > np.median(e["POST"])
+                pre, beh, post = (np.concatenate(ex[k]) for k in ["PRE", "BEHAV", "POST"])
+                mw = stats.mannwhitneyu(pre, post)
+                rows.append(dict(inclusion=inc[1] + " whole", kernel=kind, norm=nm, behav=bm, pairs=len(pre), sessions=int(nses),
+                                 p_PRE_POST=mw.pvalue, effect_r=(mw.statistic / (len(pre) * len(post)) - 0.5) * 2,
+                                 p_PRE_gt_BEHAV=stats.mannwhitneyu(pre, beh, alternative="greater").pvalue,
+                                 p_POST_gt_BEHAV=stats.mannwhitneyu(post, beh, alternative="greater").pvalue,
+                                 sessions_differ=sess_sig[0], PRE_below=sess_sig[1], PRE_above=sess_sig[2]))
+F4W = pd.DataFrame(rows)
+print(F4W.to_string(float_format=lambda v: f"{v:.3g}"))
+print(f"\nPairs per reading {F4W.pairs.min()} to {F4W.pairs.max()} (paper 7172 +- 717.2), sessions {F4W.sessions.min()} to {F4W.sessions.max()} (paper 53); "
+      f"PRE and POST differ (rank-sum p < 0.05) in {int((F4W.p_PRE_POST < 0.05).sum())} of {len(F4W)} readings "
+      f"({int((F4W[F4W.norm == 'sqrt'].p_PRE_POST < 0.05).sum())} of {int((F4W.norm == 'sqrt').sum())} normalized)")
+EOF
+time python $TMPDIR/dev/var.py $TMPDIR/dev/S.pkl $TMPDIR/dev/cell.py
+```
+
+```
+Recordings with trials, LSRipples and LS units on two or more shanks: 7 (Counter({'DT5': 7}))
+CCGs computed in 4 s
+   inclusion kernel  norm   behav  pairs  sessions  PRE_median  POST_median  BEHAV_median  p_PRE_POST  differ  effect_r
+0          a   fwhm   raw    span     62         4       0.301       0.3089        0.2303      0.8749   False  -0.01665
+1          a   fwhm   raw  trials     55         4      0.3039       0.3121        0.1383      0.8203   False  -0.02545
+2          a   fwhm  sqrt    span     62         4    0.005745     0.004745      0.000275      0.7662   False  -0.03122
+3          a   fwhm  sqrt  trials     55         4    0.006007     0.004907      0.000245      0.7333   False  -0.03802
+4          a     sd   raw    span     62         4      0.2705       0.2935        0.1899      0.3778   False  -0.09209
+5          a     sd   raw  trials     55         4      0.2709       0.3147         0.303      0.3541   False   -0.1028
+6          a     sd  sqrt    span     62         4    0.004292     0.005234     0.0002152      0.1281   False   -0.1587
+7          a     sd  sqrt  trials     55         4    0.004527     0.005372     0.0003779      0.1497   False   -0.1597
+8          b   fwhm   raw    span     47         4      0.3398       0.3274        0.1924      0.9037   False   0.01494
+9          b   fwhm   raw  trials     40         4      0.3332        0.328        0.1905      0.9578   False    0.0075
+10         b   fwhm  sqrt    span     47         4    0.006091     0.004907     0.0002483      0.9759   False -0.004074
+11         b   fwhm  sqrt  trials     40         4    0.006113     0.005004     0.0003142      0.8814   False     -0.02
+12         b     sd   raw    span     47         4      0.2974       0.3673        0.1158      0.3484   False   -0.1127
+13         b     sd   raw  trials     40         4      0.3109       0.3794        0.3644      0.2623   False   -0.1462
+14         b     sd  sqrt    span     47         4    0.004351     0.005438     0.000
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; source ../../executed/tingley-2019/.venv/bin/activate; python - <<'EOF'
+import os
+p=os.path.join(os.environ['TMPDIR'],'dev/cell.py')
+s=open(p).read()
+old=s[s.index("t0 = time.time()"):s.index("rows = []")]
+new='''t0 = time.time()
+WHOLE = {}
+for s, P in PAIRS["trials"]:
+    units = s.units_in(["ls"]); ep = s.epochs("trials"); wa = wb = np.ones(len(P["I"]), bool)
+    for k in ["PRE", "POST"]:
+        es = T.restrict([s.spikes[u] for u in units], ep[k])
+        wa = wa & np.array([pair_counts_200(es[i], es[j]) > 5 for i, j in zip(P["I"], P["J"])], bool)
+        pc = np.array([partner_counts(es[i], es[j]) for i, j in zip(P["I"], P["J"])]).reshape(-1, 2)
+        wb = wb & (pc[:, 0] > 5) & (pc[:, 1] > 5)
+    WHOLE[s.session] = wa, wb
+for bm, lst in PAIRS.items():
+    for s, P in lst:
+        P["inc_wa"] = WHOLE[s.session][0] & P["inc_a_ep"]["BEHAV"]; P["inc_wb"] = WHOLE[s.session][1] & P["inc_b_ep"]["BEHAV"]
+print(f"Whole-epoch inclusion computed in {time.time()-t0:.0f} s; pairs passing in PRE and POST: (a) {sum(v[0].sum() for v in WHOLE.values())}, "
+      f"(b) {sum(v[1].sum() for v in WHOLE.values())}, of {sum(len(v[0]) for v in WHOLE.values())} candidates")
+'''
+s=s.replace(old,new)
+s=s.replace('nses = 0; sess_sig = [0, 0, 0]','nses = 0; sess_sig = [0, 0, 0, 0]')
+s=s.replace('sess_sig[2] += np.median(e["PRE"]) > np.median(e["POST"])','sess_sig[2] += np.median(e["PRE"]) > np.median(e["POST"]); sess_sig[3] += np.median(e["PRE"]) == np.median(e["POST"])')
+s=s.replace('PRE_above=sess_sig[2]))','PRE_above=sess_sig[2], medians_equal=sess_sig[3],\n                                 zero_PRE=float(np.mean(pre == 0)), zero_POST=float(np.mean(post == 0))))')
+open(p,'w').write(s)
+EOF
+grep -n "PRE_above\|zero_" $TMPDIR/dev/cell.py; time python $TMPDIR/dev/var.py $TMPDIR/dev/S.pkl $TMPDIR/dev/cell.py 2>&1 | tail -22
+```
+
+```
+45:                                 sessions_differ=sess_sig[0], PRE_below=sess_sig[1], PRE_above=sess_sig[2], medians_equal=sess_sig[3],
+46:                                 zero_PRE=float(np.mean(pre == 0)), zero_POST=float(np.mean(post == 0))))
+Per animal, reading (a, sd, raw, trials): pairs, median PRE, median POST, rank-sum p
+  DT5: 55, 0.271, 0.315, 0.35
+Whole-epoch inclusion computed in 13 s; pairs passing in PRE and POST: (a) 3397, (b) 3384, of 3481 candidates
+   inclusion kernel  norm   behav  pairs  sessions  p_PRE_POST  effect_r  p_PRE_gt_BEHAV  p_POST_gt_BEHAV  sessions_differ  PRE_below  PRE_above  medians_equal  zero_PRE  zero_POST
+0    a whole     sd   raw  trials   2715         7       0.295   -0.0125               1                1                2          0          0              2     0.763      0.734
+1    a whole     sd  sqrt  trials   2715         7       0.285   -0.0128               1            0.977                2          0          0              2     0.763      0.734
+2    a whole   fwhm   raw  trials   2715         7       0.278    -0.013           0.999            0.997                0          0          0              0     0.763      0.734
+3    a whole   fwhm  sqrt  trials   2715         7       0.279   -0.0129           0.967            0.707                0          0          0              0     0.763      0.734
+4    b whole     sd   raw  trials   2619         7       0.371   -0.0109               1                1                2          0          0              2     0.762      0.735
+5    b whole     sd  sqrt  trials   2619         7       0.359   -0.0112               1            0.999                2          0          0              2     0.762      0.735
+6    b whole   fwhm   raw  trials   2619         7       0.272   -0.0133               1                1                0          0          0              0     0.762      0.735
+7    b whole   fwhm  sqrt  trials   2619         7       0.276   -0.0132        
+[... 14 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py --help 2>&1 | head -30; grep -n "stamp\|clean-run\|def cmd_run\|add_argument" tools/entry.py | head -50; cat executed/tingley-2019/.clean-run.json executed/tingley-2019/result.json
+```
+
+```
+usage: entry.py [-h] [--output-dir OUTPUT_DIR] [--timeout TIMEOUT]
+                [--max-minutes MAX_MINUTES] [--fresh] [--python PYTHON]
+                [--before BEFORE]
+                {lock,check,run,all,handover,upgrade-python,hash}
+                entry [entry ...]
+
+Lock, check and run one entry. This is the whole local workflow for a deposit.
 
     python tools/entry.py lock  entries/<name>   # pin the environment
     python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
     python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
     python tools/entry.py all   entries/<name>   # check, then run
     python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
@@ -305,320 +598,204 @@ requirements.lock.txt with every version pinned.
 
 `check` validates entry.yaml, and the claims and attempt files that mention
 the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-[... 55 more lines not kept]
+[... 92 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-curl -s "https://api.dandiarchive.org/api/dandisets/?search=Tingley&page_size=50" | python -c "
-import json,sys; d=json.load(sys.stdin); print(d['count'])
-for x in d['results']: print(x['identifier'], (x.get('most_recent_published_version') or x['draft_version'])['name'][:90])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000218-tingley-2019/ls_hfo.py",
- "old_string": "    m[\"lfp_conversion\"] = float(d.attrs[\"conversion\"])",
- "new_string": "    m[\"acquisition\"] = {}\n    if \"acquisition\" in f:\n        for k, obj in f[\"acquisition\"].items():\n            if isinstance(obj, h5py.Group) and \"data\" in obj:\n                st = obj[\"starting_time\"].attrs.get(\"rate\") if \"starting_time\" in obj else None\n                m[\"acquisition\"][k] = {\"type\": _s(obj.attrs.get(\"neurodata_type\", \"\")), \"shape\": obj[\"data\"].shape,\n                                       \"bytes\": int(np.prod(obj[\"data\"].shape)) * obj[\"data\"].dtype.itemsize,\n                                       \"rate\": None if st is None else float(st)}\n    m[\"lfp_conversion\"] = float(d.attrs[\"conversion\"])"
-}
-```
-
-```
-The file entries/000218-tingley-2019/ls_hfo.py has been updated successfully.
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000218-tingley-2019; sed -n 490,540p ls_hfo.py; sed -n 625,720p ls_hfo.py
-```
-
-```
-return lags / fs, np.full(len(lags), np.nan), 0
-    M = idx[:, None] + lags[None, :]
-    d = np.angle(a[M]) - np.angle(b[M])
-    return lags / fs, np.abs(np.exp(1j * d).mean(axis=0)), len(idx)
-
-
-def session_job(path, seed=None, full_channels=None):
-    """Everything the notebook needs from one file, computed while streaming.
-
-    Reads the metadata, a 300 s sample of all channels, then the whole LS channel, the
-    hippocampal channel and one channel per shank for the EMG. Returns events, phase
-    locking and coherence. full_channels also reads up to 30 min of all channels from the
-    sample's start and returns their HFO-triggered band power (localization claim); by
-    default it does so for files with electrodes outside LS and the hippocampus. The seed
-    defaults to a checksum of the path, so each file has its own fixed generator."""
-    t0 = time.time()
-    f, url = open_file(path)
-    meta = metadata(f)
-    if seed is None:
-        seed = zlib.crc32(path.encode())
-[... 125 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
-import json
+cd entries/tingley-2019; python - <<'EOF'
+import json, os
 p='reproduce_tingley_2019.ipynb'
 nb=json.load(open(p))
-C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def setsrc(i,s): C[i]['source']=s.splitlines(keepends=True)
-def rep(i,a,b):
-    s=src(i); assert s.count(a)==1,(i,a); setsrc(i,s.replace(a,b))
-def code(s,tags):
-    return {"cell_type":"code","execution_count":None,"metadata":{"tags":tags},"outputs":[],"source":s.splitlines(keepends=True)}
-def md(s):
-    return {"cell_type":"markdown","metadata":{},"source":s.splitlines(keepends=True)}
-
-# cell 6: count files with out-of-order units
-rep(6,'print(pd.DataFrame(bad).to_string())\n',
-'''print(pd.DataFrame(bad).to_string())
-oo_files = sorted({r["path"] for r in results for s in r["meta"]["units"]["spikes"] if len(s) and np.any(np.diff(s) < 0)})
-print(f"units with spike times out of order: {sum(b['out_of_order'] > 0 for b in bad)}, in {len(oo_files)} files:")
-for f_ in oo_files:
-    print("  ", f_)
-''')
-
-# cell 16: flanking baseline variant
-rep(16,'    freqs, ev_p, rnd_p, n_events, peth_sum, peth_rnd = [], [], [], 0, 0, 0\n',
-        '    freqs, ev_p, rnd_p, fl_p, n_events, peth_sum, peth_rnd = [], [], [], [], 0, 0, 0\n')
-rep(16,'            rnd_p.append(pr[90:110].sum())\n',
-'''            rnd_p.append(pr[90:110].sum())
-            fl_p.append((pe[:50].sum() + pe[150:].sum()) / 100 * 20)   # 50-100 ms on each side, scaled to 20 bins
-''')
-rep(16,'    d = np.array(ev_p) - np.array(rnd_p)\n',
-'''    d = np.array(ev_p) - np.array(rnd_p)
-    dfl = np.array(ev_p) - np.array(fl_p)
-    flank_rows.append({"animal": subj, "LS neurons": len(dfl), "P(spike) +-10 ms at HFO": round(np.mean(ev_p), 4),
-                       "flanks 50-100 ms": round(np.mean(fl_p), 4), "difference": round(dfl.mean(), 4),
-                       "SEM": round(dfl.std(ddof=1) / np.sqrt(len(dfl)), 4),
-                       "difference / SEM": round(dfl.mean() / (dfl.std(ddof=1) / np.sqrt(len(dfl))), 1)})
-''')
-rep(16,'rows, curves = [], {}\n','rows, curves, flank_rows = [], {}, []\n')
-s=src(16)
-s=s.rstrip('\n')+'''
-
-# Variant (does not change the outcome): the same window against each neuron's own firing 50 to 100 ms
-# before and after the same events, a baseline taken in the same moments as the events.
-f1c_flank = pd.DataFrame(flank_rows)
-print("\\nvariant, baseline from the flanks of the PETH (50-100 ms either side of the event):")
-print(f1c_flank.to_string(index=False))
-print("animals above 3 SEM against the flanks:", int((f1c_flank["difference / SEM"] > 3).sum()), "of", len(f1c_flank))
-'''
-setsrc(16,s)
-
-# cell 24: ratios to the paper's values
-rep(24,'print("paper: 0.16 (tolerance 0.016) and 0.23 (0.023)")\n',
-'''print("paper: 0.16 (tolerance 0.016) and 0.23 (0.023)")
-print(f"ratio to the paper's values: fraction {fa / 0.16:.2f} (pooled), {per_rec.fraction.mean() / 0.16:.2f} (recordings);"
-      f" spikes {sa / 0.23:.2f} (pooled), {per_rec.spikes.mean() / 0.23:.2f} (recordings)")
-''')
-
-# cell 60: per-animal pooled median without same-sample pairs
-rep(60,'print("by animal, median of recording medians (ms):", lags.groupby("subject")["median lag"].median().round(2).to_dict())\n',
-'''print("by animal, median of recording medians, all pairs (ms):", lags.groupby("subject")["median lag"].median().round(2).to_dict())
-subj_hpc = [r["meta"]["subject"] for r in R if "hpc_events" in r]
-print("by animal, pooled median without pairs within 1 ms (ms):",
-      {s_: round(float(np.median(np.concatenate([d[np.abs(d) >= 1] for d, sj in zip(all_lags, subj_hpc) if sj == s_]))), 2) for s_ in sorted(set(subj_hpc))})
-''')
-
-# new cells: fig7e-ca1-depth before Summary (index 76), fig6 before fig7e section (index 71)
-i_sum=[i for i,c in enumerate(C) if src(i).startswith('## Summary')][0]
-C[i_sum:i_sum]=[
-md('''## fig7e-ca1-depth (blocked)
-
-> The mean depth within the CA1 pyramidal layer of the neurons active in a SPW-R predicts the spike
-> count of 23% of LS neurons.
-
-The depth of a CA1 neuron comes from its waveform amplitude across sites, and the units table holds
-no waveforms or channels (see the data check). Waveforms could only be re-extracted from wide-band
-data. The cell below lists the files that hold a series sampled above 5 kHz in `acquisition`, with
-their size and the hippocampal units they hold.
-'''),
-code('''# fig7e-ca1-depth (blocked): which files hold wide-band data from which waveforms could be re-extracted?
-sizes = {a["path"]: a["size"] for a in asset_list}
-rows = []
-for r in results:
-    m = r["meta"]
-    raw = {k: v for k, v in m["acquisition"].items() if v["rate"] is not None and v["rate"] > 5000}
-    loc = m["units"]["location"]
-    rows.append({"subject": m["subject"], "file": r["path"].split("/")[1][:44], "wide-band series": ", ".join(raw) or None,
-                 "rate (Hz)": max([v["rate"] for v in raw.values()], default=None),
-                 "channels": max([v["shape"][1] if len(v["shape"]) > 1 else 1 for v in raw.values()], default=None),
-                 "wide-band GB": sum(v["bytes"] for v in raw.values()) / 1e9, "file GB": sizes[r["path"]] / 1e9,
-                 "hpc units": 0 if loc is None else int((loc == "hpc").sum())})
-wb = pd.DataFrame(rows)
-print("series types in acquisition:", dict(collections.Counter(v["type"] for r in results for v in r["meta"]["acquisition"].values())))
-have = wb[wb["wide-band series"].notna()]
-print(f"files with a wide-band series: {len(have)} of {len(wb)}; wide-band data {have['wide-band GB'].sum() / 1e3:.2f} TB,"
-      f" files {have['file GB'].sum() / 1e3:.2f} TB")
-print(wb.groupby("subject").agg(files=("file", "size"), with_wide_band=("wide-band series", lambda x: int(x.notna().sum())),
-                                 hpc_units=("hpc units", "sum")).to_string())
-print(have.drop(columns="file GB").round(1).to_string(index=False))
-hv = have[have["hpc units"] > 0]
-print(f"wide-band files with hpc units: {len(hv)}, {hv['wide-band GB'].sum() / 1e3:.2f} TB; streaming them within the"
-      f" 30 min run limit needs {hv['wide-band GB'].sum() * 1e3 / 1800:.0f} MB/s")
-print(f"hpc units in files without wide-band data: {wb.loc[wb['wide-band series'].isna(), 'hpc units'].sum()} of {wb['hpc units'].sum()}")
-''',['claim:fig7e-ca1-depth']),
-md('''**Result: blocked (data missing).** PLACEHOLDER
-'''),
-]
-i71=[i for i,c in enumerate(C) if src(i).startswith('## fig7e-ca1-spikes, fig7e-state')][0]
-C[i71:i71]=[
-md('''## fig6-optogenetic-hfos (blocked)
-
-> Optogenetic stimulation of LS evokes HFO-like events.
-
-The two rats used for optogenetics are not among the 6 subjects of the dandiset (see the data
-check), and no file holds an optogenetic series. The cell below searches the archive for other
-dandisets by the same authors.
-'''),
-code('''# fig6-optogenetic-hfos (blocked): is there another dandiset of this paper on the archive?
-for q in ("Tingley", "lateral septum"):
-    res_ = requests.get("https://api.dandiarchive.org/api/dandisets/", params={"search": q, "page_size": 100}, timeout=60)
-    res_.raise_for_status()
-    print(f"archive search {q!r}: {res_.json()['count']} dandisets")
-    for x in res_.json()["results"]:
-        v = x.get("most_recent_published_version") or x["draft_version"]
-        print("  ", x["identifier"], v["name"])
-print("optogenetic series in the files:", sum("Optogenetic" in v["type"] for r in results for v in r["meta"]["acquisition"].values()),
-      "| subjects:", sorted({r["meta"]["subject"] for r in results}))
-''',['claim:fig6-optogenetic-hfos']),
-md('''**Result: blocked (data missing).** PLACEHOLDER
-'''),
-]
+c=nb['cells'][45]; s=''.join(c['source'])
+old='PRE_median=np.median(pre), POST_median=np.median(post), BEHAV_median=np.median(beh), p_PRE_POST=p,'
+assert old in s
+s=s.replace(old,'PRE_median=np.median(pre), POST_median=np.median(post), BEHAV_median=np.median(beh),\n                     PRE_mean=np.mean(pre), POST_mean=np.mean(post), BEHAV_mean=np.mean(beh), p_PRE_POST=p,')
+c['source']=s.splitlines(True)
+v=open(os.path.join(os.environ['TMPDIR'],'dev/cell.py')).read()
+new={"cell_type":"code","execution_count":None,"metadata":{"tags":["claim:fig4b-pre-post-unchanged"]},"outputs":[],"source":v.rstrip('\n').splitlines(True)}
+if 'id' in nb['cells'][46]: new['id']='fig4-whole-epoch-inclusion'
+nb['cells'].insert(47,new)
 json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
-grep -n "^import\|^from" reproduce_tingley_2019.ipynb | head; python -c "import json;nb=json.load(open('reproduce_tingley_2019.ipynb'));print(''.join(nb['cells'][1]['source']))"; grep -n "statement" ../../claims/000218/*.yaml | grep -i -A0 "opto\|fig6" ; grep -n -A3 "id: fig6" ../../claims/000218/*.yaml
+git -C  status 2>&1 | head -3; head -c 300 reproduce_tingley_2019.ipynb | head -5; tail -c 200 reproduce_tingley_2019.ipynb
 ```
 
 ```
-import collections
-import time
-import warnings
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from scipy import stats
-
-import ls_hfo
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_columns", 30)
-pd.set_option("display.max_rows", 200)
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-
-325:  statement: Optogenetic activation of LS GABAergic neurons with a Gaussian light waveform
-324:- id: fig6-optogenetic-hfos
-325-  statement: Optogenetic activation of LS GABAergic neurons with a Gaussian light waveform
-326-    induces local oscillations of about 140 Hz.
+fatal: not a git repository (or any of the parent directories): .git
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "fb910a2d",
+e sites' geometry.\n",
+    ""
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
 [... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
+cd entries/tingley-2019; source ../../executed/tingley-2019/.venv/bin/activate; python -c "import nbclient, nbformat; print('ok')"; date -u
+```
+
+```
+ok
+Wed Nov 18 21:41:34 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; source ../../executed/tingley-2019/.venv/bin/activate; python - <<'EOF'
+import nbformat, nbclient, os, time
+t=time.time()
+nb=nbformat.read('reproduce_tingley_2019.ipynb',4)
+nbclient.NotebookClient(nb, timeout=3600, kernel_name='python3', resources={'metadata':{'path':'.'}}).execute()
+nbformat.write(nb, os.path.join(os.environ['TMPDIR'],'dev/main_exec.ipynb'))
+print(time.time()-t)
+EOF
+```
+
+```
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+1021.416773557663
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json, os
+nb=json.load(open(os.path.join(os.environ['TMPDIR'],'dev/main_exec.ipynb')))
+def out(i):
+    c=nb['cells'][i]
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text'])[:8000])
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:3000])
+for i in [45,47]:
+    print("=== ",i); out(i)
+EOF
+```
+
+```
+===  45
+Recordings with trials, LSRipples and LS units on two or more shanks: 54 (Counter({'DT8': 17, 'DT5': 14, 'DT9': 13, 'DT2': 10}))
+
+CCGs computed in 21 s
+
+   inclusion kernel  norm   behav  pairs  sessions  PRE_median  POST_median  BEHAV_median  PRE_mean  POST_mean  BEHAV_mean  p_PRE_POST  differ  effect_r
+0          a   fwhm   raw    span    503        23      0.3598       0.4153        0.5829    0.7226      1.093       70.67    0.006508    True  -0.09912
+1          a   fwhm   raw  trials    462        23      0.3719       0.4474       0.08774    0.7414      1.134       17.72    0.003592    True   -0.1107
+2          a   fwhm  sqrt    span    503        23    0.006025     0.005613     0.0002911  0.009831   0.009635    0.003181      0.8885   False   0.00511
+3          a   fwhm  sqrt  trials    462        23    0.006043      0.00584     0.0002053  0.009931   0.009867    0.003109      0.8478   False -0.007299
+4          a     sd   raw    span    503        23       0.324       0.3921        0.4338    0.6033     0.8915       50.22    0.006005    True   -0.1001
+5          a     sd   raw  trials    462        23      0.3372       0.3998       0.09373    0.6221     0.9232       13.12    0.005924    True   -0.1046
+6          a     sd  sqrt    span    503        23    0.005524     0.005275     0.0002588  0.008083   0.007742    0.001737      0.4981   False   0.02468
+7          a     sd  sqrt  trials    462        23     0.00562      0.00536     0.0003335  0.008265   0.007936     0.00175      0.5671   False   0.02176
+8          b   fwhm   raw    span    401        21      0.4325       0.4925        0.6563    0.8346      1.293       82.99    0.005291    True   -0.1138
+9          b   fwhm   raw  trials    361        21      0.4417       0.5114       0.09779    0.8526      1.334       21.03    0.004681    True   -0.1216
+10         b   fwhm  sqrt    span    401        21    0.006025     0.005755     0.0002881   0.01005    0.01015    0.003429      0.8047   False  -0.01009
+11 
+[... 35 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json, os
+a=json.load(open('executed/tingley-2019/reproduce_tingley_2019.ipynb'))
+b=json.load(open(os.path.join(os.environ['TMPDIR'],'dev/main_exec.ipynb')))
+def txt(c):
+    r=[]
+    for o in c.get('outputs',[]):
+        if 'text' in o: r.append(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data']: r.append(''.join(o['data']['text/plain']))
+    return '\n'.join(r)
+ac=[c for c in a['cells']]; bc=[c for i,c in enumerate(b['cells']) if i!=47]
+import difflib, re
+for i,(x,y) in enumerate(zip(ac,bc)):
+    tx,ty=txt(x),txt(y)
+    tx=re.sub(r'in \d+ s','in N s',tx); ty=re.sub(r'in \d+ s','in N s',ty)
+    tx=re.sub(r'peak memory [\d.]+','pm',tx); ty=re.sub(r'peak memory [\d.]+','pm',ty)
+    if tx!=ty:
+        print('cell',i); print('\n'.join(list(difflib.unified_diff(tx.splitlines(),ty.splitlines(),lineterm=''))[:20]))
+EOF
+```
+
+```
+cell 6
+--- 
++++ 
+@@ -1,3 +1,2 @@
+ Duplicate candidates: none
+-
+ Tables within a file with the same events: none
+cell 16
+--- 
++++ 
+@@ -1,14 +1,12 @@
+ (1) recordings with both: 21901 LS HFOs, 101164 CA1 ripples, 4 / 4 animals
+   duration LS 27.8 +- 9.5 ms, CA1 31.2 +- 13.7 ms; rank-sum p = 1.2e-199; medians 25.6 / 28.0
+   frequency LS 147.6 +- 5.8 Hz, CA1 158.3 +- 7.4 Hz; rank-sum p = 0
+-
+ (2) all events of animals with both: 23044 LS HFOs, 101217 CA1 ripples, 4 / 4 animals
+   duration LS 27.8 +- 9.6 ms, CA1 31.2 +- 13.7 ms; rank-sum p = 4.1e-192; medians 25.6 / 28.0
+   frequency LS 147.5 +- 5.8 Hz, CA1 158.4 +- 7.4 Hz; rank-sum p = 0
+ Animals with both: ['DT2', 'DT5', 'DT7', 'DT9']
+ 
+[... 36 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; python - <<'EOF'
 import json
-p='reproduce_tingley_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-s=''.join(C[1]['source']).replace("import pandas as pd\n","import pandas as pd\nimport requests\n"); C[1]['source']=s.splitlines(keepends=True)
-for c in C:
-    s=''.join(c['source'])
-    if '> Optogenetic stimulation of LS evokes HFO-like events.' in s:
-        c['source']=s.replace('> Optogenetic stimulation of LS evokes HFO-like events.','> Optogenetic activation of LS GABAergic neurons with a Gaussian light waveform induces local\n> oscillations of about 140 Hz.').splitlines(keepends=True)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+nb=json.load(open('reproduce_tingley_2019.ipynb'))
+for i in [52,55]:
+    print(f"=== [{i}]"); print(''.join(nb['cells'][i]['source']))
+for f in ['lfp_tingley_2019.ipynb','fig7e_tingley_2019.ipynb']:
+    nb=json.load(open(f))
+    for i,c in enumerate(nb['cells']):
+        s=''.join(c['source'])
+        if c['cell_type']=='markdown' and ('dataset-composition' in s or 'raw_waveform' in s or 'one waveform' in s or '3.2e-9' in s or 'Summary' in s[:20]):
+            print(f"=== {f} [{i}]"); print(s)
 EOF
-git diff --stat; git diff reproduce_tingley_2019.ipynb | head -30
 ```
 
 ```
-entries/000218-tingley-2019/ls_hfo.py              |   8 ++
- .../reproduce_tingley_2019.ipynb                   | 132 ++++++++++++++++++++-
- 2 files changed, 136 insertions(+), 4 deletions(-)
-diff --git a/entries/000218-tingley-2019/reproduce_tingley_2019.ipynb b/entries/000218-tingley-2019/reproduce_tingley_2019.ipynb
-index fca7350..e8c9682 100644
---- a/entries/000218-tingley-2019/reproduce_tingley_2019.ipynb
-+++ b/entries/000218-tingley-2019/reproduce_tingley_2019.ipynb
-@@ -76,6 +76,7 @@
-     "import matplotlib.pyplot as plt\n",
-     "import numpy as np\n",
-     "import pandas as pd\n",
-+    "import requests\n",
-     "from scipy import stats\n",
-     "\n",
-     "import ls_hfo\n",
-@@ -243,6 +244,10 @@
-     "                        \"first\": round(float(s.min()), 3), \"last_minus_duration\": round(float(s.max() - m[\"duration\"]), 3)})\n",
-     "print(f\"units with spike times out of order or outside the recording: {len(bad)}\")\n",
-     "print(pd.DataFrame(bad).to_string())\n",
-+    "oo_files = sorted({r[\"path\"] for r in results for s in r[\"meta\"][\"units\"][\"spikes\"] if len(s) and np.any(np.diff(s) < 0)})\n",
-[... 13 more lines not kept]
-```
+=== [52]
+**Result: fig4b-hfo-above-behav reproduced, resting on the assumption of fig4b-pre-post-unchanged.** Under all 8 normalized readings, PRE and POST exceed BEHAV (rank-sum p 1e-69 to 1e-129) and PRE, POST and BEHAV each exceed their jittered values (p <= 2.1e-6). Under raw counts, every epoch exceeds its jitter, but with BEHAV taken from the first to the last trial, PRE and POST do not exceed BEHAV (p 0.13 to 0.87). Under the four other jitter seeds, every epoch exceeds its jitter under all 16 readings.
+=== [55]
+**Result: fig4-sessions-few-change not reproduced.** 21 to 23 sessions have included pairs (paper 53 +- 5.3). At most 1 session per reading has PRE and POST different at p < 0.01 (fraction 0 to 0.048, against 0.132), and no reading has both directions.
+=== lfp_tingley_2019.ipynb [0]
+# Reproducing Tingley and Buzsaki (2019) from DANDI:000218: LFP analyses
 
-**Agent calls Bash**
+Tingley D. and Buzsaki G. (2019). Routing of hippocampal ripples to subcortical structures via the lateral septum. Neuron 105, 138-149. doi:10.1016/j.neuron.2019.10.012.
 
-```bash
-cd  python tools/entry.py check entries/000218-tingley-2019 2>&1 | tail -20
-```
+Dataset: DANDI:000218, version 0.261110.1911 (doi:10.48324/dandi.000218/0.261110.1911), streamed from the archive.
 
-```
-/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
-  _validate(nbdict, ref, version, version_minor, relax_add_props)
-0 error(s)
-```
+Version. The paper cites no version of the dandiset (it predates it). The most recent published version, 0.261110.1911, is pinned: its files were re-converted with trial labels sorted with their rows, the lab's ripple and LS HFO detections, sleep states for every session with them, units with shank and region, and electrode flags, all of which the claims use; the earlier versions (0.220131.1608, 0.250624.0439) lack the event tables and sleep states, so they match the claims file's description less well. The LFP is the earlier version's data, stored again in channel order (release notes).
 
-**Agent calls Bash**
+Claims file: `claims/tingley-2019.yaml`, written from the accepted manuscript in PubMed Central (PMC6952543) with its supplement. The paper's full text and supplement were read here.
 
-```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
-import json,uuid
-p='reproduce_tingley_2019.ipynb'
-nb=json.load(open(p))
-print(nb['nbformat'],nb['nbformat_minor'], sum('id' in c for c in nb['cells']), len(nb['cells']))
-for c in nb['cells']:
-    if 'id' not in c: c['id']=uuid.uuid4().hex[:8]
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-cd ../..; python tools/entry.py check entries/000218-tingley-2019 2>&1 | tail -3
-```
-
-```
-4 5 77 83
-0 error(s)
-```
-
-**Agent**
-
-Check passes. Starting the full run now (about 23 minutes).
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py all entries/000218-tingley-2019 2>&1 | tail -20
-```
-
-```
-Installed kernelspec registry-000218-tingley-2019 in executed/000218-tingley-2019/.venv/share/jupyter/kernels/registry-000218-tingley-2019
-0 error(s)
-pass  reproduce_tingley_2019.ipynb  (1087 s)
+This notebook tests the claims that need the LFP: 
+[... 103 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -626,191 +803,87 @@ pass  reproduce_tingley_2019.ipynb  (1087 s)
 ```bash
 cd  python - <<'EOF'
 import json
-nb=json.load(open('executed/000218-tingley-2019/reproduce_tingley_2019.ipynb'))
-def out(c):
-    s=''
-    for o in c.get('outputs',[]):
-        if 'text' in o: s+=''.join(o['text'])
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: s+=''.join(o['data']['text/plain'])
-    return s
-for i,c in enumerate(nb['cells']):
-    s=''.join(c['source'])
-    if c['cell_type']=='code' and any(k in s for k in ['Stream every','Duplicates, spike','fig1c-hfo-each-animal: freq','Variant (does not','# figs1-part','# fig1d-phase','# fig1f-shorter','fig5d-lag and fig5e','fig6-optogenetic','fig7e-ca1-depth','Re-referenced LS channel']):
-        print('=====',i); print(out(c)[:6000])
+nb=json.load(open('executed/tingley-2019/fig7e_tingley_2019.ipynb'))
+c=nb['cells'][9]
+print(''.join(c['source'])[-1500:])
+for o in c.get('outputs',[]):
+    if 'text' in o: print(''.join(o['text'])[:9000])
 EOF
 ```
 
 ```
-===== 2
-dandiset 000218 version 0.250624.0439: 98 files, 1.51 TB
-streamed and processed in 17.3 min
-files that failed: 0
-files without LS electrodes (no LFP analysis): 4
-   sub-DT7/sub-DT7_ses-20170327-864um-360um-170327-115803_ecephys.nwb {np.str_('unknown'): 128}
-   sub-DT7/sub-DT7_ses-20170406-864um-1152um-merge_behavior+ecephys.nwb {np.str_('unknown'): 128}
-   sub-DT7/sub-DT7_ses-20170407-936um-1152um-merge_behavior+ecephys.nwb {np.str_('unknown'): 128}
-   sub-DT7/sub-DT7_ses-20170408-936um-1152um-merge_ecephys.nwb {np.str_('unknown'): 128}
-0.220131.1608 and the pinned version hold the same paths and blobs: True
+7T = f7_table(F7)
+EXPECT7 = {"ca1-spikes": 38, "state": 26, "duration": 20}
+F7T["within_tol"] = [abs(r.percent - EXPECT7[r.feature]) <= 0.1 * EXPECT7[r.feature] for r in F7T.itertuples()]
+print(F7T.to_string(float_format=lambda v: f"{v:.3g}"))
+for fn, e in EXPECT7.items():
+    g = F7T[F7T.feature == fn]
+    print(f"{fn}: paper {e}%; combinations within tolerance {int(g.within_tol.sum())} of {len(g)}; range {g.percent.min():.1f} to {g.percent.max():.1f}%; "
+          f"above chance (binomial p < 0.05) in {int((g.binom_p < 0.05).sum())}")
+    print(f"   z reading: range {g.z_percent.min():.1f} to {g.z_percent.max():.1f}%; within tolerance {int((abs(g.z_percent - e) <= 0.1 * e).sum())} of {len(g)}; "
+          f"chance {g.z_chance_percent.min():.1f} to {g.z_chance_percent.max():.1f}%; above chance (binomial p < 0.05) in {int((g.z_binom_p < 0.05).sum())}")
+# The two tests' chance rates on synthetic data: 100 normal draws as shuffles and one more as the "actual" value, 20000 times.
+_r = np.random.default_rng(seed_of("fig7e-ca1-spikes") + 1); _M = _r.normal(size=(20000, 1 + NSHUF))
+_s = sig_from_mse(_M)
+print(f"Synthetic null (actual drawn from the shuffle distribution): t reading {100 * _s[0].mean():.1f}%, z reading {100 * _s[2].mean():.1f}% of neurons significant")
+print("\nPer animal, linear in-sample start-stop, no minimum:")
+print(F7[(F7.model == "linear") & (~F7.cv) & (F7.window == "start-stop")].groupby(["feature", "subject"]).sig.agg(["mean", "count"]).round(3).to_string())
+Recordings: 42 (Counter({'DT5': 19, 'DT9': 10, 'DT2': 9, 'DT7': 4})); LS neurons 1353; CA3 by unit label 6
 
-===== 6
-files sharing an LFP length: 0 | files sharing the checksum of the first 10 s of their LS channel: 0
-files sharing the spike counts of all their units: 0
-units with spike times out of order or outside the recording: 25
-                                        file  unit region   spikes  out_of_order  first  last_minus_duration
-0   sub-DT2_ses-DT2-rPPC-rCCG-3324um-1144um-     3     ls   779907             1  0.000               -0.038
-1   sub-DT2_ses-DT2-rPPC-rCCG-3324um-1144um-    16     ls   589905             1  0.000               -0.090
-2   sub-DT2_ses-DT2-rPPC-rCCG-3324um-1144um-    29    hpc   392003             4  0.000               -0.210
-3   sub-DT2_ses-DT2-rPPC-rCCG-3324um-1144um-    36    hpc   607301             7  0.000               -0.032
-[... 203 more lines not kept]
+computed in 1141 s; recordings that failed: none
+       feature      window    model     cv  min_spikes  neurons  percent  chance_percent   binom_p  z_percent  z_chance_percent  z_binom_p  within_tol
+[... 71 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
+cd entries/tingley-2019; python - <<'EOF'
 import json
 p='reproduce_tingley_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def find(a):
-    m=[c for c in C if a in ''.join(c['source'])]; assert len(m)==1,(a,len(m)); return m[0]
-def rep(a,b):
-    c=find(a); c['source']=''.join(c['source']).replace(a,b).splitlines(keepends=True)
-
-rep("25 units have spike times out of order (1 to 2782 inversions each), a break",
-    "25 units in 10 files have spike times out of order (1 to 2782 inversions each), a break")
-rep("against as many uniformly random times in the same recording.\n",
-    "against as many uniformly random times in the same recording. A variant compares the same window\nwith each neuron's firing 50 to 100 ms before and after the same events.\n")
-rep("""(3.9 SEM) pass; with ripple-coupled events, DT9 passes (4.2 SEM). On the re-referenced channel (see
-the check after fig5f) no animal passes (largest 1.5 SEM, DT2; DT8 -4.4 SEM). Many detected events
-do not behave as LS population bursts.""",
-"""(3.9 SEM) pass; with ripple-coupled events, DT9 passes (4.2 SEM). On the re-referenced channel (see
-the check after fig5f) no animal passes (largest 1.5 SEM, DT2; DT8 -4.4 SEM). Random times are a
-baseline that mixes states. Against each neuron's firing 50 to 100 ms before and after the same
-events, firing at the events is higher in DT1, DT2, DT5 and DT9 (DT9 0.0151 against 0.0145) and
-lower in DT7 and DT8, and exceeds 3 SEM only in DT1 (5.2 SEM; DT2 1.6, DT5 1.7, DT9 0.5). In DT2
-and DT5 the differences are large (0.024 and 0.037) but vary widely across neurons. The test
-does not show raised LS firing at the events outside DT1; it does not show that the events lack it.""")
-rep("""spikes per neuron per event; the mean over recordings gives 3.5% and 0.068. Both are a fifth to a
-third of the paper's values.""",
-"""spikes per neuron per event; the mean over recordings gives 3.5% and 0.068. The fraction is 0.17
-(pooled) to 0.22 (recordings) of the paper's value, and the spike count 0.22 to 0.30 of it.""")
-rep("""sample (71% in DT8, 7% in DT9). Without those pairs the pooled median is 3.2 ms, LS after CA1 in
-55%; DT9 gives 3.8 ms.""",
-"""sample (71% in DT8, 7% in DT9). Without the pairs within 1 ms the pooled median is 3.2 ms, LS after
-CA1 in 55%, but by animal it is -3.2 (DT2), -5.6 (DT5), -6.4 (DT7), 1.6 (DT8) and 8.0 ms (DT9), so
-LS leads in three animals. Over all pairs, DT9's median of recording medians is 3.8 ms, inside the
-tolerance (2.2 to 10.6 ms); the other four animals give 0.0 ms.""")
-rep("""measures do not move towards the paper's: no animal shows raised LS firing at the events,""",
-    """measures do not move towards the paper's: no animal shows LS firing at the events more than 3 SEM
-above random times,""")
-rep("""**Result: blocked (data missing).** PLACEHOLDER
-""" if False else "XXXX","XXXX") if False else None
-# placeholders
-ph=[c for c in C if ''.join(c['source']).startswith('**Result: blocked (data missing).** PLACEHOLDER')]
-assert len(ph)==2
-ph[0]['source']="""**Result: blocked (data missing).** The 6 subjects are the recording rats, no file holds an
-optogenetic series, and archive searches for "Tingley" and "lateral septum" find only 000213,
-000218 and 000233, none of which is described as holding these experiments.
-""".splitlines(keepends=True)
-ph[1]['source']="""**Result: blocked (data missing).** 27 of 98 files hold a 20 kHz wide-band series: all 12 DT1
-files, all 13 DT2 files and 2 DT9 files, 1.15 TB as stored. Twelve of them (10 DT2, 2 DT9) hold
-hippocampal units, 1.00 TB of wide-band data, which would have to be streamed at about 556 MB/s
-to fit the 30 min run limit; for these recordings the claim is blocked by run time. The other
-1579 of 2778 hippocampal units, including all of DT5 and DT7, have no wide-band data, and for them
-the waveforms are missing.
-""".splitlines(keepends=True)
-# summary
-rep("""EMG estimated from the LFP. Many detected LS events are not followed by LS firing, and a third
-  of those coupled to ripples fall on the same sample as the ripple, so the event set differs from
-  the paper's; most of the outcomes on HFOs follow from that.""",
-"""EMG estimated from the LFP. LS firing at the detected events exceeds firing at random times,
-  or before and after the events, by more than 3 SEM in one animal of six, participation is about
-  a fifth of the paper's, and a third of the events coupled to ripples fall on the same sample as
-  the ripple. Neither the detection channel nor the re-referenced one is shown to capture the
-  paper's HFOs; most of the outcomes on HFOs follow from that.""")
-rep("- 25 units have spike times out of order.", "- 25 units in 10 files have spike times out of order.")
-rep("""- The CA3 recordings have no CA1 reference channel; the optogenetic rats are not in the dandiset.""",
-"""- The CA3 recordings have no CA1 reference channel; the optogenetic rats are not in the dandiset.
-- Wide-band data, from which unit waveforms could be re-extracted, are in 27 of 98 files (DT1, DT2
-  and two DT9 files).""")
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    s=''.join(C[i]['source']); assert old in s, (i, old[:40]); s=s.replace(old,new); C[i]['source']=s.splitlines(True)
+assert C[48]['source'][0].startswith('**Result: fig4b-pre-post')
+rep(48, "which only a rate-normalized measure allows;", "which only a rate-normalized measure allows (in raw counts the mean BEHAV excess is 13.1 to 83.0 against 0.60 to 0.85 in PRE, while the medians are comparable, BEHAV 0.088 to 0.66 and PRE 0.32 to 0.44);")
+rep(48, "(BEHAV medians are 10 to 100 times the HFO ones in raw counts), which", "")
+C[48]['source']=''.join(C[48]['source']).replace("very different spike counts which only","very different spike counts, which only").splitlines(True)
+s=''.join(C[48]['source'])
+s=s.rstrip('\n')+(" A variant that the claims file does not name, asked of a reader (questions/tingley-2019.yaml), applies the inclusion rule to all spikes of PRE and POST, with the CCGs still from the spikes during HFOs: 19274 of the 20182 candidate pairs pass inclusion (a) in PRE and POST, and with BEHAV 10159 to 15732 pairs in 54 sessions per reading (paper 7172 +- 717.2 in 53). About 71% to 77% of these pairs have an excess correlation of 0 in PRE or POST, as their HFO CCGs are empty or flat. Under this variant PRE and POST differ (rank-sum p < 0.05) in 8 of 16 readings: in 4 of the 8 normalized readings, all with the 5 ms SD kernel (p 0.00047 to 0.0082), and in none with the full-width kernel (p 0.15 to 0.29); the effects are small (r -0.016 to -0.023 where they differ, POST higher). The outcome is judged on the claims file's readings, so it stays as above; under this variant it would not hold for every normalized reading.")
+C[48]['source']=s.splitlines(True)
+print(s)
 json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 11, in <module>
-  File "<stdin>", line 7, in rep
-  File "<stdin>", line 5, in find
-AssertionError: ('against as many uniformly random times in the same recording.\n', 0)
+**Result: fig4b-pre-post-unchanged partially reproduced, resting on an assumption.** With the CCG divided by the square root of the two spike counts, no reading finds PRE and POST different (rank-sum p 0.50 to 0.89 over 8 readings; effect r -0.013 to 0.025). With raw counts, all 8 readings find POST above PRE (p 0.0036 to 0.0065; r -0.10 to -0.12). The normalized CCG is adopted as an assumption: the paper compares epochs with very different spike counts  only a rate-normalized measure allows (in raw counts the mean BEHAV excess is 13.1 to 83.0 against 0.60 to 0.85 in PRE, while the medians are comparable, BEHAV 0.088 to 0.66 and PRE 0.32 to 0.44); POST holds more HFO time than PRE (355 s against 252 s over the 54 recordings), which raw counts carry. Only 361 to 503 pairs in 21 to 23 sessions pass the inclusion rule, against 7172 pairs in 53 sessions. The pairs are lost in the HFO epochs: of 20182 candidate cross-shank pairs, 10823 pass inclusion (a) in BEHAV but only 795 in PRE and 954 in POST, where the LS HFOs last 252 s and 355 s in all; 462 pass in all three. DT8 has 1886 candidate pairs, of which 3 pass in PRE and 10 in POST, and none in all three. Of the recordings with LS units, 17 have no trials, 7 no LSRipples and 4 LS units on one shank. A variant that the claims file does not name, asked of a reader (questions/tingley-2019.yaml), applies the inclusion rule to all spikes of PRE and POST, with the CCGs still from the spikes during HFOs: 19274 of the 20182 candidate pairs pass inclusion (a) in PRE and POST, and with BEHAV 10159 to 15732 pairs in 54 sessions per reading (paper 7172 +- 717.2 in 53). About 71% to 77% of these pairs have an excess correlation of 0 in PRE or POST, as their HFO CCGs are empty or flat. Under this variant PRE and POST differ (rank-sum p < 0.05) in 8 of 16 readings: in 4 of the 8 normalized readings, all with the 5 ms SD kernel (p 0.00047 to 0.0082), and in none with the full-width kernel (p 0.15 to 0.29); the effects are small (r -0
+[... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
+cd entries/tingley-2019; python - <<'EOF'
 import json
 p='reproduce_tingley_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def find(a):
-    m=[c for c in C if a in ''.join(c['source'])]; assert len(m)==1,(a,len(m)); return m[0]
-def rep(a,b):
-    c=find(a); c['source']=''.join(c['source']).replace(a,b).splitlines(keepends=True)
-
-rep("25 units have spike times out of order (1 to 2782 inversions each), a break",
-    "25 units in 10 files have spike times out of order (1 to 2782 inversions each), a break")
-rep("against as many uniformly random times in the same recording.",
-    "against as many uniformly random times in the same recording. A variant compares the same window\nwith each neuron's firing 50 to 100 ms before and after the same events.")
-rep("""(3.9 SEM) pass; with ripple-coupled events, DT9 passes (4.2 SEM). On the re-referenced channel (see
-the check after fig5f) no animal passes (largest 1.5 SEM, DT2; DT8 -4.4 SEM). Many detected events
-do not behave as LS population bursts.""",
-"""(3.9 SEM) pass; with ripple-coupled events, DT9 passes (4.2 SEM). On the re-referenced channel (see
-the check after fig5f) no animal passes (largest 1.5 SEM, DT2; DT8 -4.4 SEM). Random times are a
-baseline that mixes states. Against each neuron's firing 50 to 100 ms before and after the same
-events, firing at the events is higher in DT1, DT2, DT5 and DT9 (DT9 0.0151 against 0.0145) and
-lower in DT7 and DT8, and exceeds 3 SEM only in DT1 (5.2 SEM; DT2 1.6, DT5 1.7, DT9 0.5). In DT2
-and DT5 the differences are large (0.024 and 0.037) but vary widely across neurons. The test
-does not show raised LS firing at the events outside DT1; it does not show that the events lack it.""")
-rep("""spikes per neuron per event; the mean over recordings gives 3.5% and 0.068. Both are a fifth to a
-third of the paper's values.""",
-"""spikes per neuron per event; the mean over recordings gives 3.5% and 0.068. The fraction is 0.17
-(pooled) to 0.22 (recordings) of the paper's value, and the spike count 0.22 to 0.30 of it.""")
-rep("""sample (71% in DT8, 7% in DT9). Without those pairs the pooled median is 3.2 ms, LS after CA1 in
-55%; DT9 gives 3.8 ms.""",
-"""sample (71% in DT8, 7% in DT9). Without the pairs within 1 ms the pooled median is 3.2 ms, LS after
-CA1 in 55%, but by animal it is -3.2 (DT2), -5.6 (DT5), -6.4 (DT7), 1.6 (DT8) and 8.0 ms (DT9), so
-LS leads in three animals. Over all pairs, DT9's median of recording medians is 3.8 ms, inside the
-tolerance (2.2 to 10.6 ms); the other four animals give 0.0 ms.""")
-rep("""measures do not move towards the paper's: no animal shows raised LS firing at the events,""",
-    """measures do not move towards the paper's: no animal shows LS firing at the events more than 3 SEM
-above random times,""")
-ph=[c for c in C if ''.join(c['source']).startswith('**Result: blocked (data missing).** PLACEHOLDER')]
-assert len(ph)==2
-ph[0]['source']="""**Result: blocked (data missing).** The 6 subjects are the recording rats, no file holds an
-optogenetic series, and archive searches for "Tingley" and "lateral septum" find only 000213,
-000218 and 000233, none of which is described as holding these experiments.
-""".splitlines(keepends=True)
-ph[1]['source']="""**Result: blocked (data missing).** 27 of 98 files hold a 20 kHz wide-band series: all 12 DT1
-files, all 13 DT2 files and 2 DT9 files, 1.15 TB as stored. Twelve of them (10 DT2, 2 DT9) hold
-hippocampal units, 1.00 TB of wide-band data, which would have to be streamed at about 556 MB/s
-to fit the 30 min run limit; for these recordings the claim is blocked by run time. The other
-1579 of 2778 hippocampal units, including all of DT5 and DT7, have no wide-band data, and for them
-the waveforms are missing.
-""".splitlines(keepends=True)
-rep("""EMG estimated from the LFP. Many detected LS events are not followed by LS firing, and a third
-  of those coupled to ripples fall on the same sample as the ripple, so the event set differs from
-  the paper's; most of the outcomes on HFOs follow from that.""",
-"""EMG estimated from the LFP. LS firing at the detected events exceeds firing at random times,
-  or before and after the events, by more than 3 SEM in one animal of six, participation is about
-  a fifth of the paper's, and a third of the events coupled to ripples fall on the same sample as
-  the ripple. Neither the detection channel nor the re-referenced one is shown to capture the
-  paper's HFOs; most of the outcomes on HFOs follow from that.""")
-rep("- 25 units have spike times out of order.", "- 25 units in 10 files have spike times out of order.")
-rep("""- The CA3 recordings have no CA1 reference channel; the optogenetic rats are not in the dandiset.""",
-"""- The CA3 recordings have no CA1 reference channel; the optogenetic rats are not in the dandiset.
-- Wide-band data, from which unit waveforms could be re-extracted, are in 27 of 98 files (DT1, DT2
-  and two DT9 files).""")
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    s=''.join(C[i]['source']); assert old in s, (i, old[:40]); s=s.replace(old,new); C[i]['source']=s.splitlines(True)
+rep(48,"spike counts  only","spike counts, which only")
+rep(48,"About 71% to 77% of these pairs have an excess correlation of 0 in PRE or POST, as their HFO CCGs are empty or flat.","Of these pairs, 73.8% to 76.6% have an excess correlation of exactly 0 in PRE and 70.5% to 73.2% in POST.")
+# hfo-above-behav
+assert C[52]['source'][0].startswith('**Result: fig4b-hfo-above')
+rep(52,"resting on the assumption of fig4b-pre-post-unchanged.**","resting on an assumption.**")
+rep(52,"Under raw counts, every epoch exceeds its jitter, but with BEHAV taken from the first to the last trial, PRE and POST do not exceed BEHAV (p 0.13 to 0.87).",
+ "Under raw counts, every epoch exceeds its jitter; with BEHAV inside trials (reading iv-a) PRE and POST also exceed BEHAV (p 5e-13 to 2e-21), so both parts hold, but with BEHAV taken from the first to the last trial they do not (p 0.13 to 0.87). The outcome therefore fails only under raw counts with BEHAV over the whole span, and rests on the normalized CCG or on BEHAV inside trials.")
+s=''.join(C[52]['source']).rstrip('\n')+" Under the whole-epoch inclusion variant of fig4b-pre-post-unchanged (not in the claims file, asked of a reader), PRE and POST exceed BEHAV at p < 0.001 in the 8 normalized readings and in the 4 raw full-width readings (one-sided p 1.9e-8 to 5.6e-47, and 0.0015 to 0.0021 under inclusion b over the whole span), and not in the 4 raw readings with the 5 ms SD kernel (p 0.95 to 1); the jitter part was not run under this variant."
+C[52]['source']=s.splitlines(True)
+assert C[55]['source'][0].startswith('**Result: fig4-sessions')
+s=''.join(C[55]['source']).rstrip('\n')+" Under the whole-epoch inclusion variant (not in the claims file, asked of a reader), 54 sessions have pairs, within tolerance, and 0 to 10 sessions differ at p < 0.01 (fraction up to 0.185); none has PRE above POST, so both directions still never occur."
+C[55]['source']=s.splitlines(True)
 json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
 ```
@@ -822,499 +895,590 @@ EOF
 **Agent calls Bash**
 
 ```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
+cd entries/tingley-2019; python - <<'EOF'
 import json
 p='reproduce_tingley_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def find(a):
-    m=[c for c in C if a in ''.join(c['source'])]; assert len(m)==1,(a,len(m)); return m[0]
-def rep(a,b):
-    c=find(a); c['source']=''.join(c['source']).replace(a,b).splitlines(keepends=True)
-rep("participation is about\n  a fifth of the paper's,", "participation is a sixth\n  to a third of the paper's,")
-rep("files, all 13 DT2 files and 2 DT9 files, 1.15 TB as stored.", "files, all 13 DT2 files and 2 DT9 files, which take 1.15 TB.")
-c=find("**Result: fig5d-lag partially reproduced.**"); print(''.join(c['source']))
-rep("52%, still outside the tolerance. The coupling part of the claim holds and the lag part does not.",
-"52%, still outside the tolerance. The coupling part of the claim holds and the lag part does not.\nThe criterion defines no partial outcome and requires the lag within tolerance under one reading,\nso a change to not reproduced is proposed in the attempt record for the third verification round.")
-rep("| fig5d-lag | partially reproduced |", "| fig5d-lag | partially reproduced (change to not reproduced proposed) |")
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    s=''.join(C[i]['source']); assert old in s, (i, old[:40]); s=s.replace(old,new); C[i]['source']=s.splitlines(True)
+rep(52,"(p 5e-13 to 2e-21)","(p <= 4.9e-13)")
+rep(52,"PRE and POST exceed BEHAV at p < 0.001 in the 8 normalized readings and in the 4 raw full-width readings (one-sided p 1.9e-8 to 5.6e-47, and 0.0015 to 0.0021 under inclusion b over the whole span), and not in the 4 raw readings with the 5 ms SD kernel (p 0.95 to 1); the jitter part was not run under this variant.",
+ "PRE and POST both exceed BEHAV at p < 0.001 (one-sided rank-sum) in 10 of 16 readings; not in the 4 raw readings with the 5 ms SD kernel (p 0.95 to 1), and for PRE not in the 2 readings with inclusion (b), the full-width kernel and BEHAV over the whole span (p 0.0015 and 0.0021). The jitter part was not run under this variant.")
+print(''.join(C[52]['source']))
 json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
 ```
 
 ```
-**Result: fig5d-lag partially reproduced.** LS HFOs are coupled to CA1 ripples: the pooled
-correlogram peaks at 0 ms, 166 SD above its flanks. The lag is 0.00 ms under both readings, outside
-6.4 +- 4.2 ms, and LS follows CA1 in only 33.5% of pairs; 34.8% of the coupled pairs fall on the same
-sample (71% in DT8, 7% in DT9). Without the pairs within 1 ms the pooled median is 3.2 ms, LS after
-CA1 in 55%, but by animal it is -3.2 (DT2), -5.6 (DT5), -6.4 (DT7), 1.6 (DT8) and 8.0 ms (DT9), so
-LS leads in three animals. Over all pairs, DT9's median of recording medians is 3.8 ms, inside the
-tolerance (2.2 to 10.6 ms); the other four animals give 0.0 ms. On the re-referenced channel, where 4.1% of pairs fall on the same sample,
-the coupling remains (53.4 SD at 0 ms) and the lag is 0.00 ms (a) and 0.80 ms (b), LS after CA1 in
-52%, still outside the tolerance. The coupling part of the claim holds and the lag part does not.
+**Result: fig4b-hfo-above-behav reproduced, resting on an assumption.** Under all 8 normalized readings, PRE and POST exceed BEHAV (rank-sum p 1e-69 to 1e-129) and PRE, POST and BEHAV each exceed their jittered values (p <= 2.1e-6). Under raw counts, every epoch exceeds its jitter; with BEHAV inside trials (reading iv-a) PRE and POST also exceed BEHAV (p <= 4.9e-13), so both parts hold, but with BEHAV taken from the first to the last trial they do not (p 0.13 to 0.87). The outcome therefore fails only under raw counts with BEHAV over the whole span, and rests on the normalized CCG or on BEHAV inside trials. Under the four other jitter seeds, every epoch exceeds its jitter under all 16 readings. Under the whole-epoch inclusion variant of fig4b-pre-post-unchanged (not in the claims file, asked of a reader), PRE and POST both exceed BEHAV at p < 0.001 (one-sided rank-sum) in 10 of 16 readings; not in the 4 raw readings with the 5 ms SD kernel (p 0.95 to 1), and for PRE not in the 2 readings with inclusion (b), the full-width kernel and BEHAV over the whole span (p 0.0015 and 0.0021). The jitter part was not run under this variant.
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000218-tingley-2019; python - <<'EOF'
-p='README.md'; s=open(p).read()
-a="""attempt's own. Many of them are not followed by LS firing, and a third of those coupled to CA1
-ripples fall on the same sample as the ripple; most outcomes on HFOs follow from that."""
-b="""attempt's own. LS firing at them exceeds firing at random times, or before and after the events,
-by more than 3 SEM in only one animal of six, and a third of those coupled to CA1 ripples fall on
-the same sample as the ripple; most outcomes on HFOs follow from that."""
-assert a in s; s=s.replace(a,b)
-a="It takes about 23 minutes, most of it streaming the"; assert a in s
-s=s.replace(a,"It takes about 18 minutes, most of it streaming the")
-a="| CA1 leads LS by 6.4 ms | Partially reproduced |"; assert a in s
-s=s.replace(a,"| CA1 leads LS by 6.4 ms | Partially reproduced (change to not reproduced proposed) |")
-open(p,'w').write(s)
-p='entry.yaml'; s=open(p).read(); s=s.replace("runtime_minutes: 23","runtime_minutes: 18"); open(p,'w').write(s)
+cd entries/tingley-2019; python - <<'EOF'
+import json
+p='reproduce_tingley_2019.ipynb'
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    s=''.join(C[i]['source']); assert old in s, (i, old[:40]); s=s.replace(old,new); C[i]['source']=s.splitlines(True)
+rep(52,"(rank-sum p 1e-69 to 1e-129)","(rank-sum p 7e-69 to 3e-129)")
+i=73; assert C[i]['source'][0].startswith('## Summary')
+rep(i,"| dataset-composition | partially reproduced (4 of 6 counts; CA3 and LS HFO-rate recordings short) | main, LFP |",
+      "| dataset-composition | partially reproduced (4 of 6 counts, assumed: `hpc` units counted as CA1 and ripplesALL as CA1 ripples; CA3 and LS HFO-rate recordings short) | main, LFP |")
+rep(i,"| fig4b-pre-post-unchanged | partially reproduced (assumed normalized CCG; 361 to 503 pairs against 7172) | main |",
+      "| fig4b-pre-post-unchanged | partially reproduced (assumed normalized CCG; 361 to 503 pairs against 7172; a whole-epoch inclusion variant, asked of a reader, keeps 10159 to 15732 pairs and finds a small difference in 4 of 8 normalized readings) | main |")
+rep(i,"| fig4b-hfo-above-behav | reproduced (assumed normalized CCG) | main |",
+      "| fig4b-hfo-above-behav | reproduced (assumed: fails only with raw counts and BEHAV over the whole span) | main |")
+rep(i,"the choices adopted as assumptions are the normalized CCG (Figure 4),",
+      "the choices adopted as assumptions are the units labelled `hpc` as CA1 and ripplesALL as CA1 ripples where CA1Ripples is missing (dataset-composition), the normalized CCG (Figure 4),")
+rep(i,"The electrode and units tables hold no site positions, and each unit has one waveform.",
+      "The electrode and units tables hold no site positions; in the one file per animal listed, the units of DT1, DT2 and DT8 hold one 32-sample waveform each (`raw_waveform`) and those of DT5, DT7 and DT9 none.")
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
-git diff README.md entry.yaml | head -40
 ```
 
 ```
-diff --git a/entries/000218-tingley-2019/README.md b/entries/000218-tingley-2019/README.md
-index 84af5d6..00bec53 100644
---- a/entries/000218-tingley-2019/README.md
-+++ b/entries/000218-tingley-2019/README.md
-@@ -23,7 +23,7 @@ the dandiset.
- | Compression up to 20-fold | Not reproduced |
- | Rates rise in post-behavior NREM in CA1, CA3 and LS | Partially reproduced |
- | HFOs mostly in NREM, rarer than ripples | Partially reproduced |
--| CA1 leads LS by 6.4 ms | Partially reproduced |
-+| CA1 leads LS by 6.4 ms | Partially reproduced (change to not reproduced proposed) |
- | Coupling 0.3 in NREM against 0.15 in WAKE | Not reproduced |
- | Ripple-triggered LS firing higher in NREM | Not reproduced |
- | CA1-LS phase coherence at chance | Not reproduced |
-@@ -39,14 +39,15 @@ reasoning and the differences from the paper's method.
- 
- The paper does not say which channels it used for detection, and its code repository holds no
- analysis of this paper apart from the model of Figure 8, so the detected events are this
--attempt's own. Many of them are not followed by LS firing, and a third of those coupled to CA1
--ripples fall on the same sample as the ripple; most outcomes on HFOs follow from that. Detecting
-+attempt's own. LS firing at them exceeds firing at random times, or before and after the events,
-[... 20 more lines not kept]
+(Bash completed with no output)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -i 's/by more than 3 SEM in only one animal of six, and a third of those coupled to CA1 ripples fall on/by more than 3 SEM in only one animal of six, and a third of the events coupled to CA1 ripples fall on/' entries/000218-tingley-2019/README.md; ls schemas 2>/dev/null; grep -rn "proposed" schemas/*attempt* | head; python -c "
-import json,glob
-f=[x for x in glob.glob('schemas/*') if 'attempt' in x][0]; s=json.load(open(f))
-import pprint
-def walk(o,path=''):
-    if isinstance(o,dict):
-        for k,v in o.items():
-            if k in('proposed','verifications'): print(path+'/'+k); pprint.pprint(v)
-            walk(v,path+'/'+k)
-walk(s)" | head -80; grep -rln "proposed:" attempts | head -3
+cd entries/tingley-2019; grep -n -o ".\{100\}waveform.\{100\}" *.ipynb tingley2019.py README.md | grep -v "^reproduce_tingley_2019.ipynb.*raw_waveform.*DT1, DT2" | head -20
 ```
 
 ```
-attempt.schema.json
-claims.schema.json
-entry.schema.json
-174:          "proposed": {
-/properties/outcomes/items/properties/proposed
-{'additionalProperties': False,
- 'description': 'A change of outcome found after the last verification round, '
-                'held until a further round agrees with it.',
- 'properties': {'blocked_by': {'description': 'Required when outcome is '
-                                              'blocked.',
-                               'enum': ['data_missing',
-                                        'metadata_insufficient',
-                                        'methods_underspecified',
-                                        'data_unreadable',
-                                        'too_large',
-                                        'not_runnable',
-                                        'other']},
-                'outcome': {'enum': ['reproduced',
-                                     'partially_reproduced',
-                                     'not_reproduced',
-[... 57 more lines not kept]
+reproduce_tingley_2019.ipynb:1859:site positions; in the one file per animal listed, the units of DT1, DT2 and DT8 hold one 32-sample waveform each (`raw_waveform`) and those of DT5, DT7 and DT9 none. On the septal shank of the DT7 recordings
 ```
 
-**Agent calls Edit**
+**Agent**
 
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "    channel re-referenced within its shank no animal passes (largest 1.5 SEM, DT2). The detected\n    events include many that are not LS population bursts.",
- "new_string": "    channel re-referenced within its shank no animal passes (largest 1.5 SEM, DT2). Random times\n    mix states; against each neuron's firing 50 to 100 ms before and after the same events, firing\n    at the events is higher in DT1, DT2, DT5 and DT9 and lower in DT7 and DT8, and exceeds 3 SEM\n    only in DT1 (5.2 SEM; DT2 1.6, DT5 1.7, DT9 0.5). In DT2 and DT5 the differences are large\n    (0.024 and 0.037 spikes) but vary widely across neurons. The test does not show raised LS\n    firing at the events outside DT1, and does not show that the events lack it."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "    The highest recording reaches 18.2%; the median recording 1.7%.",
- "new_string": "    The fraction is 0.17 (pooled) to 0.22 (recordings) of the paper's, the spike count 0.22 to\n    0.30. The highest recording reaches 18.2%; the median recording 1.7%."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "Both\n    means are 6 to 7 ms above the paper's.",
- "new_string": "The\n    means are 6.9 (LS) and 7.3 ms (CA1) above the paper's."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "    50 ms of a ripple fall on the same sample (DT8 71%, DT2 62%, DT9 7%). Without them the pooled\n    median is 3.2 ms with LS after CA1 in 55%; DT9 alone gives 3.8 ms. On the LS channel\n    re-referenced within its shank, 4.1% of pairs fall on the same sample, the correlogram still\n    peaks at 0 ms (53.4 SD above the flanks), and the lag is 0.00 ms (a) and 0.80 ms (b), LS after\n    CA1 in 52%. The criterion defines no partial outcome; the coupling part holds and the lag part\n    does not, which is partial under the protocol's general definition. The verifier would give\n    not reproduced.\n  deviations:\n  - Detection as in fig1c-hfo-each-animal; event times are the troughs of the filtered signal.",
- "new_string": "    50 ms of a ripple fall on the same sample (DT8 71%, DT2 62%, DT9 7%). Without the pairs within\n    1 ms the pooled median is 3.2 ms with LS after CA1 in 55%, but by animal it is -3.2 (DT2), -5.6\n    (DT5), -6.4 (DT7), 1.6 (DT8) and 8.0 ms (DT9), so LS leads in three animals. Over all pairs,\n    DT9's median of recording medians is 3.8 ms, inside the tolerance (2.2 to 10.6 ms); the other\n    animals give 0.0 ms. On the LS channel re-referenced within its shank, 4.1% of pairs fall on\n    the same sample, the correlogram still peaks at 0 ms (53.4 SD above the flanks), and the lag\n    is 0.00 ms (a) and 0.80 ms (b), LS after CA1 in 52%. The criterion defines no partial outcome;\n    the coupling part holds and the lag part does not. The verifier would give not reproduced in\n    both rounds, and a change to not reproduced is proposed.\n  deviations:\n  - Detection as in fig1c-hfo-each-animal; event times are the troughs of the filtered signal.\n  proposed:\n    outcome: not_reproduced\n    reason: The criterion calls the claim reproduced only when the lag is within 6.4 +- 4.2 ms under\n      one reading and defines no partial outcome. The lag is 0.00 ms under both readings on the\n      detection channel and 0.00 or 0.80 ms on the re-referenced channel (notebook, fig5d-lag cell\n      and the re-referenced check), and a peak at 0 ms does not show CA1 leading. Calling the\n      coupling alone a partial result reads more into the criterion than it says, so the outcome\n      should be not reproduced, as the verifier gave in rounds 1 and 2."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "    recording rats, and no file holds optogenetic stimulation. No other dandiset of this paper was\n    found on the archive; a search for Tingley finds 000213 and 000233, of other papers.",
- "new_string": "    recording rats, and no file holds an optogenetic series (notebook, fig6-optogenetic-hfos\n    cell). Archive searches for \"Tingley\" and \"lateral septum\" find only 000213, 000218 and\n    000233; 000213 and 000233 are named for other papers."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "    holds clu_id, group_id (the shank) and location, or only ids in nine files. Raw 20 kHz data\n    are in 27 of the 98 files (all DT1 and DT2 files and two DT9 files, about 1.1 TB), from which\n    waveforms could be re-extracted for the DT2 and DT9 recordings; that is not possible within the\n    run time limit, and the other recordings have no raw data.",
- "new_string": "    holds clu_id, group_id (the shank) and location, or only ids in nine files. The notebook's\n    fig7e-ca1-depth cell lists the wide-band data. 20 kHz wide-band series are in 27 of the 98\n    files (all 12 DT1 files, all 13 DT2 files and two DT9 files, which take 1.15 TB). Twelve of\n    them (10 DT2, 2 DT9) hold hippocampal units, 1.00 TB of wide-band data, from which waveforms\n    could be re-extracted; streaming them within the 30 min run limit would need about 556 MB/s,\n    so for these recordings the block is the run time (not_runnable). The other 1579 of 2778\n    hippocampal units, including all of DT5 and DT7, have no wide-band data, so their waveforms\n    are missing, which is the main reason given."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "  statement: 25 units in 9 files have spike times out of order",
- "new_string": "  statement: 25 units in 10 files have spike times out of order"
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/000218-tingley-2019-01.yaml",
- "old_string": "    units cannot be told from multi-unit clusters; 11 units fire above 50 Hz on average.",
- "new_string": "    units cannot be told from multi-unit clusters; 11 units fire above 50 Hz on average. Wide-band\n    data, from which waveforms could be re-extracted, are in 27 of the 98 files (DT1, DT2 and two\n    DT9 files); 1579 of 2778 hippocampal units have none."
-}
-```
-
-```
-The file attempts/000218-tingley-2019-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
+Now dataset-composition texts (main cell 11 and LFP cell 14) and the Figure 7E p bound.
 
 **Agent calls Bash**
 
 ```bash
-cd  cat >> attempts/000218-tingley-2019-01.yaml <<'EOF'
-- date: 2026-10-17
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The full executed notebook of the second run, with its conclusions, figures and summary,
-    the helper module, the claims file and the attempt record.
-  results:
-  - claim: dataset-composition
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: fig1c-hfo-each-animal
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees because the criterion requires it. Random times across the whole recording are a
-      baseline confounded by state; the cell 16 figure shows sharp firing peaks locked to the events
-      in DT1, DT2, DT5 and DT9 (in DT9 about 0.00135 against a baseline of about 0.00075 spikes per
-      bin), and in DT7, DT8 and DT9 the curve at HFOs lies below the curve at random times across
-      the whole window, a baseline offset. DT2 and DT5 fail the 3 SEM test because neurons vary
-      widely (differences 0.031 and 0.034, SEMs 0.025). Measured against each animal's own flanking
-      baseline, 4 of 6 animals appear to show firing locked to the events. The wording in cell 19,
-      the README and the Summary that the events are not followed by LS firing, or are not LS
-      bursts, overstates the evidence; the record should say this.
-    response: Added the test against the flanks it describes, each neuron's firing 50 to 100 ms
-      before and after the same events. Firing at the events is higher than the flanks in DT1, DT2,
-      DT5 and DT9 and lower in DT7 and DT8, but above 3 SEM only in DT1 (5.2 SEM; DT2 1.6, DT5 1.7,
-      DT9 0.5), so over +-10 ms the flanking baseline does not show locked firing in 4 animals.
-      The sentences in cell 19, the README, the Summary and the notes that called the events
-      non-bursts are replaced by what the tests show, raised firing above 3 SEM in DT1 only, and
-      say that this does not show the events lack it. The outcome stays.
-  - claim: fig1c-event-count
-    agrees: true
-    outcome: reproduced
-    reason: Agrees. Remaining problem 1, that neither the detection channel nor the re-referenced
-      one is shown to capture the paper's HFOs (jittered PLV still 0.074 against about 0.021 for
-      random phases; the re-referenced event sets are very different, DT5 4,032 against 34,492).
-    response: The Summary now says that neither channel is shown to capture the paper's HFOs. No
-      further channel choice is fixed by the paper or its code, so this is not resolved here.
-  - claim: figs1-participation
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees. Cell 25 says "a fifth to a third of the paper's values", but the pooled fraction
-      is 0.027 against 0.16, about a sixth. Participation is low (2.7% of LS neurons per event).
-    response: The notebook prints the ratios to the paper's values (fraction 0.17 pooled and 0.22
-      over recordings, spikes 0.22 and 0.30), and cell 25 and the notes now give them.
-  - claim: fig1d-phase-locking
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees. Problem 5 is resolved, as the phase taken on another shank still gives 189.7
-      degrees and 52.3% locked.
-    response: No change.
-  - claim: fig1f-shorter-than-ripples
-    agrees: true
-    outcome: reproduced
-    reason: Agrees. The notes say both means are 6 to 7 ms above the paper's, but the CA1 mean is
-      7.3 ms above (38.3 against 31). Minor.
-    response: The notes now give 6.9 ms (LS) and 7.3 ms (CA1).
-  - claim: fig1g-slower-than-ripples
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees. Affected by remaining problem 1, the detection channel.
-    response: As for fig1c-event-count.
-  - claim: fig1h-no-amplitude-frequency-correlation
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: fig2-confined-to-ls
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees. Affected by remaining problem 1, the detection channel. Problem 4 is acknowledged
-      and the data cannot fix it.
-    response: As for fig1c-event-count.
-  - claim: fig2ef-intermediate-ls
-    agrees: true
-    outcome: blocked
-    reason: Agrees with the stated outcome.
-    response: No change.
-  - claim: fig3-travelling-waves
-    agrees: true
-    outcome: blocked
-    reason: Agrees. The electrode groups and devices are now printed.
-    response: No change.
-  - claim: fig4b-pre-post-unchanged
-    agrees: true
-    outcome: reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: fig4b-hfo-above-behav
-    agrees: true
-    outcome: reproduced
-    reason: Agrees; "as in the paper" (cell 48) agrees with the paper's text.
-    response: No change.
-  - claim: fig4-sessions-few-change
-    agrees: true
-    outcome: blocked
-    reason: Agrees. Problem 2 in revised form remains, the low participation (2.7% of LS neurons per
-      event) that leaves only 106 pairs and blocks this claim.
-    response: Acknowledged; the notes already say the shortfall comes from this attempt's detection.
-      No change.
-  - claim: fig4c-temporal-bias
-    agrees: true
-    outcome: blocked
-    reason: Agrees; same remaining problem as fig4-sessions-few-change.
-    response: As for fig4-sessions-few-change.
-  - claim: fig4d-compression
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: figs2-post-rate-increase
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: fig5b-nrem-and-rates
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: fig5d-lag
-    agrees: false
-    outcome: not_reproduced
-    reason: Not reproduced, as in round 1. The criterion defines no partial outcome. The part of the
-      claim that can be measured, a lag of 6.4 ms with CA1 leading, fails on both channels, 0.00 ms
-      on the detection channel and 0.00 or 0.80 ms re-referenced. A correlogram peak at 0 ms does
-      not show CA1 leading. Also, cell 61 and the notes say "DT9 gives 3.8 ms" without those pairs,
-      but the 3.8 ms comes from all pairs, as the median of DT9's per-recording medians, and it is
-      inside the tolerance (2.2 to 10.6 ms), which neither text says.
-    response: The verified outcome is kept, and a change to not reproduced is proposed under
-      proposed, for the reason the verifier gives. The 3.8 ms sentence is corrected in cell 61 and
-      the notes, which say it is the median of DT9's recording medians over all pairs and inside
-      the tolerance; the notebook now also prints the median without same-sample pairs by animal
-      (-3.2 to 8.0 ms, LS leading in three animals).
-  - claim: fig5e-state-coupling
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees. Affected by remaining problem 1, the detection channel.
-    response: As for fig1c-event-count.
-  - claim: fig5f-ripple-triggered-firing
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
-    response: No change.
-  - claim: fig5f-no-phase-coherence
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees. Affected by remaining problem 1; the jittered PLV on the re-referenced channel is
-      still 0.074, against about 0.021 for random phases.
-    response: As for fig1c-event-count.
-  - claim: fig6-optogenetic-hfos
-    agrees: true
-    outcome: blocked
-    reason: Agrees. The archive search that found 000213 and 000233 has no printed output behind it.
-    response: Added a notebook cell that searches the archive for "Tingley" and "lateral septum"
-      (both find 000213, 000218 and 000233) and counts optogenetic series in the files (none).
-  - claim: fig7e-ca1-spikes
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees. Problem 3 is resolved; the fixed-window variant is shown and the criterion's
-      window decides the outcome.
-    response: No change.
-  - claim: fig7e-state
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees, as for fig7e-ca1-spikes.
-    response: No change.
-  - claim: fig7e-duration
-    agrees: true
-    outcome: partially_reproduced
-    reason: Agrees, as for fig7e-ca1-spikes.
-    response: No change.
-  - claim: fig7e-ca1-depth
-    agrees: true
-    outcome: blocked
-    reason: Agrees it is blocked, but not with the reason. The notes say raw 20 kHz data exist for
-      all DT2 files and two DT9 files, so waveforms could be re-extracted there; for those
-      recordings the limit is run time, not missing data, so data_missing holds only for the rest.
-      The claim of raw data in 27 files, about 1.1 TB, is not shown in the notebook.
-    response: Added a notebook cell listing the wide-band series. 27 of 98 files hold them (all DT1
-      and DT2 files, two DT9 files, 1.15 TB); 12 hold hippocampal units (1.00 TB of wide-band data,
-      about 556 MB/s to stream within the run limit), and 1579 of 2778 hippocampal units, all of
-      DT5 and DT7 among them, have none. The notes now name run time (not_runnable) as the reason
-      for the 12 recordings and keep data_missing as the main reason, since it holds for most units
-      and for two of the four animals with hippocampal units.
-  - claim: fig7e-replay
-    agrees: true
-    outcome: blocked
-    reason: Agrees. The position coverage is now printed.
-    response: No change.
-  - claim: fig7e-seqnmf
-    agrees: true
-    outcome: blocked
-    reason: Agrees with the stated outcome.
-    response: No change.
-  - claim: fig7e-content-independent
-    agrees: true
-    outcome: blocked
-    reason: Agrees; the record states the round-1 reason faithfully.
-    response: No change.
-  - claim: fig8-model
-    agrees: true
-    outcome: blocked
-    reason: Agrees with the stated outcome.
-    response: No change.
+cd entries/tingley-2019; python - <<'EOF'
+import json
+def edit(p, i, old, new):
+    nb=json.load(open(p)); C=nb['cells']
+    s=''.join(C[i]['source']); assert old in s, (p,i, old[:40]); s=s.replace(old,new); C[i]['source']=s.splitlines(True)
+    json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+edit('reproduce_tingley_2019.ipynb',11,"The outcome is decided with reading (a) of the LS neuron count, in the LFP notebook.",
+ "Two of the counts within tolerance rest on choices the paper does not make: 38 CA1 recordings counts units labelled `hpc` as CA1 (29 by the flag), and 55 CA1 ripple rate recordings counts ripplesALL where CA1Ripples is missing (47 with CA1Ripples alone). The outcome is decided with reading (a) of the LS neuron count, in the LFP notebook.")
+edit('lfp_tingley_2019.ipynb',14,"**Result: dataset-composition partially reproduced.**","**Result: dataset-composition partially reproduced, resting on an assumption.**")
+edit('lfp_tingley_2019.ipynb',14,"Four of the six counts other than animals are within tolerance.",
+ "Four of the six counts other than animals are within tolerance. Two of the four rest on choices the paper does not make, adopted as assumptions: units labelled `hpc` counted as CA1 (the `ca3_channel` flag gives 29 CA1 recordings, outside) and ripplesALL counted as CA1 ripples where CA1Ripples is missing (47 recordings, outside). Without either, 3 of 6 counts are within tolerance and the outcome would be not reproduced.")
+edit('fig7e_tingley_2019.ipynb',11,"above chance in all 16 combinations (binomial p <= 3.2e-9)","above chance in all 16 combinations (binomial p at most 1.23e-8)")
 EOF
-python tools/entry.py check entries/000218-tingley-2019 2>&1 | tail -5
+grep -c "1.23e-8" fig7e_tingley_2019.ipynb
 ```
 
 ```
-0 error(s)
+1
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "agrees\|proposed\|assumed" tools/entry.py | head -40
+```
+
+```
+352:                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
+372:                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "tools/entry.py",
+ "offset": 335,
+ "limit": 45
+}
+```
+
+```
+335	        told = not version or int(version[1]) >= 15
+336	        for n, f in enumerate(attempt.get("findings") or [], 1):
+337	            if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+338	                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+339	            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+340	                                                                   "paper_inconsistency") else "data")
+341	            if told and about == "data" and len(used) > 1 and not f.get("datasets"):
+342	                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+343	                                    f"(`datasets:`, from {', '.join(used)})")
+344	            for d in f.get("datasets") or []:
+345	                if str(d) not in used:
+346	                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+347	        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
+348	        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
+349	        agreed = {}
+350	        for rnd in (attempt.get("verifications") or [])[1:]:
+351	            for r in rnd["results"]:
+352	                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
+353	        kinds = lookup(kinds_by_target, attempt) or {}
+354	        for outcome in attempt.get("outcomes", []):
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; python - <<'EOF'
+r=open('README.md').read()
+for a,b in [("two Discussion statements). About 15 minutes.","two Discussion statements). About 20 minutes."),
+            ("HFO power by recording site). About 50 minutes.","HFO power by recording site). About 52 minutes."),
+            ("SPW-R duration (Figure 7E). About 16 minutes.","SPW-R duration (Figure 7E). About 25 minutes."),
+            ("(fig1d-phase-locking). About 30 minutes.","(fig1d-phase-locking). About 15 minutes.")]:
+    assert a in r; r=r.replace(a,b)
+open('README.md','w').write(r)
+y=open('entry.yaml').read()
+for a,b in [("title: Spikes and events\n  runtime_minutes: 12","title: Spikes and events\n  runtime_minutes: 20"),
+            ("title: LFP analyses\n  runtime_minutes: 45","title: LFP analyses\n  runtime_minutes: 52"),
+            ("title: Figure 7E regressions\n  runtime_minutes: 35","title: Figure 7E regressions\n  runtime_minutes: 25"),
+            ("own shank\n  runtime_minutes: 30","own shank\n  runtime_minutes: 15")]:
+    assert a in y, a; y=y.replace(a,b)
+open('entry.yaml','w').write(y)
+EOF
+date -u
+```
+
+```
+Wed Nov 18 22:00:23 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat >> questions/tingley-2019.yaml <<'EOF'
+- claim: fig7e-ca1-spikes
+  asked: 2026-11-18
+  question: The criterion counts the claim reproduced when the percentage is within tolerance under one of 16 combinations
+    of model, cross-validation, window and minimum firing. Over these combinations the measured percentages span 11% to
+    79% (z reading) or 41% to 89% (t-test reading), so a single combination within 10% of the paper's value is likely
+    by chance alone and the criterion can hardly fail. Should the criterion name one combination, or require the
+    percentage to be within tolerance under most of them? The same applies to fig7e-state and fig7e-duration.
+  passage: For every feature, each neuron is shown twice, as a black dot (actual data vs shuffled distribution) and as a
+    red dot (one shuffled iteration vs shuffled distribution). The percentage of neurons surpassing P < 0.05 (two-way
+    T-test) are shown above for each ripple feature. (Figure 7E legend); the paper names one model per feature and no
+    variants.
+  why: Raised by the verifier of round 2. Under the z reading the three claims are within tolerance in 3, 4 and 2 of 16
+    combinations, which the criterion as written scores as reproduced; under a criterion that needs most combinations, or
+    one named combination, they could be partially reproduced or not reproduced.
+- claim: fig4b-pre-post-unchanged
+  asked: 2026-11-18
+  question: The criterion applies the inclusion rule to the spikes used for each CCG, that is to spikes during LS HFOs in
+    PRE and POST, and names no reading that applies it to all spikes of each epoch. The Methods compute CCGs "for each
+    epoch of the recording sessions (PRE, BEHAV, and POST)" and then state the rule. Should the rule also be read as
+    applied to all of the epoch's spikes, with the CCGs still from spikes during HFOs? The same reading would carry to
+    fig4b-hfo-above-behav, fig4-sessions-few-change, fig4c-temporal-bias and fig4d-compression, which use the same pairs.
+  passage: As in (Cheng and Frank, 2008), cross-correlograms (CCG) were calculated for neuron pairs (1 millisecond bins;
+    ±200 milliseconds) for each epoch of the recording sessions (PRE, BEHAV, and POST). Only spike pairs where both
+    neurons fired more than 5 spikes within 200 milliseconds of each other were included. (STAR Methods, Excess
+    correlation analysis); n = 7,172 pairs in 53 sessions (Results, paragraph 3).
+  why: Under the claims file's readings only 361 to 503 pairs in 21 to 23 sessions pass, against 7172 in 53, because few
+    pairs fire together inside the short HFO epochs (795 of 20182 in PRE, 954 in POST). Applied to all spikes of each
+    epoch, the rule keeps 10159 to 15732 pairs in 54 sessions, and PRE and POST then differ (rank-sum p < 0.05) in 4 of
+    the 8 normalized readings (those with the 5 ms SD kernel, p 0.00047 to 0.0082, effect r about -0.02), so
+    fig4b-pre-post-unchanged would not hold under every reading; fig4-sessions-few-change would have 54 sessions, within
+    tolerance.
+EOF
+tail -5 questions/tingley-2019.yaml; python -c "import yaml;print(len(yaml.safe_load(open('questions/tingley-2019.yaml'))['questions']))"
+```
+
+```
+pairs fire together inside the short HFO epochs (795 of 20182 in PRE, 954 in POST). Applied to all spikes of each
+    epoch, the rule keeps 10159 to 15732 pairs in 54 sessions, and PRE and POST then differ (rank-sum p < 0.05) in 4 of
+    the 8 normalized readings (those with the 5 ms SD kernel, p 0.00047 to 0.0082, effect r about -0.02), so
+    fig4b-pre-post-unchanged would not hold under every reading; fig4-sessions-few-change would have 54 sessions, within
+    tolerance.
+3
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd  python - <<'EOF'
-import yaml,re
-s=open('attempts/000218-tingley-2019-01.yaml').read()
-d=yaml.safe_load(s)
-print(len(d['verifications']), len(d['verifications'][1]['results']), len(d['outcomes']))
-def walk(o):
-    if isinstance(o,dict):
-        for v in o.values(): yield from walk(v)
-    elif isinstance(o,list):
-        for v in o: yield from walk(v)
-    elif isinstance(o,str): yield o
-for t in walk(d):
-    if ': ' in t or '—' in t or 'rather' in t: print('!!',t[:120])
+p='attempts/tingley-2019-02.yaml'
+y=open(p).read()
+def rep(old,new):
+    global y
+    assert y.count(old)==1, old[:60]; y=y.replace(old,new)
+# 1 dataset-composition
+rep("""  - 31.1
+  notes: Animals 6""","""  - 31.1
+  assumed: true
+  notes: Animals 6""")
+rep("""    74, mean 31.1 +- 15.5 (within). Four of the six counts other than animals are within tolerance under one reading each,
+    the partial bound. The counts by recording are in the main notebook (claim:dataset-composition).""",
+"""    74, mean 31.1 +- 15.5 (within). Four of the six counts other than animals are within tolerance under one reading each,
+    the partial bound. Two of the four rest on choices adopted as assumptions (38 CA1 recordings with hpc units as CA1, 29
+    by the flag; 55 CA1 ripple rate recordings with ripplesALL, 47 with CA1Ripples alone); without either, 3 of 6 are within
+    tolerance, which would be not reproduced. The counts by recording are in the main notebook (claim:dataset-composition).""")
+rep("""  - CA1 and CA3 recordings are told apart by the units' region label and, as a variant, by the electrodes' ca3_channel flag;
+    most hippocampal units are labelled only hpc.
+  - Recordings with rates are those with the event table and scored sleep; earlier LS tables and ripplesALL are counted as
+    a variant.""",
+"""  - 'Assumed: units labelled hpc are CA1 units, so a recording with LS units and hpc or ca1 units is a CA1 recording. Most
+    hippocampal units are labelled only hpc, the paper names CA1 as the main hippocampal site and CA3 recordings as the
+    exception, and the ca3_channel flag, shown as a variant, gives 29 CA1 recordings. The outcome rests on this choice.'
+  - 'Assumed: CA1 ripple rates come from recordings with CA1Ripples or, where it is missing, the hippocampal ripplesALL
+    table, the lab''s ripple detection on the same electrodes. CA1Ripples alone gives 47 recordings, outside tolerance;
+    the outcome rests on this choice.'
+  - LS HFO rate recordings are those with LSRipples and scored sleep; the earlier LS tables are counted as a variant.""")
+# 2 fig4b-pre-post notes
+rep("""    pairs, 3 passing in PRE and 10 in POST. Of the recordings with LS units, 17 have no trials, 7 no LSRipples and 4 LS units
+    on one shank.'""",
+"""    pairs, 3 passing in PRE and 10 in POST. Of the recordings with LS units, 17 have no trials, 7 no LSRipples and 4 LS units
+    on one shank. A variant the claims file does not name, asked of a reader, applies the inclusion rule to all spikes of
+    PRE and POST (CCGs still from spikes during HFOs): 10159 to 15732 pairs in 54 sessions pass, and PRE and POST differ
+    at p < 0.05 in 8 of 16 readings, 4 of the 8 normalized ones (5 ms SD kernel, p 0.00047 to 0.0082; full-width kernel
+    p 0.15 to 0.29), with small effects (r -0.016 to -0.023, POST higher); 73.8% to 76.6% of these pairs have an excess
+    of exactly 0 in PRE. The outcome is judged on the claims file''s readings.'""")
+# 3 fig4b-hfo-above-behav
+rep("""  notes: Under the 8 normalized readings PRE and POST exceed BEHAV (rank-sum p 7e-69 to 3e-129) and PRE, POST and BEHAV each
+    exceed their jittered values (p <= 2.1e-6). Under raw counts every epoch exceeds its jitter, but with BEHAV from the first
+    to the last trial PRE and POST do not exceed BEHAV (p 0.13 to 0.87). Under the four other jitter seeds all 16 readings
+    keep every epoch above its jitter.""",
+"""  notes: Under the 8 normalized readings PRE and POST exceed BEHAV (rank-sum p 7e-69 to 3e-129) and PRE, POST and BEHAV each
+    exceed their jittered values (p <= 2.1e-6). Under raw counts every epoch exceeds its jitter; with BEHAV inside trials
+    (reading iv-a) PRE and POST also exceed BEHAV (p <= 4.9e-13), but with BEHAV from the first to the last trial they do
+    not (p 0.13 to 0.87). So only raw counts with BEHAV over the whole span give partially reproduced (4 of 16 readings).
+    Under the four other jitter seeds all 16 readings keep every epoch above its jitter. Under the whole-epoch inclusion
+    variant (not in the claims file, asked of a reader) PRE and POST exceed BEHAV at p < 0.001 in 10 of 16 readings, not
+    in the 4 raw readings with the 5 ms SD kernel (p 0.95 to 1) and for PRE not in 2 full-width readings (p 0.0015 and
+    0.0021); its jitter part was not run.""")
+rep("""  deviations:
+  - 'Assumed: the CCG divided by the square root of the product of the two neurons'' spike counts in the epoch (claims reading
+    iii). The paper does not say how the CCG is normalized; the normalized reading is adopted because the paper compares excess
+    correlations across epochs with very different spike counts (BEHAV and HFO epochs), which raw counts do not allow. The
+    raw-count readings are shown.'
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - The jitter""","""  deviations:
+  - 'Assumed: the CCG divided by the square root of the product of the two neurons'' spike counts in the epoch (claims reading
+    iii). The paper does not say how the CCG is normalized; the normalized reading is adopted because the paper compares excess
+    correlations across epochs with very different spike counts (BEHAV and HFO epochs), which raw counts do not allow. The
+    raw-count readings are shown. For this claim the outcome differs only under raw counts with BEHAV over the whole span
+    (reading iv-b); raw counts with BEHAV inside trials also give reproduced.'
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - The jitter""")
+# 4 sessions
+rep("""    at p < 0.01 (fraction 0 to 0.043); under raw counts 0 or 1 (up to 0.048). No reading has both directions.""",
+"""    at p < 0.01 (fraction 0 to 0.043); under raw counts 0 or 1 (up to 0.048). No reading has both directions. Under the whole-epoch
+    inclusion variant (not in the claims file, asked of a reader), 54 sessions have pairs and 0 to 10 differ (fraction up
+    to 0.185), none with PRE above POST.""")
+# 5 fig7e-state
+rep("above chance in all (binomial p <= 3.2e-9)","above chance in all (binomial p at most 1.23e-8)")
+# 6 fig7e-ca1-depth
+rep("""    power profile across a shank's sites. The units hold one waveform each and the dandiset stores no electrode positions.""",
+"""    power profile across a shank's sites. The dandiset stores no electrode positions, and the units hold at most one waveform
+    each (raw_waveform, 32 samples, in the DT1, DT2 and DT8 files listed; none in those of DT5, DT7 and DT9).""")
+# 7 finding
+rep("""  statement: The electrode table holds no site positions and the units table one waveform per unit (raw_waveform, max_waveform_channel).""",
+"""  statement: The electrode table holds no site positions, and the units table at most one waveform per unit (raw_waveform,
+    32 samples, with max_waveform_channel, in the DT1, DT2 and DT8 files listed; no waveform in the DT5, DT7 and DT9 files).""")
+# 8 methods finding
+rep("""    CCG was assumed. Which pairs passed inclusion (7172), given that the dataset yields 361 to 503 under the stated rule applied
+    to HFO spikes?'""","""    CCG was assumed. Which pairs passed inclusion (7172), given that the dataset yields 361 to 503 under the stated rule applied
+    to HFO spikes, and 10159 to 15732 when it is applied to all spikes of each epoch?'""")
+open(p,'w').write(y)
 EOF
-grep -n "—\|rather" entries/000218-tingley-2019/README.md; python -c "
-import json;nb=json.load(open('entries/000218-tingley-2019/reproduce_tingley_2019.ipynb'))
-for c in nb['cells']:
-  s=''.join(c['source'])
-  if '—' in s or ' rather' in s: print(s[:200])"
+python -c "import yaml;yaml.safe_load(open('attempts/tingley-2019-02.yaml'))" && echo ok
 ```
 
 ```
-2 31 31
+ok
 ```
-
-**Agent**
-
-The record is updated and passes the check. I'm re-running the entry once more so the executed copy matches the final text.
 
 **Agent calls Bash**
 
 ```bash
-cd  python tools/entry.py all entries/000218-tingley-2019 2>&1 | tail -3
+cd  python - <<'EOF'
+p='attempts/tingley-2019-02.yaml'
+y=open(p).read()
+old="""    hippocampal units are labelled only hpc, the paper names CA1 as the main hippocampal site and CA3 recordings as the
+    exception, and the ca3_channel flag, shown as a variant, gives 29 CA1 recordings. The outcome rests on this choice.'"""
+new="""    hippocampal units are labelled only hpc, while the units of 10 recordings are labelled ca3, so hpc is read as the label
+    of the units not in CA3. The ca3_channel flag, shown as a variant, gives 29 CA1 recordings. The outcome rests on this
+    choice.'"""
+assert y.count(old)==1; y=y.replace(old,new)
+old="""    response: 'No change; the data check now lists every electrode and units column in one file per animal: no position column,
+      one raw_waveform per unit.'"""
+assert y.count(old)==1
+y=y.replace(old,"""    response: 'No change; the data check now lists every electrode and units column in one file per animal: no position column,
+      and at most one raw_waveform per unit (none in the DT5, DT7 and DT9 files; corrected in round 2).'""")
+open(p,'w').write(y)
+EOF
+date -u
 ```
 
 ```
-Installed kernelspec registry-000218-tingley-2019 in executed/000218-tingley-2019/.venv/share/jupyter/kernels/registry-000218-tingley-2019
+Wed Nov 18 22:01:19 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+y=yaml.safe_load(open('attempts/tingley-2019-02.yaml'))
+for o in y['outcomes']: print(o['claim'], o['outcome'])
+EOF
+```
+
+```
+dataset-composition partially_reproduced
+fig1c-hfo-each-animal partially_reproduced
+fig1c-post-burst-suppression not_reproduced
+fig1c-event-count reproduced
+figs1-participation not_reproduced
+fig1d-phase-locking partially_reproduced
+fig1f-shorter-than-ripples reproduced
+fig1g-slower-than-ripples reproduced
+fig1h-no-amplitude-frequency-correlation reproduced
+fig2-confined-to-ls not_reproduced
+fig2ef-intermediate-ls blocked
+fig3-travelling-waves blocked
+fig4b-pre-post-unchanged partially_reproduced
+fig4b-hfo-above-behav reproduced
+fig4-sessions-few-change not_reproduced
+fig4c-temporal-bias reproduced
+fig4d-compression partially_reproduced
+figs3d-hpc-compression-post partially_reproduced
+figs2-post-rate-increase partially_reproduced
+figs2c-no-ls-reactivation reproduced
+[... 19 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/v2.py <<'PYEOF'
+import yaml
+p='attempts/tingley-2019-02.yaml'
+y=yaml.safe_load(open(p))
+out={o['claim']:o['outcome'] for o in y['outcomes']}
+REST="The remaining outcomes are unchanged from round 1 and still match the printed outputs."
+R={
+"dataset-composition":("The partial bound needs 4 of the 6 counts to be within tolerance. Two of the four count only under choices the attempt made: CA1 recordings = 38 only if units labelled hpc count as CA1 (the ca3_channel flag reading gives 29), and CA1-rate recordings = 55 only if ripplesALL counts as CA1 ripples (CA1Ripples alone gives 47, below the lower bound of 47.7). Dropping either choice leaves 3 of 6, which is not_reproduced. Both choices are listed as deviations and are reasonable, but the outcome should carry assumed: true.",
+  "Outcome kept, now with assumed: true. The two choices are written as assumptions in the deviations, with why, and the notes, the LFP notebook's result and the Summary say that without either 3 of 6 counts are within tolerance."),
+"fig1c-post-burst-suppression":("In round 1 I disagreed. I now agree. The claims file names both windows and does not say which decides. Taking the window from each event's stop as 'immediately following the population burst' is stated and reasonable. Under that window no seed shows suppression (main cell 24). The +20..50 ms window passes under 3 of 5 seeds and in 1 of 6 animals.","No change."),
+"ls-spikes-not-locked-to-ca1-ripples":("In round 1 I said partially_reproduced, but the criterion only allows reproduced or not reproduced. I now agree with not_reproduced. Using spikes inside CA1 ripples is stated and the closer reading of 'individual waves'. The result is marginal: 43 of 599 neurons are locked (7.2%), binomial p = 0.012, against a 4.9% shuffle null (LFP cell 16).","No change."),
+"fig1h-no-amplitude-frequency-correlation":("Stated and reasonable. The recomputed maximum NSS differs in scale (median 4.69 against 8.03) and gives r = 0.081, p = 1.3e-38. So the outcome rests on using the deposited peak_normed_power, which is the lab's own value.","No change."),
+"fig4b-pre-post-unchanged":("Using the normalized CCG is reasonable. Raw counts carry the extra HFO time in POST (355 s against 252 s). Part of the justification is misstated: main cell 47 says BEHAV medians are 10 to 100 times the HFO ones in raw counts, but the printed raw medians are comparable (BEHAV 0.088-0.66 against PRE 0.32-0.44); only the means differ that much (13.1-83 against 0.60-0.85). Remaining (B2): every Figure 4 claim rests on 361-503 pairs, about 6% of the paper's 7,172; the claims file applies the inclusion rule to HFO-only spikes in every epoch and names no reading that applies it over the whole epoch, which would probably retain far more pairs. Reported as a gap in the claims file, not a correction.",
+  "Outcome kept. The sentence is corrected: the raw means and medians of each epoch are now printed in the Figure 4 table and the conclusion quotes both. The whole-epoch reading is run as a variant and asked of a reader (questions/tingley-2019.yaml): 10159 to 15732 pairs in 54 sessions pass, and PRE and POST differ at p < 0.05 in 4 of 8 normalized readings (5 ms SD kernel, p 0.00047 to 0.0082, r about -0.02). The outcome stays as tested on the claims file's readings; the notes and the methods_unavailable finding give the variant."),
+"fig4b-hfo-above-behav":("The flag overstates the dependence. Under raw counts with BEHAV inside trials (the claims file's reading iv-a), both parts also hold (main cell 49, rows 1, 5, 9 and 13).",
+  "Outcome and assumed: true kept, as the outcome still differs under raw counts with BEHAV over the whole span; the conclusion, the notes and the deviation now say that only that combination (4 of 16 readings) fails. The whole-epoch inclusion variant is reported for part 1."),
+"fig4-sessions-few-change":(REST,"No change; the notes add the whole-epoch inclusion variant (54 sessions, still no reading with both directions)."),
+"fig5e-state-coupling":("Pooling all HFOs is stated and reasonable: the paper's NREM fraction of 0.3 matches the pooled 0.302. The pooled test treats HFOs as independent, and DT9 supplies 9,783 of the 15,605 NREM HFOs. In DT5 the gap is small (0.160 against 0.131).","No change."),
+"fig7e-ca1-spikes":("These follow from the claims file's t-test reading, judged against that test's own chance rate. They are open: under the z reading, each claim is within tolerance in 3, 4 and 2 of 16 combinations, which the criterion would score as reproduced. That question is now with a reader. A further claims-file issue: the criterion 'within tolerance under one combination', applied to 16 combinations spanning 11-79%, is nearly impossible to fail.",
+  "Outcome kept. The criterion's dependence on one of 16 combinations is added to questions/tingley-2019.yaml as a second question for a reader."),
+"fig7e-state":("As fig7e-ca1-spikes. Fig. 7E cell 11 and the record's notes say binomial p <= 3.2e-9, but cell 9, row 46 (state, start-stop, Poisson, cross-validated) prints 1.23e-08; the largest p is about 1.2e-8. The outcome does not change.",
+  "Outcome kept; the bound is corrected to p at most 1.23e-8 in the notebook and the notes. The criterion question is asked as for fig7e-ca1-spikes."),
+"fig7e-duration":("As fig7e-ca1-spikes.","As fig7e-ca1-spikes."),
+"fig7e-ca1-depth":("Main cell 72 (Summary), the record's last metadata_insufficient finding and its fig7e-ca1-depth response say each unit has one waveform, one raw_waveform per unit. Main cell 8 shows no raw_waveform column at all in the units tables of DT5, DT7 and DT9. The block still stands.",
+  "Block kept. The Summary, the notes, the finding and the round-1 response now say the units hold at most one 32-sample raw_waveform, in the DT1, DT2 and DT8 files listed, and none in those of DT5, DT7 and DT9."),
+"fig2-confined-to-ls":("B6, does not change the outcome. The septal-shank labels alternate along channel order, so whether the labels are reliable cannot be settled. The two-chunk limit is unchanged. The outcome rests on the labels, as the record states.","No change."),
+"discussion-medial-septum":("B6, does not change the outcome. The septal-shank labels alternate along channel order, so whether the labels are reliable cannot be settled. The two-chunk limit is unchanged. The outcome rests on the labels, as the record states.","No change."),
+"fig1d-phase-locking":("B5 resolved: the own-shank reading now covers every neuron (81.1%, still below 83.25%). "+REST,"No change."),
+"fig5f-ripple-triggered-firing":("B7 resolved: 'WAKE outside trials' was run. "+REST,"No change."),
+"figs2c-no-ls-reactivation":("B9 resolved: the conclusion now says the positive control is weak. "+REST,"No change."),
+"fig7e-content-independent":("B11 resolved: blocked_by changed to 'other' with the correct reason. "+REST,"No change."),
+"fig7e-coupled-only":("B11 resolved: blocked_by changed to 'other' with the correct reason. "+REST,"No change."),
+}
+results=[]
+for o in y['outcomes']:
+    c=o['claim']; r,resp=R.get(c,(REST,"No change."))
+    results.append(dict(claim=c, agrees=True, outcome=out[c], reason=r, response=resp))
+blk=dict(date='2026-11-18', kind='agent',
+  by='Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)',
+  reviewed="The full executed notebooks of round 1's revision (main, LFP, Figure 7E and own-shank), the helper module, the claims file, the questions file and the attempt record, with the paper's full text. The verifier checked each stated outcome and assumption, every sentence of the conclusions, the Summary, the README and the record's notes against the printed outputs, and its round-1 points.",
+  results=results)
+txt=yaml.safe_dump([blk], sort_keys=False, width=120, allow_unicode=True)
+txt=''.join(txt)
+open(p,'a').write(txt)
+y2=yaml.safe_load(open(p)); print(len(y2['verifications']), len(y2['verifications'][-1]['results']))
+PYEOF
+python $TMPDIR/v2.py; tail -30 attempts/tingley-2019-02.yaml
+```
+
+```
+2 39
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig7e-content-independent
+    agrees: true
+    outcome: blocked
+    reason: 'B11 resolved: blocked_by changed to ''other'' with the correct reason. The remaining outcomes are unchanged from
+      round 1 and still match the printed outputs.'
+    response: No change.
+  - claim: fig7e-coupled-only
+    agrees: true
+    outcome: blocked
+    reason: 'B11 resolved: blocked_by changed to ''other'' with the correct reason. The remaining outcomes are unchanged from
+      round 1 and still match the printed outputs.'
+    response: No change.
+  - claim: discussion-medial-septum
+    agrees: true
+    outcome: not_reproduced
+    reason: B6, does not change the outcome. The septal-shank labels alternate along channel order, so whether the labels
+      are reliable cannot be settled. The two-chunk limit is unchanged. The outcome rests on the labels, as the record states.
+[... 11 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py check entries/tingley-2019 2>&1 | tail -15; date -u
+```
+
+```
 0 error(s)
-pass  reproduce_tingley_2019.ipynb  (1109 s)
+Wed Nov 18 22:02:01 UTC 2026
+```
+
+**Agent**
+
+Checks pass. Now the full re-run (about 110 minutes from the last run's timings: 20 + 52 + 25 + 15 min).
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py all entries/tingley-2019 2>&1 | tail -25; date -u
+```
+
+```
+Installed kernelspec registry-tingley-2019 in executed/tingley-2019/.venv/share/jupyter/kernels/registry-tingley-2019
+0 error(s)
+pass  reproduce_tingley_2019.ipynb  (1043 s)
+pass  lfp_tingley_2019.ipynb  (2947 s)
+pass  fig7e_tingley_2019.ipynb  (1789 s)
+pass  shanks_tingley_2019.ipynb  (795 s)
+
+real	109m45.311s
+user	98m52.469s
+sys	20m43.782s
+Wed Nov 18 23:51:51 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "def entry_hash" -A25 tools/entry.py
+```
+
+```
+526:def entry_hash(entry_dir: Path) -> str:
+527-    """A hash of everything a run of the entry's notebooks reads from the repository: every file of the entry (its
+528-    notebooks, helpers, lock and entry.yaml, which names the Python and the dataset versions), the packages `run`
+529-    adds, and RUN_VERSION. Two runs from the same hash execute the same code on the same data versions."""
+530-    import hashlib
+531-    h = hashlib.sha256(f"run {RUN_VERSION}; harness {' '.join(HARNESS)}; python {python_of(entry_dir)}\n".encode())
+532-    for path in sorted(p for p in entry_dir.rglob("*") if p.is_file()):
+533-        rel = path.relative_to(entry_dir)
+534-        if any(part in ("__pycache__", ".ipynb_checkpoints", ".venv") or part.endswith(".pyc") for part in rel.parts):
+535-            continue
+536-        h.update(f"{rel.as_posix()}\0{file_hash(path)}\n".encode())
+537-    return h.hexdigest()
+538-
+539-
+540-def reusable(entry_dir: Path, output_dir: Path, max_minutes: float) -> dict | None:
+541-    """The stamp of executed copies that a run now would only make again: made from this hash, each copy still as
+542-    the run left it, each within the time limit asked for now, and not older than REUSE_DAYS. Else None."""
+543-    try:
+544-        stamp = json.loads((output_dir / STAMP).read_text())
+545-        entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+[... 6 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json, os, re, difflib
+def txt(c):
+    r=[]
+    for o in c.get('outputs',[]):
+        if 'text' in o: r.append(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data']: r.append(''.join(o['data']['text/plain']))
+    return re.sub(r'peak memory [\d.]+','pm',re.sub(r'in \d+ s','in N s','\n'.join(r)))
+a=json.load(open('executed/tingley-2019/reproduce_tingley_2019.ipynb'))
+b=json.load(open(os.path.join(os.environ['TMPDIR'],'dev/main_exec.ipynb')))
+for i,(x,y) in enumerate(zip(a['cells'],b['cells'])):
+    if txt(x).replace('\n\n','\n')!=txt(y).replace('\n\n','\n'): print('main differs at',i)
+f=json.load(open('executed/tingley-2019/fig7e_tingley_2019.ipynb'))
+t=txt(f['cells'][9]); print(re.findall(r'.*paper \d+%.*\n.*z reading.*',t)); print(re.findall(r'Synthetic.*',t))
+print([l for l in t.splitlines() if l.startswith('46 ')])
+for i,c in enumerate(f['cells']):
+    if c['cell_type']=='code' and i>9: print(i, txt(c)[:1500])
+EOF
+```
+
+```
+['ca1-spikes: paper 38%; combinations within tolerance 0 of 16; range 47.0 to 80.0%; above chance (binomial p < 0.05) in 16\n   z reading: range 15.2 to 64.6%; within tolerance 3 of 16; chance 2.3 to 7.4%; above chance (binomial p < 0.05) in 16', 'state: paper 26%; combinations within tolerance 0 of 16; range 44.4 to 63.9%; above chance (binomial p < 0.05) in 16\n   z reading: range 16.8 to 39.5%; within tolerance 4 of 16; chance 2.1 to 5.8%; above chance (binomial p < 0.05) in 16', 'duration: paper 20%; combinations within tolerance 0 of 16; range 41.1 to 89.0%; above chance (binomial p < 0.05) in 16\n   z reading: range 11.1 to 79.2%; within tolerance 2 of 16; chance 1.9 to 6.2%; above chance (binomial p < 0.05) in 16']
+['Synthetic null (actual drawn from the shuffle distribution): t reading 42.2%, z reading 2.5% of neurons significant']
+['46       state  start-stop  poisson   True           0     1238     50.2            42.3  1.23e-08       16.8               2.1  2.97e-117       False']
+10 seed 2545904651: ca1-spikes 47.1-63.9% (within tolerance 0; z reading 15.5-47.1%, within tolerance 1); duration 40.1-72.0% (within tolerance 0; z reading 11.0-58.2%, within tolerance 0); state 44.9-58.2% (within tolerance 0; z reading 16.9-35.4%, within tolerance 1)
+
+seed 2545905651: ca1-spikes 47.0-64.1% (within tolerance 0; z reading 15.2-47.7%, within tolerance 1); duration 41.1-71.4% (within tolerance 0; z reading 10.9-58.5%, within tolerance 0); state 44.5-57.7% (within tolerance 0; z reading 16.7-35.5%, within tolerance 0)
+
+seed 2545906651: ca1-spikes 46.8-63.4% (within tolerance 0; z reading 15.9-47.1%, within tolerance 1); duration 41.7-71.2% (within tolerance 0; z reading 11.0-58.8%, within tolerance 0); state 44.5-57.9% (within tolerance 0; z reading 16.8-35.5%, within tolerance 0)
+
+seed 2545907651: ca1-spikes 46.6-64.2% (within tolerance 0; z reading 15.8-47.2%, within tolerance 1); duration 41.1-71.0% (within tolerance 0; z reading 11.3-58.2%, within tolerance 0);
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json, re
+def alltxt(p):
+    nb=json.load(open(p)); r=[]
+    for c in nb['cells']:
+        for o in c.get('outputs',[]):
+            if 'text' in o: r.append(''.join(o['text']))
+            elif 'data' in o and 'text/plain' in o['data']: r.append(''.join(o['data']['text/plain']))
+    return '\n'.join(r)
+L=alltxt('executed/tingley-2019/lfp_tingley_2019.ipynb'); Sh=alltxt('executed/tingley-2019/shanks_tingley_2019.ipynb')
+for k in ['1996','1209','883','1129','61.3','5.2%','-167.0','39.3','76.8','0.186','0.104','14.7','43 of 599','61 of 1218','0.877','0.081','1.3e-38','12.32','44.33','0.97','6.00','3.40','2.4','81.6','25690','0.068','0.136','4.9']:
+    print(k, k in L)
+for k in ['732','863','1615','1992','81.1','84.8']:
+    print('sh',k, k in Sh)
+EOF
+```
+
+```
+1996 True
+1209 True
+883 True
+1129 True
+61.3 False
+5.2% False
+-167.0 True
+39.3 False
+76.8 False
+0.186 True
+0.104 True
+14.7 True
+43 of 599 False
+61 of 1218 False
+0.877 True
+0.081 True
+1.3e-38 True
+12.32 True
+44.33 True
+0.97 True
+[... 14 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -1322,70 +1486,109 @@ pass  reproduce_tingley_2019.ipynb  (1109 s)
 ```bash
 cd  python - <<'EOF'
 import json
-nb=json.load(open('executed/000218-tingley-2019/reproduce_tingley_2019.ipynb'))
-want=['animals above 3 SEM against the flanks','ratio to the paper','pooled median without pairs','in 10 files','files with a wide-band','556 MB/s','1579 of 2778','archive search','streamed and processed','pooled CA1-LS CCG','(a) pooled over']
-for c in nb['cells']:
-    for o in c.get('outputs',[]):
-        t=''.join(o.get('text',''))
-        for line in t.splitlines():
-            if any(w in line for w in want): print(line)
+def show(p, keys):
+    nb=json.load(open(p))
+    for i,c in enumerate(nb['cells']):
+        tags=c.get('metadata',{}).get('tags',[])
+        if any(k in t for t in tags for k in keys) and c['cell_type']=='code':
+            for o in c.get('outputs',[]):
+                if 'text' in o: print(f'--[{i}]', ''.join(o['text'])[-2500:])
+show('executed/tingley-2019/lfp_tingley_2019.ipynb',['fig1d','ls-spikes-not'])
+show('executed/tingley-2019/shanks_tingley_2019.ipynb',['fig1d'])
 EOF
-git status --short
 ```
 
 ```
-streamed and processed in 17.7 min
-units with spike times out of order: 25, in 10 files:
-animals above 3 SEM against the flanks: 1 of 6
-(a) pooled over 31984 events: fraction of LS neurons firing 0.027, spikes per neuron per event 0.051
-ratio to the paper's values: fraction 0.17 (pooled), 0.22 (recordings); spikes 0.22 (pooled), 0.30 (recordings)
-pooled CA1-LS CCG (5 ms bins): peak within +-25 ms 2966 at 0 ms; flanks (100-200 ms) mean 95.9, SD 17.3; peak - flank = 166.3 SD
-by animal, pooled median without pairs within 1 ms (ms): {'DT2': -3.2, 'DT5': -5.6, 'DT7': -6.4, 'DT8': 1.6, 'DT9': 8.0}
-archive search 'Tingley': 3 dandisets
-archive search 'lateral septum': 3 dandisets
-files with a wide-band series: 27 of 98; wide-band data 1.43 TB, files 1.15 TB
-wide-band files with hpc units: 12, 1.00 TB; streaming them within the 30 min run limit needs 556 MB/s
-hpc units in files without wide-band data: 1579 of 2778
- M attempts/000218-tingley-2019-01.yaml
- M entries/000218-tingley-2019/README.md
- M entries/000218-tingley-2019/entry.yaml
- M entries/000218-tingley-2019/ls_hfo.py
- M entries/000218-tingley-2019/reproduce_tingley_2019.ipynb
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-[... 8 more lines not kept]
+--[13] detection channel, 120-200 Hz: LS neurons 2327; with > 50 spikes in high-power epochs 1996; significant 1209; fraction (a) 0.606, (b) 0.520; null fraction (10 shifts) 0.052
+   preferred phase of significant neurons: circular mean -167.0 deg (|distance to 180| 13.0); Rayleigh over neurons p = 0, r = 0.78; median resultant length 0.206
+own shank channel, 120-200 Hz: LS neurons 1299; with > 50 spikes in high-power epochs 1129; significant 883; fraction (a) 0.782, (b) 0.680; null fraction (10 shifts) 0.053
+   preferred phase of significant neurons: circular mean -164.0 deg (|distance to 180| 16.0); Rayleigh over neurons p = 1.7e-302, r = 0.80; median resultant length 0.313
+detection channel, 120-180 Hz: LS neurons 2327; with > 50 spikes in high-power epochs 2013; significant 1234; fraction (a) 0.613, (b) 0.530; null fraction (10 shifts) 0.051
+   preferred phase of significant neurons: circular mean -165.2 deg (|distance to 180| 14.8); Rayleigh over neurons p = 0, r = 0.76; median resultant length 0.193
+
+Per animal (detection channel, 120-200 Hz): neurons > 50 spikes, fraction significant
+         count   mean
+subject              
+DT1        560  0.768
+DT2        287  0.446
+DT5        428  0.696
+DT7         44  0.545
+DT8        239  0.657
+DT9        438  0.393
+Neurons with > 50 spikes per recording: 5 to 62, mean 27.3 +- 14.7 (paper: 8-74, 29.6 +- 15.5); recordings 73
+dataset-composition reading (a): LS neurons with > 50 spikes in high-power epochs = 1996 (paper 1989, tolerance 198.9)
+High-power epochs cover a median 0.026 of each recording
+
+[... 14 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd executed/tingley-2019; grep -l "1615" *.ipynb; grep -o ".\{200\}1615.\{100\}" shanks_tingley_2019.ipynb | head -3
+```
+
+```
+lfp_tingley_2019.ipynb
+shanks_tingley_2019.ipynb
+ed; 10 circular shifts give about 5%; significant neurons prefer -167.7 degrees. With the 883 of 1129 neurons of the in-block shanks (LFP notebook), the own-shank reading covers 1992 neurons of which 1615 (81.1%) are locked, below the tolerance's lower bound of 83.25%. The outcome is in the LFP notebook
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py check entries/tingley-2019 2>&1 | tail -3; python tools/entry.py run entries/tingley-2019 2>&1 | tail -3; grep -n "—\|rather" attempts/tingley-2019-02.yaml questions/tingley-2019.yaml entries/tingley-2019/README.md | head; date -u
+```
+
+```
+0 error(s)
+pass  fig7e_tingley_2019.ipynb  (1789 s, reused)
+pass  shanks_tingley_2019.ipynb  (795 s, reused)
+reused the executed copies of 2026-11-18 23:51 UTC: nothing the run reads has changed since (hash 151b16a0e683). Nothing was executed and no environment was built; --fresh runs it again.
+Wed Nov 18 23:52:31 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/tingley-2019; grep -c "—" *.ipynb; grep -o ".\{40\}rather.\{40\}" *.ipynb | head
+```
+
+```
+fig7e_tingley_2019.ipynb:0
+lfp_tingley_2019.ipynb:0
+reproduce_tingley_2019.ipynb:0
+shanks_tingley_2019.ipynb:0
 ```
 
 **Agent**
 
-No outcome changed. For fig5d-lag I kept the verified outcome and proposed a change from partially reproduced to not reproduced, which a third verification round now has to review. The entry ran twice from a clean environment (about 18 minutes each) and passes the check. The numbers did not change, and every conclusion matches the final run.
+No outcome changed and none is proposed, so no third verification round is needed. The verifier agreed with all 39 outcomes. The entry was re-run with `python tools/entry.py all entries/tingley-2019`: the checks report 0 errors and all four notebooks pass. Every number I quote below comes from that run.
 
-**The fig5d-lag proposal.** The verifier is right. The criterion has no partial outcome and requires the lag to be within 6.4 ± 4.2 ms under one reading. The measured lag is 0.00 ms on the detection channel, and 0.00 or 0.80 ms on the re-referenced channel. The analysis behind this was already in the notebook, and I added the lag by animal with same-sample pairs removed: it runs from -3.2 to 8.0 ms, and LS leads CA1 in three animals.
-
-**Outputs added**
-- **fig1c-hfo-each-animal:** I added the test the verifier described, comparing firing at each event with each neuron's own firing 50 to 100 ms before and after it. It does not bear out the verifier's reading that 4 of 6 animals show locked firing. Firing is higher than this baseline in DT1, DT2, DT5 and DT9, but above 3 SEM only in DT1 (5.2 SEM). I replaced every sentence calling the events "non-bursts" (cell 19, Summary, README, notes) with what the tests show.
-- **fig7e-ca1-depth:** a new cell lists the wide-band data. 27 of the 98 files hold 20 kHz series, 1.15 TB in total. Twelve of them hold hippocampal units, and streaming them within the 30-minute limit would need about 556 MB/s, so the block there is run time (`not_runnable`, now in the notes). I kept `data_missing` as the main reason because 1579 of 2778 hippocampal units, including all of DT5 and DT7, have no wide-band data.
-- **fig6-optogenetic-hfos:** a new cell searches the archive for "Tingley" and "lateral septum" and finds only 000213, 000218 and 000233. It also confirms that no file holds an optogenetic series.
-- **Data check:** the unsorted spike times are in 10 files, not 9. The finding and the notebook text are corrected.
-- **figs1-participation:** the notebook now prints the ratios to the paper's values, which replace "a fifth to a third".
+**Outcomes and flags**
+- **dataset-composition:** now marked `assumed: true`. Two of the four counts within tolerance only count under choices I made: units labelled `hpc` counted as CA1 (38 recordings; the `ca3_channel` flag gives 29), and `ripplesALL` counted as CA1 ripples (55; `CA1Ripples` alone gives 47). The record, the LFP notebook's result and the Summary now say that without either choice only 3 of 6 counts are within tolerance, which would be not reproduced.
+- **fig4b-hfo-above-behav:** kept as reproduced and assumed. The text now says it fails only in the 4 of 16 readings with raw counts and maze-traversal (BEHAV) time taken over the whole span. With raw counts and BEHAV inside trials, both parts also hold.
 
 **Text corrected**
-- fig5d: the 3.8 ms is now described as DT9's median over all pairs, and inside the tolerance.
-- fig1f: the means are now 6.9 and 7.3 ms above the paper's.
-- The README runtime is now 18 minutes (it said 23), and `entry.yaml` matches.
-- The Summary now says neither the detection channel nor the re-referenced one is shown to capture the paper's HFOs.
+- **Main notebook, Figure 4 result:** the false "BEHAV medians are 10 to 100 times" sentence is replaced. The Figure 4 table now prints means as well as medians: the means are 13.1 to 83.0 for BEHAV against 0.60 to 0.85 for the pre-maze epoch (PRE), while the medians are comparable.
+- **fig7e-state:** the bound is now "binomial p at most 1.23e-8" in the notebook and the record.
+- **"one waveform per unit":** corrected in the Summary, the fig7e-ca1-depth notes, the finding and the round-1 response. In the one file listed per animal, units in the DT1, DT2 and DT8 files hold one 32-sample `raw_waveform`; those in the DT5, DT7 and DT9 files hold none.
+- **Run times:** updated in the README and `entry.yaml`. The Figure 7E notebook took 24 minutes before and 30 minutes in this run; the README says about 25. I left it there because editing the README would invalidate the run stamp, and a second full run (about 110 minutes) would not have finished before the 01:47 cut-off.
 
-To support the wide-band inventory, `ls_hfo.py` now also records the `acquisition` series.
-
-**Round 2 is recorded** under `verifications`: 31 claims, with agreement on 30 and disagreement on fig5d-lag.
+**Added**
+- **Whole-epoch inclusion variant for Figure 4:** a new cell in the main notebook applies the pair-inclusion rule to all spikes of the pre- and post-maze epochs, keeping the cross-correlograms from spikes during HFOs.
+  - It keeps 10,159 to 15,732 pairs in 54 sessions, against 361 to 503 under the claims file's readings and 7,172 in 53 in the paper.
+  - The pre-maze and post-maze epochs then differ in 4 of the 8 normalized readings, all with the 5 ms SD kernel (p 0.00047 to 0.0082, r about -0.02).
+  - Under this variant fig4b-pre-post-unchanged would not hold in every reading. It is not one of the claims file's readings, so the outcome stays as tested and the variant is reported in the notes and conclusions of the Figure 4 claims.
+- **Two questions for a reader** in `questions/tingley-2019.yaml`:
+  - whether the inclusion rule should also be read over the whole epoch;
+  - that the Figure 7E criterion ("within tolerance under one of 16 combinations") can hardly fail.
+- **Round 2 in `verifications`:** all 39 claims, with the verifier's reasons in its own words and my responses.
 
 **Not done**
-- The verifier's remaining problem 1 (which channel captures the paper's HFOs) and problem 3 (low participation, which leaves too few pairs for the fig4 per-session claims) are acknowledged in the record but not fixed. Neither the paper nor its code says which channels were used, so there is no further choice to test.
-- Some untracked files I did not create appeared in the repository root (`.bashrc`, `.idea`, `scripts` and others). I left them alone.
-
-Nothing is committed, as instructed.
+- The jitter test was not run under the whole-epoch variant, as the notebook says.
+- Nothing has been committed or pushed.
 
 ## End of run
 
-37 turns, 42 minutes, result: success.
+49 turns, 135 minutes, $4.49 at API prices, result: success.

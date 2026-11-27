@@ -1,0 +1,123 @@
+# mehrotra-2024, Mehrotra et al. 2024
+
+One claim reproduced on the dandiset, none partially, one not reproduced and
+two blocked, for missing data; `fig5f-rsc-pmr-onset`, the reproduced one, rests
+on an assumption. Of the 18 claims on data elsewhere, eight reproduced, four
+not reproduced and six blocked, so that the attempt has 9 reproduced, 5 not
+reproduced and 8 blocked of 22, seven of them resting on an assumption. The
+first verification round agreed with 17 of the 22 outcomes and disagreed on
+`fig1b-no-dv-tuning-gradient`, which it held not reproduced, on
+`fig2f-gamma-travels`, which it held blocked, and on `fig5e-fc-pmr-onset`,
+`fig1j-down-resets-hd` and `fig1k-hd-stable-at-onset`, whose blocks it held not
+established; the second agreed with 21, withdrawing its disagreement on fig2f
+and keeping the one on fig1b, which is recorded, and nothing was proposed after
+the second, so there was no third round. It pins version 0.261003.2342; the
+author found that the four published versions hold identical files and differ
+only in metadata. The paper, Mehrotra, Levenstein et al. in Current Biology (34,
+3043-3054), records 1,657 units along the dorsoventral (DV) axis of
+postsubiculum (PoSub) in 16 mice and reports that at the DOWN-to-UP (DU)
+transition of NREM sleep units activate in a dorsal-to-ventral sequence, which
+high gamma LFP power follows, while the UP-to-DOWN (UD) transition is
+synchronous, that the DOWN state resets the head direction (HD) signal, that a
+model with an Ih gradient produces this sequence and an ex vivo sag gradient
+supports it, and that units with a larger overshoot at UP onset (PMR) activate
+earlier in PoSub, rat frontal cortex and retrosplenial cortex (RSC); this
+dandiset holds only the RSC recordings, 14 sessions from 3 mice with spike
+times, epochs, sleep scoring, DOWN and UP states and tracking, and only
+`rsc-dataset` and fig5f use it. The claims were written from the version of
+record, a PDF supplied by a person and extracted to text with its STAR Methods
+and supplemental legends, the figures unread, and from the paper's code at
+commit 4ee34f3; the claims check added `figs1i-du-more-stable`,
+`figs1kl-not-firing-rate` and `figs2d-lfp-spike-agree`, for 22 claims. The PoSub
+claims ran on DANDI:000939 (version 0.261016.2310) with the paper's DOWN and UP
+event files, fig5e on CRCNS fcx-1, and DANDI:000056 was examined for the ADN
+claim. On this dandiset, fig5f gives Kendall tau = -0.2748 (p = 8.1e-21, paper
+-0.28) over 570 entering units under the reading of all sorted units, and
+`rsc-dataset` is not reproduced, as the files hold 638 units against 570.
+Reproduced elsewhere are `fig5c-posub-pmr-onset` (tau = -0.177, within 0.019 of
+-0.19), `fig5d-isomap-pmr` (abs R = 0.865), `fig1e-delay-range` (5 to 100 ms),
+`fig1g-dv-sequence-du` (DU W = 1, p = 6.1e-5; UD W = 38, p = 0.13, the paper's
+values), `fig1h-ventral-down-longer`, `figs1j-dorsal-ventral-same-hd`, fig1b,
+which rests on taking HD information in bits per spike (in bits per second, the
+formula as printed, tau = 0.082, p = 5.1e-5, which is why the verifier held it
+not reproduced), and fig5e (tau = -0.221 over 986 EX units of 27 sessions, with
+the data set's UPInts in place of the code's SlowWaves events). fig5c and fig1g
+rest on re-detecting the states of A3708-200317b, whose event file fails the
+clock check, and fig1g is called fragile. Not reproduced are fig2f, where no
+reading gives both halves of the claim, `figs2e-speed-similar` (LFP speeds of
+15.96 to 39.50 mm/s against the paper's 9.89 +/- 5.51), fig1j, where one of 20
+bins lies outside the shuffle range in two of three draws of the ring, and
+fig1k (U = 98, p = 0.27), which rests on leaving out the steps below the radius
+threshold. Blocked are figs1i, figs1kl and figs2d, whose readings disagree,
+`figs2g-adn-synchronous` for insufficient metadata, the model claims
+`fig3-other-gradients-fail` and `fig3f-ih-gradient` as not runnable, the model
+code being MATLAB, and `fig4d-sag-gradient` and `figs4-no-other-gradients` for
+missing data. The author's first run left fig1j and fig1k untested for time and
+blocked fig5e as not runnable on an estimate of about 85 min to read fcx-1; in
+reply to round 1 the 27 archives were streamed eight at a time, fig5e became
+reproduced, and fig1j and fig1k were tested in a new notebook. Round 1 also
+found that the odd and even halves of figs1i dropped the UP state before each
+DOWN start, which was fixed, and that the LFP of three sessions is not shown to
+share the clock of the spikes, which were left out of the main LFP reading.
+Round 2 found the fig1k numbers in the text did not match the executed copy and
+that the Isomap solver was unseeded; the text was corrected, the dense solver
+made the ring repeat, and two more draws of the ring were run. The author asked
+no questions of a reader, so the answer and author-answers runs changed
+nothing; a question on the unit of HD information was added in
+`questions/mehrotra-2024.yaml` after round 1. The author's final run took 22 minutes
+(2.2, 6.0 and 13.8 for the three notebooks), and the ring notebook added after
+round 1 came to take about 40 minutes; nothing failed.
+
+The dandiset holds 638 sorted units, 31 to 71 per session, while its
+description and the paper's Methods give 570; no unit selection of the Methods
+gives 570, and exactly 570 units cross half their mean rate within 155 ms of DU
+and enter the Figure 5F test. The description lists LFP in each file, but no
+file holds LFP or any other electrical series. Units carry no waveform, cell
+type, channel or depth, and the electrode table gives x, y and z as 0 for every
+channel, so the Methods' rule for putative excitatory units cannot be applied
+and units cannot be placed on the probe. session_start_time is 2024-05-09, the
+upload day, in every file, while the identifiers carry the 2021 recording
+dates. In 9 of 14 sessions part of the SWS epochs lies outside the sleep
+epochs, and in A7803-210730 one SWS interval, 7,680 to 9,565 s, covers two
+whole wake epochs. The stored DOWN and UP states match a re-detection with the
+paper's procedure, 95% to 99% of DOWN states within 10 ms. Of the data
+elsewhere: in DANDI:000939 the unit counts match the paper (1,657 units, 1,097
+EX, 1,096 entering), but the paper's event file for A3708-200317b does not fit
+that session's spikes (population rate inside its DOWN states 454.7 Hz, against
+455.8 Hz for shifted intervals, and no shift within 6,000 s fits), while the
+other 15 fit; the NREM epochs lie partly outside the home cage epochs and in
+A3711-200810b, A3717-201021 and A3723-201115 run 3,508 to 5,092 s past the last
+spike; the LFP of A3705-200306 covers 11,168 s and that of A3711-200810b
+9,499 s, against spikes to 16,199 s and 12,177 s, and in those two and
+A3708-200317b high gamma power does not rise after DU, which suggests their
+LFP and spikes do not share a clock; the electrode table gives x, y and z as
+NaN and the direction of rel_y is said only in the probe description; the
+archive holds 31 mice and which 16 sessions the paper used is recorded only by
+the event files in its code; and the Isomap ring does not follow head direction
+in A3706-200313 and A3730-210323b (0.114 and 0.328). CRCNS fcx-1 holds 27
+sessions where the paper used 25, listed in a dataset_DM.list the code
+repository does not hold, and Figure5E.py reads buzcode files that fcx-1 does
+not hold. DANDI:000056 holds 8 of the 9 ADN sessions the code names but gives
+no location, shank or electrode for its units. The ex vivo recordings are not
+deposited. Questions are put to the paper's authors: which units enter the RSC
+test of Figure 5F, whether HD information is in bits per spike or bits per
+second, how a session is halved for Figure S1I and with which correlation,
+whether the predictors of Figure S1L were standardized and the coefficients
+compared signed or in absolute value, how high gamma power and its timing are
+taken from the LFP for Figures 2 and S2D, whether the speed of Figure S2E is
+the slope of depth on delay or its inverse, which UP states and 25 sessions
+Figure 5E used, and whether the steps below the radius threshold are left out
+in Figure 1K.
+
+The author's points on the protocol: it has no rule for a criterion reading
+the data cannot support, as reading (b) of fig5f needs waveforms the files
+lack; the criterion's rule to block when readings disagree conflicts with step
+1.6's rule to adopt the best-supported reading; there is no rule for a
+paper-supplied input that fails the clock check, such as the event file of
+A3708-200317b; there is no reason code for claims left untested for time when
+computation was not the limit, so `other` was used; it is unclear whether data
+looked at only to justify a block belong under `inputs`; findings have no field
+naming the dataset they concern; the `not_runnable` fetch estimate can only be
+an upper bound when the position of the needed files inside compressed
+archives is unknown; and the claims file's UD window for fig2f lies after the
+drop and cannot be tested, so the mirror window was added as a deviation.

@@ -20,12 +20,33 @@ for try in 1 2 3 4 5; do
   git fetch -q origin main "attempt/$d"
   git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
   git worktree add -q --detach "$tmp" origin/main
+  bash "$tmp/tools/protocol.sh" "$tmp" >/dev/null   # the protocol main names (schemas/claims.schema.json)
   git -C "$tmp" checkout -q "origin/attempt/$d" -- "claims/$d.yaml"
   if [ "$with_transcripts" = --with-transcripts ]; then
     git -C "$tmp" ls-tree --name-only "origin/attempt/$d" "transcripts/$d/" | { grep '/claims[^/]*\.md$' || true; } \
       | xargs -r git -C "$tmp" checkout -q "origin/attempt/$d" --
   fi
   if git -C "$tmp" diff --cached --quiet; then echo "$d: main already has these claims"; exit 0; fi
+  # Not ahead of the attempt when it would break main: the latest attempt on main is checked against main's claims
+  # file (tools/entry.py), so a new reading that drops or renames a claim that attempt recorded waits for the new
+  # attempt's merge, which brings its claims file and a later record with it. On 2026-11-16 the checkpoint of
+  # tingley-2018 renamed one claim, and every attempt's pull request failed its check until it was put back.
+  dropped=$(cd "$tmp" && python - "$d" <<'PY'
+import re, sys
+from pathlib import Path
+import yaml
+d = sys.argv[1]
+records = sorted(p for p in Path("attempts").glob(f"{d}-*.yaml") if re.fullmatch(rf"{re.escape(d)}-\d\d\.yaml", p.name))
+if records:
+    used = {o.get("claim") for o in (yaml.safe_load(records[-1].read_text()) or {}).get("outcomes") or []}
+    have = {c.get("id") for c in (yaml.safe_load(Path(f"claims/{d}.yaml").read_text()) or {}).get("claims") or []}
+    print(" ".join(sorted(x for x in used - have if x)))
+PY
+)
+  if [ -n "$dropped" ]; then
+    echo "$d: the new claims file has no claim $dropped, which the attempt on main records; left for the attempt's merge"
+    exit 0
+  fi
   (cd "$tmp" && python - "claims/$d.yaml" <<'PY'
 import json, sys
 from pathlib import Path

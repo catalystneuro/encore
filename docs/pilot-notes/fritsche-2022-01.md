@@ -1,0 +1,90 @@
+# fritsche-2022, Fritsche et al. 2022
+
+Twenty-six claims reproduced, three partially, two not reproduced and none
+blocked; two outcomes, `fig3b-thalamus-short-term` and
+`decay-thalamus-single`, rest on an assumption. The first verification round
+agreed with 30 of the 31 outcomes; it gave `fig5-repeat-suppression` not
+reproduced where the record had partial, the author changed it, and the
+second round agreed with all 31, so there was no third round. It pins
+version 0.251116.2246, the only published version; the paper cites none.
+The paper, Fritsche, Solomon and de Lange, "Brief Stimuli Cast a Persistent
+Long-Term Trace in Visual Cortex" (J Neurosci 42(10):1999-2010), reanalyses
+the Allen Brain Observatory Neuropixels recordings of 32 mice and reports
+that the response to a grating is reduced when a grating of the same
+orientation came n trials before, up to 8 trials back for drifting and 20
+for static gratings in visual cortex, decaying as a double exponential with
+a half-life of about 14 s, while in LGN and LP it is limited to the last one
+or two trials. The claims were written from the version of record
+(PMC8916757), which has no supplement, with the display equations read from
+its MathML and no figure opened; the paper's code at doi:10.34973/kpt9-y956
+is behind a data use agreement and every script returned HTTP 401, so the
+details the Methods leave open were named with their readings, and the
+claims check added two claims, for 31. The adopted reading was the one the
+unit counts point to, and under it the 1-back values match the paper to
+within 0.01 for drifting gratings and static cortex. Reproduced are the unit
+counts (2422; V1 580, LGN 142, LP 91), the 1-back ratios in every region
+(V1 0.821, static 0.897), the Figure 2 tuning effects, V1 adaptation to
+8-back with all four Table 1 estimates inside their intervals and a
+half-life of 13.96 s, the cumulative adaptation, the decay fits of Tables 1
+and 2 and the static long-term adaptation. `fig3b-thalamus-short-term`
+passes in 1 of 12 readings, with RL at the threshold of 6, and only if
+significant adaptation counts ratios below 1 and the units labelled `noise`
+are left out; with either changed it fails. Partial are the three
+across-mice claims of Figures 1E, 6D and 7C, which hold by sign test while a
+few mice fail, in the thalamus mice with 2 to 4 units. Not reproduced are
+`fig5-repeat-suppression`, where orthogonal over blank is still below 1 at
+2-back (0.972) under every reading and seed and in a session bootstrap, and
+`fig8-no-spurious-long-term`, seed sensitive, whose criterion asks every
+interval of the simulated neuron to contain 1, which noise alone breaks at
+about the chance rate (38.0% of 200 further seeds pass); both verifiers read
+this as the claims file's misreading, and it went to a reader in
+`questions/fritsche-2022.yaml`. The author's first run gave 26 reproduced, 4
+partially and 1 not reproduced. Round 1 asked for the invalid intervals to
+be applied as a variant, the Figure 2 units dropped per tertile, a two-sided
+count for Figure 3B, 200 seeds for Figure 8, the thalamic units of the mice
+that fail and a session bootstrap for Figure 5, all added. Round 2 asked for
+the Figure 3B readings with `noise` units kept, which then met no reading,
+and found sentences the outputs did not support (seven of 12 readings, not
+eight; a p range starting at 4.5e-09; the ground truth inside the interval
+in the six named runs, not in every run; the 1-back match not holding for
+static thalamus, LGN 0.957 against 0.93 and LP 0.900 against 0.85), all
+corrected. The first full notebook run failed on a missing cell boundary
+that left a function in a markdown cell; the notebook ran in 492 s at first,
+with peak memory about 3.2 GB, and in 367 s after round 1.
+
+The units table holds all 74658 sorted units, with a `quality` column
+marking 20182 as `noise` and the AllenSDK quality metric columns, none of
+them described in the files; the paper's counts are matched when the
+`noise` units are left out, as the AllenSDK's units table does, nothing in
+the files says they should be, and keeping them changes the thalamic
+results (LGN gains a significant 7-back and its tau falls to 0.000). Of the
+units that pass the quality metrics, 3723 sit on channels whose area is
+`grey` and 686 on `VIS`, labels that name no structure, and they reach the
+paper's 50 responsive units for a region; they are left out. Thirteen
+sessions list invalid intervals tagged with a probe, totalling 12 to 2931 s,
+several overlapping the grating epochs (375 drifting presentations in 5
+sessions, 7001 static in 10); their meaning is not described, the paper does
+not mention them, and leaving those presentations out changes the 1-back
+ratios by at most 0.014. Three sessions (715093703, 719161530, 721123822)
+hold 598 drifting gratings in place of 600, and static blank sweeps number
+189 to 197 of 6000 presentations per session, about one in 31, where the
+Methods say about one in 25. The checks passed: 32 mice, one session each,
+with the paper's genotypes, stimuli as the Methods describe, no recording or
+unit deposited twice, and V1 tuning locked to the stimulus tables in every
+session. Three questions are put to the paper's authors: whether Figure 3B's
+borders include ratios significantly above 1, what rate and noise model the
+Figure 8 simulated neuron used and which interval, and whether the `noise`
+units were left out.
+
+The author's points on the protocol: it says the outcome is the one all
+readings give, while the claims file's criteria say reproduced under one
+reading, and the claims file was followed; nothing says whether a
+significant n-back counts ratios above 1, and adaptation only was assumed
+with both shown; a filter outside the listed readings, the `noise` label,
+was treated as an assumption with the key results run without it; it does
+not say whether each region's bootstrap takes its own seed, and every
+region took the claim's seed; `archives.md` does not say how to get the S3
+URL, and as the download redirect returned 403 the asset metadata's
+`contentUrl` was used; and with no partial rule in the fig5 criterion the
+protocol's general definition was used, while the strict fig8 criterion
+fails on tiny chance exclusions.

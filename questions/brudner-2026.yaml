@@ -1,0 +1,75 @@
+dandiset: "001871"
+paper: doi:10.1073/pnas.2608896123
+questions:
+- claim: fig5e-cue-betas
+  asked: 2026-11-12
+  question: The criterion takes turn onset as the time turn speed crosses 20% of the peak on the rising
+    edge (SI), and says that if the dataset's turn event start is defined otherwise, onset is computed
+    from the rotational velocity by that rule. Computed from the files' dtheta, that crossing comes a
+    median of 4 frames before the dataset's event start. But the code's published Fig. 5E and 5F
+    tables, the claims file's expected values, are matched within 0.1 SE in both complex coefficients
+    and within 0.001 per turn in all four log-likelihoods by the dataset's event start (smoke-1a files,
+    heading 160 to 200), and not by the 20% rule on dtheta. Can the dataset's event start be read as
+    the paper's onset (for example the 20% crossing of a smoothed turn speed), so that it is the
+    criterion's onset and the 20% rule on the raw dtheta a variant? The same reading decides
+    fig5f-cue-dominance and methods-intensity-right-bias.
+  passage: SI, Behavioral Analysis, "we used their values 50ms prior to turn onset (time of crossing 20%
+    turn speed peak height on the rising edge of the peak)"; the code (summary_tables.py) merges on the
+    dataset's turn start; data/published_panel_tables/fig5e_cue_beta_complex_plume.csv and
+    fig5f_s5_model_comparison_complex_plume.csv.
+  why: With the 20% rule on dtheta and the smoke-1a files, fig5e-cue-betas fails under every reading
+    (complex motion p 0.046 and 0.090) and fig5f-cue-dominance is partially reproduced (complex -0.492
+    against -0.662 +/- 0.066). With the dataset's event start, fig5e-cue-betas holds at 160 to 200
+    degrees with the predictors as stored or pooled (complex motion p 0.0059) and fails at 150 to 210
+    and per trajectory, so its readings would disagree, and fig5f-cue-dominance is reproduced (0.879
+    and -0.701), so the outcomes could change.
+- claim: figs5c-turn-angles
+  asked: 2026-11-12
+  question: The criterion takes the dataset's detected turn events as the paper's turns and measures
+    the displacement over the event (heading change from its start to its end, or the integral of
+    rotational velocity over it). Should the deposited event bounds be read as the paper's turn bounds?
+    The deposited events lie inside the run of rotation at or above half the peak (they start a median
+    of 1 frame after its rising crossing and stop 1 frame before its falling one, median length 7
+    frames), start a median of 4 frames after the SI's 20% onset, and 99.9% stop before the 20% crossing
+    on the falling edge. The paper defines only the onset (20% of the peak on the rising edge) and
+    measures peak width at half height for detection (Fig. S5A). The claims file allows for the event
+    start differing from the paper's onset in fig5e-cue-betas but not for the event bounds here.
+  passage: SI Figure S5 legend, "(A) Histogram of the width (at half height) and amplitude of peaks in
+    flies' instantaneous rotational speed" and "(C) Angular displacement during the identified turn
+    events ... Median values (dashed lines; -34.2, +33.8)"; SI, Behavioral Analysis, "time of crossing
+    20% turn speed peak height on the rising edge of the peak".
+  why: Over the deposited events the medians are -19.6 to -21.4 and +20.7 to +22.0 degrees (not
+    reproduced); over the run at or above half the peak they are -25.0 to -26.6 and +26.8 to +27.7 (not
+    reproduced); over the turn bounded by the 20% crossings on both edges they are -32.7 to -35.0 and
+    +35.2 to +36.7 (reproduced). The outcome depends on which bounds are the paper's.
+- claim: fig5e-cue-betas
+  asked: 2026-11-12
+  question: The claims file's header says the code selects the complex files by the path substring
+    "smoke-2a", and the criteria follow the code, but it does not mention that the dandiset's
+    description says the deposited smoke_1a_orig plume "was analyzed throughout the paper", nor that
+    the smoke-1a files' session descriptions name that movie. Which set should stand for the paper's
+    complex plume, smoke-1a, smoke-2a or both? The same choice decides fig5f-cue-dominance,
+    figs5c-turn-angles and methods-intensity-right-bias.
+  passage: Claims file header (the code selects complex files containing "smoke-2a",
+    metadata/published_panel_params.json); the dandiset's description (DANDI:001871, version
+    0.260630.1657); the paper does not name the behavior files of its complex plume.
+  why: With the SI onset, smoke-1a passes 0 of 24 readings and smoke-2a 16 of 24; with the dataset's
+    turn start, smoke-1a passes 8 of 24 and smoke-2a 0. For fig5f-cue-dominance, smoke-2a with the
+    SI onset gives both values within tolerance (0.937 and -0.717) and smoke-1a does not. The code's
+    published tables are matched most closely by smoke-1a. The two sets give complex coefficients of
+    opposite sign.
+- claim: fig5f-cue-dominance
+  asked: 2026-11-12
+  question: The criterion of fig5e-cue-betas takes the outcome all readings give, while that of
+    fig5f-cue-dominance, whose readings are "as fig5e-cue-betas", is reproduced when both values are
+    within tolerance under one reading. Is this difference intended? Under it the two claims, on the
+    same turns and models, can come out differently, and the fig5f outcome is decided by the most
+    favourable reading.
+  passage: Claims file, criteria of fig5e-cue-betas ("the outcome is the one all readings give") and
+    fig5f-cue-dominance ("with both within tolerance under one reading"); Figure 5E and 5F come from
+    the same models (Results, Different Directional Odor Cues Predict Fly Crosswind Turning in
+    Different Plume Types, paragraph 3).
+  why: With smoke-1a and the SI onset, the signs hold in 4 of 6 readings and the values are never both
+    within tolerance (partially reproduced); with smoke-2a, or with smoke-1a and the dataset's turn
+    start, one reading gives both values within tolerance (reproduced). Under an all-readings rule
+    fig5f-cue-dominance would not be reproduced under any file set or onset.

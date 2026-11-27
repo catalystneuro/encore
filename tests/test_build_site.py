@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import html
 import json
 import re
 import sys
+import urllib.parse
 from pathlib import Path
 
 import pytest
@@ -83,7 +85,7 @@ def built(tmp_path_factory):
 
 def test_every_page_is_built(built):
     data, out = built
-    for page in ("index.html", "datasets/index.html",
+    for page in ("index.html", "registry/index.html", "journals/index.html", "datasets/index.html",
                  "assets/app.css", "assets/list.js", "assets/favicon.svg", "assets/favicon-32.png",
                  "assets/favicon-180.png", "registry.json"):
         assert (out / page).is_file(), page
@@ -101,13 +103,28 @@ def test_rows_match_the_attempts(built):
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["datasets"]) == data["queue_counts"]["with_a_paper"]
     assert sum(r["claims"] or 0 for r in rows["datasets"]) == sum(len(a["outcomes"]) for a in attempts)
-    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(len(a["findings"]) for a in attempts)
+    # A finding that a later version of its dataset fixed is no longer open (finding_scope).
+    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(
+        1 for a in attempts for f in a["findings"] if f["scope"] != "fixed")
     assert sum(1 for r in rows["datasets"] if r["status"] == "attempted") == len(current)
 
 
 def test_no_internal_link_is_broken(built):
     _, out = built
     assert broken_links(out) == []
+
+
+def test_a_replaced_attempts_page_does_not_link_to_findings_the_datasets_page_no_longer_lists(tmp_path):
+    # 2026-11-25: senzai-2017-01 found a problem that changes results; once senzai-2017-02 replaced it, its page
+    # still linked to that finding's anchor on the dataset's page, which lists the findings of current attempts.
+    data = site.collect()
+    latest = {a["id"] for atts in site.current_attempts(data).values() for a in atts}
+    replaced = next(a for a in data["attempts"] if a["id"] not in latest and not a.get("deprecated") and a["findings"])
+    replaced["findings"][0]["changes_results"] = True
+    site.build(data, tmp_path)
+    assert broken_links(tmp_path) == []
+    page = (tmp_path / site.attempt_path(data, replaced) / "index.html").read_text()
+    assert "changed results" in page or "changes results" in page      # the problem is still named there
 
 
 def test_pages_load_nothing_from_other_sites(built):
@@ -140,29 +157,52 @@ def test_the_not_found_page_works_at_any_depth_and_is_not_indexed(built):
     assert 'href="/assets/' in text and 'href="/datasets/"' in text
 
 
-def test_every_claim_has_an_anchor_on_its_dandiset_page(built):
+def _paper_page(data, out, attempt):
+    """The page of the paper an attempt is on: claims belong to the paper."""
+    q = next(q for q in site.papers_of(data) if q["doi"] == attempt["paper"].lower() and q["attempts"])
+    return (out / "papers" / q["key"] / "index.html").read_text()
+
+
+def test_every_claim_has_an_anchor_on_its_papers_page_and_none_on_a_datasets(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        page = (out / site.page_of(dandiset) / "index.html").read_text()
+        dataset_page = (out / site.page_of(dandiset) / "index.html").read_text()
+        assert 'id="claim-' not in dataset_page
         for attempt in attempts:
+            page = _paper_page(data, out, attempt)
             for outcome in attempt["outcomes"]:
                 assert f'id="claim-{outcome["claim"]}"' in page
 
 
 def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
     data, out = built
-    assert site.CAUTION in (out / "index.html").read_text()
+    assert site.CAUTION in (out / "registry" / "index.html").read_text()
     for dandiset in site.current_attempts(data):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
-def test_a_dandiset_page_lists_every_notebook_of_every_entry_that_uses_it(built):
+def test_the_caution_shows_its_lead_and_keeps_the_rest_behind_a_disclosure(built):
+    _, out = built
+    home = (out / "registry" / "index.html").read_text()
+    block = home[home.index('<div class="caution" id="caution">'):]
+    block = block[:block.index("</details>") + len("</details>")]
+    lead, details = block.split("<details>", 1)
+    assert site.CAUTION in lead and "It may be a failure of the attempt." in lead
+    assert "<details open" not in block
+    assert "An outcome says what one attempt could recover" in details
+    assert "Most attempts are made by AI agents." in details and site.RESPOND_URL in details
+    assert site.CAUTION_JS in home and "#caution" in site.CAUTION_JS
+
+
+def test_a_papers_page_lists_every_notebook_of_every_entry_that_uses_its_datasets(built):
     data, out = built
-    for dandiset in site.current_attempts(data):
-        page = (out / site.page_of(dandiset) / "index.html").read_text()
+    for dandiset, attempts in site.current_attempts(data).items():
+        page = _paper_page(data, out, attempts[-1])
         entries = site.entries_for(data, dandiset)
         assert entries, dandiset
         for entry in entries:
+            if entry["name"] != attempts[-1]["entry"]:
+                continue
             for notebook in entry["notebooks"]:
                 assert notebook["path"] in page
         assert "Open the executed notebook" not in page
@@ -183,8 +223,9 @@ def test_the_overview_stays_small_at_scale(tmp_path):
     data = site.demo(site.collect(), 150)
     site.build(data, tmp_path)
     assert len(list((tmp_path / "datasets" / "dandi").glob("*/index.html"))) == 150
-    assert (tmp_path / "index.html").stat().st_size < 100_000
-    assert "Demo data" in (tmp_path / "index.html").read_text()
+    for page in ("index.html", "registry/index.html"):
+        assert (tmp_path / page).stat().st_size < 100_000
+        assert "Demo data" in (tmp_path / page).read_text()
     assert broken_links(tmp_path) == []
 
 
@@ -210,23 +251,60 @@ def test_every_page_declares_the_favicon(built):
         assert ((out / href.lstrip("/")) if href.startswith("/") else (page.parent / href)).resolve().is_file(), page
 
 
-def test_findings_are_reached_from_the_dandisets_list(built):
+def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
     data, out = built
     assert not (out / "findings").exists() and not (out / "claims").exists()
     rows = json.loads((out / "data" / "dandisets.json").read_text())
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["id"] == dandiset)
         attempts = [a for a in attempts if not a.get("deprecated")]
-        assert row["findings"] == sum(len(a["findings"]) for a in attempts)
-        assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
-        assert 'id="findings"' in (out / row["page"] / "index.html").read_text()
-    assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
+        # Open: not fixed by a later version of the dataset (finding_scope).
+        open_ = [f for a in attempts for f in a["findings"] if f["scope"] != "fixed"]
+        assert row["findings"] == len(open_)
+        kinds = sorted({f["kind"] for f in open_})
+        # Beside the kinds, the lists' filter has the datasets with a problem that changes results.
+        assert [k for k in row["found"] if k != site.CHANGES_RESULTS] == kinds
+        page = (out / row["page"] / "index.html").read_text()
+        assert "Open findings about the data" in page and "Papers tested on this dataset" in page
+        for a in attempts:
+            for f in a["findings"]:
+                assert site.e(f["statement"]) in page
+        # The findings are under the version of the dataset they were found on, and the row has what a curator
+        # reads: the versions tested, the open findings by kind, and the papers tested.
+        # One heading for each version with a finding that is in the dataset now, and one, "In earlier versions",
+        # for those a later version fixed or that were not looked for since.
+        earlier = [f for a in attempts for f in a["findings"] if f["scope"] != "current"]
+        now = {site.version_text(a) for a in attempts if any(f["scope"] == "current" for f in a["findings"])}
+        every = {site.version_text(a) for a in attempts}
+        assert page.count('<h3 class="vhead">') == (len(now) + 1 if earlier else len(every))
+        assert ("In earlier versions" in page) == bool(earlier)
+        assert all(site.version_text(a) in page for a in attempts)
+        assert sum(row["found_counts"].values()) == row["findings"] and sorted(row["found_counts"]) == kinds
+        assert row["versions"] == list(dict.fromkeys(
+            site.version_plain(a) for a in sorted(attempts, key=site.version_order, reverse=True)))
+        assert row["n_tested"] == len({a["paper"].lower() for a in attempts})
+        assert '<a href="../../../datasets/">Datasets</a> / ' in page
 
+
+def test_every_finding_has_its_own_anchor_on_its_datasets_page(built):
+    """Each finding about the data can be linked to on its dataset's page by an id made of the attempt's id and the
+    finding's number in the attempt's record, so the link survives the page ordering findings differently."""
+    data, out = built
+    for dandiset, attempts in site.current_attempts(data).items():
+        page = (out / site.page_of(dandiset) / "index.html").read_text()
+        ids = re.findall(r'<li class="finding" id="(finding-[^"]+)"', page)
+        assert len(ids) == len(set(ids))
+        for a in attempts:
+            if a.get("deprecated"):
+                continue
+            for f in a["findings"]:
+                anchor = f'finding-{a["id"]}-{f["n"]}'
+                assert anchor in ids and f'href="#{anchor}"' in page
 
 
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
     counts = {key: {"done": 3, "waiting": 1} if key == "paper" else {"todo": 2, "none": 2}
-              for key, _ in site.PIPELINE_STEPS}
+              for key, _ in site.PAPER_STEPS}
     chart = site.pipeline_chart(counts, 4)
     assert chart.count('class="frow"') == len(site.CHART_STEPS)
     assert 'class="seg st-done" style="width:75.00%"' in chart and 'class="seg st-waiting" style="width:25.00%"' in chart
@@ -296,27 +374,109 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
+    # A record that gives a tested claim no notebook (andrews-2024 did) must not stop the build: the paper's page
+    # lists the claim with those no notebook tests, and says the record names none.
+    data = site.collect()
+    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
+    a = q["attempts"][0]
+    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
+    moved["notebook"] = None
+    page = site.page_paper(data, q)
+    assert "Not tested in a notebook" in page and "with no notebook named in the record" in page
+    assert f'id="claim-{moved["claim"]}"' in page
+
+
+def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
+    data, out = built
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    seen = none = zeros = 0
+    for orcid, author in list(site.author_index(data).items())[:400]:
+        counts = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in author["papers"]) for k in site.OUTCOMES}
+        every = site.author_outcomes(data, author)
+        line, card = (out / "badge" / "authors" / f"{orcid}-{kind}.svg" for kind in ("outcomes", "card"))
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["outcome_counts"] == (counts if every else None)
+        assert api["badges"] == {"reproduced": (site.author_badge(data, author) or {}).get("svg"),
+                                 "outcomes": every["svg_outcomes"] if every else None, "card": every["svg_card"] if every else None}
+        if not every:
+            none += 1
+            continue
+        seen += 1
+        assert every["counts"] == counts and every["claims"] == sum(counts.values())
+        # All four outcomes are on both, by count, a word and a dot in the outcome's colour: one with no claim as 0.
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'<circle' in svg
+                assert f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert svg.count("<circle") >= 4 and site.e(every["alt"]) in svg
+        zeros += any(n == 0 for n in counts.values())
+        assert site.e(author["name"]) in card.read_text() and card.read_text().count("<rect") == 1 + sum(1 for n in counts.values() if n)
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+    assert seen and none and zeros
+
+
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        if any(a.get("deprecated") for a in attempts):
-            assert "Deprecated:" in (out / site.page_of(dandiset) / "index.html").read_text()
+        for a in attempts:
+            if a.get("deprecated"):
+                assert "Deprecated:" in _paper_page(data, out, a)
 
 
-
-def test_an_earlier_attempt_has_its_own_page_linked_from_the_dandiset(built):
+def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it_used(built):
     data, out = built
-    pages = 0
+    replaced = several = 0
+    for q in site.papers_of(data):
+        current = {a["id"] for a in q["attempts"]}
+        for a in site.paper_attempts(data, q):
+            own = site.attempt_own_path(data, a)
+            assert own == f'papers/{q["key"]}/{a["id"]}/'
+            page = (out / own / "index.html").read_text()
+            if current == {a["id"]}:
+                # The paper's one current attempt is read on the paper's page; its address leads there.
+                assert site.attempt_path(data, a) == f'papers/{q["key"]}/' and f'url=../../../papers/{q["key"]}/"' in page
+                page = (out / "papers" / q["key"] / "index.html").read_text()
+                up = "../../"
+            else:
+                assert site.attempt_path(data, a) == own and f'/ Attempt {a["id"]}</p>' in page
+                assert ("An earlier attempt." in page) == (a["id"] not in current)
+                replaced += a["id"] not in current
+                several += a["id"] in current
+                up = "../../../"
+                for o in a["outcomes"]:
+                    assert (f'id="claim-{o["claim"]}"' if o.get("kind") == "link"
+                            else f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"') in page
+                # The paper's page leads to each of its attempts.
+                assert f'href="../../{own}"' in (out / "papers" / q["key"] / "index.html").read_text()
+            # An attempt links to every dataset it used, with the version it ran on.
+            for x in site.attempt_sets(data, a):
+                assert (f'<th scope="row"><a href="{up}{site.page_of(x["key"])}">{x["label"]}</a></th>'
+                        f'<td>{site.version_text(x)}</td>') in page
+                # And the dataset's page links back to the attempt, unless a later one replaced it there.
+                if a["id"] in current:
+                    dataset = (out / site.page_of(x["key"]) / "index.html").read_text()
+                    assert f'Attempt <a href="../../../{site.attempt_path(data, a)}">{a["id"]}</a> on {site.version_text(x)}' in dataset
+    assert replaced and several
+    # The attempts behind a paper's results are closed until asked for, under a bar that counts them.
+    semenov = (out / "papers" / "semenov-2026" / "index.html").read_text()
+    assert '<details class="panel timeline-panel"><summary><h2>Attempts <span class="count">7</span></h2>' in semenov
+    assert '<span class="muted small">7 current</span></summary>' in semenov and "timeline-panel\" open" not in semenov
+    assert "1 current, 1 replaced</span></summary>" in (out / "papers" / "kim-2022" / "index.html").read_text()
+    # An attempt on two datasets names both, each with its version.
+    kim = (out / "papers" / "kim-2022" / "index.html").read_text()
+    assert "DANDI:000489</a></th><td>version" in kim and "DANDI:000448</a></th><td>version" in kim
+    # A dataset of the paper that no attempt used is in the table too, and why is on request.
+    assert 'DANDI:000548</a></th><td><span class="muted">not used by an attempt</span>' in kim
+    assert '<details class="sets-why"><summary>3 datasets the attempt could not use, and why</summary>' in kim
+    # Where an earlier attempt's page was, under its dataset, leads to its page under the paper.
     for dandiset in site.current_attempts(data):
         for a in site.earlier_attempts(data, dandiset):
-            pages += 1
-            current = (out / site.page_of(dandiset) / "index.html").read_text()
-            assert f'href="../../../{site.page_of(dandiset)}{a["id"]}/"' in current
-            page = (out / site.page_of(dandiset) / a["id"] / "index.html").read_text()
-            assert "An earlier attempt." in page and f'href="../../../../{site.page_of(dandiset)}"' in page
-            for o in a["outcomes"]:
-                assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
-    assert pages
+            old = (out / site.page_of(dandiset) / a["id"] / "index.html").read_text()
+            assert f'url=../../../../{site.attempt_own_path(data, a)}"' in old
+
 
 def test_claims_using_outside_data_are_counted_apart():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dataset"},
@@ -331,14 +491,29 @@ def test_claims_using_outside_data_are_counted_apart():
 def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        page = (out / site.page_of(dandiset) / "index.html").read_text()
-        assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
         for attempt in attempts:
+            page = _paper_page(data, out, attempt)
+            assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
             for o in attempt["outcomes"]:
+                if o.get("kind") == "link":   # a check of the link to the paper is under Provenance, not a claim
+                    assert f'id="claim-{o["claim"]}"' in page
+                    continue
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"><details><summary>' in page
             for nb in attempt["notebooks"]:
                 if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
-                    assert f'Notebook <code>{nb["path"]}</code>' in page
+                    assert f'Notebook <code>{nb["path"]}</code>' not in page   # the name and the Colab badge say it
+
+
+def test_each_outcome_has_its_own_mark_and_not_reproduced_is_not_a_question_or_a_cross():
+    icons = [icon for _, _, icon in site.OUTCOMES.values()]
+    assert len(set(icons)) == len(icons)
+    assert all("?" not in icon for icon in icons)
+    differs = site.OUTCOMES["not_reproduced"][2]
+    assert differs == site.DIFFERS_MARK and not any(c in differs for c in "✗✕×!")
+    # The mark is decorative: a screen reader hears the label next to it, not the symbol.
+    assert 'aria-hidden="true"' in differs
+    assert site.chip("not_reproduced").startswith('<span class="chip unresolved"><span class="icon" aria-hidden="true">')
+    assert all(f'aria-hidden="true">{icon}</span>' in site.legend({k: 1 for k in site.OUTCOMES}) for icon in icons)
 
 
 def test_claims_with_outside_names_count_as_the_dandiset():
@@ -400,9 +575,108 @@ def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
 def test_the_overview_shows_the_dashboard(built):
     data, out = built
     if len(site.progress_data(data)["days"]) > 1:
-        page = (out / "index.html").read_text()
-        assert 'id="progress-data"' in page and "assets/progress.js" in page
+        page = (out / "registry" / "index.html").read_text()
+        assert 'id="progress-data"' in page and "../assets/progress.js" in page
         assert (out / "assets" / "progress.js").is_file()
+
+
+def test_the_overviews_outcomes_give_each_ones_share_of_the_claims(built):
+    # Each outcome's count and its share, in whole percent that add up to 100; the compact legends have no shares.
+    data, out = built
+    page = (out / "registry" / "index.html").read_text()
+    panel = page[page.index("claims that rest on the dataset alone"):page.index("</ul>", page.index("claims that rest"))]
+    found = re.findall(r"<strong>([0-9,]+)</strong> ([A-Za-z ]+) <span class=\"pct\">(<?[0-9]+)%</span>", panel)
+    assert [label for _, label, _ in found] == [v[0] for v in site.OUTCOMES.values()]
+    counts = [int(n.replace(",", "")) for n, _, _ in found]
+    if "<1" not in [p for *_, p in found]:
+        assert sum(int(p) for *_, p in found) == 100
+    assert all(abs(int(p) - 100 * n / sum(counts)) < 1 for (_, _, p), n in zip(found, counts) if p != "<1")
+    assert site.shares({"r": 2716, "p": 1044, "n": 1167, "b": 3096}) == {"r": "34", "p": "13", "n": "14", "b": "39"}
+    assert site.shares({"r": 1, "b": 400}) == {"r": "<1", "b": "100"} and site.shares({"r": 0}) == {"r": "0"}
+    assert 'class="pct"' not in site.legend({"reproduced": 3, "partially_reproduced": 0, "not_reproduced": 1,
+                                              "blocked": 0}, compact=True)
+
+
+def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
+    data, out = built
+    page = (out / "registry" / "index.html").read_text()
+    # A plain form, so it works without scripts: the papers list reads q from the URL.
+    assert re.search(r'<form class="home-search" method="get" action="\.\./papers/"[^>]*>\s*<input name="q" type="search"', page)
+    # Under the lede, then the outcomes (with the caution attached), then the counters and charts.
+    order = [page.index('class="lede"'), page.index('class="home-search"'), page.index("claims that rest on the dataset alone"),
+             page.index('id="caution"'), page.index('class="progress"' if 'class="progress"' in page else 'class="tiles"')]
+    assert order == sorted(order)
+
+
+def test_a_papers_page_counts_all_its_claims_and_its_dataset_says_which_rest_on_it_alone(built):
+    # A paper's page is about the paper: its bar counts every claim, wherever the data are, with no groups counted
+    # apart. The dataset's line in the sidebar says how many rest on the dataset alone, when that is only some.
+    data, out = built
+    some = whole = 0
+    for q in site.papers_of(data):
+        live = [a for a in q["live"] if not a.get("deprecated")]
+        if len(live) != 1 or len(q["attempts"]) != 1:
+            continue
+        every, own = site.outcome_counts(live, "paper"), site.outcome_counts(live)
+        assert sum(every.values()) == sum(sum(site.outcome_counts(live, g).values()) for g in ("dataset", "with_inputs", "elsewhere"))
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        head = page[page.index('<header class="page">'):page.index("</header>")]
+        n = sum(every.values())
+        assert f"Outcomes of {n} claims</p>" in head and "Counted separately" not in head
+        if sum(own.values()) < n:
+            some += 1
+            assert f'<strong>{sum(own.values())}</strong> of the {n} claims rest on this dataset alone' in head
+        else:
+            whole += 1
+            assert "rest on this dataset alone" not in head
+        if some and whole > 3:
+            break
+    assert some and whole
+    # A dataset's own page still counts the claims that rest on it alone, with the others apart.
+    assert site.outcome_counts([], "paper") == dict.fromkeys(site.OUTCOMES, 0)
+
+
+def test_a_papers_other_sources_are_named_in_its_sidebar_and_described_under_provenance(built):
+    # What an attempt used that is not in its datasets (the record's `inputs`): by name under the datasets, and in
+    # the record's words under Provenance.
+    data, out = built
+    ref = lambda src: site.source_ref(data, src, "../../")
+    assert ref("https://github.com/lab/code at commit 1d95162") == {"host": "GitHub", "label": "lab/code", "href": "https://github.com/lab/code"}
+    assert ref("doi:10.5281/zenodo.13749343") == {"host": "Zenodo", "label": "10.5281/zenodo.13749343",
+                                                  "href": "https://doi.org/10.5281/zenodo.13749343"}
+    assert ref("NCBI GEO GSE241559 (SuperSeries GSE241561)")["href"].endswith("acc=GSE241559")
+    assert ref("PRIDE PXD065006") == {"host": "", "label": "PRIDE PXD065006", "href": None}
+    known = ref("doi:10.48324/dandi.000003/0.260218.2052")       # a dataset the registry has a page for
+    assert known["label"] == "DANDI:000003" and known["href"] == "../../datasets/dandi/000003/"
+    seen = 0
+    for q in site.papers_of(data):
+        if not q["attempts"]:
+            continue
+        others = site.other_sources(data, q["attempts"], "../../")
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        head = page[page.index('<header class="page">'):page.index("</header>")]
+        assert ('class="srcs"' in head) == bool(others) == ('id="other-sources"' in page)
+        if others:
+            seen += 1
+            assert len(others) == len({(o["label"], o["href"]) for o in others})            # each source once
+            assert all(site.e(o["what"]) in page for o in others)
+            assert head.count("<li>") + head.count('<li class="muted">') >= min(len(others), 6)
+        if seen > 12:
+            break
+    assert seen
+
+
+def test_each_notebook_on_the_claims_panel_has_an_open_in_colab_badge(built):
+    # Beside the notebook's name over its claims: a link to the copy of it on the `colab` branch.
+    data, out = built
+    page = (out / "papers" / "senzai-2017" / "index.html").read_text()
+    panel = page[page.index('id="claims"'):page.index('id="notebooks"')]
+    href = f'{site.COLAB_URL}/senzai-2017/reproduce_senzai_2017.ipynb'
+    assert f'<a class="colab" href="{href}" target="_blank" rel="noopener"' in panel
+    assert panel.count('class="colab"') == panel.count('<div class="claim-group"><h3')
+    # Google's own badge, from the site's assets: the page loads nothing from another site.
+    assert '<img src="../../assets/colab-badge.svg" alt="Open in Colab"' in panel
+    assert (out / "assets" / "colab-badge.svg").read_text().startswith("<svg ") and "colab.research.google.com/assets" not in page
 
 
 def test_view_on_dandi_opens_a_new_window(built):
@@ -422,7 +696,7 @@ def test_pages_carry_a_description_canonical_link_and_social_card(built):
     assert (out / "assets" / "social-card.png").is_file()
     dandiset = next(iter(site.current_attempts(data)))
     page = (out / site.page_of(dandiset) / "index.html").read_text()
-    assert f'href="{site.SITE_URL}{site.page_of(dandiset)}"' in page and "claims tested" in page
+    assert f'href="{site.SITE_URL}{site.page_of(dandiset)}"' in page and "found about its data" in page
 
 
 def test_the_sitemap_lists_every_dandiset_page(built):
@@ -441,19 +715,136 @@ def test_a_preview_is_kept_out_of_search_results(tmp_path):
 
 def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     data, out = built
-    about = (out / "about" / "index.html").read_text()
-    assert "How the registry works" in about and "First verification" in about
-    assert 'aria-current="page">About' in about
-    assert 'href="about/">About' in (out / "index.html").read_text()
-    assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
+    about = (out / "method" / "index.html").read_text()
+    assert "<h1>The method</h1>" in about and "First verification" in about
+    assert 'aria-current="page">Method' in about
+    assert 'href="method/">Method' in (out / "index.html").read_text()
+    assert f"<loc>{site.SITE_URL}method/</loc>" in (out / "sitemap.xml").read_text()
+    # The page was at about/: that address sends its readers on, anchor and all.
+    old = (out / "about" / "index.html").read_text()
+    assert 'url=../method/"' in old and "location.hash" in old
+
+
+def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_and_archives_on(built):
+    data, out = built
+    about = (out / "method" / "index.html").read_text()
+    archives = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    assert archives and site.attempted_archives(data)
+    for k in archives:
+        assert html.escape(site.ARCHIVES[k]["name"]) in about
+    assert "the only archive" not in about
+    # The diagram: one box a step, the last of them the authors' response, labelled for screen readers, and the list still in full.
+    # A response can start a new attempt: the picture has the line back to the first step, and the step says so.
+    assert 'class="fl"' in about and "New attempt, with the authors’ notes" in about
+    assert "goes to a new attempt as notes" in about and "does not see the earlier" in about
+    assert 'id="flow"' in about and 'role="img" aria-label="The seven steps of an attempt' in about
+    assert site.ABOUT_STEPS[-1][0] == "The paper's authors respond" and "by the paper&#x27;s authors" in about
+    for head, _ in site.ABOUT_STEPS:
+        assert about.count(f">{html.escape(head)}<") >= 2
+    assert html.escape(site.RESPOND_URL) in about and "docs/badges.md" in about
+    assert 'href="../authors/"' in about and 'href="../datasets/"' in about
+    # The badge shown is a real one, of the first dataset with a badge.
+    shown = re.search(r'src="\.\./badge/([a-z]+)/([^"]+)\.svg"', about)
+    assert shown and (out / "badge" / shown[1] / f"{shown[2]}.svg").exists()
+
+
+def test_the_bar_is_the_sites_and_the_registrys_pages_have_a_bar_of_their_own(built):
+    """The bar has the site's three places and one filled button, "Contact us". The registry's pages carry a second
+    bar with its lists, and Pipeline, the maintainers' page, is at its far end and in the foot, not in the bar."""
+    data, out = built
+    home = (out / "index.html").read_text()
+    bar = home[home.index('<nav class="top"'):home.index("</nav>")]
+    footer = home[home.index("<footer>"):home.index("</footer>")]
+    assert [h for _, h in re.findall(r'<a class="(tab)" href="([^"]*)"', bar)] == ["registry/", "method/", "journals/"]
+    assert "pipeline" not in bar and 'href="pipeline/">Pipeline</a>' in footer
+    # "Check your data" is a page of the site, which points on to the command's full documentation.
+    assert '<a class="tab quiet" href="check/" title="Run the same check' in bar
+    check = (out / "check" / "index.html").read_text()
+    assert "<h1>Check your own data</h1>" in check and "pip install encore-science" in check
+    assert f'href="{site.ENCORE_DOCS}"' in check and 'href="../check/" aria-current="page"' in check
+    assert f'<a class="tab cta" href="{site.CONTACT_URL}"' in bar
+    assert 'class="regnav"' not in home and "aria-current" not in bar     # the home page is none of the three
+    # The button is filled in ink, and the menu button shows only on a small screen.
+    css = (site.ASSETS / "app.css").read_text()
+    wide = css[:css.index("@media (max-width:860px)")]
+    assert "background:var(--text);color:var(--surface)" in wide[wide.index("nav.top a.tab.cta{"):]
+    assert "button.navtoggle{display:none}" in wide and "nav.top.open .tabrow{display:flex}" in css
+    # On a page of the registry the bar's Registry tab is lit, and the second bar marks the page itself.
+    for path, label, root in (("registry", "Overview", "../"), ("papers", "Papers", "../"), ("pipeline", "Pipeline", "../")):
+        page = (out / path / "index.html").read_text()
+        top = page[page.index('<nav class="top"'):page.index("</nav>")]
+        sub = page[page.index('<nav class="regnav"'):]
+        sub = sub[:sub.index("</nav>")]
+        assert f'<a class="tab" href="{root}registry/" aria-current=' in top
+        assert re.search(rf'<a href="{re.escape(root)}{path}/" aria-current="page">{label}', sub)
+        assert sub.count("aria-current") == 1
+        assert [h for h in re.findall(r'<a href="([^"]*)"', sub)] == [
+            f"{root}registry/", f"{root}papers/", f"{root}datasets/", f"{root}authors/", f"{root}pipeline/"]
+    paper = next(q for q in site.papers_of(data) if q["attempts"])
+    assert 'class="regnav"' in (out / "papers" / paper["key"] / "index.html").read_text()
+    for path in ("method", "journals"):
+        assert 'class="regnav"' not in (out / path / "index.html").read_text()
+    assert 'href="../pipeline/">pipeline</a>' in (out / "method" / "index.html").read_text()
+
+
+def test_the_home_page_says_what_encore_does_and_shows_the_registrys_own_numbers(built):
+    """The home page is for a visitor who has not seen the registry. Its evidence is read from the record: the
+    example is a verified attempt of a real paper, and the numbers are the registry's."""
+    data, out = built
+    home = (out / "index.html").read_text()
+    assert "<h1>Do the deposited data support the paper?</h1>" in home
+    assert '<a class="button" href="journals/">' in home and '<a class="button secondary" href="registry/">' in home
+    assert home.count(f'href="{site.CONTACT_URL}"') >= 2 and site.CAUTION in home
+    for head, _ in site.HOME_STEPS:
+        assert f"<h3>{html.escape(head)}</h3>" in home
+    attempts = [a for atts in site.current_attempts(data).values() for a in atts]
+    counts = site.outcome_counts(attempts)
+    assert f'<span class="n">{sum(counts.values()):,}</span><span class="l">claims given an outcome</span>' in home
+    n_papers = sum(1 for q in site.papers_of(data) if q["attempts"])
+    assert f'<span class="n">{n_papers:,}</span><span class="l">papers checked</span>' in home
+    papers = {q["doi"]: q for q in site.papers_of(data) if q["attempts"]}
+    shown = site.home_example(data, attempts, papers)
+    if shown:
+        attempt, paper = shown
+        assert attempt["tier"] != "runs" and attempt["findings"]
+        assert sum(1 for n in site.outcome_counts(attempt, "paper").values() if n) >= 2
+        card = home[home.index('<figure class="shot">'):home.index("</figure>")]
+        assert f'href="papers/{paper["key"]}/"' in card and html.escape(paper["title"]) in card
+        assert any(html.escape(site.squash(o["statement"])) in card for o in attempt["outcomes"])
+    # A link to an attempt by its old anchor on the home page still reaches it.
+    assert "location.hash.match(/^#attempt-(.+)$/)" in home
+
+
+def test_the_journals_page_lists_the_journals_of_the_papers_attempted(built):
+    data, out = built
+    page = (out / "journals" / "index.html").read_text()
+    assert "<h1>Encore for journals</h1>" in page and 'aria-current="page">For journals' in page
+    assert site.CAUTION in page and f'href="{site.CONTACT_URL}"' in page
+    # The four ways to work with us are numbered, and what follows them has a heading of its own.
+    offers = page[page.index('id="offers"'):page.index('id="terms"')]
+    assert re.findall(r'<span class="offer-n">(\d)</span>', offers) == ["1", "2", "3", "4"] and offers.count('class="panel"') == 4
+    assert page.index('id="terms"') < page.index('id="confidential"') < page.index('id="limits"')
+    journals = site.journal_counts(data)
+    rows = [p for p in site.rows_cache(data)["papers"] if p["status"] == "attempted"]
+    assert all(name not in ("Preprint", "Other journals") for name, _ in journals)
+    assert [n for _, n in journals] == sorted((n for _, n in journals), reverse=True)
+    for name, n in journals[:12]:
+        assert n == sum(1 for p in rows if p["journal"] == name)
+        assert f'journal={urllib.parse.quote(name)}">{html.escape(name)}</a><span class="num">{n:,}</span>' in page
+    for path in ("registry/", "journals/", "check/"):
+        assert f"<loc>{site.SITE_URL}{path}</loc>" in (out / "sitemap.xml").read_text()
 
 
 def test_a_claim_shows_the_papers_own_words_when_quoted():
     claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
              "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
-    assert html.index("blockquote") < html.index("It rose.")
+    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p></blockquote>' in html
+    head, body = html.split("</summary>")
+    # Where the paper says it is on the claim's own line, once, and the open claim's parts are labelled, in order.
+    assert '<span class="source">Figure 2B</span>' in head and "Figure 2B" not in body
+    assert body.index("<h5>From the paper</h5>") < body.index("blockquote") < body.index("<h5>Result</h5>") < body.index("It rose.")
+    assert "Deviations from" not in body and "Reported statistics" not in body      # no empty parts
     assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
 
 
@@ -476,7 +867,8 @@ def test_a_claim_lists_the_statistics_the_paper_reports():
     claim = {"claim": "a", "statement": "S.", "source": None, "statistics": stats, "outcome": "reproduced",
              "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in html and html.index("stats") < html.index("N.")
+    body = html.split("</summary>")[1]
+    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in body and body.index("stats") < body.index("N.")
 
 
 def test_link_claims_are_counted_apart_from_the_papers_findings():
@@ -486,12 +878,84 @@ def test_link_claims_are_counted_apart_from_the_papers_findings():
     assert sum(site.outcome_counts(attempt).values()) == 1
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     assert site.outcome_counts(attempt, "link")["reproduced"] == 1
-    assert "1 check that the dataset is the data behind the paper" in site.outside_note([attempt])
+    # A check of the link is a step of the work, not a result: the page's note of what is counted apart leaves it
+    # out, and has the claims on outside data.
+    note = site.outside_note([attempt])
+    assert "check that the dataset" not in note and "1 claim that also uses data from outside the dataset" in note
+    assert site.outside_note([{"outcomes": attempt["outcomes"][:2]}]) == ""
     # The overview folds them into a details block that names each group and its count.
     folded = site.outside_note([attempt], collapsed=True)
     assert folded.startswith('<details class="separate">')
-    assert "claims using outside data (1) and checks of the link to the paper (1)</summary>" in folded
-    assert "<details" not in site.outside_note([attempt])
+    assert "Counted separately: claims using outside data (1)</summary>" in folded and "link" not in folded
+    assert "<details" not in note
+
+
+def test_a_check_of_the_link_is_under_provenance_and_not_among_the_claims(built):
+    data, out = built
+    seen = 0
+    for q in site.papers_of(data):
+        for a in q["attempts"]:
+            links = [o for o in a["outcomes"] if o.get("kind") == "link"]
+            if not links or len(q["attempts"]) > 1:
+                continue
+            seen += 1
+            page = (out / "papers" / q["key"] / "index.html").read_text()
+            claims, provenance = page.split('id="provenance"')[0], page.split('id="provenance"')[1]
+            for o in links:
+                # Its anchor is kept, under Provenance; it is not a claim in the list, and the page's counts of
+                # outcomes do not mention it.
+                assert f'id="claim-{o["claim"]}"' in provenance and f'id="claim-{o["claim"]}"' not in claims
+                assert site.e(o["statement"]) in provenance
+            assert "check that the dataset is the data behind the paper" not in page.lower()
+            shown = [o for o in a["outcomes"] if o.get("kind") != "link"]
+            assert claims.count('<li class="claim') == len(shown)
+    assert seen
+
+
+def test_a_claim_shows_its_id_which_the_response_form_asks_for():
+    claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
+             "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    # In view without opening the claim, once, at the end of the line under the statement, and itself the link to
+    # the claim.
+    head = html.split("</summary>")[0]
+    assert ('<a class="claim-id" href="#claim-fig2-rates" title="The id of this claim, and a link to it">'
+            'fig2-rates</a></div>') in head
+    assert head.index('class="statement"') < head.index('class="claim-meta"') < head.index('class="claim-id"')
+    assert html.count(">fig2-rates</a>") == 1 and "Claim id" not in html
+    # Open, a claim tested in a notebook that has an executed copy leads to its cell there.
+    assert "that tests this claim" not in html
+    at_cell = site.claim_item({**claim, "cell": "../notebooks/demo/analysis.html#cell-id=ab12"}, "../")
+    assert '<a href="../notebooks/demo/analysis.html#cell-id=ab12">See the notebook cell that tests this claim</a>' in at_cell
+    at_top = site.claim_item({**claim, "cell": "../notebooks/demo/analysis.html"}, "../")
+    assert '<a href="../notebooks/demo/analysis.html">See the notebook that tests this claim</a>' in at_top
+    attempt = {"notebooks": [{"path": "analysis.ipynb", "executed": "notebooks/demo/analysis.html", "cells": {"claim:fig2-rates": "ab12"}},
+                             {"path": "other.ipynb", "executed": None, "cells": {}}]}
+    o = {"notebook": "analysis.ipynb", "output": "claim:fig2-rates"}
+    assert site.cell_href({}, attempt, o, "../../") == "../../notebooks/demo/analysis.html#cell-id=ab12"
+    assert site.cell_href({"notebooks_root": "https://x.org/"}, attempt, {**o, "output": "claim:gone"}, "../") == "https://x.org/notebooks/demo/analysis.html"
+    assert site.cell_href({}, attempt, {"notebook": "other.ipynb", "output": "claim:a"}, "../") is None
+    # The form's hint names ids as the page shows them, not numbers the page does not have.
+    form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
+    assert "C3, C7" not in form and "at the end of the line under the claim" in form
+
+
+def test_a_closed_claim_gives_the_first_sentence_of_its_notes():
+    notes = ("GC median latency 0.710 ms against MC 0.740 ms (Mann-Whitney P = 2.3e-14, Fig. 1E). The stored "
+             "waveforms are cut off.")
+    claim = {"claim": "fig1", "statement": "Rates <rise>.", "source": "Figure 1E", "outcome": "reproduced",
+             "blocked_by": None, "notes": notes, "deviations": [], "disagreed": False}
+    head, body = site.claim_item(claim, "../").split("</summary>")
+    # In the summary, after the statement, whose markup is unchanged; the full notes are in the body.
+    assert ('<p class="statement">Rates &lt;rise&gt;.</p><p class="gist">GC median latency 0.710 ms against MC '
+            '0.740 ms (Mann-Whitney P = 2.3e-14, Fig. 1E).</p>') in head
+    assert f'<p class="notes">{site.e(notes)}</p>' in body
+    # A long first sentence is cut at a word, with an ellipsis; a short label is joined by the next sentence.
+    long = site.gist("In " + "many long words " * 20 + "the rate rose. Then more.")
+    assert long == "In " + "many long words " * 6 + "many long…"
+    assert site.gist("Reading (b). The rate is 3 Hz in 9 sessions. More.") == "Reading (b). The rate is 3 Hz in 9 sessions."
+    # No notes, no line.
+    assert 'class="gist"' not in site.claim_item({**claim, "notes": ""}, "../")
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
@@ -527,7 +991,7 @@ def test_stylesheets_and_scripts_are_named_by_their_contents(built):
     data, out = built
     page = (out / "pipeline" / "index.html").read_text()
     assert re.search(r'href="\.\./assets/app\.css\?v=[0-9a-f]{10}"', page)
-    assert re.search(r'src="assets/progress\.js\?v=[0-9a-f]{10}"', (out / "index.html").read_text())
+    assert re.search(r'src="\.\./assets/progress\.js\?v=[0-9a-f]{10}"', (out / "registry" / "index.html").read_text())
 
 
 def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
@@ -541,7 +1005,7 @@ def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
         assert f'url=../../{site.page_of(key)}"' in old
         for a in site.earlier_attempts(data, key):
             moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
-            assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
+            assert f'url=../../../{site.attempt_own_path(data, a)}"' in moved
     assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
 
 
@@ -552,26 +1016,33 @@ def test_datasets_are_named_by_archive_and_id():
     assert site.key_of_dir("000003") == "dandi:000003" and site.key_of_dir("ebrains-abc") == "ebrains:abc"
 
 
-def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipeline(built):
+def test_a_dataset_with_claims_and_no_attempt_has_a_page_leading_to_its_papers_claims(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
+    targets = {t["key"] for t in data["targets"]}
     for key in site.claims_only(data):
-        row = next(r for r in rows if r["key"] == key)
-        assert row["page"] == site.page_of(key)
+        # The pipeline lists the archives' targets. A dataset only a reuse paper names (targets/reuse.yaml) can be
+        # outside them: it has its page, and no row.
+        row = next((r for r in rows if r["key"] == key), None)
+        assert (row is not None) == (key in targets)
+        if row:
+            assert row["page"] == site.page_of(key)
         page = (out / site.page_of(key) / "index.html").read_text()
-        claims = [c for f in data["claim_files"][key] for c in f["claims"]]
-        assert all(f'id="claim-{c["id"]}"' in page for c in claims)
+        assert 'id="claim-' not in page and "Papers tested on this dataset" in page
+        # Its paper's claims, read: the paper is attempted on its other datasets, or not yet at all.
+        papers = [q for q in site.papers_of(data) if key in q["datasets"] and q["status"] in ("claims", "attempted")]
+        assert papers and any(f'papers/{q["key"]}/"' in page for q in papers)
 
 
 def test_a_dataset_waiting_on_a_person_links_its_issue():
     data = site.collect()
     label = data["targets"][0]["label"]
-    data["issues"] = {label: "https://github.com/catalystneuro/encore/issues/1"}
+    data["issues"] = {label: "https://github.com/encorescience/encore-registry/issues/1"}
     row = next(r for r in site.pipeline_rows(data) if r["dataset"] == label)
     assert row["issue"] == data["issues"][label]
     page = site.page_pipeline(data)
     assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
-    assert "has stopped on" in page and "1 dataset</a>" in page
+    assert "has stopped on" in page and "1 paper</a>" in page
 
 
 def test_the_queue_estimates_fill_the_lanes_in_order():
@@ -606,7 +1077,55 @@ def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
     assert ">1 for an attempt</td>" in page and ">about 4 hours</td>" in page and ">branch open</td>" in page
     assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
     assert "2 chains are running now" in page
-    assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+    assert "1 paper waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+
+
+def test_the_pipeline_page_goes_by_paper(built):
+    data, out = built
+    rows = site.paper_pipeline_rows(data)
+    steps = [key for key, _ in site.PAPER_STEPS]
+    assert steps[0] == "match"
+    states = {"done", "waiting", "todo", "deprecated", "none"}
+    assert all(set(r["state"]) == set(steps) and {v[0] for v in r["state"].values()} <= states for r in rows)
+    # Each listed paper once, whatever the number of its datasets, and every target under some paper.
+    listed = [r["paper"] for r in rows if r["paper"]]
+    assert sorted(listed) == sorted(site.paper_records.listed())
+    shown = {d["key"] for r in rows for d in r["datasets"]}
+    assert {t["key"] for t in data["targets"]} <= shown
+    several = next(r for r in rows if r["paper"] and len(site.paper_records.listed()[r["paper"]]["datasets"]) > 1)
+    assert len([r for r in rows if r["paper"] == several["paper"]]) == 1
+    # A listed paper's match is made; a target no paper is listed for has it still to do (or has none).
+    assert all(r["state"]["match"][0] in ("done", "todo", "waiting") for r in rows if r["paper"])
+    assert all(r["state"]["match"][0] != "done" for r in rows if not r["paper"])
+    page = (out / "pipeline" / "index.html").read_text()
+    assert "Papers at each step" in page and ">Paper match</button>" in page and ">Datasets</button>" in page
+    assert page.count("<tr data-match=") == len(rows)
+
+
+def test_a_paper_is_attempted_when_each_of_its_datasets_has_been_used():
+    data = site.collect()
+    rows = {r["paper"]: r for r in site.paper_pipeline_rows(data) if r["paper"]}
+    current = site.current_attempts(data)
+    for key, body in site.paper_records.listed().items():
+        doi = site.paper_records.doi_of(key)
+        need = [d["key"] for d in body["datasets"] if d.get("available", True)]
+        used = {k for k in need for a in current.get(k, []) if a["paper"].lower() == doi and not a.get("deprecated")}
+        state = rows[key]["state"]["attempt"]
+        if state[0] == "done":
+            assert used == set(need)
+        elif state[0] == "todo" and used:
+            assert state[1] == f"{len(used)} of {len(need)} datasets"
+
+
+def test_the_queue_by_paper_places_a_paper_once():
+    data = site.collect()
+    paper = next(r for r in site.paper_pipeline_rows(data) if r["paper"] and len(r["datasets"]) > 1)
+    data["queue"] = {"full": [site.dir_of(d["key"]) for d in paper["datasets"]], "claims": [], "branches": [],
+                     "lanes": {"full": 1, "claims": 1}, "hours": {"full": 4.0, "claims": 0.25},
+                     "papers": {"full": [paper["paper"]], "claims": [], "branches": [], "running": {}}}
+    row = next(r for r in site.paper_pipeline_rows(data) if r["paper"] == paper["paper"])
+    assert row["queue"]["place"] == 1
+    assert "1 paper waits for an attempt on 1 lane" in site.page_pipeline(data)
 
 
 def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
@@ -621,5 +1140,798 @@ def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
     site.reconcile([earlier, later])
     assert [f["status"] for f in later["findings"]] == ["still_present", "new"]
     assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
-                                                "kind": "metadata_error"}]
+                                                "kind": "metadata_error", "about": "data"}]
     assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"
+
+
+def _response(name, labels, attempt="tingley-2021-01", paper="tingley-2021", orcid="_No response_"):
+    body = (f"### Paper\n\n{paper}\n\n### Attempt\n\n{attempt}\n\n### Your name\n\n{name}\n\n"
+            f"### Your role in the paper\n\nfirst author\n\n### ORCID iD\n\n{orcid}\n\n"
+            "### Your view of the attempt\n\nSome outcomes are wrong\n\n### Claims you are responding to\n\nC3\n\n"
+            "### Your response\n\nThe intervals in Figure 3 are bootstrapped.\n\n### Supporting links\n\n_No response_\n")
+    return {"url": "https://github.com/x/y/issues/" + "".join(str(ord(c)) for c in name)[:12], "body": body, "state": "OPEN",
+            "createdAt": "2026-11-07T00:00:00Z", "labels": [{"name": n} for n in ["author-response", *labels]]}
+
+
+TINGLEY = {"key": "tingley-2021", "byline": "Tingley et al. 2021"}
+
+
+def test_the_response_link_fills_in_the_paper_and_the_attempt():
+    url = site.respond_link(TINGLEY, {"id": "tingley-2021-01"})
+    assert "template=author-response.yml" in url and "paper=tingley-2021" in url and "attempt=tingley-2021-01" in url
+    assert "title=Author+response%3A+Tingley+et+al.+2021" in url and "attempt=" not in site.respond_link(TINGLEY)
+
+
+def test_a_response_names_its_paper_by_key_doi_or_page():
+    doi = site.paper_records.doi_of("tingley-2021")
+    for said in ("tingley-2021", doi, f"https://doi.org/{doi}", "https://encorescience.org/papers/tingley-2021/"):
+        assert list(site.responses_by_paper([_response("A", ["author-confirmed"], paper=said)])) == ["tingley-2021"], said
+    assert site.responses_by_paper([_response("A", [], paper="no such paper")]) == {}
+
+
+def test_only_confirmed_author_responses_are_shown():
+    rs = site.responses_by_paper([_response("A. Author", ["author-confirmed"]), _response("Someone", [])])
+    assert list(rs) == ["tingley-2021"] and [r["shown"] for r in rs["tingley-2021"]] == [True, False]
+    html = site.responses_block({"responses": rs}, TINGLEY)
+    assert "A. Author" in html and "bootstrapped" in html and "Someone" not in html
+    assert "1 response from someone who says they are an author awaits confirmation" in html
+    assert "attempt tingley-2021-01" in html and "template=author-response.yml" not in html   # the form is linked once, under it
+
+
+def test_a_paper_without_responses_has_no_responses_section():
+    assert site.responses_block({"responses": {}}, TINGLEY) == ""
+
+
+def test_an_attempts_page_shows_the_responses_to_it_and_to_the_paper_in_general():
+    mine, other, general = (_response("A. Author", ["author-confirmed"]),
+                            _response("Be Author", ["author-confirmed"], attempt="tingley-2021-02"),
+                            _response("Cee Author", ["author-confirmed"], attempt="_No response_"))
+    rs = site.responses_by_paper([mine, other, general, mine])
+    page = site.responses_block({"responses": rs}, TINGLEY)
+    assert page.count("A. Author") == 1 and "Be Author" in page and "Cee Author" in page
+    one = site.responses_block({"responses": rs}, TINGLEY, {"id": "tingley-2021-01"})
+    assert "A. Author" in one and "Cee Author" in one and "Be Author" not in one
+
+
+def test_responses_are_on_the_papers_page_and_the_writers_page_and_not_the_datasets(tmp_path):
+    data = site.collect()
+    person = next(a for a in site.authors_of(data, site.paper_records.doi_of("tingley-2021")) if a.get("orcid"))
+    data["responses"] = site.responses_by_paper([_response(person["name"], ["author-confirmed"], orcid=person["orcid"])])
+    site.build(data, tmp_path)
+    paper = (tmp_path / "papers" / "tingley-2021" / "index.html").read_text()
+    # On the paper's page, under the summary: the writer's name opens their page, as their ORCID iD has one.
+    assert "Responses from the paper&rsquo;s authors" in paper and "bootstrapped" in paper
+    assert f'<strong><a href="../../authors/{person["orcid"]}/">{site.e(person["name"])}</a></strong>' in paper
+    assert paper.count("Respond to this attempt</a>") == 1 and "attempt=tingley-2021-" in paper
+    # Their own page has a Responses tab with it, naming the paper.
+    theirs = (tmp_path / "authors" / person["orcid"] / "index.html").read_text()
+    assert 'data-panel="responses"' in theirs and "bootstrapped" in theirs and 'papers/tingley-2021/">Tingley et al. 2021</a>' in theirs
+    # A dataset's page has neither the responses nor the form: a response is to a paper's attempt.
+    dataset = (tmp_path / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert "bootstrapped" not in dataset and "Respond to" not in dataset
+
+
+def test_the_response_form_is_on_paper_and_attempt_pages(built):
+    data, out = built
+    paper = (out / "papers" / "tingley-2021" / "index.html").read_text()
+    assert "Respond to this attempt</a>" in paper and "paper=tingley-2021&amp;" in paper and "attempt=tingley-2021-" in paper
+    # A paper with several current attempts does not choose one for the writer; each attempt's page does.
+    several = (out / "papers" / "semenov-2026" / "index.html").read_text()
+    assert "Respond to an attempt</a>" in several and "attempt=semenov-2026" not in several
+    assert "attempt=semenov-2026-03" in (out / "papers" / "semenov-2026" / "semenov-2026-03" / "index.html").read_text()
+    assert "Respond to" not in (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # No one has a Responses tab while there are no responses.
+    assert 'data-panel="responses"' not in (out / "authors" / next(iter(site.author_index(data))) / "index.html").read_text()
+
+
+def test_the_journal_filter_names_at_most_the_top_journals(built):
+    _, out = built
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    named = {r["journal"] for r in rows} - {"Preprint", "Other journals", "Not recorded"}
+    assert len(named) <= site.TOP_JOURNALS and all(r["journal"] for r in rows)
+
+
+def test_each_attempted_paper_has_a_page_listed_under_results(built):
+    import json
+    _, site = built
+    papers = json.loads((site / "data" / "papers.json").read_text())
+    attempted = [p for p in papers if p["status"] == "attempted"]
+    assert attempted and all((site / p["page"] / "index.html").is_file() for p in attempted)
+    page = (site / "papers" / "tingley-2021" / "index.html").read_text()
+    assert "A metabolic function of the hippocampal sharp wave-ripple" in page and "tingley-2021-01" in page
+    # The paper's page stands on its own: its claims, with their outcomes, tests and notes, are on the page, and no
+    # claim sends the reader to a dataset's page. So are the findings, notebooks, verification and provenance.
+    assert 'id="claim-' in page and "/#claim-" not in page
+    for panel in ("claims", "notebooks", "verification", "differences", "provenance"):
+        assert f'<section class="tabpanel" id="{panel}">' in page
+    # Findings about the data belong to the dataset: the paper's page points to them.
+    assert 'id="findings"' not in page and 'datasets/dandi/000233/#findings">' in page
+    # The header has one table of the paper's datasets, each with its version, findings and links, once.
+    assert page.count('<div class="sets">') == 1 and ">Paper</a>" not in page and "JSON (" not in page
+    assert '<a href="../../papers/">Papers</a>' in page and 'href="../../datasets/dandi/000233/"' in page
+    # Every attempted paper's page has each claim of its latest attempts, once.
+    import build_site
+    for q in build_site.papers_of(_):
+        if q["attempts"]:
+            text = (site / "papers" / q["key"] / "index.html").read_text()
+            for a in q["attempts"]:
+                assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
+    # And a dataset's page names the paper's page.
+    assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # The result leads: under the title, the full outcome bar and the summary come before the datasets, which
+    # sit with the paper's DOI, tags and verification badge in the side column. So on an attempt's page.
+    for path in (("papers", "tingley-2021"), ("papers", "kim-2022", "kim-2022-01")):
+        text = site.joinpath(*path, "index.html").read_text()
+        head = text[text.index('<header class="page"'):text.index("</header>")]
+        result, summary = head.index('<div class="result">'), head.index('<div class="attempt-summary">')
+        side, sets = head.index('<aside class="phead-side"'), head.index('<div class="sets">')
+        assert head.index("<h1>") < result < summary < side < sets, path
+        assert '<div class="bar" role="img" aria-label="Outcomes of ' in head[result:summary]
+        assert 'class="tier' in head[side:] and "doi:" in head[side:] and "doi:" not in head[:side]
+    # A paper on several datasets lists them all; the tab bar leads to the papers and to the datasets.
+    semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
+    assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
+    nav = (site / "index.html").read_text()
+    assert 'href="papers/"' in nav and 'href="datasets/"' in nav and 'class="menu"' not in nav
+
+
+def test_links_are_underlined_except_where_nearly_every_word_is_one():
+    """Links keep the browser's underline by default. Only the dense areas (the datasets table, list rows, crumbs,
+    attempts, footer) quiet it, each with one scoped rule, and there it comes back on hover and keyboard focus."""
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    # The base rule colours links and does not remove their underline.
+    assert re.search(r"^a\{color:var\(--link\)\}$", css, re.M)
+    assert not re.search(r"^a\{[^}]*text-decoration", css, re.M)
+    quiet = re.search(r"^:where\((.*?)\) a:not\(\[class\]\)\{text-decoration:none\}$", css, re.M)
+    thin = re.search(r"^:where\((.*?)\) a:not\(\[class\]\)\{text-decoration:underline;", css, re.M)
+    back = re.search(r"^:where\((.*?)\) a:not\(\[class\]\):is\(:hover,:focus-visible\)\{text-decoration:underline", css, re.M)
+    assert quiet and thin and back
+    assert {".sets th", ".row .id", ".row .meta"} <= set(quiet[1].split(","))
+    assert {".crumbs", "footer"} <= set(thin[1].split(","))
+    assert {".sets", ".row .meta", ".crumbs", ".timeline", "footer"} <= set(back[1].split(","))
+    # Running text is never in the scope, and keyboard focus keeps its outline.
+    for prose in (".lede", ".notes", ".caution", ".about", ".claim", ".sub"):
+        assert prose not in quiet[1] + thin[1] + back[1]
+    assert ":focus-visible{outline:2px solid var(--accent)" in css and "outline:none" not in css
+
+
+def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
+    """DANDI:000978 names no paper, so no archive list has it; wakhloo-2026 reuses it (targets/reuse.yaml)."""
+    data = site.collect()
+    archive = {t["key"] for t in site.all_targets()}
+    outside = [t for t in data["targets"] if t["key"] not in archive]
+    assert outside and all(t.get("reuse_only") and t["match"] == "matched" for t in outside)
+    for t in outside:
+        # Its paper is one of those listed for it (several papers can reuse one dataset).
+        papers = {site.paper_records.doi_of(key) for key, body in site.paper_records.listed().items()
+                  if t["key"] in {d["key"] for d in body["datasets"]}}
+        assert t["paper"] in papers and t["name"] != t["label"]
+        assert isinstance(t["size_gb"], float) and isinstance(t["files"], int)
+    # Each has its row in the pipeline and in the datasets list, as the tests of both expect of an attempted dataset.
+    assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
+    assert data["queue_counts"]["with_a_paper"] == len(data["targets"])
+
+
+def test_the_overview_leads_with_papers():
+    """The papers are the primary index: the first tile, and the measure the charts show first."""
+    panel = site.progress_panel(site.collect())
+    assert list(site.PROGRESS_METRICS)[0] == site.PROGRESS_DEFAULT == "papers"
+    first = panel.index('data-metric="papers"')
+    assert first < panel.index('data-metric="datasets"')
+    assert 'data-metric="papers" aria-pressed="true"' in panel and 'data-metric="datasets" aria-pressed="false"' in panel
+    assert ">Papers attempted over time</h2>" in panel and ">Papers attempted, new each day</h2>" in panel
+
+
+def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives():
+    """Three archive colours, none an outcome's: DANDI and CRCNS each have one, every other archive shares the third."""
+    data = site.collect()
+    p = site.progress_data(data)
+    keys = [a["key"] for a in p["archives"]]
+    assert keys[: len([k for k in keys if k in site.OWN_COLOUR])] == [k for k in site.OWN_COLOUR if k in keys]
+    assert all(a["slot"] in (1, 2, 3) for a in p["archives"])
+    present = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    if present - set(site.OWN_COLOUR):
+        other = next(a for a in p["archives"] if a["key"] == "other")
+        assert other["slot"] == 3 and other["label"].startswith("Other archives (")
+    # Every dataset is counted once, in its archive's series or in the other archives'.
+    rows = p["series"]["all"]
+    assert sum(rows["datasets"]) == sum(sum(rows[f"archive:{k}"]) for k in keys)
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    assert "--archive-4" not in css
+
+
+def test_muted_text_keeps_the_wcag_aa_contrast_in_both_themes():
+    """Small gray text (dates, journals, claim sources, counts) needs 4.5:1 on every background it sits on, and must
+    stay lighter than the secondary text so the two still read as two levels."""
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+
+    def theme(selector):
+        block = css.split(selector, 1)[1].split("}", 1)[0]
+        return dict(re.findall(r"--([a-z0-9-]+):(#[0-9a-f]{6})", block))
+
+    def ratio(a, b):
+        def lum(h):
+            c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+            c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+            return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+        hi, lo = sorted([lum(a), lum(b)], reverse=True)
+        return (hi + 0.05) / (lo + 0.05)
+
+    light = theme(":root{")
+    dark_system = theme(":root:not([data-theme=light]){")
+    dark_chosen = theme(":root[data-theme=dark]{")
+    assert dark_system == dark_chosen  # the two copies of the dark theme stay in step
+    for colours in (light, {**light, **dark_chosen}):
+        for text in ("muted", "good-text"):
+            for background in ("surface", "panel", "hover"):
+                assert ratio(colours[text], colours[background]) >= 4.5, (text, background, colours[text])
+        assert ratio(colours["muted"], colours["surface"]) < ratio(colours["text2"], colours["surface"]) - 2
+
+
+def test_the_datasets_list_is_for_curators_and_the_papers_list_finds_a_paper_by_its_datasets(built):
+    import json
+    data, out = built
+    # The datasets list has the datasets an attempt used, by what was found about their data; the old address of
+    # the DANDI list leads to it.
+    page = (out / "datasets" / "index.html").read_text()
+    config = json.loads(page.split('id="list-config">')[1].split("</script>")[0])
+    assert config["only"] == {"status": ["attempted"]} and config["sorts"][0]["key"] == "-findings"
+    assert [f["key"] for f in config["facets"]][:3] == ["archive", "found", "tested"]
+    assert set(config["labels"]["tested"]) >= set(site.VERSION_STATES)
+    assert 'aria-current="page">Datasets' in page
+    assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
+    assert "datasets/</loc>" in (out / "sitemap.xml").read_text()
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    tested = [r for r in rows if r["status"] == "attempted"]
+    assert tested and all(set(r["tested"]) <= set(site.VERSION_STATES) for r in tested)
+    assert f'<span class="n">{len(tested):,}</span>' in page
+    # The papers list still finds a paper by its datasets, and filters by what was found about them.
+    keys = [k for k, _ in site.LISTS["papers"]["facets"]]
+    assert "found" in keys and "converted" in keys
+    rows = json.loads((out / "data" / "papers.json").read_text())
+    named = [r for r in rows if any(d.get("name") for d in r["datasets"])]
+    assert named and all({"found", "converted"} <= set(r) for r in rows)
+    # A finding's kind, on any page, opens the datasets with an open finding of that kind.
+    assert 'datasets/?found=' in (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert 'papers/?found=' not in (out / "index.html").read_text()
+
+
+def test_the_datasets_list_says_how_many_papers_each_dataset_has(built):
+    data, out = built
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    theirs: dict = {}
+    for q in site.papers_of(data):
+        for k in q["datasets"]:
+            theirs.setdefault(k, []).append(q)
+    several = 0
+    for r in rows:
+        papers = theirs.get(r["id"], [])
+        # Every paper associated with the dataset, attempted or not, those with an attempt first.
+        assert r["n_papers"] == len(papers) == len(r["papers"])
+        assert {q["byline"] for q in papers} == {x["byline"] for x in r["papers"]}
+        assert [x["attempted"] for x in r["papers"]] == sorted((x["attempted"] for x in r["papers"]), reverse=True)
+        assert r["paper_count"] == ("one" if len(papers) == 1 else "several" if papers else None)
+        several += len(papers) > 1
+    assert several
+    config = json.loads((out / "datasets" / "index.html").read_text().split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_papers", "label": "Most papers"} in config["sorts"]
+    assert {"key": "paper_count", "label": "Papers"} in config["facets"]
+    js = (site.ASSETS / "list.js").read_text()
+    assert "r.papers" in js and "not yet tested" in js
+
+
+def test_a_version_is_said_in_words(built):
+    a = {"dataset_version": "0.240101.0000", "dataset": {"doi": "10.48324/dandi.000001/0.240101.0000"}}
+    assert site.version_state(a) == "published" and site.version_plain(a) == "version 0.240101.0000"
+    assert 'href="https://doi.org/10.48324/dandi.000001/0.240101.0000"' in site.version_text(a)
+    for v, state, words in (("draft", "draft", "the unpublished draft"), ("unversioned", "unversioned", "unversioned files"),
+                            (None, "unknown", "a version not recorded")):
+        a = {"dataset_version": v, "dataset": {}}
+        assert site.version_state(a) == state and site.version_plain(a) == words
+        assert "version unversioned" not in site.version_text(a)
+    # Newest version first: a draft after every published version, which are dated.
+    order = [{"dataset_version": v, "date": "2026-01-01", "id": "x"} for v in ("0.240101.0000", "draft", None, "0.230101.0000")]
+    assert [a["dataset_version"] for a in sorted(order, key=site.version_order, reverse=True)] == [
+        "draft", "0.240101.0000", "0.230101.0000", None]
+
+
+def test_every_paper_has_a_page_and_every_list_links_to_it(built):
+    # A paper not tested yet has a page too, which says so, so that the lists of datasets, papers and authors open
+    # the paper's page in the registry, never the paper's DOI.
+    data, out = built
+    untested = 0
+    for q in site.papers_of(data):
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        assert site.e(q["title"]) in page and f'https://doi.org/{site.e(q["doi"])}' in page
+        if not q["attempts"] and q["status"] != "claims":
+            untested += 1
+            assert "Not tested yet." in page
+    assert untested
+    for name in ("datasets", "papers", "authors"):
+        rows = json.loads((out / "data" / f"{name}.json").read_text())
+        pages = [r["page"] for r in rows] if name == "papers" else [q["page"] for r in rows for q in r.get("papers") or []]
+        assert pages and all(x and x.startswith("papers/") and (out / x / "index.html").is_file() for x in pages), name
+    # The list opens each paper's page; the DOI is offered only as a link of its own, labelled "doi".
+    js = (site.ASSETS / "list.js").read_text()
+    assert "doi.org/${esc(q.doi)}" not in js and "r.page ? root + r.page : `https://doi.org" not in js
+
+
+def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):
+    data, out = built
+    papers = [q for q in site.papers_of(data) if q["status"] == "claims"]
+    assert papers
+    for q in papers:
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        files = [f for k in q["datasets"] for f in data["claim_files"].get(k, []) if f["paper"].lower() == q["doi"]]
+        ids = {c["id"] for f in files for c in f["claims"]}
+        assert ids and all(f'id="claim-{i}"' in page for i in ids), q["key"]
+        assert "Not attempted yet" in page and "No attempt on this paper yet" not in page
+
+
+def test_a_finding_is_about_the_data_or_the_paper_and_shown_where_it_belongs(built):
+    data, out = built
+    # By its kind unless the record says: the paper for these three kinds.
+    assert site.ABOUT_PAPER == {"methods_unavailable", "code_mismatch", "paper_inconsistency"}
+    seen_notes = 0
+    for dandiset, attempts in site.current_attempts(data).items():
+        dataset_page = (out / site.page_of(dandiset) / "index.html").read_text()
+        for a in attempts:
+            assert all(f["about"] == "data" for f in a["findings"])
+            assert all(f["about"] == "paper" for f in a["paper_notes"])
+            if a.get("deprecated"):
+                continue
+            paper_page = _paper_page(data, out, a)
+            for f in a["paper_notes"]:
+                seen_notes += 1
+                assert site.e(f["statement"]) in paper_page and site.e(f["statement"]) not in dataset_page
+            for f in a["findings"]:
+                assert site.e(f["statement"]) in dataset_page and site.e(f["statement"]) not in paper_page
+    assert seen_notes
+
+
+def test_a_finding_that_names_its_datasets_is_on_those_datasets_only():
+    import jsonschema, json
+    schema = json.loads((REPO / "schemas" / "attempt.schema.json").read_text())["properties"]["findings"]
+    ok = [{"kind": "other", "statement": "S.", "about": "data", "datasets": ["000001"]}]
+    jsonschema.validate(ok, schema)
+    for bad in ([{"kind": "other", "statement": "S.", "about": "both"}], [{"kind": "other", "statement": "S.", "datasets": []}]):
+        try:
+            jsonschema.validate(bad, schema)
+        except jsonschema.ValidationError:
+            continue
+        raise AssertionError(bad)
+
+
+
+def test_a_critical_finding_is_presented_as_one_only_when_someone_else_checked_it():
+    # The attempt's own rating (pilot-18 on), which the verifier reviews in round 2.
+    f = {"kind": "other", "statement": "Two sessions are one.", "about": "data", "severity": "critical"}
+    rounds = lambda agrees: [{"results": []}, {"results": [], "findings": [{"finding": 1, "agrees": agrees, "reason": "Cell 4 shows it."}]}]
+    assert site.finding_severity({"findings": [f]}, f, 1) == {"severity": "critical", "changes_results": False, "checked": None}
+    assert site.finding_severity({"verifications": rounds(True)}, f, 1) == {
+        "severity": "critical", "changes_results": True, "checked": "Cell 4 shows it."}
+    assert not site.finding_severity({"verifications": rounds(False)}, f, 1)["changes_results"]
+    assert not site.finding_severity({"verifications": rounds(True)}, {**f, "severity": "major"}, 1)["changes_results"]
+    assert not site.finding_severity({"verifications": rounds(True)}, f, 2)["changes_results"]   # another finding's review
+    # An earlier attempt's finding, rated by a later review (`findings_review`), and checked in it or not.
+    old = {"kind": "other", "statement": "Two sessions are one.", "about": "data"}
+    review = lambda **more: {"findings_review": {"findings": [{"finding": 1, "severity": "critical", **more}]}}
+    assert site.finding_severity(review(), old, 1) == {"severity": "critical", "changes_results": False, "checked": None}
+    assert site.finding_severity(review(confirmed=True, note="Cell 9."), old, 1) == {
+        "severity": "critical", "changes_results": True, "checked": "Cell 9."}
+    assert not site.finding_severity(review(confirmed=False, note="Not shown."), old, 1)["changes_results"]
+    assert site.finding_severity({}, old, 1) == {"severity": None, "changes_results": False, "checked": None}
+
+
+def test_problems_that_change_results_come_first_under_their_version_on_a_datasets_page(built):
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "datasets.json").read_text())}
+    overview = (out / "index.html").read_text()
+    hit = set()
+    for key, atts in site.current_attempts(data).items():
+        live = [a for a in atts if not a.get("deprecated")]
+        if not live:
+            continue
+        # Only a problem that is in the dataset's newest version counts as one that changes results now.
+        worst = [f for a in live for f in a["findings"] if site.counts_now(f)]
+        page = (out / site.page_of(key) / "index.html").read_text()
+        # The heading is there only with such a finding; each is listed once, under it, with what the check found.
+        rest = [f for a in live for f in a["findings"] if not f["changes_results"] and f["scope"] == "current"]
+        for f in worst[:1]:
+            for g in rest[:1]:
+                assert page.index(site.e(f["statement"])) < page.index("Other findings") < page.index(site.e(g["statement"])) \
+                    or len({site.version_text(a) for a in live}) > 1
+        assert ("Problems that change results" in page) == bool(worst)
+        assert (site.CHANGES_RESULTS in rows[key]["found"]) == bool(worst)
+        for f in worst:
+            assert f["severity"] == "critical" and f["checked"]
+            assert page.count(site.e(f["statement"])) == 1 and f"Checked: {site.e(f['checked'])}" in page
+            # Under the version of the dataset it was found on, before that version's other findings.
+            assert page.index('<h3 class="vhead">Dataset') < page.index("Problems that change results") < page.index(site.e(f["statement"]))
+        if worst:
+            hit.add(key)
+    # The Overview does not count them.
+    assert hit and "changes results" not in overview and site.CHANGES_RESULTS not in overview
+
+
+def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_their_papers(built):
+    data, out = built
+    index = site.author_index(data)
+    assert index and (out / "authors" / "index.html").is_file()
+    # Every author with an ORCID iD has a page with all of their papers in the registry.
+    rows = {r["id"]: r for r in json.loads((out / "data" / "authors.json").read_text())}
+    assert set(rows) == set(index)
+    theirs: dict = {}
+    for q in site.papers_of(data):
+        for a in site.authors_of(data, q["doi"]):
+            if a.get("orcid"):
+                theirs.setdefault(a["orcid"], []).append(q)
+    for orcid, author in index.items():
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert f'href="https://orcid.org/{orcid}"' in page and site.e(author["name"]) in page
+        papers = theirs.get(orcid, [])
+        # Their datasets: every dataset in the registry that names the iD among its contributors, with their roles.
+        sets = [(k["key"], c.get("roles") or []) for k in data["targets"]
+                for c in site.contributors_of(data, k["key"]) if c.get("orcid") == orcid]
+        assert [(d["key"], d["roles"]) for d in author["datasets"]] == sorted(sets)
+        assert papers or sets
+        assert rows[orcid]["n_datasets"] == len(sets)
+        assert rows[orcid]["as"] == [k for k, on in (("author", papers), ("contributor", sets)) if on]
+        for key, roles in sets:
+            assert site.e(site.dataset_label(key)) in page and site.e(", ".join(roles)) in page
+        assert ('data-panel="datasets"' in page) == bool(sets) and ('data-panel="papers"' in page) == bool(papers or not sets)
+        # The outcomes of their papers' claims, summed.
+        counted = {r["id"]: r["counts"] for r in json.loads((out / "data" / "papers.json").read_text())} if orcid == next(iter(index)) else None
+        if counted is not None:
+            total = sum(n for q in papers for n in (counted[q["key"]] or {}).values())
+            assert (f"Outcomes of the {total:,} claims tested across" in page) == bool(total)
+        assert {q["key"] for q in author["papers"]} == {q["key"] for q in papers}
+        for q in papers:
+            assert site.e(q["title"]) in page
+            assert f'href="../../papers/{q["key"]}/"' in page
+        assert rows[orcid]["n_papers"] == len(papers) and rows[orcid]["n_attempted"] == sum(1 for q in papers if q["attempts"])
+    # A paper's page names its authors in order; one with an ORCID iD opens the author's page, one without is a name.
+    linked = plain = long = 0
+    for q in site.papers_of(data):
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        people = site.authors_of(data, q["doi"])
+        at = 0
+        for a in people:
+            shown = (f'<a href="../../authors/{a["orcid"]}/">{site.e(a["name"])}</a>' if a.get("orcid") else site.e(a["name"]))
+            at = page.index(shown, at)   # raises if a name is missing or out of order
+            linked += bool(a.get("orcid")); plain += not a.get("orcid")
+        if len(people) > site.AUTHORS_SHOWN + 2:
+            long += 1
+            assert f"and {len(people) - site.AUTHORS_SHOWN} more authors</summary>" in page
+    assert linked and plain and long
+    # A dataset's page names its contributors; each with an ORCID iD opens their page.
+    page = (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
+    people = site.contributors_of(data, "dandi:000003")
+    assert people and all(site.e(c["name"]) in page for c in people)
+    assert any(f'<a href="../../../authors/{c["orcid"]}/"' in page for c in people if c.get("orcid"))
+    # Someone who is only a contributor of datasets has a page too, with the Datasets tab alone.
+    only = next(a for a in index.values() if a["datasets"] and not a["papers"])
+    theirs_page = (out / "authors" / only["orcid"] / "index.html").read_text()
+    assert 'data-panel="datasets"' in theirs_page and 'data-panel="papers"' not in theirs_page
+    sitemap = (out / "sitemap.xml").read_text()
+    assert "authors/</loc>" in sitemap and f"authors/{next(iter(index))}/</loc>" in sitemap
+    assert 'href="authors/"' in (out / "index.html").read_text()
+
+
+def test_the_authors_file_has_each_person_once_a_paper():
+    import authors
+    people = [{"name": "A B", "orcid": "0000-0001-0000-0001"}, {"name": "C D", "orcid": None},
+              {"name": "E F", "orcid": None}, {"name": "A. B", "orcid": "0000-0001-0000-0001"}]
+    assert [a["name"] for a in authors.once(people)] == ["A B", "C D", "E F"]
+    assert authors.key("10.1101/2020.03.31.018820v2") == "10.1101/2020.03.31.018820"
+    known = site.load_yaml(site.ROOT / "papers" / "authors.yaml")["papers"]
+    for doi, listed in known.items():
+        ids = [a["orcid"] for a in listed if a["orcid"]]
+        assert len(ids) == len(set(ids)), doi
+        assert all(a["name"] and (a["orcid"] is None or authors.ORCID.fullmatch(a["orcid"])) for a in listed), doi
+
+
+def test_the_contributors_file_names_people_given_name_first_with_roles_in_words():
+    import contributors
+    assert contributors.given_first("Buzsáki, György") == "György Buzsáki" and contributors.given_first("IBL") == "IBL"
+    assert contributors.role("dcite:ContactPerson") == "Contact person" and contributors.role("Creator") == "Creator"
+    people = [{"name": "A B", "orcid": "0000-0001-0000-0001", "roles": ["Author"]},
+              {"name": "A B", "orcid": "0000-0001-0000-0001", "roles": ["Author", "Data curator"]},
+              {"name": "C D", "orcid": None, "roles": ["Creator"]}]
+    assert contributors.once(people) == [{"name": "A B", "orcid": "0000-0001-0000-0001", "roles": ["Author", "Data curator"]},
+                                         {"name": "C D", "orcid": None, "roles": ["Creator"]}]
+    known = site.load_yaml(site.ROOT / "targets" / "contributors.yaml")["datasets"]
+    for key, listed in known.items():
+        ids = [p["orcid"] for p in listed if p["orcid"]]
+        assert len(ids) == len(set(ids)), key
+        assert all(p["name"] and "," not in p["name"] and (p["orcid"] is None or contributors.ORCID.fullmatch(p["orcid"]))
+                   for p in listed), key
+
+
+def test_a_lists_filters_open_again_when_a_narrow_window_is_widened():
+    # Closed under their bar on a narrow screen; a wide screen has no bar, so they are opened whenever it is wide,
+    # not only when the page loads (assets/list.js follows the media query).
+    js = (site.ASSETS / "list.js").read_text()
+    assert "narrow.addEventListener('change', fitFilters)" in js and "$('facets').open = !narrow.matches" in js
+
+
+def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_attempts(built):
+    data, out = built
+    with_badge = 0
+    for key, attempts in site.current_attempts(data).items():
+        archive, ident = site.split_key(key)
+        svg = out / "badge" / archive / f"{ident}.svg"
+        api = json.loads((out / "api" / f'{site.page_of(key).rstrip("/")}.json').read_text())
+        row = next(r for r in json.loads((out / "data" / "datasets.json").read_text()) if r["id"] == key) if with_badge < 3 else None
+        # Only claims on the dataset, reproduced in full, in a current attempt a verifier has checked.
+        counted = [a for a in attempts if not a.get("deprecated") and a["tier"] != "runs"]
+        total = sum(site.outcome_counts(a)["reproduced"] for a in counted)
+        badge = site.badge_of(data, key)
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and api["badge"] == badge
+        page = (out / site.page_of(key) / "index.html").read_text()
+        assert ("Badges for this dataset" in page) == bool(site.dataset_outcomes(data, key)) and (not total or site.dataset_outcomes(data, key))
+        if not total:
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        assert badge["text"].startswith(f'{total} finding{"" if total == 1 else "s"} reproduced')
+        assert badge["url"] == site.SITE_URL + site.page_of(key) and badge["svg"].endswith(f"badge/{archive}/{ident}.svg")
+        text = svg.read_text()
+        assert text.startswith("<svg ") and f">{site.e(badge['text'])}</text>" in text and ">Encore</text>" in text
+        assert f"<strong>{total}</strong> finding" in page and site.e(badge["svg"]) in page
+        if row is not None:
+            assert row["badge"] == badge["text"]
+    assert with_badge
+    # A dataset's page leads with its papers; what was found about its data comes after.
+    page = (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert page.index('id="papers"') < page.index('id="findings"')
+
+
+def test_a_dataset_has_two_more_badges_with_all_the_outcomes(built):
+    # Every outcome of the claims tested on the dataset, verified or not, as one line and as a card: a dataset whose
+    # attempts no verifier has checked has these two and not the first.
+    data, out = built
+    seen = unverified = 0
+    for key, attempts in site.current_attempts(data).items():
+        archive, ident = site.split_key(key)
+        live = [a for a in attempts if not a.get("deprecated")]
+        counts = site.outcome_counts(live) if live else dict.fromkeys(site.OUTCOMES, 0)
+        every = site.dataset_outcomes(data, key)
+        line, card = (out / "badge" / archive / f"{ident}-{kind}.svg" for kind in ("outcomes", "card"))
+        api = json.loads((out / "api" / f'{site.page_of(key).rstrip("/")}.json').read_text())
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["badges"] == {"reproduced": (site.badge_of(data, key) or {}).get("svg"),
+                                 "outcomes": every["svg_outcomes"] if every else None, "card": every["svg_card"] if every else None}
+        if not every:
+            continue
+        seen += 1
+        unverified += site.badge_of(data, key) is None
+        assert every["counts"] == counts and list(counts) == list(site.OUTCOMES)
+        assert every["papers"] == len({a["paper"].lower() for a in live})
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert site.e(every["alt"]) in svg
+        assert site.e(site.dataset_label(key)) in card.read_text()
+        assert f'· {every["papers"]} paper' in card.read_text()
+        page = (out / site.page_of(key) / "index.html").read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+    assert seen and unverified
+
+
+def test_a_paper_has_badges_and_a_json_file_of_its_results(built):
+    # The same three styles as a dataset and a person, at badge/papers/<key>; the first only when a verified attempt
+    # reproduced something. They are offered at the end of the paper's page, not on the page of one attempt.
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "papers.json").read_text())}
+    seen = without = claims_only = 0
+    for q in site.papers_of(data):
+        key = q["key"]
+        first, line, card = (out / "badge" / "papers" / f"{key}{kind}.svg" for kind in ("", "-outcomes", "-card"))
+        file = out / "api" / "papers" / f"{key}.json"
+        if not (q["attempts"] or q["status"] == "claims"):
+            # A paper not tested yet has a page and a JSON file, and no badge.
+            assert file.is_file() and not first.exists() and not card.exists()
+            assert json.loads(file.read_text())["badges"] == {"reproduced": None, "outcomes": None, "card": None}
+            continue
+        api = json.loads(file.read_text())
+        badge, every = site.paper_badge(data, q), site.paper_outcomes(data, q)
+        total = sum(site.outcome_counts(a, "paper")["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        counts = {k: (rows[key].get("counts") or {}).get(k, 0) for k in site.OUTCOMES}
+        assert (badge is None) == (total == 0) and first.is_file() == bool(total)
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["badge"] == badge and api["outcome_counts"] == (counts if every else None)
+        assert api["badges"] == {"reproduced": (badge or {}).get("svg"), "outcomes": every["svg_outcomes"] if every else None,
+                                 "card": every["svg_card"] if every else None}
+        assert api["doi"] == q["doi"] and api["url"] == site.SITE_URL + f"papers/{key}/"
+        assert rows[key]["badge"] == (badge or {}).get("text")
+        page = (out / "papers" / key / "index.html").read_text()
+        # A badge with only the number reproduced, over every current attempt, where the first does not say it.
+        count, anyone = site.paper_reproduced(data, q), sum(site.outcome_counts(a, "paper")["reproduced"] for a in q["live"])
+        assert (count is None) == (anyone in (0, total))
+        assert (out / "badge" / "papers" / f"{key}-reproduced.svg").is_file() == bool(count)
+        if count:
+            assert count["text"].startswith(f"{anyone} finding") and count["svg"] in page and ">Reproduced<" in page
+        # The questions asked about the paper's text are in the tab of notes on the paper, not a tab of their own.
+        if 'id="notes"' in page:
+            assert '<section class="tabpanel" id="questions">' not in page
+            assert ('<h3 id="questions"' in page) == ('class="questions"' in page)
+        assert ("for this paper</h2>" in page) == bool(badge or every)
+        if not every:
+            claims_only += 1
+            continue
+        seen += 1
+        without += badge is None
+        if badge:
+            assert badge["reproduced"] == total and badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced'
+            assert f">{site.e(badge['text'])}</text>" in first.read_text() and badge["svg"] in page
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg
+        # The card names the paper and says how many claims and datasets, not "1 paper".
+        assert site.e(q["byline"]) in card.read_text() and f'{every["claims"]} claim' in card.read_text()
+        assert " dataset" in card.read_text() and "1 paper" not in card.read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+        # One attempt's own page does not offer the paper's badges.
+        for a in q["live"][:1]:
+            own = site.attempt_own_path(data, a)
+            if own and own.rstrip("/") != f"papers/{key}":
+                assert "for this paper</h2>" not in (out / own / "index.html").read_text()
+    assert seen and without and claims_only
+
+
+def test_a_badge_sums_the_papers_and_leaves_out_what_is_not_verified():
+    data = site.collect()
+    key = next(k for k, atts in site.current_attempts(data).items()
+               if len(atts) == 1 and atts[0]["tier"] != "runs" and not atts[0].get("deprecated")
+               and site.outcome_counts(atts[0])["reproduced"] >= 2)
+    first = site.current_attempts(data)[key][0]
+    one = site.badge_of(data, key)
+    assert "papers" not in one["text"] and len(one["papers"]) == 1 and one["papers"][0]["relation"] in ("primary", "reuses")
+    # A second paper tested on the dataset, verified: its findings are added, and the badge says how many papers.
+    n = site.outcome_counts(first)["reproduced"]
+    second = {**first, "id": "another-2020-01", "paper": "10.1000/another"}
+    data["attempts"].append(second)
+    two = site.badge_of(data, key)
+    assert two["reproduced"] == 2 * n and two["text"] == f"{2 * n} findings reproduced · 2 papers"
+    assert "2 papers" in site.badge_svg(two) and two["alt"].endswith(f"from 2 papers, from {site.dataset_label(key)}")
+    # Not yet verified, or set aside: not counted.
+    second["tier"] = "runs"
+    assert site.badge_of(data, key)["reproduced"] == n
+    second["tier"], second["deprecated"] = first["tier"], "to redo"
+    assert site.badge_of(data, key)["reproduced"] == n
+    first["tier"] = "runs"
+    assert site.badge_of(data, key) is None
+
+
+def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_verified_attempts(built):
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "authors.json").read_text())}
+    with_badge = without = 0
+    for orcid, author in site.author_index(data).items():
+        badge = site.author_badge(data, author)
+        total = sum(site.outcome_counts(a, "paper")["reproduced"] for q in author["papers"] for a in q["live"] if a["tier"] != "runs")
+        svg = out / "badge" / "authors" / f"{orcid}.svg"
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and rows[orcid]["badge"] == (badge or {}).get("text")
+        if with_badge + without > 60 and badge and with_badge > 5 and without > 5:
+            continue   # the files of a sample of people are read; the rule is checked for everyone
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert api["badge"] == badge and api["orcid"] == orcid and api["name"] == author["name"]
+        assert [q["key"] for q in api["papers"]] == [q["key"] for q in author["papers"]]
+        assert [d["key"] for d in api["datasets"]] == [d["key"] for d in author["datasets"]]
+        # The section is there when the person has any badge: this one, or those with all the outcomes.
+        assert ("for this page</h2>" in page) == bool(badge or site.author_outcomes(data, author))
+        assert (site.e(f'{orcid}.svg" alt=') in page) == bool(badge)
+        if not badge:
+            without += 1
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        papers = len(badge["papers"])
+        assert badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced' + (f" · {papers} papers" if papers > 1 else "")
+        assert badge["url"] == site.SITE_URL + f"authors/{orcid}/" and f">{site.e(badge['text'])}</text>" in svg.read_text()
+        # The page has the badge and what to paste to show it, as HTML and as Markdown.
+        assert f'[![{site.e(badge["alt"])}]({badge["svg"]})]({badge["url"]})' in page
+        assert site.e(f'<a href="{badge["url"]}"><img src="{badge["svg"]}"') in page
+    assert with_badge and without
+    # A dataset's page offers both forms too.
+    assert "Or as Markdown:" in (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
+
+
+def test_the_authors_list_sorts_by_findings_reproduced(built):
+    data, out = built
+    page = (out / "authors" / "index.html").read_text()
+    config = json.loads(page.split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_reproduced", "label": "Most findings reproduced"} in config["sorts"]
+    rows = json.loads((out / "data" / "authors.json").read_text())
+    index = site.author_index(data)
+    # The number is the one the row's bar shows: the claims reproduced across the person's papers.
+    assert all(r["n_reproduced"] == (r["counts"] or {}).get("reproduced", 0) for r in rows)
+    assert max(r["n_reproduced"] for r in rows) > 0 and any(r["n_reproduced"] == 0 for r in rows)
+    # A row has the outcomes of all the person's papers as one bar, and their first few papers only.
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    for r in rows[:200]:
+        total = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in index[r["id"]]["papers"]) for k in site.OUTCOMES}
+        assert r["counts"] == (total if sum(total.values()) else None)
+    js = (site.ASSETS / "list.js").read_text()
+    assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js
+
+
+def test_summaries_start_with_a_bold_label():
+    one = site.summary_block([{"summary": "It held up.", "paper": "doi:10.1/x"}])
+    assert '<p class="lede"><strong>Summary:</strong> It held up.</p>' in one
+    two = site.summary_block([{"summary": "A.", "paper": "p1", "paper_title": "First"},
+                                    {"summary": "B.", "paper": "p2", "paper_title": "Second"}])
+    assert two.count("<strong>Summary, <em>") == 2 and "<strong>Summary, <em>Second</em>:</strong> B." in two
+
+
+def test_summaries_hold_no_agent_chatter():
+    # A recorder that could not write its file answered with the paragraph and a note around it ("Here is the
+    # paragraph to save...", "I couldn't create ..."); only the paragraph belongs in summaries/.
+    import backfill_summaries
+
+    chatter = backfill_summaries.META
+    found = [p.name for p in (Path(site.ROOT) / "summaries").glob("*.md")
+             if p.name != "README.md" and chatter.search(p.read_text())]
+    assert found == []
+
+
+@pytest.mark.parametrize("url,owner", [
+    ("https://github.com/acme-lab/encore-registry/actions/runs/1", "acme-lab"),
+    ("https://github.com/catalystneuro/encore/actions/runs/1", None),
+    ("https://github.com/CatalystNeuro/reproduction-registry/actions/runs/1", None),
+    ("https://github.com/encorescience/encore-registry/actions/runs/1", None),
+    (None, None),
+])
+def test_an_outside_run_is_known_by_its_runner(url, owner):
+    assert site.outside_of({"runner": {"url": url} if url else None}) == owner
+
+
+def test_an_outside_run_says_who_ran_it_under_provenance(tmp_path):
+    # An outside organization's attempt (encore-protocol docs/outside-runs.md): its paper's page names the
+    # organization and says that Encore's verifiers check it here.
+    data = site.collect()
+    # A paper's page describes its latest attempt: the first attempt in the list can be one a later attempt replaced.
+    latest = [a for atts in site.current_attempts(data).values() for a in atts]
+    attempt = next(a for a in latest if not a.get("deprecated") and a["kind"] == "agent")
+    attempt.update(accountable="Acme Lab", outside="acme-lab",
+                   runner={"platform": "GitHub Actions", "url": "https://github.com/acme-lab/encore-registry/actions/runs/1"})
+    site.build(data, tmp_path)
+    page = _paper_page(data, tmp_path, attempt)
+    assert "run by Acme Lab in its own GitHub organization (acme-lab)" in page
+    assert "https://github.com/acme-lab/encore-registry/actions/runs/1" in page
+
+
+# A finding against its dataset's newest version (finding_scope).
+
+def test_a_finding_is_current_fixed_or_seen_only_in_an_earlier_version():
+    scope = lambda f, tested, latest: site.finding_scope(f, tested, latest)[0]
+    new, old = "0.240923.1441", "0.240503.0152"
+    # The attempt read the newest version, or there is nothing newer to hold the finding against.
+    assert scope({}, new, new) == "current"
+    assert scope({}, "draft", new) == scope({}, "unversioned", None) == scope({}, old, None) == "current"
+    # The attempt read an earlier version and nobody has looked since.
+    assert scope({}, old, new) == "older"
+    # The finding says which versions it was seen in: the one the paper cites, whatever the attempt read.
+    assert site.finding_scope({"versions": [old]}, new, new) == ("older", [old])
+    assert scope({"versions": [old, new]}, new, new) == "current"
+    assert scope({"versions": [old], "fixed_in": new}, new, new) == "fixed"
+    # A target list that is behind the attempt does not make the attempt's version an earlier one.
+    assert scope({}, new, old) == "current"
+
+
+def test_only_a_current_finding_makes_a_dataset_one_whose_data_change_results():
+    assert site.counts_now({"changes_results": True, "scope": "current"})
+    assert site.counts_now({"changes_results": True})   # a finding with no scope is about the version read
+    assert not site.counts_now({"changes_results": True, "scope": "fixed"})
+    assert not site.counts_now({"changes_results": True, "scope": "older"})
+    assert not site.counts_now({"changes_results": False, "scope": "current"})
+    fixed = {"changes_results": True, "scope": "fixed", "seen_in": ["0.1"], "fixed_in": "0.2", "newest": "0.2"}
+    # On the dataset's page a fixed problem is marked fixed, not as one that changes results; on the paper's it is.
+    assert "Fixed in 0.2" in site.finding_tags(fixed) and site.CHANGES_LABEL not in site.finding_tags(fixed)
+    assert site.CHANGES_LABEL in site.finding_tags(fixed, paper=True)
+    older = {"changes_results": False, "scope": "older", "seen_in": ["0.1"], "newest": "0.2"}
+    assert "not rechecked since" in site.finding_tags(older)
+    assert "See the code that shows this finding" in site.finding_code("notebooks/x/a.html#cell-id=c1")
+    assert site.finding_code(None) == ""

@@ -1,0 +1,653 @@
+# Claims for Huang, Hess, Bajpai, Li, Hobson, Xu, Barton & Lu (2025), iScience 28, 112104, on
+# DANDI:001349.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. The version of record as served by Europe PMC (PMC11930745), full text with Results,
+# Discussion, figure legends and STAR Methods, and the supplement (Document S1, Figures S1 to S9,
+# text of the PDF appended to the same file). There is no PDF of the main article, so no main
+# figure image was read; Videos S1 to S3 were not read. The dataset's archive title is the paper's
+# title; its description says it holds two-photon awake imaging of the somatosensory cortex of
+# developing mice from P11 to P21 with synchronized behavioral video.
+#
+# Code read. github.com/EdnaHuang/SubnetworkAssembley2024, commit 28e1b6d79c830b77831ceb97738ab423f9fc333f
+# (the repository the paper links for code, statistics and post-analyzed files). It holds the MATLAB
+# preprocessing (Calcium_Image_PreProcess_EventActivity, Steps 0 to 8, and calculate_mi_matrix_trace.m),
+# the k-means clustering adapted from Modol et al. 2020 (Clustering_Analysis_Kmean/Modol_script.m and
+# Cossart_Lab helpers), the Louvain and DBSCAN variants, the tetrachoric correlation and distance
+# code (Post_Clustering_Analysis), the R statistics (Statistical_Script_Data) with knitted HTML
+# outputs for Figures 1, 2, 3, 5, S2, S3, S6, S7, S8 and S9 (none for Figure 4 or S4; those panels
+# use the same fitted models as Figures 1 to 3), and per-dataset summary tables (xlsx) with one row
+# per imaging field. The Methods say "detailed statistical comparisons for all figures" are in this
+# repository, so the contrast estimates and p-values its outputs print are cited in the criteria
+# as the paper's own test results. The paper's text prints almost no p-values, so the
+# `statistics` fields record only what the text prints.
+#
+# Data the paper used. Mice injected at P1 to P2 with AAV9-Syn.NES-jRGECO1a into S1, cranial window
+# at P8 to P9, head-fixed awake two-photon imaging (505 x 505 um field, 512 x 512 pixels, 65.6 ms
+# per frame, about 15.2 Hz) of L2/3 (120 to 150 um below pia) and L4 (200 to 350 um) at P11, P13,
+# P15, P18 and P21, the same fields relocated by vasculature. Body and whisker movement filmed
+# (30 Hz USB cameras; 100 Hz Flea3 for whiskers), limbs tracked with DeepLabCut and face with
+# Facemap. Mice per age (Figure 4 legend) P11 14 F and 20 M; P13 13 F and 18 M; P15 11 F and 17 M;
+# P18 5 F and 11 M; P21 6 F and 11 M. Some developmental animals carry R26-LSL-hM4Di, R26-LSL-Gq
+# DREADD or FGF9 cKO alleles (STAR Methods). DREADD experiment (Figure 5, S6) with AAV9-Syn.NES-jRGECO1a
+# plus AAV9-hDlx-hM3Dq-dTomato, imaged at P15 to P16 before and 30 to 60 min after CNO (1 mg/kg i.p.),
+# 6 F and 4 M C57BL/6J mice; dTomato-positive (GABAergic) ROIs were excluded. Histology (Figures S5
+# and S9) on fixed sections. The unit of every imaging statistic is a dataset, one imaging field
+# (Location) in one layer of one session; the repository's developmental table has 455 rows and the
+# DREADD table 96, and its R scripts drop Location 4 from the developmental analysis. Raw data were
+# also deposited on Mendeley (data.mendeley.com/preview/nztp6242zk, a preview link).
+#
+# Measures, as fixed by the Methods and the code (cited as "the paper's measures" in the criteria).
+# Quiescent window, a per-dataset period with minimal body movement and whisking (Methods, Data
+# analysis for calcium imaging); every measure is computed inside it (Step2 to Step8, Modol_script.m
+# all cut frames floor(start/0.0656) to floor(end/0.0656) - 1). dF/F with F0 the median of the bottom
+# 10th percentile of the FISSA-corrected trace; Z score against the 10 s period of lowest SD of dF/F
+# (Methods). Events (Step2, which settles the Methods' "four times the noise level") are peaks of the Z
+# trace found by findpeaks whose height above the mean of the 5 s (77-frame) window of lowest RMS is
+# at least 4 times that window's mean absolute peak-to-valley difference (read literally, the
+# Methods' threshold, four times the mean Z score of the quietest window, is near zero for a Z-scored
+# trace, so the code's reading is taken as the one the Methods mean). Event frequency is events per
+# second per neuron over the window (Step4). Synchrony: percent of active cells per frame against a
+# shuffle threshold (Methods; see open detail O2); synchrony frequency is synchrony events per second.
+# Pearson correlation is the mean over all neuron pairs of the correlation of Z-scored traces;
+# mutual information (MI) is the mean over pairs of the MI of Z-scored traces with 256-bin histograms
+# (calculate_mi_matrix_trace.m). k-means (Methods; Modol_script.m, kmeansopt.m) clusters the frame by
+# frame normalized covariance matrix of the binary event raster of all frames in the window, for 2 to
+# 19 clusters, keeping the run with the best mean silhouette; the plotted silhouette value
+# (silhs_mean_beforeStat) is the mean over clusters of each cluster's median silhouette, before the
+# cluster significance test. A neuron participates in an event cluster when the number of that
+# cluster's frames in which it fires exceeds the shuffle threshold (O4); neurons in one cluster are
+# single-cluster, in two or more multiple-cluster (reassigned to the cluster of highest participation
+# for subnetwork membership), in none non-cluster; a subnetwork is a cluster with more than 2 neurons,
+# and the subnetwork number counts them (Modol_script.m). tCC is the tetrachoric correlation of the
+# binary event rasters (tetrac.m), its within-subnetwork value the mean over all within-subnetwork
+# pairs pooled over subnetworks (Calculate_Correlation_in_out_Cluster.mlx); the "outside" value pairs
+# each subnetwork neuron with the neurons of the other subnetworks. Distances use Suite2p ROI centres
+# (pixels, about 0.99 um each) per subnetwork, centroid the mean position (Calcuate_Subnetwork_Distances.m).
+#
+# The paper's test, T1 (developmental), from the Methods (Statistical analysis) and
+# Develop_Function_20230219.R with Develop_Function_posthoc_20240411.R. Per-dataset values of all five
+# ages in one linear mixed model, fixed effects age (factor), sex, layer and the interactions kept by
+# the scripts' selection (the lowest-AIC of the eight nested models, then Kenward-Roger comparisons with
+# the simplest and the full model), random intercepts for subject and for subject by location (the
+# second, then the first, dropped when the fit is singular, and a linear model used when still
+# singular); case bootstrap resampling subjects, 10,000 replicates (lm.boot with 10,000 for linear
+# models); emmeans contrasts on the replicates, p = 2(1 - pd), no correction across contrasts;
+# significant at p < 0.05. Post hoc contrasts are age pairs within each sex and layer, sex within each
+# layer and age, layer within each sex and age. T2 (CNO) is the same with fixed effects CNO (before or
+# after), sex and layer and no age (WT_Dlx_GsDREADD_Function_20230211_caseboot.R). The Figure S9
+# histology model is layer by sex with random intercepts for animal and image (VGAT_Syt2_Function_20230319.R).
+#
+# Details the paper leaves open, with the readings each claim that uses them must run.
+# O1 the quiescent window. The paper gives no movement threshold. Readings (a) the window the paper
+# used, from the repository tables (Time_start and Time_end, seconds, per dataset name); (b) a window
+# found from the dataset's behavioral video with a stated movement threshold (an assumption).
+# O2 the synchrony threshold. The Methods fix it as the 95th percentile, over 100 shuffles that keep
+# each cell's event rate, of each shuffle's peak percent of active cells, an event lasting from the
+# upward to the downward crossing; Step7 instead circularly shifts each cell, takes the 95th percentile
+# of all shuffled frames pooled, counts findpeaks peaks above it and first drops cells with no event.
+# The Methods are the main reading, Step7 the variant.
+# O3 k-means runs per cluster number, 100 in the Methods, 10 in kmeansopt as called. Methods main,
+# code variant.
+# O4 the participation threshold, the 95th percentile of reshuffled data in the Methods, the
+# 1 - 0.05/(number of clusters) quantile of 5,000 shuffles in Modol_script.m. Methods main, code variant.
+# O5 the denominator of the neuron percentages, (a) all ROIs (the code counts silent ROIs as
+# non-cluster) or (b) ROIs with at least one event in the window.
+# O6 the dataset event frequency, the mean over neurons (a) with at least one event (Step4 sets zero
+# to NaN) or (b) over all ROIs; the averaging step is not in the repository.
+# Conflicts between the paper's sentences and its own outputs are named in the claims concerned
+# (figs4b-mi-sex-p21, figs6ab-cno-correlation-unchanged, fig4fgh-configuration-trajectory,
+# figs7-subnetwork-number-stable, figs9-layer-differences).
+schema_version: 2
+paper: doi:10.1016/j.isci.2025.112104
+claims:
+- id: fig1d-event-frequency-decline
+  statement: Spontaneous event frequency during quiescence declines from P11 to P21 in both L2/3 and
+    L4 neurons and in both sexes.
+  source: Figure 1D; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: We observed a notable developmental decline in event frequency from P11 to P21 in L2/3 and
+    L4, a consistent trend in both sexes
+  criterion: The paper's measures (event frequency, O1 and O6 readings) and test T1. Reproduced when
+    the P11 minus P21 contrast is positive with p < 0.05 in each of the four sex and layer groups;
+    partially reproduced when it holds in two or three. The repository output (Figure_1_supp2.html)
+    printed a main-effect model with P11 minus P21 0.605 events/s (95% CI 0.352 to 0.822, p < 0.001)
+    in every group.
+- id: fig1f-synchrony-decline
+  statement: The frequency of synchronous network events falls significantly by P21, in both layers
+    and both sexes.
+  source: Figure 1E and 1F; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: The results showed a significant decrease in synchrony frequency by P21, regardless of
+    cortical layer or sex
+  criterion: The paper's measures (synchrony frequency, O1 and O2 readings) and test T1. Reproduced
+    when P11 minus P21 is positive with p < 0.05 in each sex and layer group; partially reproduced in
+    two or three. The repository output printed 0.491 synchrony events/s (95% CI 0.315 to 0.658,
+    p < 0.001), the same in all groups.
+- id: figs2f-pearson-decline-females
+  statement: The mean pairwise Pearson correlation falls from P11 to P21 in females but not in males.
+  source: Figure S2F; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: Our analysis revealed a significant decrease in the mean correlation coefficient from P11 to
+    P21 in females, but not in males
+  criterion: The paper's measures (Pearson correlation of Z-scored traces, all pairs, O1 reading) and
+    test T1. The female part holds when P11 minus P21 is positive with p < 0.05 in both layers of
+    females. The male part is a claim of absence, judged on the same contrast in males of each layer;
+    it holds when p >= 0.05 in both. Reproduced when both parts hold, partially reproduced when one
+    does. The repository output printed females L2/3 0.153 (p < 0.001) and L4 0.096 (p = 0.017),
+    males L2/3 0.076 (p = 0.096) and L4 -0.004 (p = 0.85).
+- id: figs2f-pearson-l23-above-l4-p11
+  statement: At P11, L2/3 neurons have higher pairwise Pearson correlation than L4 neurons, in both
+    sexes.
+  source: Figure S2F; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: Furthermore, L2/3 neurons showed higher correlated activity compared to L4 neurons at P11,
+    regardless of sex
+  criterion: Test T1, the layer contrast at P11 within each sex. Reproduced when L2/3 exceeds L4 with
+    p < 0.05 in both sexes, partially reproduced in one. The repository output printed L4 minus L2/3
+    -0.033 (p = 0.025) in females and -0.051 (p < 0.001) in males.
+- id: figs2g-mi-decline
+  statement: Mutual information between neuron pairs is significantly lower at P21 than at P11 in
+    both sexes and both layers.
+  source: Figure S2G; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: MI analysis shows a significant decrease in MI at P21 compared to younger ages in both sexes
+    and cortical layers
+  criterion: The paper's measures (MI, O1 reading) and test T1. Figure S2G shows P11 and P21 only, so
+    "younger ages" is read as P11. Reproduced when P11 minus P21 is positive with p < 0.05 in all four
+    sex and layer groups; partially in two or three. The repository output printed 0.190 (p < 0.001)
+    in females and 0.107 (p = 0.001) in males, the same in both layers.
+- id: figs2g-mi-male-above-female-p21
+  statement: At P21, male neurons have significantly higher MI than female neurons, in both layers.
+  source: Figure S2G; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: Notably, at P21, male neurons displayed significantly higher MI values than female neurons,
+    regardless of cortical layer
+  criterion: Test T1, the sex contrast at P21 in each layer. Reproduced when male exceeds female with
+    p < 0.05 in both layers, partially in one. The repository output printed male minus female 0.087
+    (p = 0.015) in both layers.
+- id: figs2g-mi-l4-below-l23
+  statement: L4 neurons have lower MI than L2/3 neurons at both P11 and P21, in both sexes.
+  source: Figure S2G; Results, Spontaneous neuronal activity decreased and desynchronized
+  quote: Additionally, L4 neurons exhibited lower MI values compared to L2/3 neurons at both P11 and
+    P21, independent of sex
+  criterion: Test T1, the layer contrast at P11 and at P21 within each sex. Reproduced when L4 is
+    below L2/3 with p < 0.05 in all four age and sex groups, partially in two or three. The
+    repository output printed L4 minus L2/3 -0.022 (p < 0.001) throughout.
+- id: fig2e-subnetworks-present-same-number
+  statement: Neuronal subnetworks are already present at P11, and a similar number of subnetworks is
+    found at P21.
+  source: Figure 2E; Results, Subnetworks are formed by P11
+  quote: we found that neuronal subnetworks were already present at P11 and that a similar number of
+    subnetworks was found at P21
+  criterion: The paper's measures (k-means subnetworks, O1, O3, O4 readings). Two parts. Presence holds
+    when more than half of the P11 datasets have at least one subnetwork (the paper shows five in its
+    example, Figure 2B); the bound is this file's choice, since the paper gives none and the Figure 4
+    legend says some datasets had no subnetwork. The equal number is a claim of absence, judged on test T1's P11 minus P21 contrast of
+    subnetwork number; it holds when p >= 0.05 in every sex and layer group. Reproduced when both
+    hold; the contrast is reported either way. The repository output printed 0.575 subnetworks (95%
+    CI -0.443 to 1.763, p = 0.29).
+- id: fig2d-silhouette-increase
+  statement: The silhouette value of event clusters increases substantially from P11 to P21 in both
+    layers and both sexes.
+  source: Figure 2D; Results, Subnetworks are formed by P11
+  quote: Interestingly, our data analysis revealed a substantial increase in silhouette value from P11
+    to P21, spanning both cortical layers and sexes
+  criterion: The paper's measures (silhouette value before the cluster test, O1 and O3 readings) and
+    test T1. Reproduced when P21 exceeds P11 with p < 0.05 in all four sex and layer groups; partially
+    in two or three. The repository output printed P11 minus P21 from -0.188 to -0.215 (p < 0.001) in
+    every group.
+- id: figs3c-tcc-inside-above-outside
+  statement: At P11 and P21 the tetrachoric correlation of neuron pairs within the same subnetwork is
+    consistently higher than that of pairs from different subnetworks.
+  source: Figure S3C; Results, Subnetworks are formed by P11
+  quote: Notably, the tCC of neuronal pairs within the same subnetworks at P11 and P21 was consistently
+    higher than that of pairwise comparisons between neurons from different subnetworks
+  depends_on:
+  - fig2e-subnetworks-present-same-number
+  criterion: The paper's tCC inside and outside measures (O1, O3, O4 readings), on datasets with at
+    least two subnetworks. The paper shows paired values per dataset and reports no test. Reproduced
+    when the mean inside value exceeds the mean outside value in each of the eight age, sex and layer
+    groups and a paired Wilcoxon signed-rank test over datasets (a standard choice; the paper names
+    none) gives p < 0.05 at each age; partially reproduced when the means hold and the test fails at
+    one age. The fraction of datasets with inside above outside is reported.
+- id: fig2f-tcc-increase-l23
+  statement: Within-subnetwork tCC is significantly higher at P21 than P11 in L2/3 in both sexes,
+    while L4 shows a similar trend that is not significant (p = 0.051).
+  source: Figure 2F; Results, Subnetworks are formed by P11
+  quote: L2/3 neurons had a significantly heightened tCC at P21 compared to P11, regardless of sex ...
+    while a similar trend was observed in L4 neurons, without reaching statistically significance
+  statistics:
+  - about: L4, P21 against P11
+    test: linear mixed-effects model, bootstrapped post hoc comparison
+    p: 0.051
+  criterion: The paper's tCC within subnetworks (O1, O3, O4 readings) and test T1. Reproduced when the
+    L2/3 P21 minus P11 contrast is positive with p < 0.05 in both sexes and the L4 contrast is
+    positive with p >= 0.05; partially reproduced when L2/3 holds and L4 is positive with p < 0.05.
+    The repository output printed L2/3 0.084 (p = 0.004) and L4 0.064 (p = 0.051).
+- id: figs3d-neuron-number-not-related
+  statement: The number of subnetworks found is barely related to the number of neurons in the
+    analysis (Spearman rho = -0.063).
+  source: Figure S3D; Results, Subnetworks are formed by P11
+  quote: The Spearman correlation coefficient for the number of neurons included in the clustering
+    analysis was ρ = −0.063
+  expected:
+  - quantity: Spearman rho, subnetwork number against neuron number, P11 and P21 datasets
+    value: -0.063
+    tolerance: 0.08
+  criterion: Over the P11 and P21 datasets pooled (Figure_2_supp3.Rmd keeps only those ages; its test
+    has n = 162), Spearman correlation of subnetwork number with the number of ROIs. The tolerance is
+    one sampling standard error of rho at that n (about 1/sqrt(161)), since 10% of a value near zero
+    is far below its sampling error. Reproduced when rho is within tolerance.
+- id: figs3e-time-interval-not-related
+  statement: The length of the analysed time interval has little effect on the number of subnetworks
+    (Spearman rho = 0.233).
+  source: Figure S3E; Results, Subnetworks are formed by P11
+  quote: and for the time intervals used, ρ = 0.233 ... These results indicate that both the number of
+    neurons and time intervals had minimal impact on subnetwork identification
+  expected:
+  - quantity: Spearman rho, subnetwork number against quiescent interval length, P11 and P21 datasets
+    value: 0.233
+    tolerance: 0.08
+  criterion: As figs3d-neuron-number-not-related, with the length of the quiescent window (O1). The
+    tolerance has the same reason. Reproduced when rho is within tolerance. The repository output
+    gives this rho a p-value of 0.0028, which is reported.
+- id: fig3a-single-cluster-decline
+  statement: The percentage of neurons participating in a single event cluster decreases from P11 to
+    P21, in both layers and sexes.
+  source: Figure 3A; Results, Changes in subnetwork configuration
+  quote: Our findings revealed a decrease in the percentage of single-cluster neurons with age
+  criterion: The paper's measures (O1, O3, O4, O5 readings) and test T1. Reproduced when P11 minus P21
+    is positive with p < 0.05 in all four sex and layer groups; partially in two or three. The
+    repository output printed 15.1 percentage points (95% CI 6.1 to 23.5, p = 0.001).
+- id: fig3b-non-cluster-increase
+  statement: The percentage of neurons not participating in any event cluster rises from P11 to P21,
+    in both layers and sexes.
+  source: Figure 3B; Results, Changes in subnetwork configuration
+  quote: accompanied by a rise in the percentage of non-cluster neurons
+  criterion: As fig3a-single-cluster-decline, with P21 above P11. The repository output printed P11
+    minus P21 -18.6 percentage points (95% CI -26.5 to -10.9, p < 0.001).
+- id: fig3c-multiple-cluster-unchanged
+  statement: The percentage of neurons participating in multiple event clusters is similar at P11 and
+    P21.
+  source: Figure 3C; Results, Changes in subnetwork configuration
+  quote: The percentages of multiple-cluster neurons remained similar between P11 and P21
+  criterion: A claim of absence, judged on test T1's P11 minus P21 contrast in each sex and layer
+    group (O1, O3, O4, O5 readings). Reproduced when p >= 0.05 in every group, not reproduced when any
+    group has p < 0.05; the size is reported either way. The repository output printed 2.5 percentage
+    points (p = 0.674).
+- id: fig3ef-subnetwork-size-unchanged
+  statement: The physical size of subnetworks, measured as pairwise distances between member neurons
+    and distances of neurons to their subnetwork centroid, does not differ between P11 and P21 within
+    a layer.
+  source: Figure 3E and 3F; Results, Changes in subnetwork configuration
+  quote: We found no significant differences between P11 and P21 in either measure within the same
+    cortical layers
+  criterion: A claim of absence, judged on test T1's P11 minus P21 contrast of each measure in each
+    layer and sex (the paper's distance measures; O1, O3, O4 readings). Reproduced when every p >= 0.05,
+    not reproduced when any is below. The repository output printed -9.2 pixels (p = 0.111) for
+    pairwise and -3.2 pixels (p = 0.489) for centroid distances.
+- id: fig3g-centroid-distances-decrease
+  statement: Pairwise distances between subnetwork centroids fall significantly from P11 to P21 in
+    both layers and sexes, so subnetworks become more intermingled.
+  source: Figure 3D and 3G; Results, Changes in subnetwork configuration
+  quote: We observed a significant reduction in these distances from P11 to P21 for both cortical layer
+    and sexes
+  criterion: The paper's centroid distances (O1, O3, O4 readings) on datasets with at least two
+    subnetworks, and test T1. Reproduced when P11 minus P21 is positive with p < 0.05 in all four
+    groups; partially in two or three. The repository output printed 53.2 pixels in L2/3 and 67.5 in
+    L4 (p < 0.001).
+- id: fig4a-event-frequency-trajectory
+  statement: Across P11 to P21 event frequency declines, with the largest mean difference between P11
+    and P18.
+  source: Figure 4A; Results, The refinement of S1 neuronal subnetworks
+  quote: A developmental decline in spontaneous neuronal event frequency was observed ... with the
+    greatest mean difference occurring between P11 and P18
+  criterion: Test T1 over all five ages (event frequency, O1 and O6 readings). Reproduced when, of the
+    ten age contrasts, P11 minus P18 has the largest positive estimate and p < 0.05. The repository
+    output printed 0.635 for P11 minus P18 and 0.605 for P11 minus P21, so the two are close and both
+    are reported.
+- id: fig4b-synchrony-gradual-decline
+  statement: Synchrony frequency declines gradually from P11 to P21.
+  source: Figure 4B; Results, The refinement of S1 neuronal subnetworks
+  quote: while synchrony frequency showed a gradual decline from P11 to P21
+  criterion: Test T1 over all five ages (O1, O2 readings). Reproduced when the estimated marginal means
+    fall at every step from P11 to P21 except at most one step that does not rise significantly, and
+    P11 minus P21 is positive with p < 0.05 (this reading of "gradual" is this file's; the paper gives
+    no rule). The repository output printed P11 minus P13 0.054,
+    P13 minus P15 0.077, P15 minus P18 0.300 and P18 minus P21 0.061.
+- id: figs4a-pearson-trajectory
+  statement: In females the Pearson correlation decreases gradually from P11 to P21 in L2/3 and from
+    P11 to P18 in L4; in males it decreases from P11 to P15 and then rises transiently at P18.
+  source: Figure S4A; Results, The refinement of S1 neuronal subnetworks
+  quote: Pearson correlation coefficients revealed that, in females, L2/3 and L4 neurons showed a
+    gradual decrease in their correlation coefficients from P11 to P21 and P11 to P18, respectively ...
+    In males, correlation coefficients decreased from P11 to P15, followed by a transient increase at
+    P18
+  criterion: Test T1 (Pearson correlation, O1 reading). Three parts, each from the post hoc age
+    contrasts. Female L2/3 holds when P11 minus P21 is positive with p < 0.05; female L4 when P11 minus
+    P18 is positive with p < 0.05 and is the largest female L4 contrast from P11; males when P11 minus
+    P15 is positive with p < 0.05 in at least one layer and P15 minus P18 is negative with p < 0.05 in
+    at least one layer. Reproduced when all three hold, partially when one or two. The repository
+    output printed female L2/3 P11 minus P21 0.153, female L4 P11 minus P18 0.102, male P11 minus P15
+    0.088 and 0.076, and male P15 minus P18 -0.052 (L2/3, p = 0.015) and -0.084 (L4, p = 0.001).
+- id: figs4b-mi-trajectory
+  statement: MI declines over time in females from P11 to P21 and in males from P11 to P15, and L2/3
+    neurons have higher MI than L4 neurons at every age.
+  source: Figure S4B; Results, The refinement of S1 neuronal subnetworks
+  quote: MI analysis revealed a consistent decline in MI values over time in females (P11–P21) and males
+    (P11–P15) ... Furthermore, L2/3 neurons consistently exhibited higher MI values than L4 neurons across
+    all age groups
+  criterion: Test T1 (MI, O1 reading). The decline holds when P11 minus P21 in females and P11 minus
+    P15 in males are positive with p < 0.05 in both layers; the layer part when L2/3 exceeds L4 with
+    p < 0.05 in every age and sex group. Reproduced when both hold, partially when one does.
+- id: figs4b-mi-sex-p21
+  statement: Females have higher MI than males at P21.
+  source: Figure S4B; Results, The refinement of S1 neuronal subnetworks
+  quote: with females exhibiting higher MI values than males at P21
+  criterion: Test T1, the sex contrast at P21 in each layer (MI, O1 reading). Reproduced when female
+    exceeds male with p < 0.05 in at least one layer. This sentence contradicts the paper's Figure S2G
+    sentence (figs2g-mi-male-above-female-p21) and the repository output (male minus female 0.087,
+    p = 0.015), which are the same model; the claim is tested as written and the conflict reported.
+- id: fig4c-subnetwork-number-transient-p15
+  statement: The number of subnetworks shows a transient, modest increase at P15.
+  source: Figure 4C; Results, The refinement of S1 neuronal subnetworks
+  quote: With the subnetwork analysis, we found a transient but modest increase in the subnetwork number
+    at P15
+  depends_on:
+  - fig2e-subnetworks-present-same-number
+  criterion: Test T1 over all five ages (O1, O3, O4 readings). Reproduced when P15 exceeds P11 with
+    p < 0.05 and P15 exceeds P21 with p < 0.05. The repository output printed P11 minus P15 -1.07
+    (p = 0.040) and P15 minus P21 1.65 (p < 0.001); P13 was also above P11 (p = 0.013), which is
+    reported.
+- id: fig4d-silhouette-gradual-increase
+  statement: The silhouette value increases gradually from P11 to P21 regardless of sex and layer, and
+    at P15 males have transiently higher silhouette values than females in both layers.
+  source: Figure 4D; Results, The refinement of S1 neuronal subnetworks; Discussion, sentence on sex
+    differences at P15
+  quote: For event cluster coherences, the silhouette value gradually increased from P11 to P21,
+    regardless of sex and cortical layer ... At P15, males transiently exhibited significantly higher
+    silhouette values than females
+  criterion: Test T1 over all five ages (O1, O3 readings). The increase holds when P21 exceeds P11 with
+    p < 0.05 and no step between consecutive ages falls significantly, in every sex and layer group.
+    The sex part holds when male exceeds female at P15 with p < 0.05 in both layers and not at P11 or
+    P21. Reproduced when both hold, partially when one does. The repository output printed male minus
+    female at P15 0.070 (p = 0.011).
+- id: fig4e-tcc-maximum-earlier-l23
+  statement: Within-subnetwork tCC reaches its maximum earlier in L2/3 than in L4, with the largest
+    mean difference from P11 at P15 in L2/3 and at P18 in L4, in both sexes.
+  source: Figure 4E; Results, The refinement of S1 neuronal subnetworks
+  quote: L2/3 neurons reached their maximum subnetwork-based correlation earlier than L4 neurons ... the
+    maximum mean difference for L2/3 occurred at P15, while for L4 occurred at P18, regardless of sex
+  criterion: Test T1 (tCC within subnetworks; O1, O3, O4 readings). "Maximum mean difference" is read as
+    the contrast from P11 with the largest increase. Reproduced when that contrast is P11 to P15 in
+    L2/3 and P11 to P18 in L4, each with p < 0.05, in both sexes. The repository output printed L2/3
+    P15 minus P11 0.104 and L4 P18 minus P11 0.099 (p < 0.001).
+- id: fig4e-tcc-l4-below-l23-p15
+  statement: At P15, L4 neurons within the same subnetwork have significantly lower tCC than L2/3
+    neurons.
+  source: Discussion, sentence on L4 tCC at P15 (after the Figure S9 findings); Figure 4E
+  quote: Notably, L4 neurons within the same subnetwork displayed significantly lower tCC at P15
+    compared to L2/3 neurons
+  criterion: Test T1, the layer contrast at P15 in each sex. Reproduced when L4 is below L2/3 with
+    p < 0.05 in both sexes, partially in one. The repository output printed -0.036 (p = 0.035) in
+    females and -0.071 (p < 0.001) in males.
+- id: fig4fgh-configuration-trajectory
+  statement: Single-cluster neurons decrease gradually from P11 to P18, non-cluster neurons increase
+    from P11 to P21, and multiple-cluster neurons stay constant throughout.
+  source: Figure 4F, 4G and 4H; Results, The refinement of S1 neuronal subnetworks
+  quote: the percentage of single-cluster neurons gradually decreased from P11 to P18 ... while the
+    percentage of non-cluster neurons increased from P11 to P21 ... The percentage of neurons
+    participating in multiple clustering remained consistent throughout the observation period
+  criterion: Test T1 over all five ages (O1, O3, O4, O5 readings). Single holds when P11 minus P18 is
+    positive with p < 0.05 and is the largest contrast from P11; non-cluster when P21 exceeds P11 with
+    p < 0.05; multiple is a claim of absence, holding when no age contrast has p < 0.05. Reproduced when
+    all three hold, partially when two do. The repository output printed single P11 minus P18 17.6
+    (p < 0.001), non-cluster P11 minus P21 -18.6 (p < 0.001) and an age effect on multiple-cluster
+    neurons with p = 0.101 before bootstrapping; but of its ten bootstrapped age contrasts of
+    multiple-cluster neurons, P13 minus P15 is 6.2 percentage points with p = 0.029 (Figure_3.html),
+    so the paper's own test does not support the multiple-cluster part as the criterion reads it.
+- id: figs4-distance-trajectory
+  statement: The largest mean differences in subnetwork size (neuron to neuron and neuron to centroid
+    distances) occur between P13 and P21, and centroid to centroid distances decrease gradually, most
+    from P11 to P21 in L2/3 and from P11 to P18 in L4.
+  source: Figure S4C to S4E (the text cites S4B to S4D); Results, The refinement of S1 neuronal
+    subnetworks
+  quote: We found that the maximum mean difference in physical size indices ... occurred between P13 and
+    P21, regardless of cortical layer or sex ... Notably, the pairwise distances between subnetwork
+    centroids gradually decreased from P11 to P21, with the largest reduction observed in L2/3 and L4
+    neurons during P11–P21 and P11–P18, respectively
+  criterion: Test T1 over all five ages (the paper's distance measures; O1, O3, O4 readings). Reproduced
+    when, of the ten age contrasts, P13 against P21 has the largest absolute estimate for both size
+    measures, and the largest centroid distance reduction is P11 to P21 in L2/3 and P11 to P18 in L4;
+    partially when either part holds.
+- id: fig5cd-cno-reduces-events-synchrony
+  statement: Acutely enhancing GABAergic activity with CNO at P15 to P16 reduces both the frequency of
+    calcium events and of synchronous events, in both layers and sexes.
+  source: Figure 5C and 5D; Results, Acute GABAergic transmission augmentation
+  quote: This acute enhancement of GABAergic activity significantly reduced the frequency of both
+    individual calcium events ... and synchronized events ... in both L2/3 and L4 neurons and across
+    both sexes
+  criterion: The paper's measures (O1, O2, O6 readings) on the DREADD datasets before and after CNO,
+    with test T2. Reproduced when before minus after is positive with p < 0.05 for both measures in
+    all four sex and layer groups; partially when one measure holds. The repository output
+    (Figure_5_supp6.html) printed 0.208 events/s (p = 0.005) and 0.276 synchrony events/s
+    (p < 0.001).
+- id: figs6ab-cno-correlation-unchanged
+  statement: CNO does not detectably change the Pearson correlation or the MI of all neuron pairs.
+  source: Figure S6A (the text cites S6B for MI, a panel the legend gives to subnetwork number); Results, Acute GABAergic transmission augmentation
+  quote: CNO administration did not detectably impact the Pearson correlation coefficient or MI values
+    of all neuronal pairs
+  criterion: A claim of absence, judged on test T2's before against after contrast of each measure
+    (O1 reading). Reproduced when p >= 0.05 for both, not reproduced when either has p < 0.05; the
+    sizes are reported. The repository output printed, for Pearson, after above before by 0.030
+    (p = 0.040), and for MI 0.008 (p = 0.378), so the paper's own test finds a Pearson effect.
+- id: fig5e-cno-silhouette-increase
+  statement: CNO robustly increases the silhouette value of event clusters in both layers,
+    independent of sex.
+  source: Figure 5E; Results, Acute GABAergic transmission augmentation
+  quote: Results from subnetwork analysis showed that acute CNO treatment robustly increased silhouette
+    values of event clusters in both L2/3 and L4, independent of sex
+  criterion: Test T2 (silhouette value; O1, O3 readings). Reproduced when after exceeds before with
+    p < 0.05 in all four sex and layer groups, partially in two or three. The repository output
+    printed after minus before 0.068 (p < 0.001).
+- id: figs6c-cno-subnetwork-number-unchanged
+  statement: CNO leaves the number of subnetworks unchanged.
+  source: Figure S6B (the text cites S6C); Results, Acute GABAergic transmission augmentation
+  quote: while the subnetwork numbers remained constant
+  criterion: A claim of absence, judged on test T2's before against after contrast (O1, O3, O4
+    readings). Reproduced when p >= 0.05, not reproduced when below. The repository output printed
+    0.46 fewer after CNO (p = 0.317, a linear model).
+- id: figs6d-cno-tcc-females
+  statement: CNO increases within-subnetwork tCC, an effect evident in females in both L2/3 and L4.
+  source: Figure S6C (the text cites S6D); Results, Acute GABAergic transmission augmentation
+  quote: The intensified tCC within the same subnetwork due to acute GABAergic enhancement was
+    particularly evident in females in both L2/3 and L4
+  criterion: Test T2 (tCC within subnetworks; O1, O3, O4 readings). Reproduced when after exceeds before
+    with p < 0.05 in females in both layers; the male contrasts are reported. The repository output
+    printed 0.117 in females (p < 0.001) and 0.005 in males (p = 0.739).
+- id: fig5fgh-cno-configuration
+  statement: CNO decreases the percentage of single-cluster neurons and increases the percentage of
+    multiple-cluster neurons, while the percentage of non-cluster neurons does not change
+    significantly.
+  source: Figure 5F, 5G and 5H; Results, Acute GABAergic transmission augmentation
+  quote: we observed that CNO treatment decreased the percentage of single-cluster neurons ... while
+    increasing the percentage of multiple-cluster neurons ... The percentage of non-cluster neurons was
+    not significantly altered by CNO treatment
+  criterion: Test T2 (O1, O3, O4, O5 readings). Single holds when before minus after is positive with
+    p < 0.05; multiple when it is negative with p < 0.05; non-cluster, a claim of absence, when
+    p >= 0.05. Reproduced when all three hold, partially when two do. The repository output printed
+    5.2 (p = 0.006), -10.7 (p = 0.016) and 5.5 (p = 0.175) percentage points.
+- id: figs6efg-cno-topography-unchanged
+  statement: CNO has no detectable effect on distances between neurons of a subnetwork, distances of
+    neurons to their centroid, or distances between subnetwork centroids.
+  source: Figure S6D to S6F (the text cites S6E to S6G); Results, Acute GABAergic transmission
+    augmentation
+  quote: Analysis of the topographical distribution of neurons showed that CNO application had no
+    detectable impact on the distances between neurons within the same subnetwork
+  criterion: A claim of absence, judged on test T2's before against after contrast for each of the
+    three distances (O1, O3, O4 readings). Reproduced when all three have p >= 0.05, not reproduced
+    when any is below. The repository output (Figure_5_supp6.html, bootstrapped contrasts) printed
+    p = 0.398 for neuron to neuron distances, p = 0.097 for neuron to centroid distances and p = 0.660
+    for centroid to centroid distances.
+- id: figs7a-events-clustered
+  statement: k-means on the covariance matrix groups about 25% of events into clusters, about 1% of
+    events in multiple clusters, and about 30% at P11.
+  source: Discussion, sentences on k-means event clustering (citing Figure S7A); Figure S7 legend
+  quote: we found that the k-means algorithm grouped approximately 25% of events, with about 1% of
+    events being involved in event-multiple clusters
+  expected:
+  - quantity: percentage of events (frames) in any event cluster, all datasets
+    value: 25
+    tolerance: 2.5
+    unit: '%'
+  - quantity: percentage of events in multiple event clusters, all datasets
+    value: 1
+    tolerance: 0.1
+    unit: '%'
+  - quantity: percentage of events in any event cluster at P11
+    value: 30
+    tolerance: 3
+    unit: '%'
+  criterion: Events are the frames of the quiescent window (O1); a frame is in a cluster when its count
+    of active subnetwork neurons exceeds the shuffle threshold of Modol_script.m (PCl), in one or in
+    several clusters. The mean over datasets is compared. The 30% figure comes from the Figure S7
+    legend.
+- id: figs7-method-comparison
+  statement: The covariance matrix groups the most events and gives the most subnetworks of the three
+    similarity matrices; k-means and Louvain detection cluster similar percentages of events, DBSCAN
+    only about 10% but with higher silhouette values, and k-means finds more subnetworks (about 4)
+    than Louvain or DBSCAN.
+  source: Discussion, sentences comparing similarity matrices and clustering methods (citing
+    Figures S7A to S7F); Figure S7 legend
+  quote: we observed that the covariance matrix grouped the highest number of events and consequently
+    formed more subnetworks ... Our results revealed that k-means clustering and Louvain community
+    detection clustered a similar percentage of events ... However, DBSCAN clustered only about 10% of
+    events ... Notably, DBSCAN produced event clusters with higher silhouette values than the k-means
+    and Louvain methods
+  expected:
+  - quantity: percentage of events clustered by DBSCAN
+    value: 10
+    tolerance: 1
+    unit: '%'
+  - quantity: mean number of subnetworks, k-means on the covariance matrix
+    value: 4
+    tolerance: 0.4
+  criterion: Each method as the Methods describe it and the repository implements it (cosine and Jaccard
+    matrices in Clustering_Analysis_Kmean; Louvain uniform with 500 and asymmetric with 100 iterations
+    and 10 consensus iterations; DBSCAN on 1 - covariance with minPts 3 and epsilon from a k-distance
+    graph). Reproduced when the expected values are within tolerance and the orderings hold in the
+    means over datasets; "similar" for k-means against Louvain is read as within 5 percentage points
+    (a stated choice; the paper gives no bound).
+- id: figs7-silhouette-increase-all-methods
+  statement: Every clustering method shows a developmental increase in silhouette value in both
+    layers, independent of sex.
+  source: Discussion, sentence listing the outcomes common to all methods; Figure S7 legend
+  quote: All methods showed an age-dependent increase in silhouette value in both L2/3 and L4,
+    independent of sex
+  depends_on:
+  - figs7-method-comparison
+  criterion: Test T1 per method, P21 against P11. Reproduced when P21 exceeds P11 with p < 0.05 for all
+    six methods; partially for four or five. The repository output printed P11 minus P21 between -0.095
+    and -0.234 (p < 0.001) for all six.
+- id: figs7-subnetwork-number-stable
+  statement: Every clustering method shows a stable number of subnetworks across P11 to P21.
+  source: Discussion, sentence listing the outcomes common to all methods (citing Figure S7)
+  quote: all clustering methods consistently revealed the following outcomes ... (2) the stability in
+    subnetwork numbers across P11–P21
+  depends_on:
+  - figs7-method-comparison
+  criterion: A claim of absence, judged per method on test T1's P11 minus P21 contrast of subnetwork
+    number. Reproduced when p >= 0.05 for all six methods, not reproduced when any has p < 0.05; the
+    contrasts are reported. The repository output (Figure_supp7_ClusteringMethod_EventCluster.html)
+    printed p = 0.29 for k-means on covariance and p = 0.558 for Jaccard, but p < 0.001 for cosine and
+    both Louvain models and p = 0.024 for DBSCAN, so the paper's own test does not support this
+    sentence for four methods.
+- id: figs8-configuration-all-methods
+  statement: Every clustering method shows a reduction in single-cluster neurons and an increase in
+    non-cluster neurons with age.
+  source: Discussion, sentence listing the outcomes common to all methods (citing Figure S8);
+    Figure S8A to S8D
+  quote: (3) reductions in the percentage of single-cluster neurons and increases in the percentage of
+    non-cluster neurons
+  depends_on:
+  - figs7-method-comparison
+  criterion: Test T1 per method (k-means covariance, Louvain uniform, Louvain asymmetric, DBSCAN, the
+    four Figure S8 shows), P11 against P21 (O5 readings). Reproduced when single-cluster falls and
+    non-cluster rises with p < 0.05 for all four methods; partially for two or three.
+- id: figs5e-mostly-glutamatergic
+  statement: About 90% of the imaged jRGECO1a-expressing neurons are glutamatergic (CamKII-positive)
+    and about 10% GABAergic (GAD67-GFP-positive).
+  source: Figure S5E; Discussion, sentence on glutamatergic and GABAergic imaged neurons
+  quote: most imaged neurons (∼90%) were identified as glutamatergic neurons, while approximately 10%
+    were categorized as GABAergic neurons
+  expected:
+  - quantity: CamKII-positive fraction of jRGECO1a-positive neurons
+    value: 90
+    tolerance: 9
+    unit: '%'
+  - quantity: GAD67-GFP-positive fraction of jRGECO1a-positive neurons
+    value: 10
+    tolerance: 1
+    unit: '%'
+  data: elsewhere
+  where: Mendeley data.mendeley.com/preview/nztp6242zk (the paper's raw-data deposit, a preview link;
+    the paper does not say it holds the Figure S5 counts, and the code repository does not)
+  criterion: From the paper's immunohistochemistry counts (mean over animals, Figure S5E). Settled by
+    the expected values.
+- id: figs5f-hm3dq-mostly-gabaergic
+  statement: Neurons expressing the Dlx5/6-hM3Dq construct (nuclear dTomato) are predominantly
+    GABAergic.
+  source: Figure S5F; Results, Acute GABAergic transmission augmentation, paragraph 1
+  quote: while Dlx5/6-hM3Dq-positive neurons were predominantly GABAergic
+  data: elsewhere
+  where: Mendeley data.mendeley.com/preview/nztp6242zk (the paper's raw-data deposit, a preview link;
+    the paper does not say it holds the Figure S5 counts, and the code repository does not)
+  criterion: From the paper's immunohistochemistry counts (Figure S5F, percentage of GAD67-GFP-positive
+    and CamKII-positive neurons among nuclear Tom-positive neurons, mean over animals). The paper
+    prints no number. Reproduced when the GAD67-GFP-positive percentage is above 50% and above the
+    CamKII-positive percentage ("predominantly" read as a majority, this file's reading).
+- id: figs9-no-sex-difference-gabaergic-input
+  statement: At P15 the densities of GABAergic synapses in the neuropil and around somata show no sex
+    difference.
+  source: Discussion, sentence on sex differences at P15 (citing Figures S9A and S9C to S9E);
+    Figure S9 legend
+  quote: Our anatomical studies quantifying the densities of overall GABAergic input in the neuropil and
+    perisomatic regions did not reveal any sex-dependent differences
+  data: elsewhere
+  where: GitHub EdnaHuang/SubnetworkAssembley2024 commit 28e1b6d, Statistical_Script_Data/Analysis_VGAT-Syt2/data/P15_VGAT_SYT2_20230318.xlsx
+  criterion: A claim of absence, judged on the paper's histology model (layer by sex, random intercepts
+    for animal and image, bootstrapped sex contrast) for VGAT, Syt2 and VGAT/Syt2 densities in neuropil
+    and perisomatic VGAT/Syt2 density. Reproduced when every sex contrast has p >= 0.05. The repository
+    output printed p from 0.103 to 0.28.
+- id: figs9-layer-differences
+  statement: L4 has a higher density of Syt2 (putative parvalbumin) synapses than L2/3 but not of total
+    VGAT synapses, and L4 spiny stellate neurons have smaller somata and fewer perisomatic GABAergic
+    inputs than L2/3 neurons.
+  source: Discussion, sentences on L2/3 and L4 GABAergic input (citing Figures S9D to S9G); Figure S9
+    legend
+  quote: L4 exhibited a higher density of putative parvalbumin synapses labeled by synaptotagmin-2
+    (Syt2) antibody, 60 but not in total GABAergic synapses marked by vesicular GABA transporter
+    (VGAT), compared to L2/3 ... L4 spiny stellate neurons not only have significantly smaller somatic
+    volumes
+  data: elsewhere
+  where: GitHub EdnaHuang/SubnetworkAssembley2024 commit 28e1b6d, Statistical_Script_Data/Analysis_VGAT-Syt2/data/P15_VGAT_SYT2_20230318.xlsx
+  criterion: The paper's histology model, layer contrasts. The Syt2, soma volume and perisomatic parts
+    hold when L4 differs from L2/3 in the stated direction with p < 0.05; the VGAT part is a claim of
+    absence, holding when the VGAT layer contrast has p >= 0.05. Reproduced when all hold, partially
+    when all but the VGAT part hold. The repository output printed a VGAT layer contrast of 0.95
+    puncta density units, L4 higher (p < 0.001), against the main text; the Figure S9 legend names
+    only Syt2 and VGAT/Syt2 puncta as higher in L4.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs6efg-cno-topography-unchanged. The criterion cited the pre-bootstrap ANOVA p of the CNO term (0.145, 0.746) for two of the three distances, while Figure_5_supp6.html prints the bootstrapped contrasts that are the paper's test (p = 0.097 and 0.660). Replaced with those.
+  - fig4fgh-configuration-trajectory. The criterion reported only the pre-bootstrap age effect (p = 0.101) for multiple-cluster neurons; Figure_3.html prints P13 minus P15 6.2 percentage points with p = 0.029, which fails the criterion's own rule. Added this as a conflict between the sentence and the paper's output, and listed the claim among the header's conflicts.
+  - fig2e-subnetworks-present-same-number. "Most P11 datasets" was an unmarked bound; it now reads more than half and says the bound is this file's choice, since the paper gives none.
+  - fig4b-synchrony-gradual-decline. Said that the rule for "gradual" is this file's reading; the paper gives none.
+  - figs5e-mostly-glutamatergic. The claim had the default data (the imaging dataset), but the counts are histology. Set data elsewhere, naming the Mendeley deposit and saying the paper does not state it holds these counts.
+  - Added claim figs5f-hm3dq-mostly-gabaergic (Results, Acute GABAergic transmission augmentation, paragraph 1; Figure S5F), a finding with no claim.
+  - Header. Said why the code's event threshold is taken where the Methods' literal wording (four times the mean Z of the quietest window) would be near zero.
+  - Checked against the repository at the cited commit, and found as stated, the contrasts and p-values quoted in the criteria of fig1d, fig1f, figs2f (both), figs2g (all three), fig2d, fig2e, fig2f, figs3d, figs3e, fig3a to fig3g, fig4a, fig4b, figs4a, fig4c, fig4d, fig4e (both), fig5cd, figs6ab, fig5e, figs6c, figs6d, fig5fgh, figs7-silhouette-increase-all-methods, figs7-subnetwork-number-stable and both figs9 claims; the conflicts the file names (figs4b-mi-sex-p21, figs6ab, figs7-subnetwork-number-stable, figs9 VGAT) are real.
+  - Open. The paper's own sentences conflict with its outputs for figs4b-mi-sex-p21, figs6ab-cno-correlation-unchanged, fig4fgh-configuration-trajectory (multiple-cluster part), figs7-subnetwork-number-stable and figs9-layer-differences (VGAT part); the claims are tested as written and these cannot be settled from the paper.
+  - Open. figs3c-tcc-inside-above-outside uses a Wilcoxon signed-rank test the paper does not name, and several criteria use decision rules of this file ("similar" within 5 points in figs7-method-comparison, "largest contrast" readings in fig4a, figs4a, fig4fgh, figs4-distance); each says so.
+  - Open. Whether "approximately 25% of events" (figs7a-events-clustered) counts single-cluster events only or single and multiple together is not said; the two differ by about 1 point, inside the tolerance.
+  - Open. Whether the Mendeley deposit holds the histology of Figures S5 and S9 is not known; figs9 claims use the repository xlsx, the S5 claims have no public source named by the paper.

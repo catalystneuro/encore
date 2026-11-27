@@ -351,6 +351,7 @@ findings:
     encoding and draw most "old" responses. The paper's code reads it correctly, but a user
     following the description gets an AUC of 0.25.
 - kind: other
+  about: data
   statement: Sessions 43 and 44 (subject H23) and sessions 54 and 55 (subject H42) hold identical
     spike trains for every unit, 23 and 32 units. In each pair the units are the same neurons, so 55
     of the 1864 units are repeats and the paper's neuron count includes them twice. Session 55 also
@@ -401,10 +402,12 @@ findings:
     1), is not in the dandiset or in Online-only Table 1; its section in the code's session list is
     commented out.
 - kind: other
+  about: data
   statement: The 23 sessions that are new relative to the earlier release hold 325 units, where the
     paper says 288 neurons were added; 288 is the dandiset's 1864 units minus the earlier release's
     1576.
 - kind: other
+  about: data
   statement: The institution is written "Hunigton Memorial Hospital" in 28 files and "Hunington
     Memorial Hospital" in 6, and the device as "Neuralynx-cheetah" and "Neuralynx-Cheetah".
 verifications:
@@ -797,3 +800,41 @@ verifications:
       1-based 5, and electrode row 4, so cell number is the 0-based unit index (or the row), and the
       candidate is cell 2 (or 1), not 3. The outcome stays blocked and no change is proposed; a
       conclusion cell for the claim is added.
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: major
+    confirmed: false
+    checked: 2026-11-19
+    note: "reproduce_chandravadia_2020.ipynb cell 5 prints the file description (0 = old, 1 = new), cell 24 shows every label-1 image and no label-0 image was shown in encoding in 79 of 87 sessions (label 0 matches the description in 0 sessions), and cell 48 prints a mean AUC of 0.247 under the stated coding. That the paper's text and code use one coding or the other is prose only; the values are right and the below-chance AUC makes the wrong description noticeable."
+  - finding: 2
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_chandravadia_2020.ipynb cell 7 prints identical_spike_trains True for sessions 43/44 (23 units) and 54/55 (32 units), 55 units in all, with the learning trials of 54 and 55 identical and no recognition onsets or images shared; cell 12 prints 1864 unit rows and 1809 with the repeats counted once. The session table lists these as H23 and H42; that the paper's count includes the repeats is an inference from 1864 against 1863."
+  - finding: 3
+    severity: major
+  - finding: 4
+    severity: minor
+  - finding: 5
+    severity: minor
+  - finding: 6
+    severity: minor
+  - finding: 7
+    severity: minor
+  - finding: 8
+    severity: minor
+  - finding: 9
+    severity: minor
+  - finding: 13
+    severity: minor
+  - finding: 14
+    severity: minor
+  - finding: 15
+    severity: minor
+  - finding: 16
+    severity: minor

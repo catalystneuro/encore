@@ -440,12 +440,14 @@ findings:
     not converted (the conversion code comments them out), so the pair-based results (Figures 3, 4 and
     7) cannot be checked on the authors' pairs.
 - kind: other
+  about: data
   statement: The dandiset holds 568 mossy cells and 609 granule cells against the paper's 500 and 586,
     and 237 units labelled `missing` (units of the spike sorting with no row in the authors' unit summary).
 - kind: format_error
   statement: The light-pulse series PulseStim_5V_20ms_LD12 of YutaMouse57-161006 holds 89,086 times of
     which 24,286 are duplicates, and its times decrease once.
 - kind: other
+  about: data
   statement: The units table has two layouts. 18 files (mice 33, 41, 42 and 54) carry an `electrode_group`
     column naming each unit's shank, one of them without waveforms (YutaMouse33-150218, which the conversion
     script lists as excluded); the other 83 files do not.
@@ -980,3 +982,41 @@ verifications:
     response: Recovered the stored-channel order as for gc-mc-distance, which is consistent with depth.
       Kept blocked and no change proposed, for the same reason; the notes say a new attempt could measure
       the delay along that order.
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_senzai_2017.ipynb cell 9 output lists 24 files where unit 0 gains a block of 65536 x k spikes (k = 1 to 7) from the start of unit 1, gaps of 0.0023 to 0.526 s, and 24 units with decreasing spike times as stored (0 after the repair). The statement that the waveforms follow the same boundaries appears only in markdown (cell 10), not in printed output."
+  - finding: 2
+    severity: major
+  - finding: 3
+    severity: major
+  - finding: 4
+    severity: minor
+  - finding: 5
+    severity: minor
+  - finding: 6
+    severity: minor
+  - finding: 7
+    severity: major
+  - finding: 8
+    severity: minor
+  - finding: 9
+    severity: major
+  - finding: 10
+    severity: minor
+  - finding: 11
+    severity: minor
+  - finding: 13
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_senzai_2017.ipynb cell 21 output prints 17 files, largest wide-band column on the table's shank for 0.45 of units (0.11 to 0.79 by file) and equal to the table's column for 0.09, DS2 sign changes more than once on 43 of 64 shanks, and 1216 of 1216 wide-band columns matching the LFP column; cell 23 output prints the held-out map at 0.78 to 0.89 against 0.05 to 0.13 for the table. That the table and not the units is the wrong side is an inference from the cross-mouse consistency and the smoother DS2 profile (once on 43 of 51), which the outputs support."
+  - finding: 14
+    severity: minor

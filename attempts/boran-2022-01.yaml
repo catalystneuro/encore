@@ -370,6 +370,7 @@ outcomes:
     resampling runs and 100 scrambled runs, for time.
 findings:
 - kind: other
+  about: data
   statement: >-
     The spikes may be misaligned with the trial table. Workload information in the spikes
     (squared t of low against high workload, summed over units) is at chance in every session when
@@ -411,11 +412,13 @@ findings:
     that way, the stored values are response times from test onset of 0.41 to 3.15 s. The response
     series does not say what its timestamps mean.
 - kind: selection_undocumented
+  about: data
   statement: >-
     Sessions hold 174 to 192 trials (3038 in all), where the paper and the files' task description
     state 192 per session. Trial ids run without gaps, and which trials were left out, and why, is
     not documented.
 - kind: other
+  about: data
   statement: >-
     Spikes are stored only inside trial windows (fixation onset to 2 s after test onset), so
     nothing between trials, including the inter-trial interval, can be analysed. The fixation
@@ -780,3 +783,29 @@ verifications:
     outcome: reproduced
     reason: Agrees; it carries little weight, and the record now says so.
     response: No change.
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: major
+  - finding: 2
+    severity: minor
+  - finding: 3
+    severity: major
+  - finding: 4
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_boran_2022.ipynb cell 3 prints 18 files for 16 sessions, two sub-12 files each repeating another, all four named ses-20161217T103800, and the two kept sessions with identifiers subject12_session01 and session02 both starting 2016-12-17T10:38. The repeat test compares trial starts, spike counts and first spikes, not every value, and the identifiers of the two dropped copies are not printed."
+  - finding: 5
+    severity: major
+    confirmed: false
+    checked: 2026-11-19
+    note: "reproduce_boran_2022.ipynb cell 10 prints 1385 of 3038 responses before test onset when the timestamp is read as the press time, and 0.414 to 3.146 s when read as timestamp minus trial start minus 1.7 s. The conversion's 1.7 s offset is stated in a code comment and prose only, and cell 11 says this reading is consistent with the data, not shown by it; negative response times make the problem noticeable."
+  - finding: 6
+    severity: minor
+  - finding: 7
+    severity: minor

@@ -1,0 +1,550 @@
+schema_version: 3
+id: nishimoto-2011-reconstructing-01
+datasets:
+- archive: crcns
+  id: vim-2
+  version: unversioned
+  doi: 10.6080/K00Z715X
+  relation: primary
+paper: doi:10.1016/j.cub.2011.08.031
+date: 2026-11-14
+entry: nishimoto-2011-reconstructing
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43583031739
+inputs:
+- what: The motion-energy filter bank (filter definitions and the batched projection), from the package
+    pymoten 0.1.3, the Gallant lab's implementation of the model of this paper. It is software, not data;
+    its default envelopes give the paper's 6,555 filters.
+  source: https://pypi.org/project/pymoten/0.1.3/ (pinned with hashes in the entry's lock file)
+outcomes:
+- claim: fig2de-prediction-accuracy
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2de-prediction-accuracy
+  measured:
+  - 0.233
+  - 0.384
+  - 0.386
+  notes: Under penalty reading b (five-fold cross-validation) with the repeat-averaged test signal (signal
+    reading a), the pooled means over 13,007 voxels are 0.233 (static), 0.384 (nondirectional) and 0.386
+    (directional), all within tolerance, in the paper's order, with paired two-sided Wilcoxon p below
+    0.0001 (directional against nondirectional 1.3e-22, against static printed as 0). The mean of subject
+    means gives 0.234, 0.384 and 0.386. Under penalty reading a (one held-out 10%) the means are 0.211,
+    0.370 and 0.373, with the same order and tests, but the static mean is 0.005 below its lower bound
+    of 0.216; that reading alone would give partially reproduced. Per subject, penalty and signal reading
+    a, S1 0.217, 0.376, 0.376; S2 0.197, 0.391, 0.397; S3 0.221, 0.342, 0.345. Single repeats (signal
+    reading b) give 0.118 to 0.128 (static) and 0.207 to 0.212 (directional), outside tolerance under
+    both penalty readings. The stored rv gives the same means as the z-scored repeats to within 0.003.
+    The outcome rests on ridge in place of L1 and on penalty reading b. An approximate L1 fit on 120 voxels
+    (40 per subject, at random) predicts better than ridge on the same voxels, static 0.243 against 0.218
+    (reading a) and 0.238 (reading b), directional 0.416 against 0.391 and 0.405; shifting the static
+    mean of all voxels by the subsample's difference gives 0.236 (reading a) and 0.238 (reading b), both
+    inside tolerance. This check suggests the outcome does not hinge on ridge or on the penalty reading;
+    it is a subsample, and the outcome does not rest on it.
+  deviations:
+  - Ridge regression replaces the paper's L1-regularized least squares (Supplemental, Model Fitting, "L1-regularized
+    least squares regression procedure was used to obtain the linear weights", refs. 15 and 16). This
+    is an assumption. The paper gives neither the L1 penalty nor the stopping rule of its coordinate descent,
+    and ridge with a penalty per voxel chosen on held-out data is the standard fit of voxel-wise encoding
+    models of this kind. As a check, the static and directional models are fit by an approximate L1 (accelerated
+    proximal gradient along seven penalties from 0.5 to 0.01 of the largest useful one, 60 iterations each,
+    penalty chosen per voxel on the held-out 10%) on 120 voxels; the paper gives no stopping rule, and
+    at the smallest penalties the objective still changes by about 1% over the last iterations. The penalty is chosen per voxel from 19 values (1 to 1e9, half decades)
+    under both readings of the claims file, (a) a held-out 10% of the training data in 50 s blocks and
+    (b) five-fold cross-validation over such blocks (whole decades only, for time), and the model is refit
+    on all training data.
+  - The data set's test responses are not on the scale of the z-scored training responses (s.d. 0.10 for
+    rv and 0.20 for rva, against 0.99 for rt). Each test repeat is z-scored per voxel before averaging,
+    following Data Preprocessing ("For each 10 minute run and each individual voxel ... signals were then
+    normalized to mean 0.0 and standard deviation 1.0"). Correlations with the mean signal hardly depend
+    on this.
+  - Voxels are those of the data set's V1, V2, V3, V3A and V3B masks (4,183, 4,668 and 4,410 per subject,
+    against the paper's about 4,500); 179, 46 and 29 voxels with missing values are dropped.
+  - The motion-energy bank is pymoten's pyramid with spatial frequencies 0 to 32 cycles/image on 96 x
+    96 frames at 15 Hz, which gives exactly 6,555 filters (spatial envelope 0.6 wavelengths, 10-frame
+    window), the reading the claims file asks to reproduce that count. Its 855 zero-spatial-frequency
+    filters are one per position of each nonzero frequency's grid, with that frequency's envelope, at
+    each temporal frequency, and have no direction ("zero spatial frequency filters occur only once (no
+    orientation)", Gabor Wavelet Basis Set); the nondirectional model keeps them as single features, so
+    it has 4,275 features. Quadrature pairs are combined by the square root of the summed squares before
+    the log, which after the z-score differs from the paper's squared sum only through the log offset
+    of 1e-5. The log is pymoten's log(x + 1e-5), which is the claims file's log(x) reading, not its standard
+    choice log(1 + x); the claims file judges this unlikely to change the outcome, and log(1 + x) was not
+    run. Envelope variants (half and double) were not run, for time.
+  - The held-out 10% and the five folds are drawn once and used for all three subjects, so that one eigendecomposition
+    of the kernel serves the three (standard choice); the held-out blocks are laid on the concatenated
+    kept samples, and hold 728 samples.
+  assumed: true
+- claim: fig2e-directional-gain-small
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2e-directional-gain-small
+  notes: Directional minus nondirectional accuracy is 0.0010 to 0.0034 against a nondirectional gain over
+    static of 0.083 to 0.159, ratios of 0.012 to 0.022, under the bound of 0.1, with Wilcoxon p below
+    0.0001 (largest 5.2e-22), under every reading of penalty, test signal and subject combination. The
+    directional model is better in 53%, 62% and 55% of voxels of S1, S2 and S3. Whether this shows that
+    BOLD signals carry mostly nondirectional information, as the statement suggests, is an interpretation
+    the criterion does not test. The criterion is pooled; per subject, S1 has a difference of 0.0003 with
+    p = 2.1e-03, which would not pass p < 0.0001 alone.
+  deviations:
+  - The fits of fig2de-prediction-accuracy, with its deviations (ridge in place of L1).
+  assumed: true
+- claim: figs1a-motion-better-every-area
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:figs1a-motion-better-every-area
+  notes: Both motion models beat the static model in 15 of 15 area and subject cells under both test-signal
+    readings. V1 has the highest mean accuracy in each subject for each model. Against the other four
+    areas pooled (rank-sum reading b), V1 is better with p below 0.0001 in all three subjects for every
+    model, one-sided or two-sided (largest two-sided p 2.8e-10, S3 directional). Against each other area
+    in turn (reading a), this holds in all three subjects for the static model, in two for the nondirectional
+    model and in one for the directional model. Every failure is V1 against V3A, nondirectional in S3
+    (one-sided p = 1.2e-02) and directional in S1 (4.1e-04) and S3 (3.8e-02); in S2 both motion models
+    pass against every area (largest one-sided p 8.2e-06, V1 against V2, directional).
+    The criterion is met under rank-sum reading b with either model reading, and under reading a with
+    the static model; doubling the one-sided p-values changes no pass or fail.
+  deviations:
+  - The fits of fig2de-prediction-accuracy, with its deviations (ridge in place of L1), under penalty
+    reading a.
+  - The rank-sum p-values are given one-sided (V1 greater, as the claim is that V1 is best) and two-sided;
+    both give the same counts.
+  assumed: true
+- claim: fig2fgh-retinotopic-receptive-fields
+  outcome: reproduced
+  notes: 'On the claims file''s proxy test, which replaces the multifocal maps the data set does not hold.
+    Retained voxels (prediction p <= 0.01 on the 486 test samples, reading a) are 3,037, 3,867 and 3,358
+    in S1, S2 and S3, of which 97%, 95% and 95% have a Gaussian fit centered inside the display (bound
+    over half). The centers of left-hemisphere V1 voxels lie in the right visual field in 90%, 91% and
+    84% of cases, those of right-hemisphere V1 voxels in the left field in 91%, 89% and 89% (bound over
+    75%). V1 eccentricity rises from the occipital pole forward, Pearson r = 0.535, 0.607 and 0.330 (p
+    = 2.6e-61, 7.3e-89, 2.9e-27; bound p < 0.05). Reading b of the p-value (the 728 held-out training samples)
+    passes as well in every subject (contralateral 0.86 to 0.92, r = 0.312 to 0.607). The forward direction
+    is that from the V1 masks to the MT masks along the slice axis (mean slice 8.7 to 9.9 against 3.4
+    to 4.3). The similarity of the maps to multifocal mapping, which the statement also asserts, could
+    not be tested: the mapping data are not in the data set and not public.'
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2fgh-retinotopic-receptive-fields
+  deviations:
+  - Probes follow Selectivity Estimation (17 x 17 grid of dynamic Gaussian white noise on uniform gray;
+    full-field drifting gratings at the basis set's six spatial frequencies, three temporal frequencies
+    and eight directions; response minus the response to gray). The paper does not give the noise or grating
+    contrast, the gray level or the probe duration; the standard choices are L* 50 gray, noise s.d. 25
+    L*, grating amplitude 40 L*, 40 frames of which the middle 20 are scored. The predicted response to
+    a sustained probe is its features times the directional weights (penalty reading a) summed over the
+    four delays. The Gaussian is isotropic, fit by a search over centers (half-cell steps, also outside
+    the display) and widths with amplitude and offset by least squares.
+  - Judged on the claims file's proxy test (fits inside the display, contralateral V1, eccentricity rising
+    forward along V1); the comparison with multifocal maps is not run, since those maps are not public.
+  - The fits of fig2de-prediction-accuracy (ridge in place of L1), under penalty reading a.
+- claim: fig2j-speed-eccentricity
+  outcome: reproduced
+  notes: Under both peak readings (joint map, marginal curves) and both p-value readings, optimal speed
+    correlates positively with eccentricity in all nine area and subject cells with p < 0.0001. Joint
+    peaks with p-value reading a give r = 0.216 to 0.450 over 735 to 1,268 voxels per cell (largest p
+    1.0e-12, S2 V3); marginal peaks give r = 0.209 to 0.390 (largest p 2.8e-11). Voxels with optimal spatial
+    frequency 0 (4 to 20 per cell) are left out; eccentricity is that of fits centered inside the display.
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2j-speed-eccentricity
+  deviations:
+  - Probes follow Selectivity Estimation (17 x 17 grid of dynamic Gaussian white noise on uniform gray;
+    full-field drifting gratings at the basis set's six spatial frequencies, three temporal frequencies
+    and eight directions; response minus the response to gray). The paper does not give the noise or grating
+    contrast, the gray level or the probe duration; the standard choices are L* 50 gray, noise s.d. 25
+    L*, grating amplitude 40 L*, 40 frames of which the middle 20 are scored. The predicted response to
+    a sustained probe is its features times the directional weights (penalty reading a) summed over the
+    four delays. The Gaussian is isotropic, fit by a search over centers (half-cell steps, also outside
+    the display) and widths with amplitude and offset by least squares.
+  - The fits of fig2de-prediction-accuracy (ridge in place of L1), under penalty reading a.
+- claim: fig3ab-identification-s1
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig3ab-identification-s1
+  measured: 426
+  notes: 'With the four-delay directional model (reading a), the repeat-averaged test signal (reading
+    i), the encoding penalties of reading b (five-fold cross-validation), the 2,000 voxels best predicted
+    on the held-out training data, and the Tikhonov penalty chosen on the held-out training data (5.623
+    times the mean residual variance; 506 of 728 held-out samples identified within 1 s), 426 of 486 test
+    volumes (87.7%) are identified within one volume, at least the 418 the tolerance needs, and 38 short
+    of 464. Chance is 2.96 of 486 (0.61%). Over the Tikhonov grid the counts run from 319 to 432; penalties
+    1 to 5.623 all give 424 to 432, and the best on the test data (3.162, 432) is not the one chosen. Single
+    repeats give 360.4 on average (344 to 390). The reading b penalties come from cross-validation over
+    all 7,128 training samples, so the held-out 728 samples that choose the voxels and the Tikhonov penalty
+    also took part in choosing each voxel''s encoding penalty; no test data is involved. With encoding
+    penalty reading a, the same model and signal give 408 of 486 (84.0%),
+    10 short of the tolerance (Tikhonov penalty 3.162; 521 of 728 held-out samples). No Tikhonov penalty
+    of the grid (0.1 to 100, quarter decades) reaches 418 under that reading; the counts run from 313
+    to 408. Single repeats give 337.3 on average (320 to 364); the single 4 s delay model gives 326
+    (repeat mean) and 231.5 (single repeats), both under reading a. An earlier run of the same code gave 409 under reading a, so counts move
+    by about one between runs from floating-point differences. The round-1 count of 424 came from a different
+    analysis (a held-out split drawn per subject, a ridge grid of 10 to 1e7, and the zero-spatial-frequency
+    filters summed in the nondirectional model), so its difference from 408 cannot be put down to the
+    split alone.'
+  deviations:
+  - The fits use ridge regression in place of L1 (see fig2de-prediction-accuracy), under penalty readings
+    a and b; the outcome rests on reading b, under which the 90% fit for voxel selection and the
+    Tikhonov choice uses the reading b penalties.
+  - The Tikhonov inverse is inv(S + lambda * mean(diag S) * I), lambda from 0.1 to 100 in quarter decades,
+    chosen by identification of the held-out 10% of the training data with the residual covariance of
+    the 90% fit (claims file, Likelihood). The scaling by the mean residual variance is a standard choice.
+  - Test volumes are compared with all 486 candidate test seconds; within one volume means within 1 s
+    on the 540 s test clock.
+  assumed: true
+- claim: fig3c-identification-large-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs a set of 1,000,000 1 s clips from the internet. The data set holds only the experiment's
+    stimuli (data descriptor and bucket listing of vim-2), and the paper names no location for the clips
+    (Results paragraph 9, Figure 3C legend). The training movies (about 7,128 s) could serve as distractors
+    for a partial test, but not at the 1,000,000 clips the criterion names; it was not run.
+- claim: fig4-reconstructions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the sampled prior of about 18,000,000 s of YouTube clips, which the data set does not hold
+    (bucket listing of vim-2) and the paper does not deposit or locate (Results paragraph 10, Figure S2
+    legend).
+- claim: fig4d-reconstruction-accuracy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the sampled prior, as fig4-reconstructions.
+- claim: discussion-color-no-gain
+  outcome: reproduced
+  notes: The color model (the directional bank applied to L*, A* and B*, 78,660 regressors) predicts worse
+    than the luminance model, not better. Pooled over 13,007 voxels, penalty reading a, mean accuracy
+    0.3640 against 0.3735 (difference -0.0095, repeat-averaged signal; -0.0047 for single repeats), lower
+    in every subject (-0.0073, -0.0082, -0.0128), better in 38% of voxels; the one-sided Wilcoxon test
+    of color greater gives p = 1.0, so color is not higher by the test. Penalty reading b gives 0.3756
+    against 0.3861 (-0.0105; single repeats -0.0052), lower in every subject, one-sided p = 1.0. With a
+    separate weight per color channel (banded ridge; weights 0, 0.1, 0.3 and 1 in eight pairs, luminance
+    alone among them, chosen per voxel with the penalty on the held-out data), 2,674, 3,295 and 3,222 voxels
+    choose some color, but the banded model gives 0.3669 against 0.3735 (-0.0066), lower in every subject
+    and in the voxels that chose color, one-sided p = 1.0. S1 identification, reported without a test,
+    gives 378 of 486 for color against 408 for luminance. The outcome rests on the claims file's reading
+    of the color model and on ridge regression; the shared penalty is not what makes the color model worse.
+  assumed: true
+  notebook: color_no_gain.ipynb
+  output: claim:discussion-color-no-gain
+  deviations:
+  - The fits use ridge regression in place of L1 (see fig2de-prediction-accuracy), under penalty readings
+    a and b; the banded check under reading a only, for time.
+  - Each channel's features are z-scored with their own training statistics before the channels are joined
+    (standard choice).
+  - Run in a second notebook, color_no_gain.ipynb, as the three filterings with the other analyses would
+    pass the hour a notebook may take.
+findings:
+- kind: metadata_insufficient
+  statement: The data descriptor does not say that the responses include the first 6 s of each 600 s training
+    run (and of each 60 s test block) that the paper discards for the onset transient. They do; the mean
+    training response over those seconds is 0.42, 0.41 and 0.28 in the three subjects, against 0.01 over
+    the other samples.
+- kind: metadata_insufficient
+  statement: The descriptor does not give the units of the test responses. rt is z-scored per run (s.d.
+    0.99), while rv and rva have s.d. 0.10 to 0.11 and 0.20 to 0.23, so the test responses are on another
+    scale; a likelihood that uses training residuals needs them rescaled.
+- kind: metadata_insufficient
+  statement: The descriptor does not say that some voxels hold missing values; 179, 46 and 29 of the V1
+    to V3B voxels of S1, S2 and S3 have missing training or test values.
+- kind: other
+  about: data
+  statement: The descriptor says peak BOLD responses to each timepoint were estimated, which could be
+    read as responses already aligned to the stimulus. They are not; the directional model at a single
+    delay predicts the test data with mean accuracy 0.06 to 0.09 at 0 s, 0.30 to 0.33 at 4 s and 0.13
+    to 0.15 at 8 s, so the hemodynamic delay is still in the data.
+- kind: metadata_insufficient
+  statement: The files hold many ROI masks beyond V1 to V3B, by hemisphere, and the set differs between
+    subjects (30 masks in S1, among them V4, MT, MTp, IP, OBJ, VO, FFA, empty on the left, and PPA, empty
+    on both sides; 30 in S2, among them EBA, OFA and V7; 44 in S3, among them IPS1 to IPS4,
+    MST, TOS and cortALL). The descriptor names only one by example and does not say how they were defined. One subject 3 voxel lies in two
+    of the V1 to V3B masks.
+- kind: methods_unavailable
+  statement: The paper fits each voxel by L1-regularized least squares by coordinate descent (refs. 15
+    and 16) but does not say how the penalty or the stopping point was chosen, and publishes no code.
+    Here ridge is used, with the penalty chosen per voxel on held-out training data, and the static model's
+    mean accuracy is within tolerance under five-fold cross-validation (0.233) but not under a single
+    held-out 10% (0.211); an approximate L1 fit on 120 voxels predicts better than ridge by 0.005 to 0.025. Was the penalty chosen per voxel on held-out training data, and on which split?
+- kind: methods_unavailable
+  statement: The paper does not say whether identification and prediction accuracy use the mean of the
+    ten test repeats or single repeats, nor how the Tikhonov penalty of the noise covariance was chosen.
+    Here the repeat mean with a Tikhonov penalty chosen on held-out training data gives 408 of 486 with
+    encoding penalties chosen on one held-out 10% and 426 with penalties chosen by five-fold cross-validation,
+    below the reported 464; were these the choices, and how were the encoding penalties chosen for identification?
+- kind: data_missing
+  statement: The sampled natural movie prior (about 18,000,000 s of YouTube clips), the 1,000,000-clip
+    identification set and the multifocal retinotopic mapping data are not in the data set and not public,
+    so the reconstruction findings of Figure 4 and the large-set identification of Figure 3C cannot be
+    tested, and the receptive-field maps can be judged only on a proxy.
+verifications:
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module vim2.py and the claims file, with the paper's full text under paper/. The verifier checked
+    the archive listing for the blocked claims and tested the helper functions on synthetic inputs.
+  results:
+  - claim: fig2de-prediction-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 10, reading (a)(i) and (a)(ii): static 0.217, nondirectional 0.375, directional 0.379.
+      All three are within tolerance, in the right order, and both Wilcoxon tests give p ≈ 0 (underflow).
+      The margin is tiny: static 0.217 sits just above the 0.216 lower bound, and the fit is ridge, not
+      the L1 regression the criterion names (problem 1). Reading (b) gives means of 0.12 to 0.21, all
+      outside tolerance. Problem 1 (affects a conclusion): every model is fit by ridge, not by the L1-regularized
+      least squares that the criterion and the paper specify; the deviation is stated as for time, which
+      the 31 min total run does not really support; reading (b) of the penalty choice (several CV splits)
+      was not run. Problem 3: the nondirectional model has 4,155 features where pairing every nonzero-temporal-frequency
+      filter would give 3,990; the notebook never shows this. Problem 5: the per-voxel ridge penalty hits
+      both ends of the grid for 100 to 560 voxels. Problem 6: the observed test signal is the mean of
+      the z-scored repeats, not the stored rv; reasonable. Problem 8: the 50 s blocks cross a few run
+      boundaries; no test data enters any selection.'
+    response: Penalty reading (b), five-fold cross-validation over 50 s blocks, is now run beside reading
+      (a), and the grid is widened to 1 to 1e9. The zero-spatial-frequency filters, which pymoten gives
+      one per position of each frequency's grid with that frequency's envelope and no direction, had been
+      summed in groups by position; they are now kept single, and the nondirectional model has 4,275 features;
+      a table of filter counts per spatial frequency, temporal frequency and direction, and of the group
+      sizes per model, is printed. With these changes and a held-out split shared by the subjects, reading
+      (a) gives 0.211, 0.370, 0.373 (static 0.005 below tolerance) and reading (b) 0.233, 0.384, 0.386
+      (all within tolerance). The outcome stays reproduced, under penalty reading (b), marked as assumed.
+      Ridge in place of L1 is now stated as an assumption with its basis; an L1 fit by coordinate descent
+      on 40 S1 voxels did not converge in 30 minutes while preparing and is not in the notebook, so the
+      L1 comparison the verifier asked for is not given. The voxels at the grid ends are counted per model
+      and subject (30 to 248 at the lowest penalty). The stored rv is scored as a check (within 0.003).
+      The block layout across run boundaries is kept, as it lets no test data into a selection.
+  - claim: fig2e-directional-gain-small
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: directional minus nondirectional is 0.0042, against a motion gain of 0.158. The
+      ratio of 0.027 is below the claims file''s bound of 0.1, and p ≈ 0. This holds under all four readings.'
+    response: Re-run with the corrected nondirectional model and both penalty readings; ratios 0.012 to
+      0.021 under every reading. Outcome unchanged.
+  - claim: figs1a-motion-better-every-area
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 14: both motion models beat the static model in 15 of 15 cells. V1 has the highest mean
+      in every subject and every model. With V1 against the other four areas pooled (reading b), p ≤ 1e-11
+      in 3 of 3 subjects for every model. Against each area in turn (reading a), only the static model
+      passes in all 3; the directional model passes in 1 of 3. Problem 4: the rank-sum tests are one-sided,
+      which is neither stated nor in the claims file; doubling the p-values changes no pass/fail.'
+    response: The one-sided test is stated, and two-sided p-values and pass counts are printed beside
+      it; the counts are the same. Outcome unchanged.
+  - claim: fig2fgh-retinotopic-receptive-fields
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked (other: not run, though testable). Cell 17 says too_large (time), but the whole run
+      took 30.9 min and 11.7 GB, and the probes are cheap. The archive holds everything the claims file''s
+      proxy test needs (problem 2): the ROI masks are split by hemisphere, which serves the contralateral
+      test, and the voxel index in the 64 x 64 x 18 volume gives the posterior-anterior axis. Problem
+      7: the frame orientation is asserted but never checked against an image; it would matter for the
+      receptive-field claims.'
+    response: 'Now tested: white-noise probes on the 17 x 17 grid, Gaussian fits, and the proxy test.
+      All three conditions hold in every subject under both p-value readings; outcome reproduced, marked
+      as assumed for the probe parameters and ridge. Four training frames are shown to check the frame
+      orientation (upright), and the anterior direction of the slice axis is taken from the V1 and MT
+      masks.'
+  - claim: fig2j-speed-eccentricity
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked (other: not run, though testable). Same as fig2fgh: the grating probes need only
+      the fitted weights and the filter bank.'
+    response: Now tested with grating probes; 9 of 9 correlations positive with p < 0.0001 under every
+      reading; outcome reproduced.
+  - claim: fig3ab-identification-s1
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16, model (a) with the repeat-averaged signal (i): 424 of 486 at the Tikhonov penalty
+      3.0, chosen on the held-out training data. That clears the threshold of 418. Chance is 2.96 of 486,
+      matching the paper''s 3 of 486. The margin is 6 volumes, and the fit is ridge (problem 1). Readings
+      (b) and (ii) fall short. The penalty grid has half-decade steps, so the sensitivity of the 424 count
+      to it could not be checked.'
+    response: The Tikhonov grid is now in quarter decades (0.1 to 100), with held-out and test counts
+      at each value. After the corrections above and with the held-out split shared by the subjects, the
+      count is 409 of 486 at the chosen penalty, and no penalty reaches 418; the outcome changes to partially
+      reproduced (far above chance, below the paper's count). The L1 count the verifier asked for is not
+      given (see fig2de).
+  - claim: fig3c-identification-large-set
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. The archive listing has no candidate clip set: Stimuli, VoxelResponses
+      x3, anatomy.zip, docs, raw_data, checksums.md5 and filelist.txt only. The paper gives no location.
+      Only a partial test is possible: the ~7,128 training seconds as distractors. That cannot meet the
+      criterion at 1,000,000 clips.'
+    response: The possible partial test with the training seconds as distractors is now named in the notes;
+      it was not run. Outcome unchanged.
+  - claim: fig4-reconstructions
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. The archive has no sampled prior. The training movies (7,200 s) are
+      about 2,500 times smaller than the 18,000,000 s prior, so they are no defensible stand-in.
+    response: No change.
+  - claim: fig4d-reconstruction-accuracy
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. Same as fig4.
+    response: No change.
+  - claim: discussion-color-no-gain
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked (other: not run, though testable). Stimuli.tar.gz holds RGB frames, and vim2.load_stimuli
+      already supports the a and b channels. The cost is about 2 x 622 s of extra filtering plus one more
+      fit per subject, which fits a run of this length.'
+    response: Now tested in a second notebook, color_no_gain.ipynb (42.4 minutes in that run, which with
+      the first would pass the hour). The color model is 0.0095 lower than luminance and not higher by the test;
+      outcome reproduced, marked as assumed.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebooks of the first revision (reproduce_nishimoto_2011.ipynb and color_no_gain.ipynb)
+    with their conclusions and summaries, the helper module vim2.py, the claims file and this record, with
+    the paper's full text under paper/.
+  results:
+  - claim: fig2de-prediction-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 'NB1 cell 13, penalty (b), signal (a), 0.233 / 0.384 / 0.386, all within tolerance, in the
+      right order, p = 0 and 1.3e-22. Penalty reading (b) is one of the claims file''s own readings, so
+      "under one reading" is met. Under (a), static is 0.211 (-0.0049 from the bound), which the record
+      states. Ridge in place of L1 is stated with its basis, and the failed L1 attempt is disclosed; reasonable,
+      but untested. Remaining point 1, ridge vs L1, not resolved: no L1 fit is shown, even on a voxel subsample;
+      fig2de passes only under penalty reading (b), so its reproduced rests on ridge plus reading (b), and
+      the sensitivity is unknown. Minor: the log offset of 1e-5 is the claims file''s log(x) reading, not
+      its standard log(1+x), and the record does not name it as a reading choice.'
+    response: 'An approximate L1 fit (accelerated proximal gradient, seven penalties, 60 iterations each,
+      penalty chosen per voxel on the held-out 10%) is now run on 120 voxels, 40 per subject, for the static
+      and directional models, with a convergence check. It predicts better than ridge on the same voxels
+      (static +0.025 against reading a, +0.005 against reading b; directional +0.025 and +0.011), and the
+      static mean shifted by that difference is inside tolerance under both readings (0.236, 0.238). Outcome
+      unchanged; the check is a subsample and no outcome rests on it. The log offset is now named as the
+      claims file''s log(x) reading in the deviation and in vim2.py; log(1 + x) was not run.'
+  - claim: fig2e-directional-gain-small
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16, ratio 0.012 to 0.021 and p <= 5.3e-22 under all 12 combinations. Not in the conclusion,
+      S1 alone gives a difference of 0.0003, p = 2.5e-3 (cell 13). The pooled criterion does not require
+      a per-subject test.'
+    response: The S1 per-subject result is now stated in the notes (0.0003, p = 2.1e-03 in this run). Numbers
+      updated from the re-run (ratios 0.012 to 0.022, largest p 5.2e-22). Outcome unchanged.
+  - claim: figs1a-motion-better-every-area
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19, 15 of 15 cells; pooled rank-sum p < 1e-4 in 3 of 3 subjects for every model and both
+      sidednesses. The record''s exception sentence is wrong, S2 V1 vs V2 at 8e-06 passes p < 1e-4 and
+      is not an exception, and the actual nondirectional failure, S3 V1 vs V3A (p = 1.2e-02), is left out;
+      cell 20 states this correctly, the record does not. It does not change the outcome, but it misstates
+      which tests fail.'
+    response: The record now says that every failure is V1 against V3A (nondirectional in S3, directional
+      in S1 and S3) and that S2 passes against every area; the notebook's result cell says the same. Outcome
+      unchanged.
+  - claim: fig2fgh-retinotopic-receptive-fields
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23, 95 to 97% of fits inside the display; contralateral 0.84 to 0.91; r = 0.330 to 0.607,
+      p <= 2.9e-27; passes under both p-value readings. The probe contrast and duration, the isotropic
+      Gaussian and the MT-based anterior direction are all stated. The 84 to 91% contralateral fractions
+      also confirm left/right orientation independently. NB1 cell 21 says "(b) the 750 held-out training
+      samples", while cell 6 prints 728.'
+    response: Corrected to 728 in the notebook and the record. Numbers updated from the re-run (3,037 and
+      3,867 retained voxels, p = 2.6e-61 and 7.3e-89, r = 0.312 to 0.607 under reading b). Outcome unchanged.
+  - claim: fig2j-speed-eccentricity
+    agrees: true
+    outcome: reproduced
+    reason: Cell 26, 9 of 9 positive with p < 1e-4 under all four reading combinations.
+    response: Numbers updated from the re-run (largest joint-peak p 1.0e-12, S2 V3). Outcome unchanged.
+  - claim: fig3ab-identification-s1
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes, provisionally. Cell 29, 409 of 486, and no Tikhonov penalty reaches 418. However, only
+      encoding-penalty reading (a) was run. Reading (b) is the one that made fig2de pass, and the claims
+      file''s readings apply here too, so the outcome is not settled across readings; the partially_reproduced
+      outcome is not established until identification is run with the (b) fits. The record''s sentence
+      that the count moves with the held-out split (424 in round 1) is not supported, as no output compares
+      the two splits and the ridge grid also changed between rounds.'
+    response: 'Identification is now run with the encoding fits of reading (b) (90% fit with the reading
+      b penalties for voxel selection and the Tikhonov choice, full fit for the test). It gives 426 of 486
+      at the Tikhonov penalty chosen on the held-out data, inside the tolerance, while reading (a) gives
+      408 in this run. The outcome stays partially_reproduced, as round 2 requires, with a proposed change
+      to reproduced. The sentence on the split is replaced: the round-1 count came from an analysis that
+      differed in the split, the ridge grid and the nondirectional features, so the change cannot be put
+      down to the split alone.'
+  - claim: fig3c-identification-large-set
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing; agreed.
+    response: No change.
+  - claim: fig4-reconstructions
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing; agreed.
+    response: No change.
+  - claim: fig4d-reconstruction-accuracy
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing; agreed.
+    response: No change.
+  - claim: discussion-color-no-gain
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, by the criterion. NB2 cell 6, -0.0095 pooled, one-sided p = 1.0, lower in every subject.
+      The criterion''s "not higher" test is passed by any handicapped model, and here 78,660 regressors
+      share one ridge penalty per voxel, which makes it a weak test of absence; "not higher" may reflect
+      the fit, not an absence of color information. A fit with a separate penalty per channel (banded ridge)
+      would make the test meaningful. The fit also used penalty reading (a) only. The record says "about
+      46 minutes" where NB2 cell 6 prints 42.4 min.'
+    response: 'Penalty reading (b) is now run (color 0.0105 lower), and a banded fit with a separate weight
+      per color channel, chosen per voxel on the held-out data with luminance alone among the choices: the
+      banded model is still 0.0066 lower than luminance, lower in every subject and in the voxels that chose
+      color, one-sided p = 1.0. Outcome unchanged. The run time in the round-1 response is corrected to
+      42.4 minutes.'
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3, the proposed change of fig3ab-identification-s1 from partially_reproduced to reproduced
+    and the analysis behind it in reproduce_nishimoto_2011.ipynb (cells 10, 32 and 33), with vim2.py,
+    the claims file and this record.
+  results:
+  - claim: fig3ab-identification-s1
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32 prints 426 of 486 for model reading (a), signal (i) and encoding penalty reading (b)
+      at Tikhonov penalty 5.623, chosen as the best held-out count (506 of 728); chance is 2.96 of 486.
+      Cell 10 fits the 90% model with the reading (b) penalties on the 90% eigensystem, and cell 32 runs
+      the same code path under both penalty readings. Penalty reading (b) is one of the claims file''s
+      own readings. The Tikhonov penalty is chosen on training data only and is not the best on the test
+      data (3.162 gives 432); penalties 1 to 5.623 all give 424 to 432, a margin of 8 over 418 against
+      run-to-run changes of about 1. 426 is at least 418 under readings (a)(i) with penalty reading (b),
+      and chance is reported. Caveats that do not change the outcome: the reading (b) penalties come from
+      cross-validation over all 7,128 training samples, so the held-out 728 samples helped choose each
+      voxel''s penalty before being used for voxel selection and the Tikhonov choice, a slight leak between
+      training-data selections with no test data involved; reading (b) searches only the whole decades
+      of the ridge grid; the outcome rests on ridge in place of L1 and on penalty reading (b), both stated,
+      and under reading (a) the count stays 408.'
+    response: The outcome is changed to reproduced and the proposal removed; measured is now 426. The notes
+      now lead with the reading b result and state the leak of the held-out samples into the encoding
+      penalty choice, the range of Tikhonov penalties that pass, and that the reading a count stays 408.
+      The notebook's conclusions and summary and the entry README are updated to match.
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: minor
+  - finding: 2
+    severity: major
+  - finding: 3
+    severity: minor
+  - finding: 4
+    severity: minor
+  - finding: 5
+    severity: minor
+  - finding: 8
+    severity: major

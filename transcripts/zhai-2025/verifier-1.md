@@ -1,65 +1,99 @@
-# 001538 · verifier-1 · run 39177525534
+# zhai-2025 · verifier-1 · run 45866172234
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls docs paper 2>/dev/null; cat *claims* 2>/dev/null | head -200
+cd  ls -la; ls paper docs 2>/dev/null; wc -c *
 ```
 
 ```
-total 200
-drwxr-xr-x 5 runner runner    4096 Oct 18 23:48 .
-drwxr-xr-x 7 runner runner    4096 Oct 18 23:48 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 23:38 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 23:38 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 18 23:48 .claude
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.development
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.local
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.production
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.test
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .env.test.local
-drwx------ 2 runner runner    4096 Oct 18 23:48 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 23:38 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 23:38 .github
--rw-r--r-- 1 runner runner       0 Oct 18 23:48 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 23:38 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 23:38 .mcp.json
-[... 18 more lines not kept]
+Exit code 1
+total 240
+drwxr-xr-x 6 runner runner    4096 Nov 26 17:23 .
+drwxr-xr-x 8 runner runner    4096 Nov 26 17:23 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 26 17:15 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 26 17:15 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 26 17:23 .claude
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .env.test.local
+drwx------ 2 runner runner    4096 Nov 26 17:23 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 26 17:15 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 26 17:15 .github
+-rw-r--r-- 1 runner runner       0 Nov 26 17:23 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 26 17:15 .idea
+[... 37 more lines not kept]
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-cd  cat 10.1126-sciadv.adv8224.yaml
+```json
+{
+ "file_path": "zhai-2025.yaml"
+}
 ```
 
 ```
-# Claims for Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel & Surmeier (2025) on dandiset 001538.
-# Source: the full text of the version of record in PubMed Central (PMC12674127, CC BY), read from
-# its Results, figure legends and Materials and Methods.
-#
-# What the author had seen when these criteria were written. The data check: the file list and
-# metadata of every NWB file; for every patch-clamp file the cell and condition counts, the spike
-# counts per current step and each cell's rheobase, and per group the median rheobase; the
-# dendritic excitability index per cell and its group medians; the Sr2+-oEPSC events found by the
-# detector in lid.py and their per-cell counts and mean amplitudes; the GRAB-ACh areas per mouse;
-# the AIM tables. Also the paper's per-cell tables (Zenodo doi:10.5281/zenodo.17307059), and that
-# most dandiset cells match a row of them exactly. No statistical test of any claim had been run.
-#
-# The paper's statistics (Methods) are two-sided Mann-Whitney tests for unpaired and Wilcoxon tests
-# for paired data at P < 0.05, unless stated otherwise; the criteria use these. Where the dandiset
-# holds so few units that the paper's test cannot reach P < 0.05 whatever the data (the smallest
-# attainable two-sided P is 0.057 for 3 against 4, 0.10 for 3 against 3, 0.25 for 3 pairs and
-# 0.0625 for 5 pairs), the claim is blocked with `other`, and the numbers are shown under the link
-# claim for that data. Groups are formed from the file's condition_subfolder column, not from the
-# session name, because files named for a drug also hold baseline cells.
-#
-[... 300 more lines not kept]
+1	# Claims for Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel & Surmeier (2025) on dandiset 001538.
+2	# Source: the full text of the version of record in PubMed Central (PMC12674127, CC BY), read from
+3	# its Results, figure legends and Materials and Methods.
+4	#
+5	# What the author had seen when these criteria were written. The data check: the file list and
+6	# metadata of every NWB file; for every patch-clamp file the cell and condition counts, the spike
+7	# counts per current step and each cell's rheobase, and per group the median rheobase; the
+8	# dendritic excitability index per cell and its group medians; the Sr2+-oEPSC events found by the
+9	# detector in lid.py and their per-cell counts and mean amplitudes; the GRAB-ACh areas per mouse;
+10	# the AIM tables. Also the paper's per-cell tables (Zenodo doi:10.5281/zenodo.17307059), and that
+11	# most dandiset cells match a row of them exactly. No statistical test of any claim had been run.
+12	#
+13	# The paper's statistics (Methods) are two-sided Mann-Whitney tests for unpaired and Wilcoxon tests
+14	# for paired data at P < 0.05, unless stated otherwise; the criteria use these. Where the dandiset
+15	# holds so few units that the paper's test cannot reach P < 0.05 whatever the data (the smallest
+16	# attainable two-sided P is 0.057 for 3 against 4, 0.10 for 3 against 3, 0.25 for 3 pairs and
+17	# 0.0625 for 5 pairs), the claim is blocked with `other`, and the numbers are shown under the link
+18	# claim for that data. Groups are formed from the file's condition_subfolder column, not from the
+19	# session name, because files named for a drug also hold baseline cells.
+20	#
+[... 674 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "zhai.py"
+}
+```
+
+```
+1	"""Loading and measures for dandiset 001538 (Zhai et al. 2025, Science Advances).
+2	
+3	Every file is streamed from the DANDI Archive with remfile and h5py; nothing is written to disk.
+4	The paper's own tables (Zenodo record 17307059) and analysis notebooks (Zenodo records
+5	14145776, 14163502 and 14163731) are read into memory from Zenodo.
+6	
+7	Where each parameter comes from:
+8	
+9	- Spike counts and rheobase: the paper's somatic script ("Input_output analysis ver2024.11",
+10	  Zenodo 14145776) counts upward crossings of 0 mV over the whole sweep (count_events with
+11	  threshold 0) and takes as rheobase the first positive step with a spike (rheobaseCal). The
+12	  claims file fixes the same rule. When a cell holds a step more than once, the first sweep of
+13	  that step is used: an assumption (the script numbers the sweeps in order and has no rule for
+14	  a repeated step); the notebook shows how many cells it touches.
+15	- Dendritic index: the paper's dendritic script ("PVAnalysis ver 2024.11", Zenodo 14163502):
+16	  backgrounds of 55 (red) and 161 (green) subtracted, a 6-sample running mean, the three trials
+17	  of a site averaged, R0 and G0 the means from 0.5 to 0.95 s, the area of (G - G0)/R0 from
+18	  0.95 to 1.5 s, the index the distal area over the proximal area, and the basal ratio
+19	  (G0/R0 distal over G0/R0 proximal). The claims file keeps pairs with a basal ratio between
+20	  0.5 and 2, pairs proximal and distal sites by their number, and averages pairs within a cell.
+[... 451 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -69,20 +103,20 @@ cd  python3 -c "
 import json
 nb=json.load(open('reproduce_zhai_2025.ipynb'))
 for i,c in enumerate(nb['cells']):
-    print(f'=== CELL {i} [{c[\"cell_type\"]}]')
+    print(f'=== [{i}] {c[\"cell_type\"]}')
     print(''.join(c['source']))
     for o in c.get('outputs',[]):
         if 'text' in o: print('--OUT--'); print(''.join(o['text']))
         elif 'data' in o:
             d=o['data']
             if 'text/plain' in d: print('--OUT--'); print(''.join(d['text/plain']))
-            if 'image/png' in d: print('[image]')
+            else: print('--OUT-- (non-text)', list(d))
         elif o.get('output_type')=='error': print('--ERR--', o['ename'], o['evalue'])
 " > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
 ```
 
 ```
-1510 /tmp/claude-1001/nb.txt
+1753 /tmp/claude-1001/nb.txt
 ```
 
 **Agent calls Read**
@@ -94,27 +128,27 @@ for i,c in enumerate(nb['cells']):
 ```
 
 ```
-1	=== CELL 0 [markdown]
+1	=== [0] markdown
 2	# Reproducing Zhai et al. (2025) from dandiset 001538
 3	
-4	**Paper.** Zhai S, Cui Q, Wokosin D, Sun L, Tkatch T, Crittenden JR, Graybiel AM, Surmeier DJ
-5	(2025). State-dependent modulation of spiny projection neurons controls levodopa-induced
-6	dyskinesia in a mouse model of Parkinson's disease. *Science Advances* 11, eadv8224.
-7	[doi:10.1126/sciadv.adv8224](https://doi.org/10.1126/sciadv.adv8224). This attempt used the full
-8	text (open access, PubMed Central PMC12674127).
-9	
-10	**Dandiset.** [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.260527.1302), version
-11	0.260527.1302. The paper cites no DANDI version (its data statement points to a key resources table
-12	on Zenodo). This is the only published version; the draft holds the same 468 files with the same
-13	sizes and differs only in metadata (a link to the journal article among others), which the analysis
-14	does not use.
-15	
-16	**What the dandiset holds.** Patch-clamp recordings of somatic excitability and of the dendritic
-17	back-propagation assay with two-photon line scans, for dSPNs and iSPNs in the LID off- and
-18	on-states and under the drug and genetic manipulations of Figures 1, 3, 6, 7 and 9; GRAB-ACh3.0
-19	imaging (one region per mouse, Figure 5); Sr2+-oEPSC recordings (one cell per mouse, Figures 2 and
-20	4); AIM score tables for 9 mice and rotation videos (Figures 8 and 10); and raw spine image stacks
-[... 710 more lines not kept]
+4	Paper: Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier (2025), "State-dependent
+5	modulation of spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of
+6	Parkinson's disease", Science Advances, doi:10.1126/sciadv.adv8224.
+7	
+8	Dataset: [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.261124.1858), version
+9	0.261124.1858, streamed from the archive. This version was asked for by the run that made this
+10	attempt; it is also the newest published version (the others are 0.260527.1302 and the draft). The
+11	paper cites no version of the dandiset.
+12	
+13	Claims: `claims/zhai-2025.yaml`, written from the version of record in PubMed Central (PMC12674127),
+14	its figure legends and Methods. The paper's own per-cell and per-mouse tables are read from Zenodo
+15	record 17307059 (doi:10.5281/zenodo.17307059, the latest version of 10.5281/zenodo.14589035; file
+16	"Zhai et al. 2025 Datasets.zip", md5 112da5b1b00208262bd7887dd51b54ee). They are used for the link
+17	claims and for the claims on data that are not in the dandiset (`data: elsewhere`). The paper's
+18	analysis code (Zenodo 14145776, 14163502 and 14163731) was read to fix the measures; see the
+19	docstring of `zhai.py`.
+20	
+[... 744 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -122,519 +156,432 @@ for i,c in enumerate(nb['cells']):
 ```json
 {
  "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 731,
- "limit": 780
+ "offset": 765,
+ "limit": 500
 }
 ```
 
 ```
-731	print(f"Cells matched by identifier: {sr_link.in_paper.sum()} of {len(sr_link)}; the paper has "
-732	      f"{amp_t.id.nunique()} cells ({(amp_t.group.str.strip() == 'LID off').sum()} off, {(amp_t.group.str.strip() == 'LID on').sum()} on)")
-733	print(f"Cells with mean amplitude within 25% of the paper's events: {ok_amp.sum()}; with event count within 25%: {ok_n.sum()}; both: {(ok_amp & ok_n).sum()} of {len(sr_link)}")
-734	print("\nBy group (dandiset cells only; the paper's test cannot reach P < 0.05 with 3 against 4 cells):")
-735	for ct in ("dSPN", "iSPN"):
-736	    for col in ("mean_amp", "freq_Hz", "paper_cell_amp", "paper_freq"):
-737	        a = sr_link[(sr_link.cell_type == ct) & (sr_link.state == "OffState")][col]
-738	        b = sr_link[(sr_link.cell_type == ct) & (sr_link.state == "OnState")][col]
-739	        print(f"  {ct} {col}: off {np.round(a.values, 2)} on {np.round(b.values, 2)}; MW P = {stats.mannwhitneyu(a, b).pvalue:.3f}")
-740	--OUT--
-741	cell_type    state  paper_id  in_paper  noise_pA  events  paper_events  mean_amp  paper_event_mean  paper_cell_amp  freq_Hz  paper_freq  events_3sd  mean_amp_3sd
-742	     dSPN OffState 07062023c      True      1.24      47            56     13.43             12.37           11.13    13.06       15.56          65         11.37
-743	     dSPN OffState 07132023d      True      1.25      26            45     17.33             13.63           11.61     7.22       12.50          35         15.29
-744	     dSPN OffState 08172023d      True      1.75      35            53     17.15             13.93           13.13     9.72       14.72          49         14.56
-745	     dSPN  OnState 07052023b      True      1.50      73            94     18.08             16.60           15.00    20.28       26.11          89         16.08
-746	     dSPN  OnState 07102023b      True      2.10      44            49     26.50             20.95           16.85    12.22       13.61          60         21.89
-747	     dSPN  OnState 08022023b    
-[... 763 more lines not kept]
+765	
+766	groups with the paper's n: 10 of 10
+767	median relative difference from the matched paper value: 0.027 over 92 cells; to the nearest value of the group: 0.019
+768	
+769	cells more than 10% from their matched value:
+770	               group      date  cell  n_pairs    paper_id  index  paper  nearest
+771	0            LID off  20160812     3        1     cell_21  0.468  0.543    0.441
+772	13            LID on  20170707     2        1     cell_34  0.546  0.678    0.579
+773	20      LID on + SCH  20190411     1        1     cell_41  0.582  0.228    0.482
+774	26      LID on + SCH  20190503     3        2     cell_47  0.288  0.261    0.292
+775	32           LID off  20160523     4        2     iSPN_27  0.767  0.947    0.737
+776	34           LID off  20160524     2        3     iSPN_29  0.960  0.527    0.947
+777	60           control  20200225     2        2  02252020_b  0.230  0.265    0.265
+778	65           control  20240425     2        2  04252024_b  0.363  0.504    0.392
+779	66    M1R antagonist  20200218     2        2  02182020_b  0.268  0.237    0.261
+780	70    M1R antagonist  20200312     2        2  03122020_b  0.194  0.261    0.213
+781	72    M1R antagonist  20240430     2        2  04302024_b  0.183  0.213    0.172
+782	88  ('KO', 'LID on')  20160902     3        2     cell_36  0.496  0.608    0.608
+783	
+784	=== [33] code
+[... 480 more lines not kept]
 ```
-
-**Agent**
-
-I've read the notebook (83 cells, every claim tested or flagged as blocked). Next I'm reading the helper module `lid.py`.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "lid.py"
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1265,
+ "limit": 500
 }
 ```
 
 ```
-1	"""Loading and measures for dandiset 001538 (Zhai et al. 2025, Science Advances).
-2	
-3	Zhai S, Cui Q, Wokosin D, Sun L, Tkatch T, Crittenden JR, Graybiel AM, Surmeier DJ (2025).
-4	State-dependent modulation of spiny projection neurons controls levodopa-induced dyskinesia in a
-5	mouse model of Parkinson's disease. Sci Adv 11:eadv8224. doi:10.1126/sciadv.adv8224.
-6	
-7	The dandiset holds, among others, these kinds of NWB file, all streamed from the archive at the
-8	pinned version (nothing is written to disk):
-9	
-10	- patch-clamp files (`*_icephys+ophys.nwb`, `*_icephys.nwb`), one per mouse and day: somatic
-11	  current steps (`CurrentClampSeries_CellN_Somatic`, 21 sweeps of 1 s from -120 to +300 pA) and,
-12	  for most, the dendritic back-propagation assay (`CurrentClampSeries_CellN_Dendritic`, 4 s sweeps
-13	  with three brief current injections) with two-photon line scans of Alexa 568 (red, channel 1) and
-14	  Fluo-4 (green, channel 2) at proximal and distal dendritic sites;
-15	- Sr2+-oEPSC files (`*_icephys+ogen.nwb`), one cell each, 10 voltage-clamp sweeps;
-16	- GRAB-ACh3.0 imaging files (`*_ophys.nwb`), one slice region per mouse, with Prairie View region
-17	  traces per trial and treatment, and ACh and TTX calibration trials;
-18	- AIM score tables (`ses-pan++ON...` files without `_image`), one file per mouse and session.
-19	
-20	Where the parameters come from:
-[... 498 more lines not kept]
-```
-
-**Agent**
-
-The notebook and `lid.py` are read. Next I'm pulling the paper text and the archive's file list so I can check the blocked claims against the archive.
-
-**Agent calls Bash**
-
-```bash
-cd  mkdir -p paper; curl -sL -A "Mozilla/5.0" "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/PMC12674127/unicode" -o paper/pmc.json; ls -la paper; head -c 300 paper/pmc.json
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  python3 - <<'E'
-import json,urllib.request,collections
-base="https://api.dandiarchive.org/api/dandisets/001538/versions/0.260527.1302/assets/?page_size=1000"
-items=[];url=base
-while url:
-    d=json.load(urllib.request.urlopen(url)); items+=d['results']; url=d['next']
-print(len(items))
-json.dump(items,open('/tmp/claude-1001/assets.json','w'))
-c=collections.Counter(); s=collections.Counter()
-for a in items:
-    p=a['path']; ext=p.rsplit('.',1)[-1] if '.' in p.split('/')[-1] else 'none'
-    k=ext
-    if p.endswith('.nwb'):
-        k='nwb:'+p.split('_')[-1]
-    c[k]+=1; s[k]+=a['size']
-for k in c: print(k,c[k],round(s[k]/1e9,2),'GB')
-E
-```
-
-```
-468
-mp4 154 8.5 GB
-mov 88 15.43 GB
-nwb:image.nwb 12 0.0 GB
-nwb:ses-pan++ON++none++WT++20180223.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180228.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180302.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180225.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20201104.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180304.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20201106.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20201109.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20201111.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20201113.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180320.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180323.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180325.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180327.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180329.nwb 1 0.0 GB
-nwb:ses-pan++ON++none++WT++20180403.nwb 1 0.0 GB
-[... 119 more lines not kept]
+1265	28  unlesioned  20240405  Slice1Roi2          1        0.050     0.025    0.102       0.057      0.193    NaN          0.119             0.032            0.184       NaN
+1266	29  unlesioned  20240405  Slice2Roi1          9        0.050     0.030    0.112       0.036      0.135    NaN          0.122             0.025            0.106       NaN
+1267	30  unlesioned  20240410  Slice1Roi1         10        0.145     0.079    0.145       0.118      0.561    NaN          0.067             0.090            0.523       NaN
+1268	31  unlesioned  20240410  Slice1Roi2         11        0.037     0.018    0.023       0.006      0.087    NaN          0.041             0.023            0.087       NaN
+1269	32  unlesioned  20240410  Slice2Roi1         12        0.036     0.030    0.014      -0.014      0.186    NaN          0.012             0.017            0.183       NaN
+1270	33  unlesioned  20240410  Slice2Roi2         13        0.111     0.051    0.093       0.072      0.443    NaN          0.054             0.052            0.392       NaN
+1271	
+1272	regions per group:
+1273	            dandiset  paper
+1274	group                      
+1275	6-OHDA            10     10
+1276	LID off           11     11
+1277	unlesioned        13     13
+1278	regions whose best match is within 0.05 for every treatment: 16 of 34
+1279	paper regions matched by more than one dandiset region: 11
+1280	variant, whole-frame brightness: within 0.05 for 16 of 34; median largest difference 0.055
+1281	
+1282	--OUT--
+1283	variant, Fmin from tetrodotoxin only: within 0.05 for 10 of 33; median largest difference 0.092
+1284	variant, Fmin from the quinpirole baseline only: within 0.05 for 16 of 34; median largest difference 0.053
+[... 470 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'E'
-import json,urllib.request
-items=json.load(open('/tmp/claude-1001/assets.json'))
-def md(a):
-    return json.load(urllib.request.urlopen(f"https://api.dandiarchive.org/api/dandisets/001538/versions/0.260527.1302/assets/{a['asset_id']}/"))
-picks=[a for a in items if a['path'].endswith('20160524.nwb')][:1]+[a for a in items if '20231022-Cell1-Slide2-Slice2' in a['path']]+[a for a in items if '20260524.nwb' in a['path']]+[a for a in items if 'icephys+ogen' in a['path']][:1]
-for a in picks:
-    m=md(a); print(a['path'], a['size'])
-    print(' variableMeasured:', [v.get('value') for v in m.get('variableMeasured',[])])
-    print(' measurementTechnique:', [v.get('name') for v in m.get('measurementTechnique',[])])
-    print(' wasGeneratedBy:', [ (g.get('name'),g.get('description','')[:300]) for g in m.get('wasGeneratedBy',[])])
-E
-python3 -c "
-import json;items=json.load(open('/tmp/claude-1001/assets.json'))
-import collections
-nw=[a['path'] for a in items if a['path'].endswith('.nwb')]
-print(len(nw))
-# spine stacks: no suffix
-sp=[p for p in nw if not any(p.endswith(s) for s in ['_icephys.nwb','_icephys+ophys.nwb','_icephys+ogen.nwb','_ophys.nwb','_image.nwb']) and 'pan++ON' not in p]
-print(len(sp)); print(collections.Counter(p.split('_ses-')[1].split('++')[0]+' '+p.split('_ses-')[1].split('++')[1]+' '+p.split('_ses-')[1].split('++')[3] for p in sp))
+cd  python3 -c "
+import yaml,collections
+c=yaml.safe_load(open('zhai-2025.yaml'))['claims']
+print(len(c)); print(collections.Counter(x.get('kind','finding') for x in c)); print(collections.Counter(x.get('data','in_dandiset') for x in c))
+"; ls paper; grep -n -i "background\|55\b\|161" paper/*.txt | head -20
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import zhai, numpy as np, pandas as pd
+# 1. background choice in _site_trace
+class G(dict): pass
+data=np.full(20,300.0)
+class DS:
+    def __init__(s,a): s.a=a
+    def __getitem__(s,k): return s.a[k]
+class Grp(dict): pass
+h={'s':{'data':DS(data),'starting_time':type('x',(),{'attrs':{'rate':1000.}})()}}
+rows=pd.DataFrame({'red':[(0,20,'s')],'grn':[(0,20,'s')]})
+for col in ['red','grn']:
+    tr,dt,n=zhai._site_trace(h,rows,col); print(col,'mean after bg subtraction',np.nanmean(tr),'(expected',300-(55 if col=='red' else 161),')')
+# 2. last-sweep variant
+sw=pd.DataFrame(dict(path='p',date='d',cell_type='iSPN',file_group='g',genotype='WT',cell=1,condition='c',
+  step_pA=[100.,100.,120.],start=[0.,1.,2.],n_spikes=[0,3,4]))
+print('first:',zhai.per_cell_somatic(sw).rheobase.tolist(),' last-variant:',zhai.per_cell_somatic(sw.sort_values('start',ascending=False)).rheobase.tolist())
+print(zhai.count_spikes(np.array([-70,10,10,-70,5,-70,1.])), zhai.count_spikes(np.array([5,-70,5.])))
 "
 ```
 
 ```
-sub-SubjectRecordedAt20160524000000/sub-SubjectRecordedAt20160524000000_ses-iSPN++OffState++none++WT++20160524.nwb 35110587
- variableMeasured: []
- measurementTechnique: []
- wasGeneratedBy: [('iSPN++OffState++none++WT++20160524', '"Dendritic spine density assessment in indirect pathway spiny projection neurons (iSPNs) for condition LID off-state iSPN. Two-photon laser scanning microscopy was used to acquire Z-stack images of dendritic segments at two locations: proximal (~40 μm from soma) and distal (>80 μm from soma). Animal'), ('Metadata generation', 'Metadata generated by DANDI cli')]
-sub-iSPN-confocal-mouse-3824/sub-iSPN-confocal-mouse-3824_ses-iSPN++CTRL++none++WT++20231022-Cell1-Slide2-Slice2.nwb 10446139
- variableMeasured: []
- measurementTechnique: []
- wasGeneratedBy: [('iSPN++CTRL++none++WT++20231022_Cell1_Slide2_Slice2', '"High-resolution confocal spine density imaging for methodological validation study. Nikon A1R confocal microscopy with 100x oil immersion objective (NA=1.4) and 405/488/561 nm laser excitation. Z-stack acquisition with 0.05 μm step size for superior spine detection compared to two-photon microscopy'), ('Metadata generation', 'Metadata generated by DANDI cli')]
-sub-iSPN-confocal-olympus-mouse-5104-3/sub-iSPN-confocal-olympus-mouse-5104-3_ses-iSPN++CTRL++none++WT++20260524.nwb 501013636
- variableMeasured: []
- measurementTechnique: []
- wasGeneratedBy: [('iSPN++CTRL++none++WT++20260524', '"High-resolution confocal spine density imaging using Olympus FV10i microscopy for methodological validation study. 100x oil immersion objective (NA=1.4) with multi-laser excitation for superior spine detection. Z-stack acquisition optimized for spine morphology analysis. Animal 5104-3 processed for'), ('Metadata generation', 'Metadata generated by DANDI cli')]
-sub-dSPN-mouse-dSPN++OffState++none++WT++20230706/sub-dSPN-mouse-dSPN++OffState++none++WT++20230706_ses-dSPN++OffState++none++WT++20230706_icephys+ogen.nwb 815147
- variableMeasured: ['VoltageClampSerie
-[... 5 more lines not kept]
-```
-
-**Agent**
-
-Archive check done: counts for Sr, GRAB and AIM files match the notebook, and the spine files carry no annotations. Now reading the paper's Methods.
-
-**Agent calls Bash**
-
-```bash
-cd  python3 - <<'E'
-import json
-d=json.load(open('paper/pmc.json'))[0]['documents'][0]
-out=[]
-for p in d['passages']:
-    t=p['infons'].get('section_type',''); ty=p['infons'].get('type','')
-    out.append(f"[{t}|{ty}] {p['text']}")
-open('paper/zhai2025_fulltext.txt','w').write('\n\n'.join(out))
-E
-wc -c paper/zhai2025_fulltext.txt; grep -n -i -E "G0/R0|Fmin|Fmax|TaroTools|five times|normaliz|AIM score|Mann-Whitney|rheobase was|background" paper/zhai2025_fulltext.txt | cut -c1-600
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n '179,205p' paper/zhai2025_fulltext.txt | cut -c1-3500; grep -n -E "Fig. 2, G|Fig. 4, F|P = 0.0133|0.0545|Fig. 5F|Fig. 1, F|P = 0.589" paper/zhai2025_fulltext.txt | cut -c1-200
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent**
-
-Methods checked: the GRAB Fmin rule and the 0 mV spike counting match the paper. Next, quick synthetic tests of the helper functions and one sensitivity check.
-
-**Agent calls Bash**
-
-```bash
-cd  python3 - <<'E' 2>&1 | grep -v Warning
-import numpy as np, pandas as pd
-try:
-    import lid
-except Exception as e:
-    print("import lid failed:", e)
-    import types, importlib.util, sys
-    src=open('lid.py').read().replace("import remfile","remfile=None").replace("from dandi.dandiapi import DandiAPIClient","DandiAPIClient=None")
-    lid=types.ModuleType('lid'); exec(src, lid.__dict__)
-# spike count
-v=np.full(10000,-80.); 
-for s in [2000,3000,4000]: v[s:s+10]=20
-print("spikes",lid._spike_count(v), "starts-above", lid._spike_count(np.r_[10.,v]))
-print("rheobase",lid.rheobase({-20:0,20:0,40:0,60:2,80:5}), lid.rheobase({20:0,40:0}), lid.rheobase({20:0,60:1}))
-# detect events
-rng=np.random.default_rng(0); rate=20000.; n=20000
-x=rng.normal(0,1.0,n)
-times=[0.1,0.15,0.2,0.3,0.39]
-for t in times:
-    k=int((0.02+t)*rate); x[k:k+200]-=20*np.exp(-np.arange(200)/(0.003*rate))
-e=lid.detect_events(x,rate,0.02); print("events",len(e), e.t.round(3).tolist(), e.amp.round(1).tolist(), "noise",round(e.attrs['noise'],2))
-# events outside window ignored
-y=rng.normal(0,1.0,n); y[int(0.5*rate):int(0.5*rate)+200]-=20; print("outside window:",len(lid.detect_events(y,rate,0.02)))
-# smoothing
-print(lid._smooth(np.arange(10.),3))
-# dendritic index
-s=pd.DataFrame({"cell":[1]*4,"condition":["c"]*4,"compartment":["Proximal","Distal","Proximal","Distal"],"site":[1,1,2,2],
- "G0":[100,100,100,300],"R0":[1000,1000,1000,1000],"area":[1.0,0.5,1.0,0.2]})
-print(lid.dendritic_index(s)[["pairs","pairs_kept","index"]].to_dict('records'))
-# dendritic_sites on synthetic data with step in green after 0.95 s
-rate=690.; N=2500; t=np.arange(N)/rate
-g=np.full(N,200.); g[(t>=1.0)&(t<1.2)]+=100; r=np.full(N,1055.)
-rec=lambda comp,ser: {"cell":1,"compartment":comp,"ch2_series":ser,"condition":"c","ch1":r,"ch2":g*(1 if comp=="Proximal" else 0.5)+ (161*0.5 if comp!="Proximal" else 0),"ch2_rate":rate,"spike_times":np.array([1.0])}
-day={"dendritic":[rec("Proximal","RoiProximal1")]*3+[rec("Distal","RoiDistal1")]*3}
-ds=lid.dendritic_sites(day); print(ds[["compartment","site","R0","G0","area"]]); print("expected prox area", 100*0.2/1000)
-E
-```
-
-```
+Exit code 1
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
+  File "<string>", line 2, in <module>
+    import zhai, numpy as np, pandas as pd
+  File "zhai.py", line 45, in <module>
+    import h5py
+ModuleNotFoundError: No module named 'h5py'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  mkdir -p $TMPDIR/stubs; for m in h5py remfile; do echo "" > $TMPDIR/stubs/$m.py; done; python3 -c "import requests, scipy" && PYTHONPATH=$TMPDIR/stubs python3 -c "
+import zhai, numpy as np, pandas as pd
+data=np.full(20,300.0)
+class DS:
+    def __init__(s,a): s.a=a
+    def __getitem__(s,k): return s.a[k]
+h={'s':{'data':DS(data),'starting_time':type('x',(),{'attrs':{'rate':1000.}})()}}
+rows=pd.DataFrame({'red':[(0,20,'s')],'grn':[(0,20,'s')]})
+for col in ['red','grn']:
+    tr,dt,n=zhai._site_trace(h,rows,col); print(col,'mean after bg subtraction',np.nanmean(tr),'(expected',300-(55 if col=='red' else 161),')')
+sw=pd.DataFrame(dict(path='p',date='d',cell_type='iSPN',file_group='g',genotype='WT',cell=1,condition='c',
+  step_pA=[100.,100.,120.],start=[0.,1.,2.],n_spikes=[0,3,4]))
+print('first:',zhai.per_cell_somatic(sw).rheobase.tolist(),' last-variant:',zhai.per_cell_somatic(sw.sort_values('start',ascending=False)).rheobase.tolist())
+print(zhai.count_spikes(np.array([-70,10,10,-70,5,-70,1.])), zhai.count_spikes(np.array([5,-70,5.])))
+# mixed anova check vs balanced split-plot
+rng=np.random.default_rng(0)
+df=pd.DataFrame([(s,'A' if s<5 else 'B',t,rng.normal()+ (s>=5)) for s in range(10) for t in range(4)],columns=['s','g','t','v'])
+print(zhai.mixed_anova_group(df,'s','g','t','v'))
+"
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import requests, scipy
+ModuleNotFoundError: No module named 'requests'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "import scipy, pandas, numpy; print('ok')"; echo "class Session:
+    pass" > $TMPDIR/stubs/requests.py; PYTHONPATH=$TMPDIR/stubs python3 -c "
+import zhai, numpy as np, pandas as pd
+data=np.full(20,300.0)
+class DS:
+    def __init__(s,a): s.a=a
+    def __getitem__(s,k): return s.a[k]
+h={'s':{'data':DS(data),'starting_time':type('x',(),{'attrs':{'rate':1000.}})()}}
+rows=pd.DataFrame({'red':[(0,20,'s')],'grn':[(0,20,'s')]})
+for col in ['red','grn']:
+    tr,dt,n=zhai._site_trace(h,rows,col); print(col,'mean after bg subtraction',np.nanmean(tr),'(expected',300-(55 if col=='red' else 161),')')
+sw=pd.DataFrame(dict(path='p',date='d',cell_type='iSPN',file_group='g',genotype='WT',cell=1,condition='c',
+  step_pA=[100.,100.,120.],start=[0.,1.,2.],n_spikes=[0,3,4]))
+print('first:',zhai.per_cell_somatic(sw).rheobase.tolist(),' last-variant:',zhai.per_cell_somatic(sw.sort_values('start',ascending=False)).rheobase.tolist())
+print(zhai.count_spikes(np.array([-70,10,10,-70,5,-70,1.])), zhai.count_spikes(np.array([5,-70,5.])))
+"
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import scipy, pandas, numpy; print('ok')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'scipy'
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+    import zhai, numpy as np, pandas as pd
+  File "zhai.py", line 46, in <module>
+    import numpy as np
 ModuleNotFoundError: No module named 'numpy'
 ```
 
+**Agent**
+
+Python lacks numpy here; trying a local install to test the helpers.
+
 **Agent calls Bash**
 
 ```bash
-cd  ls ~/.venv* /opt 2>/dev/null | head; which -a python3 python uv pip 2>/dev/null; (uv --version || pip --version) 2>&1
+cd $TMPDIR && (python3 -m pip install -q --target $TMPDIR/pylib numpy pandas scipy 2>&1 | tail -3); ls $TMPDIR/pylib 2>/dev/null | head
 ```
 
 ```
-/opt:
-actionarchivecache
-az
-containerd
-google
-hca
-hostedtoolcache
-microsoft
-pipx
-pipx_bin
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python3
-/usr/bin/python3
-/bin/python3
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python
-/opt/hostedtoolcache/Python/3.13.16/x64/python
-/usr/bin/python
-/bin/python
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/pip
-/usr/bin/pip
-[... 2 more lines not kept]
+bin
+dateutil
+numpy
+numpy-2.5.5.dist-info
+numpy.libs
+pandas
+pandas-3.1.1.dist-info
+python_dateutil-4.0.0.dist-info
+scipy
+scipy-1.18.1.dist-info
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  uv venv -q $TMPDIR/v && uv pip install -q --python $TMPDIR/v/bin/python numpy pandas scipy h5py 2>&1 | tail -2; $TMPDIR/v/bin/python -c "import numpy,scipy,pandas;print('ok')"
+cd  PYTHONPATH=$TMPDIR/stubs:$TMPDIR/pylib python3 -c "
+import zhai, numpy as np, pandas as pd
+data=np.full(20,300.0)
+class DS:
+    def __init__(s,a): s.a=a
+    def __getitem__(s,k): return s.a[k]
+h={'s':{'data':DS(data),'starting_time':type('x',(),{'attrs':{'rate':1000.}})()}}
+rows=pd.DataFrame({'red':[(0,20,'s')],'grn':[(0,20,'s')]})
+for col in ['red','grn']:
+    tr,dt,n=zhai._site_trace(h,rows,col); print(col,'mean after bg subtraction',np.nanmean(tr),'(expected',300-(55 if col=='red' else 161),')')
+sw=pd.DataFrame(dict(path='p',date='d',cell_type='iSPN',file_group='g',genotype='WT',cell=1,condition='c',
+  step_pA=[100.,100.,120.],start=[0.,1.,2.],n_spikes=[0,3,4]))
+print('first:',zhai.per_cell_somatic(sw).rheobase.tolist(),' last-variant:',zhai.per_cell_somatic(sw.sort_values('start',ascending=False)).rheobase.tolist())
+print(zhai.count_spikes(np.array([-70,10,10,-70,5,-70,1.])), zhai.count_spikes(np.array([5,-70,5.])))
+rng=np.random.default_rng(0)
+df=pd.DataFrame([(s,'A' if s<5 else 'B',t,rng.normal()+(s>=5)) for s in range(10) for t in range(4)],columns=['s','g','t','v'])
+r=zhai.mixed_anova_group(df,'s','g','t','v'); print(r)
+# manual split-plot
+gm=df.v.mean(); sm=df.groupby('s').v.mean(); gmn=df.groupby('g').v.mean()
+ssg=4*5*((gmn-gm)**2).sum(); sss=4*sum((sm[s]-gmn['A' if s<5 else 'B'])**2 for s in range(10)); print('manual F', ssg/(sss/8))
+# detector on synthetic: noise sd 1, events of 10 pA
+fs=10000; t=np.arange(int(1.0*fs))/fs; x=rng.normal(0,1,len(t))
+for k in [0.1,0.2,0.3]: 
+    i=int((0.02+k)*fs); x[i:i+100]-=10*np.exp(-np.arange(100)/30)
+a,sd=zhai.detect_events(x,fs,0.02); print('events',len(a),np.round(a,1),'sd',round(sd,2))
+"
 ```
 
 ```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd  $TMPDIR/v/bin/python - <<'E' 2>&1 | grep -v Warning
-import numpy as np, pandas as pd, types
-src=open('lid.py').read().replace("import remfile","remfile=None").replace("from dandi.dandiapi import DandiAPIClient","DandiAPIClient=None")
-lid=types.ModuleType('lid'); exec(src, lid.__dict__)
-v=np.full(10000,-80.)
-for s in [2000,3000,4000]: v[s:s+10]=20
-print("spikes",lid._spike_count(v), "starts-above", lid._spike_count(np.r_[10.,v]))
-print("rheobase",lid.rheobase({-20:0,20:0,40:0,60:2,80:5}), lid.rheobase({20:0,40:0}), lid.rheobase({20:0,60:1}))
-rng=np.random.default_rng(0); rate=20000.; n=20000
-x=rng.normal(0,1.0,n)
-for t in [0.1,0.15,0.2,0.3,0.39]:
-    k=int((0.02+t)*rate); x[k:k+200]-=20*np.exp(-np.arange(200)/(0.003*rate))
-e=lid.detect_events(x,rate,0.02); print("events",len(e), e.t.round(3).tolist(), e.amp.round(1).tolist(), "noise",round(e.attrs['noise'],2))
-# 10 kHz with noise 2 pA and 10 pA events
-x=rng.normal(0,2.0,10000); 
-for t in [0.1,0.2,0.3]:
-    k=int((0.02+t)*10000); x[k:k+100]-=10*np.exp(-np.arange(100)/(0.003*10000))
-e=lid.detect_events(x,10000.,0.02); print("10pA events at 2pA noise, 10kHz:",len(e), e.amp.round(1).tolist(), round(e.attrs['noise'],2))
-y=rng.normal(0,1.0,n); y[int(0.5*rate):int(0.5*rate)+200]-=20; print("outside window:",len(lid.detect_events(y,rate,0.02)))
-s=pd.DataFrame({"cell":[1]*4,"condition":["c"]*4,"compartment":["Proximal","Distal","Proximal","Distal"],"site":[1,1,2,2],
- "G0":[100,100,100,300],"R0":[1000,1000,1000,1000],"area":[1.0,0.5,1.0,0.2]})
-print(lid.dendritic_index(s)[["pairs","pairs_kept","index"]].to_dict('records'), "(expect pair2 dropped, index 0.5)")
-rate=690.; N=2500; t=np.arange(N)/rate
-g=np.full(N,361.); g[(t>=1.0)&(t<1.2)]+=100; r=np.full(N,1055.)
-def rec(comp,ser,scale): return {"cell":1,"compartment":comp,"ch2_series":ser,"condition":"c","ch1":r,"ch2":(g-161)*scale+161,"ch2_rate":rate,"spike_times":np.array([1.0])}
-day={"dendritic":[rec("Proximal","RoiProximal1",1)]*3+[rec("Distal","RoiDistal1",0.5)]*3}
-ds=lid.dendritic_sites(day); print(ds[["compartment","site","R0","G0","area"]].round(4).to_string()); print("expected prox area", 100*0.2/1000, "distal", 50*0.2/1000)
-print(lid.dendritic_index(ds)[["index"]].round(3).to_dict('records'))
-# GRAB synthetic
-rate=5.009; N=int(20*rate); tt=np.arange(N)/rate
-def trace(stim, amp): x=np.full(N,362.); x[(tt>=stim)&(tt<stim+2)]+=amp; return x
-m={"trials":[]}
-for rep in (1,2):
-    m["trials"].append({"treatment":"control","stimulation":"single_pulse","stim":10.,"series_start":0.,"rate":rate,"trace":trace(10.,50)})
-    m["trials"].append({"treatment":"quinpirole","stimulation":"single_pulse","stim":10.,"series_start":0.,"rate":rate,"trace":trace(10.,10)-20})
-    m["trials"].append({"treatment":"acetylcholine_calibration","stimulation":"none","stim":0,"series_start":0.,"rate":rate,"trace":np.full(N,662.)})
-    m["trials"].append({"treatment":"TTX_calibration","stimulation":"none","stim":0,"series_start":0.,"rate":rate,"trace":np.full(N,352.)})
-gm=lid.grab_measures(m); print(gm[["treatment","F0","Fmax","Fmin","auc_norm"]].round(4).to_string())
-print("expected control auc ~", 50*2/(500-180), "(Fmin = quinpirole baseline 180 < TTX 190)")
-E
-```
-
-```
-spikes 3 starts-above 4
-rheobase 60.0 nan 60.0
-events 5 [0.1, 0.15, 0.2, 0.3, 0.39] [19.3, 19.1, 18.8, 19.0, 18.7] noise 0.29
-10pA events at 2pA noise, 10kHz: 3 [10.1, 9.5, 8.8] 0.86
-outside window: 0
-[{'pairs': 2, 'pairs_kept': 1, 'index': 0.5}] (expect pair2 dropped, index 0.5)
-  compartment  site      R0     G0  area
-0    Proximal     1  1000.0  200.0  0.02
-1      Distal     1  1000.0  100.0  0.01
-expected prox area 0.02 distal 0.01
-[{'index': 0.5}]
-    treatment     F0   Fmax   Fmin  auc_norm
-0     control  200.0  500.0  180.0    0.2807
-1  quinpirole  180.0  500.0  180.0    0.0561
-expected control auc ~ 0.3125 (Fmin = quinpirole baseline 180 < TTX 190)
+red mean after bg subtraction 139.0 (expected 245 )
+grn mean after bg subtraction 139.0 (expected 139 )
+first: [120.0]  last-variant: [120.0]
+3 2
+{'F': 13.891471488509483, 'p': 0.005811652941045514, 'df1': 1, 'df2': 8, 'n': 10, 'n_sessions': 4}
+manual F 13.891471488509485
+events 3 [8.9 8.3 8.8] sd 1.02
 ```
 
 **Agent calls Bash**
 
 ```bash
-$TMPDIR/v/bin/python - <<'E'
-from scipy import stats
-on=[0.374,0.393,0.42,0.424,0.475,0.477,0.547,0.61,0.617,0.725]
-sch=[0.22,0.289,0.303,0.349,0.419,0.42,0.431,0.494,0.584]
-print(stats.mannwhitneyu(on,sch).pvalue)
-for i,v in enumerate(sch):
-    s=list(sch); s[i]=v/2.559
-    print(v, round(v/2.559,3), round(stats.mannwhitneyu(on,s).pvalue,4))
-# iSPN on vs sul
-print(stats.mannwhitneyu([0.234,0.252,0.295,0.339,0.34,0.398,0.418,0.475,0.644],[0.389,0.43,0.488,0.506,0.521,0.703,0.852]).pvalue)
-E
+cd $TMPDIR; python3 - <<'EOF'
+import json, urllib.request, collections, re
+API="https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858"
+def get(u): return json.load(urllib.request.urlopen(u, timeout=120))
+rows=[]; u=API+"/assets/?page_size=1000"
+while u:
+    j=get(u); rows+=j["results"]; u=j["next"]
+print(len(rows))
+nwb=[r for r in rows if r["path"].endswith(".nwb")]
+spine=[r for r in nwb if re.search(r"_ses-[di]SPN\+\+[^_]*\.nwb$", r["path"])]
+print("spine-like files", len(spine)); print(spine[0]["path"], spine[0]["size"])
+print(collections.Counter(r["path"].split("++")[1] for r in spine))
+print([r["path"] for r in rows if re.search("(?i)confocal|imaris|spine|count", r["path"])][:5])
+md=get(f"https://api.dandiarchive.org/api/assets/{spine[0]['asset_id']}/")
+print(json.dumps(md.get("variableMeasured"),indent=0)[:800]); print(md.get("measurementTechnique")); print(md.get("description","")[:500])
+ds=get(API+"/")
+print(ds.get("description","")[:3000])
+EOF
 ```
 
 ```
-0.060276405363316556
-0.22 0.086 0.0603
-0.289 0.113 0.0603
-0.303 0.118 0.0603
-0.349 0.136 0.0603
-0.419 0.164 0.0411
-0.42 0.164 0.0373
-0.431 0.168 0.0274
-0.494 0.193 0.0178
-0.584 0.228 0.0143
-0.016433566433566436
-```
+1288
+spine-like files 93
+sub-Subject20151123CONTeGFP/sub-Subject20151123CONTeGFP_ses-iSPN++UnlesionedControl++none++WT++20151123.nwb 18504444
+Counter({'OffState': 37, 'OnState': 21, 'UnlesionedControl': 20, 'LesionedControl': 15})
+[]
+[]
+[]
 
-**Agent calls Bash**
+This Dandiset contains raw and primary-processed data underlying the study “State-dependent modulation of striatal spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of Parkinson’s disease”.
+The collection spans multimodal recordings from adult C57BL/6J mice rendered hemiparkinsonian with a unilateral 6-hydroxydopamine (6-OHDA) lesion of the medial forebrain bundle, followed by chronic levodopa dosing to provoke on-/off-state dyskinesia.
 
-```bash
-$TMPDIR/v/bin/python - <<'E'
-from scipy import stats
-sets={
-"fig1i on vs off":([0.139,0.265,0.293,0.317,0.332,0.373,0.401,0.451,0.468,0.475],[0.374,0.393,0.42,0.424,0.475,0.477,0.547,0.61,0.617,0.725]),
-"fig1i on vs SCH":([0.374,0.393,0.42,0.424,0.475,0.477,0.547,0.61,0.617,0.725],[0.22,0.289,0.303,0.349,0.419,0.42,0.431,0.494,0.584]),
-"fig3f off vs on":([0.388,0.396,0.462,0.488,0.504,0.543,0.623,0.731,0.763,1.062],[0.234,0.252,0.295,0.339,0.34,0.398,0.418,0.475,0.644]),
-"fig3f on vs sul":([0.234,0.252,0.295,0.339,0.34,0.398,0.418,0.475,0.644],[0.389,0.43,0.488,0.506,0.521,0.703,0.852]),
-"fig6d":([0.23,0.361,0.421,0.435,0.451,0.462,0.49,0.531,0.655],[0.168,0.183,0.194,0.269,0.319,0.366,0.465]),
-"fig7f":([0.176,0.299,0.303,0.309,0.312,0.383,0.433,0.451,0.562,0.589],[0.205,0.212,0.279,0.284,0.288,0.314,0.5,0.661]),
-}
-for k,(a,b) in sets.items():
-    print(k, round(stats.mannwhitneyu(a,b).pvalue,4), round(stats.mannwhitneyu(a,b,method='exact').pvalue,4))
-E
-```
+Not included: some data analyzed in the paper are not part of this Dandiset. Figure numbers refer to the published article in Science Advances.
+1. Somatic and dendritic patch-clamp recordings from unlesioned control and 6-OHDA-lesioned mice (Figures 1E, 1F, 1I, 3C, 3D and 3F). The excitability data here cover the levodopa off-state, on-state and on-state with antagonist groups.
+2. Open-field data (Figure 10).
+3. The first pair of dendritic recording sites of the dSPN recorded on 2019-04-11 (cell 1, on-state with SCH23390, Figure 1I). Only its second pair is available.
+4. Detector background images for the GRAB-ACh3.0 imaging (Figure 5). The paper subtracts a background measured at the same photomultiplier tube voltage with zero laser power. These images were not shared.
+5. One of the 12 off-state regions that the lab's analysis tables count for burst stimulation in the GRAB-ACh3.0 experiments (fig. S1). The other 11 are included.
+6. The 80 min video of the first levodopa session of mouse 1590 (Figure 8), on 2018-02-23. The lab's file for it is a copy of the mouse's 20 min video of its second session.
+7. Five of the 23 mice of Figure 8: wild type 7741, 7742 and 7744, and CDGI knockout 2346 and 2347.
 
-```
-fig1i on vs off 0.0081 0.0068
-fig1i on vs SCH 0.0603 0.0653
-fig3f off vs on 0.0128 0.0101
-fig3f on vs sul 0.0164 0.0164
-fig6d 0.0229 0.0229
-fig7f 0.3154 0.3154
+[... 5 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -c "^- id:" 10.1126-sciadv.adv8224.yaml; grep "^- id:" 10.1126-sciadv.adv8224.yaml | wc -l
+cd $TMPDIR; python3 - <<'EOF'
+import json, urllib.request
+def get(u): return json.load(urllib.request.urlopen(u, timeout=120))
+ds=get("https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858/")
+print(ds.get("description","")[3000:])
+r=get("https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858/assets/?path=sub-Subject20151123CONTeGFP/&page_size=50")
+a=r["results"][0]
+md=get(f"https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858/assets/{a['asset_id']}/")
+print({k:md.get(k) for k in ["variableMeasured","measurementTechnique","approach"]})
+EOF
 ```
 
 ```
-45
-45
+ich sweeps the paper used. Two GRAB-ACh3.0 regions lack a calibration trial: 2024-04-02 Slice1Roi2 has no acetylcholine trial for the maximum fluorescence, and 2024-05-24 Slice1Roi1 has no tetrodotoxin trial for the minimum. The abnormal involuntary movement (AIM) scores of the CDGI mice are the lab's scoring sheets for 21 mice, which match the preprint. The published Figure 8 differs from them in most sessions and does not include mice 5871, 4123 and 4124. The scores of Figure 10 match the paper.
+{'variableMeasured': [], 'measurementTechnique': [], 'approach': []}
+Shell cwd was reset to
 ```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python3 - <<'EOF'
+import json, urllib.request, collections, re
+def get(u): return json.load(urllib.request.urlopen(u, timeout=120))
+rows=[]; u="https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858/assets/?page_size=1000"
+while u:
+    j=get(u); rows+=j["results"]; u=j["next"]
+sp=[r["path"] for r in rows if re.search(r"_ses-[di]SPN\+\+[^_]*\.nwb$", r["path"])]
+print(collections.Counter(tuple(p.split("_ses-")[1].split("++")[:4]) for p in sp))
+print(sorted(r["size"] for r in rows if r["path"] in sp)[::10])
+EOF
+```
+
+```
+Counter({('iSPN', 'OffState', 'none', 'WT'): 15, ('iSPN', 'UnlesionedControl', 'none', 'WT'): 14, ('iSPN', 'LesionedControl', 'none', 'WT'): 10, ('iSPN', 'OnState', 'none', 'WT'): 9, ('dSPN', 'OnState', 'none', 'WT'): 9, ('dSPN', 'OffState', 'none', 'WT'): 8, ('iSPN', 'OffState', 'none', 'CDGIKO'): 6, ('dSPN', 'UnlesionedControl', 'none', 'WT'): 6, ('dSPN', 'LesionedControl', 'none', 'WT'): 5, ('iSPN', 'OffState', 'M1RaThp', 'WT'): 5, ('iSPN', 'OnState', 'none', 'CDGIKO'): 3, ('iSPN', 'OffState', 'none', 'iSPN-M1RKO'): 3})
+[7022348, 18504444, 31061808, 42483887, 49671673, 54357941, 59604828, 65100493, 71549709, 119172761]
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i "(H)[^.]*\.[^.]*\.[^.]*" paper/*.txt | grep -i "KO\|CDGI" | head -5; grep -o -i "Fig. 7[^)]*)[^.]*0\.613[^.]*\." paper/*.txt | head; grep -o -i ".\{300\}0\.613.\{100\}" paper/*.txt | head -3
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i ".\{200\}\(sweeps\|TaroTools\|40 to 400\|40-400\).\{200\}" paper/*.txt | head -5
+```
+
+Result: not kept, because it reads the paper's text.
 
 **Agent**
 
-I made my own call on all 45 claims in the claims file: 24 reproduced, 2 partially reproduced, 4 not reproduced and 15 blocked. Two of the notebook's dendritic tests come out against the paper, and in both cases the index computation may be the cause rather than the data.
-
-**A. Outcomes**
+**A. Outcomes** (45 claims in the claims file: 5 links and 40 findings; the notebook treats 6 as blocked)
 
 | Claim | Outcome | Reason |
 |---|---|---|
-| link-somatic-cells | partially_reproduced | All 12 groups have the paper's n, but only 73.2% of cells match exactly (80% needed) and 85.4% match within 3 spikes (95% needed). Cell 19. |
-| link-dendritic-cells | reproduced | Cell counts equal the paper's n in 7 of 10 groups, and the median relative difference is 0.040 (Spearman 0.91). Two cells are far off (1.559 in dSPN on+SCH, 1.014 in iSPN off). Cell 21. |
-| link-sr-cells | partially_reproduced | All 14 cells match a paper identifier, but only 2 of 14 are within 25% on both event count and amplitude. Cell 23. |
-| link-grab-rois | not_reproduced | The dandiset holds part of the regions (3/13, 3/10, 5/11). Only 5 of 11 mice match within 0.05 on every treatment, short of half. Cell 25. |
-| link-aim-mice | not_reproduced | 7 of 9 mice are in the paper, but only 15 of 35 matched session totals are equal. All five Fig. 8 mice differ; the two Fig. 10 mice agree exactly. Cell 27. |
-| fig1f-dspn-rheobase-on-lower | reproduced | P = 8.9e-6; medians 140 (on) vs 220 (off). Cell 30. |
-| fig1e-dspn-fi-on-higher | reproduced | P = 8.8e-5, on-state higher (88 vs 36); same with complete cells only. Cell 32. |
-| fig1f-dspn-sch-no-change | reproduced | P = 1.0; the paired Wilcoxon (n = 5) also gives P = 1.0. Cell 34. |
-| fig1i-dspn-dendritic-on-higher | reproduced | P = 0.0091, on-state higher; holds in all variants. Cell 36. |
-| fig1i-dspn-dendritic-sch-lower | not_reproduced | P = 0.066 (paper 0.0133). The SCH median is 0.419 against the paper's 0.338; one SCH cell differs 2.6-fold from the paper and may drive this (B1). Cell 38. |
-| fig3d-ispn-rheobase-on-higher | reproduced | P = 0.00083; medians 160 vs 120. Cell 41. |
-| fig3c-ispn-fi-on-lower | reproduced | P = 7.2e-5, on-state lower. Cell 43. |
-| fig3d-ispn-sul-no-change | reproduced | P = 0.143. Weak: medians 160 vs 120, only 2 paired cells. Cell 45. |
-| fig3f-ispn-dendritic-on-lower | reproduced | P = 0.0128, on-state lower. Fragile: the 0.8–1.25 basal-ratio variant gives P = 0.077. Cell 47. |
-| fig3f-ispn-dendritic-sul-no-change | not_reproduced | P = 0.0164 (paper 0.0545), sulpiride higher (0.506 vs 0.340). n is 9 and 7, against the paper's 10 and 8. Cell 49. |
-| fig5f-ach-off-elevated | reproduced | P = 0.0357, the smallest P possible for 3 against 5, with off-state higher. The unnormalised dF/F0 variant gives P = 0.25. Cell 52. |
-| fig5f-ach-off-like-6ohda | reproduced | P = 0.143; little power with 3 against 5. Cell 54. |
-| fig6c-m1r-antag-somatic-unchanged | reproduced | P = 0.681 (sum of spikes, P = 0.45). Cell 57. |
-| fig6d-m1r-antag-dendritic-lower | reproduced | P = 0.0229, antagonist lower. Cell 59. |
-| fig7c-cdgi-ko-somatic-oscillation | reproduced | P = 0.00104, on-state higher (210 vs 140). Cell 61. |
-| fig7f-cdgi-ko-dendritic-unchanged | reproduced | P = 0.315. KO off has n = 10 against the paper's 11. Cell 63. |
-| fig9d-m1r-crispr-somatic-unchanged | reproduced | P = 0.147; the control group is 6 cells from 2 mice. Cell 65. |
-| fig1-dspn-lesion-and-off-somatic | reproduced | Paper's table: P = 0.0003 (lower after lesion) and 9.5e-5 (higher in off-state). Cell 68. |
-| fig1-dspn-lesion-dendritic-unchanged | reproduced | P = 0.82 and 0.90 (paper 0.824 and 0.905). Cell 70. |
-| fig3-ispn-lesion-and-off-somatic | reproduced | P = 0.0004 and 0.0006, both in the stated direction (paper gives 0.002). Cell 72. |
-| fig3-ispn-lesion-dendritic-up | reproduced | P = 0.035 and 0.024, later group higher. Cell 74. |
-| fig7e-oxom-cdgi | reproduced | WT P = 0.0098, oxo-M higher; KO P = 0.47. The paper reports 0.910 for KO (B13). Cell 76. |
-| fig8a-cdgi-rotations | reproduced | P = 0.012, KO higher (paper 0.0092). Cell 78. |
-| fig10a-m1r-rotations | reproduced | P = 0.0078, deletion higher. Cell 80. |
-| fig10ef-open-field | reproduced | Distance and time mobile both meet the criterion: control vs MCI-Park P = 1e-5 / 7e-6; levodopa vs levodopa with deletion P = 0.0003 / 0.0006; MCI-Park vs deletion alone P = 0.63 / 0.47. Cell 82. |
-| fig2h-dspn-sr-amplitude-on-larger | blocked (other) | Archive has 3 off and 4 on cells, so the smallest P is 0.057. Both the detector and the paper's per-cell values put on above off at that floor. |
-| fig2i-dspn-sr-frequency-unchanged | blocked (other) | Same 3 against 4; P = 0.229 says nothing for an absence claim. |
-| fig4g-ispn-sr-amplitude-on-smaller | blocked (other) | 3 against 4. The paper's per-cell values put off above on (P = 0.057), but the detector does not (P = 0.229). |
-| fig4h-ispn-sr-frequency-unchanged | blocked (other) | 3 against 4; P = 0.114. |
-| fig2bc-dspn-spines | blocked (methods_underspecified) | Raw 2PLSM stacks only. Counting needs AutoQuant deconvolution and semi-automated NeuronStudio counting. |
-| fig4bc-ispn-spines | blocked (data_missing, methods_underspecified) | No 2PLSM stacks from control or 6-OHDA mice; only off/on and manipulation sessions. Counting method as above. |
-| fig4k-confocal-spines | blocked (methods_underspecified) | Confocal stacks only (CTRL 3+1, PD 3, OFF 3, ON 2 files). Counting used Imaris with supervised learning and manual correction. |
-| fig6f-m1r-antag-spines | blocked (methods_underspecified) | Raw stacks only. |
-| fig7h-cdgi-ko-spines | blocked (methods_underspecified) | Raw stacks only. |
-| fig9f-m1r-crispr-spines | blocked (methods_underspecified) | Raw stacks only. |
-| fig5f-ach-6ohda-elevated | blocked (other) | 3 against 3, smallest P 0.10. All 3 lesioned values (0.18–0.27) are above all 3 controls (0.09–0.11). |
-| fig5f-ach-d2-control | blocked (other) | 3 pairs, smallest P 0.25. Direction holds in 3 of 3 for both drugs. |
-| fig5f-ach-da-suppresses | blocked (other) | 3 lesioned pairs and 5 off-state pairs (smallest P 0.0625). Dopamine is lower than no drug in 8 of 8. |
-| fig8bc-cdgi-aims | blocked (other) | Only 1 wild-type mouse by the paper's labels (2587). Dandiset genotype labels contradict each other, and the link fails. |
-| fig10b-m1r-aims | blocked (other) | One mouse per group. |
-
-The paper states no chance level for any selection, and the notebook has none.
+| link-somatic-cells | partially_reproduced | All 12 groups have the paper's n. 90/123 cells (73.2%) match exactly, under the 80% bar, and 105/123 (85.4%) are within 3 spikes, under the 95% bar (cell 11). |
+| link-dendritic-cells | reproduced (provisional) | 10/10 groups have the paper's n and the median relative difference is 0.027 (cell 32). This is provisional because of the background bug in problem 1. |
+| link-sr-cells | partially_reproduced | All 33 cells match a paper identifier. Only 21/33 (64%) are within 25% on both amplitude and count, under the 75% bar (cell 47). |
+| link-grab-rois | not_reproduced | Region counts equal the paper's (13/10/11), but only 16/34 regions match within 0.05 on every treatment (under half), and 11 paper regions are matched more than once (cell 58). Grouped by mouse (date), only 1 of 11 mice matches. |
+| link-aim-mice | not_reproduced | Figure 8: 12 of 90 matched session totals are equal, 3 dandiset mice are not in the paper and 5 paper mice are missing. Figure 10: 103/105 equal (cell 71). The dandiset description says the Figure 8 sheets match the preprint, not the published figure. |
+| fig1f-dspn-rheobase-on-lower | reproduced | P=8.9e-6, on-state median 140 against off-state 220 (cell 14). |
+| fig1e-dspn-fi-on-higher | reproduced | P=8.8e-5, on-state higher (cell 16). |
+| fig1f-dspn-sch-no-change | reproduced | P=1 (cell 18). |
+| fig1i-dspn-dendritic-on-higher | reproduced | P=0.0091, on-state higher (cell 35). |
+| fig1i-dspn-dendritic-sch-lower | not_reproduced | P=0.079 (cell 37). The cell of 2019-04-11 lacks the pair the paper used (dandiset description, item 3). Excluding it gives P=0.034, but that is not a reading the paper allows. The background bug could change this outcome. |
+| fig1-dspn-lesion-and-off-somatic | reproduced | On the paper's table, P=0.0003 and 9.5e-5, both in the stated direction (cell 79). |
+| fig1-dspn-lesion-dendritic-unchanged | reproduced | P=0.82 and 0.90 (cell 81). |
+| fig2h-dspn-sr-amplitude-on-larger | reproduced | P=0.0062, on-state larger, robust across variants (cell 50). |
+| fig2i-dspn-sr-frequency-unchanged | reproduced | P=0.0999, all variants ≥0.05 (cell 52). |
+| fig2bc-dspn-spines | blocked (other) | Raw z-stacks only. Spine counting needs AutoQuant deconvolution and semi-manual NeuronStudio. |
+| fig3d-ispn-rheobase-on-higher | reproduced | P=0.00083, on-state higher (cell 20). |
+| fig3c-ispn-fi-on-lower | reproduced | P=7.2e-5, on-state lower (cell 22). |
+| fig3d-ispn-sul-no-change | reproduced | P=0.143 (cell 24). |
+| fig3f-ispn-dendritic-on-lower | reproduced | P=0.0058 (cell 39). |
+| fig3f-ispn-dendritic-sul-no-change | reproduced (fragile) | P=0.05453, right at the threshold (cell 41). The background bug could flip it. |
+| fig3-ispn-lesion-and-off-somatic | reproduced | P=0.0004 and 0.0006 on the paper's table (cell 83). |
+| fig3-ispn-lesion-dendritic-up | reproduced | P=0.035 and 0.024, later group higher (cell 85). |
+| fig4g-ispn-sr-amplitude-on-smaller | reproduced | P=0.0093, on-state smaller, robust across variants (cell 54). |
+| fig4h-ispn-sr-frequency-unchanged | partially_reproduced | With all sweeps P=0.064. With the first 10 sweeps, the count the paper's frequencies imply, P=0.049 (cell 56). The outcome depends on a choice the paper leaves open. |
+| fig4bc-ispn-spines | blocked (other) | Same as fig2bc. |
+| fig4k-confocal-spines | blocked (data_missing) | No confocal files in the archive. They are in Zenodo 17260198, and counting used Imaris. |
+| fig5f-ach-off-elevated | reproduced | P=5e-5, off-state higher, all variants agree (cell 61). |
+| fig5f-ach-off-like-6ohda | reproduced | P=0.245; variants 0.22 to 0.79 (cell 63). |
+| fig5f-ach-6ohda-elevated | reproduced | P=0.00022 (cell 65). |
+| fig5f-ach-d2-control | reproduced | Wilcoxon: sulpiride raises 13/13 and quinpirole lowers 13/13 regions, P=0.00024 each (cell 67). |
+| fig5f-ach-da-suppresses | reproduced | Dopamine P=0.002 and 0.00098, lowering every region; sulpiride after the lesion P=0.92 (cell 69). |
+| fig6c-m1r-antag-somatic-unchanged | reproduced | P=0.68 (cell 26). |
+| fig6d-m1r-antag-dendritic-lower | reproduced | P=0.016, antagonist lower (cell 43). |
+| fig6f-m1r-antag-spines | blocked (other) | Same as fig2bc. |
+| fig7c-cdgi-ko-somatic-oscillation | reproduced | P=0.001, on-state higher (cell 28). |
+| fig7e-oxom-cdgi | reproduced | On the paper's table, wild type P=0.0098 with oxo-M higher, KO P=0.47 (the paper reports 0.91) (cell 87). |
+| fig7f-cdgi-ko-dendritic-unchanged | reproduced | KO P=0.27 (cell 45). |
+| fig7h-cdgi-ko-spines | blocked (other) | Same as fig2bc. |
+| fig8a-cdgi-rotations | reproduced | P=0.012, KO higher (cell 89). |
+| fig8bc-cdgi-aims | reproduced, with caveat | All four group effects P<0.05 with KO lower. Axial is much weaker than in the paper (F=6.87 against 19.91). These are the preprint score sheets, and link-aim-mice fails (cell 73). |
+| fig9d-m1r-crispr-somatic-unchanged | reproduced | P=0.147 (cell 30). |
+| fig9f-m1r-crispr-spines | blocked (other) | Same as fig2bc. |
+| fig10a-m1r-rotations | reproduced | P=0.0078 (cell 91). |
+| fig10b-m1r-aims | reproduced | F(1,19) = 28.7, 13.8, 41.4 and 44.6, all P<0.002. The last three equal the paper's (cell 75). |
+| fig10ef-open-field | reproduced | All six tests in the stated direction (cell 93). |
 
 **B. Problems**
 
-1. [affects a conclusion] `cell_index` / `lid.dendritic_index`, cells 21 and 38: one dSPN on+SCH cell's index differs 2.6-fold from the paper's value, but the notebook prints only the group maximum, not which cell.
-   - I replaced each SCH value in turn with value/2.559 (the paper's value implied by that difference, if ours is the high one). For any of the top five SCH values, P falls to 0.014–0.041.
-   - So fig1i-dspn-dendritic-sch-lower may fail because of one computed index, not because of the data.
-2. [affects a conclusion] `lid.dendritic_index`, cell 21: the main basal-ratio rule (0.5–2) drops 0 of 162 pairs, so the paper's rule of keeping only pairs with similar G0/R0 is never applied. The stricter 0.8–1.25 variant changes the results:
-   - fig3f-ispn-dendritic-on-lower goes to P = 0.077;
-   - fig1i SCH goes to P = 0.52;
-   - fig3f sulpiride goes to P = 0.066.
-3. [affects a conclusion] `lid.dendritic_index`: proximal and distal sites are paired only by number. Three cells get no index (iSPN on, iSPN on+sul and KO off are each one short of the paper's n). That bears on fig3f-ispn-dendritic-sul-no-change, where P is 0.016 here against 0.0545 in the paper.
-4. [does not affect a conclusion] Cell 21: matching dendritic cells to the paper's rows by order is assumed, and the notebook never checks that the somatic best-match rows follow date order. The two large differences (1.559, 1.014) could be misaligned rows.
-5. [does not affect a conclusion] Cells 19 and 25: best matches are not one-to-one.
-   - Somatic: dSPN off row 23 is used twice, dSPN on row 39 three times and row 44 twice.
-   - GRAB: off-state ROI 29 is used twice.
-   - This can only inflate the match counts, and the outcomes are already partial or not reproduced.
-6. [does not affect a conclusion] `fi_sum`, cell 32, and `lid.rheobase`: 18 cells are missing a step.
-   - In the spike sum a missing step adds nothing, which lowers that cell's total.
-   - Rheobase skips missing steps and can come out 20 pA high, e.g. dSPN off 20161116 cell 3 (no 80 pA step) and the Fig. 6 vehicle cells missing 100 or 120 pA.
-   - The complete-cell variants agree, and the margins are large.
-7. [does not affect a conclusion] `lid.load_patch` keeps the first of a repeated step (14 cells). Nothing checks this against the paper's script.
-8. [does not affect a conclusion] Cells 34 and 45: the on-state and on+drug groups share cells (5 dSPNs, 2 iSPNs), so the unpaired Mann-Whitney samples are not independent. The criterion follows the paper here. The absence claims (fig3d sulpiride, fig5f off-like-6-OHDA, fig9d) pass with little power.
-9. [does not affect a conclusion] `mw`: scipy's asymptotic test is used for n > 8, while Prism is exact. I recomputed exact P on the printed values; no outcome changes (fig1i SCH 0.065, fig3f off/on 0.010).
-10. [does not affect a conclusion] `lid.detect_events`, cell 23: the detector works on synthetic events (5 of 5 and 3 of 3 found, amplitudes right), but on real cells it finds far fewer events than the paper (20230405b: 2 against 73).
-    - The 25% criterion compares against the mean of the paper's histogram events, not the paper's per-cell amplitude. These differ (11.13 vs 12.37).
-    - This affects only link-sr-cells, since the Sr claims are blocked.
-11. [does not affect a conclusion] Cells 11–12, GRAB:
-    - six files put the stimulus at 3 s, against the Methods' "10-s baseline";
-    - the background reference images have a mean above the signal itself, so they cannot be PMT background.
-    - The normalised area does not depend on a constant background (confirmed on a synthetic case). The Fmin rule (TTX or quinpirole baseline, whichever is smaller) matches the Methods.
-12. [does not affect a conclusion] Cell 13: the AIM genotype labels contradict each other within an animal and across files. The notebook reports this correctly.
-13. [does not affect a conclusion] Cell 76: the KO Wilcoxon on the paper's own table gives P = 0.47, but the paper reports 0.910. The pivot on `expt` may pair the wrong rows. The criterion is met either way.
+1. **[affects a conclusion]** `zhai._site_trace` subtracts the wrong background from the red channel. It picks the background with `"Alexa" in col`, but `col` is always `"red"` or `"grn"`, so 161 is subtracted from red instead of 55. I confirmed this on a synthetic trace: a red value of 300 came out as 139, where 245 was expected. This changes R0, the index and the basal ratio for every dendritic cell. That touches link-dendritic-cells and the two outcomes near the threshold: fig1i-dspn-dendritic-sch-lower (P=0.079) and fig3f-ispn-dendritic-sul-no-change (P=0.0545).
+2. **[affects a conclusion]** In cells 11, 14 and 20, the "last sweep of a repeated step" variant is a no-op. `per_cell_somatic` re-sorts by `start` in ascending order, so the descending input is undone. On a synthetic cell the "last sweep" result came out the same as the first-sweep one (120 both times), and the notebook's variant outputs are identical to the main ones. So the first-sweep assumption, which touches 14 of 123 cells, was never varied. That leaves the somatic link and the rheobase claims of absence (P of 0.14 to 0.15) untested against it.
+3. **[affects a conclusion]** fig4h, cells 47 and 56: the main analysis uses all sweeps, although the paper's frequencies (and the dandiset description) imply 10 sweeps per cell. Only "first 10" was tried, not "last 10", and the outcome flips between readings.
+4. **[affects a conclusion]** fig1i-dspn-dendritic-sch-lower, cells 33 and 37: the dandiset does not hold the 2019-04-11 pair behind the paper's value of 0.228 for that cell. The exclusion variant is informative but is not a reading the paper allows. The data as deposited give not_reproduced.
+5. **[does not affect a conclusion]** `somatic_link`, cell 11: the code assumes row j of the rheobase sheet is the same cell as row j of the F-I sheet, and never checks this. Best matches are not one-to-one, and how many paper rows are reused is not reported.
+6. **[does not affect a conclusion]** `grab_link`, cell 58: matching is done per region, not per mouse as the criterion says, and is not one-to-one (11 paper regions are reused). A one-to-one assignment could only lower agreement, so not_reproduced stands.
+7. **[does not affect a conclusion]** `grab_areas` and cell 59: the dandiset description says 2024-04-02 Slice1Roi2 has no acetylcholine trial, but the notebook finds two (4.4 s and 1.2 s) and computes Fmax from them. This is not reconciled. Separately, trials within one condition with different frame intervals (0.047 to 0.1996 s overall) would be misaligned because a single median `dt` is used, and this is not checked per condition.
+8. **[does not affect a conclusion]** fig8bc, cell 73: the test runs on 21 preprint-sheet mice, 3 of which are not in the paper. The helper itself is validated: run on the paper's table, `mixed_anova_group` reproduces the paper's F(1,21) values exactly, and my synthetic check matches a hand-computed split-plot F.
+9. **[does not affect a conclusion]** fig7e, cell 87: pairing the paper's KO rows by `expt` gives P=0.47 where the paper reports 0.91. The pairing may differ from the authors'.
+10. **[does not affect a conclusion]** `dendritic_link`: the Figure 6D letter is taken from the cell number, while the claims file defines it as the ordinal of the cell within the day. The two are the same only when cells are numbered without gaps.
+11. **[does not affect a conclusion]** `detect_events` is a stand-in for TaroTools. Amplitudes run a median 11% above the paper's, and the smoothed-noise variant inflates event counts by 36%. The amplitude claims hold under both variants.
+12. **Claims file, link-grab-rois:** the criterion speaks of "each mouse's vector", but the paper's unit is the ROI and each mouse holds several. This misreads the unit. The notebook departs from the wording and states that it does.
+13. **[does not affect a conclusion]** Cell 9 calls the 93 spine files "raw image stacks only" from file names alone. No file was opened to rule out spine annotations.
 
-**C. What I could not check, and the output that would have let me**
+**Blocked claims, checked against the archive.** The file list has 93 spine-image NWB files. iSPN: unlesioned 14, lesioned 10, off-state 15, on-state 9, CDGI KO off/on 6/3, M1R antagonist 5, M1R KO 3. dSPN: 6, 5, 8 and 9 across the same four main groups. Their asset metadata `variableMeasured` is empty. No file name mentions confocal, Imaris, spines or counts, and the dandiset description puts spine densities and confocal data on Zenodo. So spine counts from the dandiset need AutoQuant deconvolution plus semi-manual NeuronStudio counting: blocked (other). The only part that can be tested is re-running the paper's statistics on its own Zenodo spine tables, which is not a reproduction from the dandiset. fig4k is data_missing.
 
-- **Zenodo tables:** I did not have the paper's per-cell tables, so I could not recompute any link match or "elsewhere" P value. For the dendritic link, a per-cell table with dandiset date and cell, our index, the paper's value and the per-pair basal ratios for every group would settle B1–B4 and show which SCH cell is off.
-- **Somatic order:** the best-match row number next to the date and cell order for every group would test the order assumption behind the dendritic link.
-- **One-to-one links:** the somatic and GRAB link counts recomputed with a one-to-one assignment.
-- **AIM mismatches:** a per-time-point comparison with the paper for the five mismatched Fig. 8 mice, to tell a scoring difference (for example the 120-min point) from different data.
-- **fig7e:** the KO pairing table from cell 76.
-- **Sr2+ detector:** traces with detected events marked for 20230405b, and for one cell where we agree with the paper.
-- **Spine stacks:** I checked them only through the asset metadata. All 86 stack files have empty `variableMeasured`, which points to no stored annotations. A listing of each spine file's processing modules would confirm that no counts are stored.
+**C. What I could not check, and the output that would settle it**
+- The dendritic results with a red background of 55. A rerun of cells 32 to 45 after fixing `_site_trace` would settle the link and the fig1i-sch and fig3f-sul outcomes.
+- Rheobase and F-I results with the last sweep of a repeated step. A working variant, plus a per-cell list of first against last rheobase for the 14 cells, would settle it.
+- fig4h with the last 10 sweeps for the two cells that have 11 and 12 sweeps.
+- How many paper rows are best-matched more than once in the somatic link, and whether the rheobase sheet and F-I sheet rows line up.
+- The frame interval per GRAB condition, and the trial labels for 2024-04-02 Slice1Roi2.
+- Whether the spine NWB files hold any segmentation (an HDF5 group listing of one file).
+- The Zenodo table labels, for example whether `"-M1R"` in 10E/F is the MCI-Park + M1R-deletion group. Printing the unique group values per sheet would answer this.
 
 ## End of run
 
-19 turns, 4 minutes, result: success.
+19 turns, 4 minutes, $1.78 at API prices, result: success.

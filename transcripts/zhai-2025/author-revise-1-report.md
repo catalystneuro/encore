@@ -1,31 +1,31 @@
-I revised the attempt for round 1. The entry re-runs cleanly (about 10 minutes), `tools/entry.py check` reports 0 errors, and every conclusion matches the new outputs. Nothing is committed.
+No outcome changed in this revision. The entry re-ran cleanly with `python tools/entry.py all entries/zhai-2025` (0 errors, 396 s), and every conclusion, note and finding now uses the new numbers. The attempt record passes its schema check, and I recorded round 1 under `verifications` for all 45 claims.
 
-**Outcome changes**
-- **fig1i-dspn-dendritic-sch-lower**: partially reproduced → not reproduced, as the verifier said. The criterion only defines the reproduced case, and P = 0.066 is above 0.05. The difference comes from one cell, 20190411 cell 1, which gives 0.584 here against the paper's 0.228. The dandiset holds only its second pair of sites. With the paper's value for that cell, the exact P is 0.0133, which is the P the paper reports.
-- **Six spine claims**: the reason for the block changed from `not_runnable` to `methods_underspecified`, as the verifier said. For fig4bc, the notes add that the control and 6-OHDA stacks are missing. All six stay blocked.
-- All other outcomes are the same. The counts are 24 reproduced, 2 partially reproduced, 4 not reproduced and 15 blocked, matching the verifier.
+**Fixes for the verifier's problems**
+1. **Dendritic background bug:** fixed. `_site_trace` now subtracts 55 from red and 161 from green. The effect is small, and every dendritic outcome stays the same:
+   - link-dendritic-cells still has a median difference of 0.027.
+   - fig1i-sch: P goes from 0.079 to 0.066, still not reproduced. Without the 2019-04-11 cell it is 0.027; the conclusion now says this exclusion only shows where the difference comes from.
+   - fig3f-sul stays at P = 0.0545.
+   - fig1i-on P = 0.0058, fig3f-on 0.0073, fig6d 0.023, fig7f KO 0.31.
+2. **Last-sweep variant:** it now really takes the last sweep (`per_cell_somatic(keep="last")`). A per-cell table of the 14 cells with a repeated step shows no rheobase changes and only one cell's summed spikes changes, by 1. So the rheobase claims of absence come out the same under it.
+3. **fig4h sweeps:** I added two readings, the last 10 sweeps (P = 0.064) and the 10 consecutive sweeps whose count is nearest the paper's for each cell (P = 0.064). Only the first 10 sweeps gives P = 0.049.
+   - I kept **reproduced**, marked as resting on the nearest-run reading, which the paper's own per-cell counts support, and recorded the disagreement.
+   - The verifier would give partially reproduced. I did not use that, because a claim of absence is judged only by whether the paper's test finds the difference.
+4. **Somatic link:** now reports that 9 paper rows are the best match for 20 cells, 6 cells tie between rows, and the rheobase and F-I sheets agree row by row in 115 of 124 rows.
+5. **GRAB link:**
+   - Counted per mouse, 1 of 11 match; with a one-to-one assignment of regions, 15 of 34.
+   - The frame interval is the same within every condition (0.1996 s), so one interval per condition is safe.
+   - The notebook now lists the trials of 2024-04-02 Slice1Roi2. The conflict with the dandiset description is stated in the finding; the files cannot settle it.
+6. **Figure 6D letters:** the paper's identifiers follow the files' cell numbers (all 16 found). Reading the letter as the cell's place among the group's cells finds 14 of 16. I kept the cell number and wrote a deviation saying why.
+7. **Other added outputs:**
+   - fig8bc on the 18 mice that are also in the paper: still reproduced.
+   - fig7e with an unpaired test: KO P = 0.89, close to the paper's 0.91.
+   - The group labels of each Zenodo sheet: "-M1R" is MCI-Park with M1R deletion, 9 mice.
+   - One spine file per cell type and group, opened: image stacks only, nothing under processing or analysis.
+8. **Claims-file question:** the link-grab-rois criterion says "mouse" where the paper's unit is the region. I added this as a question in `questions/zhai-2025.yaml` and did not change the claim.
 
-**What I added or corrected**
-- **Dendritic index (B1–B4):** checking the per-cell table turned up a data problem. Three line-scan series hold six trials, which is two sites stored under one name. I now split each into its first and last three trials and take the half with the smaller area as the distal site. That assumption is stated, and the sites as labelled are shown as a variant.
-  - Two cells that had no index now get one, matching the paper's values (0.146 and 0.293, against 0.146 and 0.299).
-  - Every group now matches the paper's rows. The median difference from the paper is 2.9%, with a Spearman correlation of 0.938.
-  - The verifier's second large difference (1.062 against 0.527) is a proximal site with only one trial. Dropping it gives 0.553.
-- **fig3f-ispn-dendritic-sul-no-change** stays not reproduced (P = 0.0097). The one sulpiride cell without an index has only a distal site in the dandiset. With the paper's value for it, P = 0.0545, the paper's figure.
-- I recorded two new findings: the series holding two sites, and the two cells whose missing sites decide the two dendritic claims above.
-- **Outputs the verifier asked for:**
-  - one-to-one matching for the somatic link (72.4% exact) and the GRAB link (5 of 11), with outcomes unchanged;
-  - a check that the paper's somatic rows follow the dandiset's order, which supports matching dendritic cells by order;
-  - for cells with a repeated step, keeping the first or the last sweep makes no difference in 13 of 14;
-  - exact Mann-Whitney P values printed next to scipy's, with no outcome changing;
-  - a listing of the 86 spine files: none has a processing module or analysis entry, so no counts are stored;
-  - the Fig. 7E KO pairing table (the pairing is correct; an unpaired test gives 0.885, so neither test gives the paper's 0.910);
-  - AIM scores per time point for the five Fig. 8 mice. The paper's totals don't match any way of summing them, so the scores themselves differ;
-  - a figure of the Sr2+ detector on 20230405b and on 07062023c, a cell where it comes close to the paper's count. On 20230405b the detection window starts on the decay of a large synchronous current, and the small events on it stay below the threshold.
-- Notes now state the low power and the cells shared between groups for the absence claims, and that the iSPN on-state result depends on the basal-ratio rule (P = 0.077 under the stricter variant).
-- I added matplotlib for the figure and relocked; only new packages were added. The runtime in `entry.yaml` and the README is now 10 minutes. The round is recorded under `verifications` for all 45 claims.
+**Not done, and why**
+- **Blocked reasons:** I kept `not_runnable` for the six spine claims. The verifier suggested `other` for the five 2PLSM claims and `data_missing` for fig4k. The protocol gives `not_runnable` when the paper's software (AutoQuant, NeuronStudio, Imaris) cannot run here, and does not allow `data_missing` for data that are public elsewhere. I recorded this under each claim's `response`.
+- **Event detector:** it stays a stand-in for TaroTools, stated as an assumption. The verifier marked this as not affecting a conclusion.
+- **Paper listing:** the paper should also be listed on Zenodo record 17260198 (`ZENODO:17260198`), the authors' raw-data deposit. It holds the confocal spine images, and I did not use it because counting them needs Imaris.
 
-**What I did not do**
-- I kept the 0.5–2 basal-ratio rule as the main analysis because it was fixed before the analysis ran; the stricter rule is shown as a variant for every claim.
-- A per-time-point AIM comparison with the paper isn't possible, because the paper's tables give session totals only.
-- I didn't change the claims file.
-- No paper text was downloaded this round, so nothing new is under `paper/`.
+Nothing was committed.

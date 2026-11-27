@@ -227,6 +227,8 @@ outcomes:
     are not in the dandiset. The trials could not be linked to clips either.
 findings:
 - kind: metadata_error
+  versions:
+  - 0.230530.1822
   statement: In the most recent published version (0.230530.1822) the spike times of subjects 13,
     17 and 18 are shifted by 191.5, -16.8 and 9.3 s against the encoding trials, which did not
     move, so spikes and clips no longer line up. The version the paper cites (0.220216.0323)
@@ -247,6 +249,7 @@ findings:
     lobe (the paper has 405), no similarity ratings and no stimuli, and it lacks the behaviour of
     one of the paper's 20 subjects.
 - kind: selection_undocumented
+  about: data
   statement: The dandiset has 565 medial temporal lobe units where the paper analyses 580, with a
     different split by region (hippocampus 279 against 343, amygdala 233 against 169,
     parahippocampal gyrus 53 against 68). Nothing says how the two sets relate.
@@ -271,18 +274,23 @@ findings:
     paper's analyses, no cell selection, chance level, statistics, state-space or reinstatement
     analysis, and nothing that links a tested frame to its clip.
 - kind: metadata_error
+  versions:
+  - 0.220216.0323
+  fixed_in: 0.230530.1822
   statement: The authors' plotting code drops missing boundaries by testing for a stored time
     above 0. In version 0.220216.0323 a missing boundary is stored as the clip's start time, so
     the code would keep 150 soft-boundary rows where 75 exist and its fixed row ranges for the
     three conditions would be wrong. In version 0.230530.1822 missing boundaries are NaN and the
     code works, but that version has the shifted spike times.
 - kind: other
+  about: paper
   statement: Methods and published code disagree on the firing-rate traces. The Methods give a
     200 ms window moved in 2 ms steps; the code uses 10 ms bins smoothed with a Gaussian window
     of 20 bins. The code shows 0.5 s before and 1 s after a boundary. It also treats every soft
     boundary, including those inside hard-boundary clips, as a soft-boundary trial (75 per
     session), which the Methods do not state.
 - kind: other
+  about: paper
   statement: Four hard-boundary clips (HB_7, HB_11, HB_14, HB_15) drive strong population
     activity in the half second before the hard boundary; all contain a soft boundary between
     2.75 and 3.40 s. This raises the baseline of a before-against-after test of the hard
@@ -484,3 +492,27 @@ verifications:
   - claim: fig6no-false-alarm-similarity
     agrees: true
     outcome: blocked
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: critical
+  - finding: 2
+    severity: minor
+  - finding: 3
+    severity: major
+  - finding: 4
+    severity: minor
+  - finding: 5
+    severity: major
+  - finding: 6
+    severity: major
+  - finding: 7
+    severity: major
+  - finding: 8
+    severity: minor
+  - finding: 11
+    severity: major

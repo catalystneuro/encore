@@ -1,133 +1,431 @@
-# 001538 · author-revise-1 · run 39178354798
+# zhai-2025 · author-revise-1 · run 45868073750
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; cat transcripts/001538/verifier-1-report.md; ls -R entries/001538-zhai-2025 | head -50
+date -u; ls; ls entries/zhai-2025 transcripts/zhai-2025 paper 2>/dev/null; cat transcripts/zhai-2025/verifier-1-report.md
+```
+
+```
+Thu Nov 26 17:32:04 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+[... 104 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat docs/protocol.md | head -400; wc -l docs/protocol.md
+```
+
+```
+# Protocol for an attempt
+
+Version: `pilot-19`. Record this version in the attempt's provenance.
+
+This is what agents, or people, do to attempt a target and deposit the
+result. A target is a dataset in a public archive and a paper it names. How
+each archive's datasets are named, versioned and read is in
+[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+
+An attempt has three roles, each a separate run with a separate context:
+
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dataset's data.
+- The **author** tests the claims on the dataset. It reads the paper to
+  understand the claims, but the claims file binds it: it cannot change a
+  claim's statement, expected values or criterion. A method detail the file
+  lacks it takes from the paper, citing the passage, and it asks a reader
+  only when it believes the file misreads the paper.
+[... 381 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts claims questions; ls attempts/* | grep -i zhai; cat entries/zhai-2025/entry.yaml; wc -l entries/zhai-2025/*
+```
+
+```
+attempts:
+allen-2026-01.yaml
+amjad-2025-01.yaml
+amjad-2025-02.yaml
+andreassen-2022-01.yaml
+andrews-2024-01.yaml
+armstrong-2026-01.yaml
+asari-2009-01.yaml
+asari-2009-02.yaml
+ashworth-2025-01.yaml
+athalye-2023-01.yaml
+azcorra-2023-01.yaml
+bakalar-2023-01.yaml
+bech-2026-01.yaml
+bellvila-2026-01.yaml
+bennett-2024-01.yaml
+berg-2020-01.yaml
+boran-2022-01.yaml
+bouabid-2026-01.yaml
+bouchard-2013-01.yaml
+[... 954 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 400,813p docs/protocol.md
+```
+
+```
+`entry.yaml`, `requirements.in`, one or more notebooks, and usually a helper
+module.
+
+- **Stream the data** from the archive, at a pinned version of the dataset
+  ([archives.md](archives.md)). Do not download files to disk or read local
+  paths.
+- **Compute every result from the data.** No embedded numbers, arrays or
+  images, and no figures read from files.
+- **Take every random seed from the claim.** Do not choose one. The seed of a
+  claim's generator is `zlib.crc32(b"<paper key>/<claim id>")`, for example
+  `np.random.default_rng(zlib.crc32(b"sohn-2019/initial-speed-biased"))`. A
+  second generator for the same claim adds 1 to the seed, a third adds 2. Two
+  attempts on a claim then start from the same seed, and each claim's section
+  has its own generator, so that adding a cell earlier does not change its
+  numbers. Never make a generator without a seed.
+- **Say how much the seed matters.** A result that depends on random draws (a
+  shuffle or permutation test, a bootstrap, a random split, a random start)
+  is computed under the claim's seed and under four more: the seed plus 1000,
+  2000, 3000 and 4000. Give the range of the measured value over the five in
+  the notes. The outcome is the one under the claim's own seed: the criterion
+[... 394 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat attempts/zhai-2025-03.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (31.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/68ed06d9-5a7f-4fa0-ae96-4dc0bc3e043b/tool-results/bl5cz4p7a.txt
+Output too large (37.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/b15f9e3b-61b3-4744-877c-49c8482c2d8f/tool-results/bl9fxg8w7.txt
 
 Preview (first 2KB):
-# Protocol for an attempt
+schema_version: 3
+id: zhai-2025-03
+datasets:
+- archive: dandi
+  id: 001538
+  version: 0.261124.1858
+  doi: 10.48324/dandi.001538/0.261124.1858
+  relation: primary
+paper: doi:10.1126/sciadv.adv8224
+date: '2026-11-26'
+entry: zhai-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+[... 27 more lines not kept]
+```
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+**Agent calls Bash**
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+```bash
+cat entries/zhai-2025/zhai.py
+```
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
+```
+"""Loading and measures for dandiset 001538 (Zhai et al. 2025, Science Advances).
 
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-[... 25 more lines not kept]
+Every file is streamed from the DANDI Archive with remfile and h5py; nothing is written to disk.
+The paper's own tables (Zenodo record 17307059) and analysis notebooks (Zenodo records
+14145776, 14163502 and 14163731) are read into memory from Zenodo.
+
+Where each parameter comes from:
+
+- Spike counts and rheobase: the paper's somatic script ("Input_output analysis ver2024.11",
+  Zenodo 14145776) counts upward crossings of 0 mV over the whole sweep (count_events with
+  threshold 0) and takes as rheobase the first positive step with a spike (rheobaseCal). The
+  claims file fixes the same rule. When a cell holds a step more than once, the first sweep of
+  that step is used: an assumption (the script numbers the sweeps in order and has no rule for
+  a repeated step); the notebook shows how many cells it touches.
+- Dendritic index: the paper's dendritic script ("PVAnalysis ver 2024.11", Zenodo 14163502):
+  backgrounds of 55 (red) and 161 (green) subtracted, a 6-sample running mean, the three trials
+  of a site averaged, R0 and G0 the means from 0.5 to 0.95 s, the area of (G - G0)/R0 from
+  0.95 to 1.5 s, the index the distal area over the proximal area, and the basal ratio
+  (G0/R0 distal over G0/R0 proximal). The claims file keeps pairs with a basal ratio between
+  0.5 and 2, pairs proximal and distal sites by their number, and averages pairs within a cell.
+[... 450 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls -la executed/zhai-2025/ 2>/dev/null; python -c "
+import json;nb=json.load(open('entries/zhai-2025/reproduce_zhai_2025.ipynb'))
+for i,c in enumerate(nb['cells']):
+    print('=====',i,c['cell_type'],c.get('metadata',{}).get('tags'))
+    print(''.join(c['source']))
+" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
+```
+
+```
+total 192
+drwxr-xr-x 3 runner runner   4096 Nov 26 17:20 .
+drwxr-xr-x 3 runner runner   4096 Nov 26 17:31 ..
+-rw-r--r-- 1 runner runner    312 Nov 26 17:20 .clean-run.json
+drwxr-xr-x 5 runner runner   4096 Nov 26 17:16 .venv
+-rw-r--r-- 1 runner runner 174783 Nov 26 17:20 reproduce_zhai_2025.ipynb
+-rw-r--r-- 1 runner runner    166 Nov 26 17:20 result.json
+1089 /tmp/claude-1001/nb.txt
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/68ed06d9-5a7f-4fa0-ae96-4dc0bc3e043b/tool-results/bl5cz4p7a.txt"
+ "file_path": "/tmp/claude-1001/nb.txt"
 }
 ```
 
 ```
-1	# Protocol for an attempt
-2	
-3	Version: `pilot-7`. Record this version in the attempt's provenance.
-4	
-5	This is what an agent, or a person, does to attempt a target and deposit the
-6	result. It is written from the eight pilot attempts
-7	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-8	
-9	There are two roles. The **author** makes the attempt. The **verifier** checks
-10	it and must not be the author: for agents, a separate run with a separate
-11	context that has not seen the author's reasoning.
+1	===== 0 markdown None
+2	# Reproducing Zhai et al. (2025) from dandiset 001538
+3	
+4	Paper: Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier (2025), "State-dependent
+5	modulation of spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of
+6	Parkinson's disease", Science Advances, doi:10.1126/sciadv.adv8224.
+7	
+8	Dataset: [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.261124.1858), version
+9	0.261124.1858, streamed from the archive. This version was asked for by the run that made this
+10	attempt; it is also the newest published version (the others are 0.260527.1302 and the draft). The
+11	paper cites no version of the dandiset.
 12	
-13	Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-14	workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-15	`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-16	of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-17	kept in [`transcripts/<dandiset>/`](../transcripts).
-18	
-19	## Author
+13	Claims: `claims/zhai-2025.yaml`, written from the version of record in PubMed Central (PMC12674127),
+14	its figure legends and Methods. The paper's own per-cell and per-mouse tables are read from Zenodo
+15	record 17307059 (doi:10.5281/zenodo.17307059, the latest version of 10.5281/zenodo.14589035; file
+16	"Zhai et al. 2025 Datasets.zip", md5 112da5b1b00208262bd7887dd51b54ee). They are used for the link
+17	claims and for the claims on data that are not in the dandiset (`data: elsewhere`). The paper's
+18	analysis code (Zenodo 14145776, 14163502 and 14163731) was read to fix the measures; see the
+19	docstring of `zhai.py`.
 20	
-[... 442 more lines not kept]
+[... 649 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 670,
+ "limit": 420
+}
+```
+
+```
+670	P = paper_sr(); P = P[P.ct == "iSPN"]
+671	col = "paper_amp" if "mean_amp" == "mean_amp" else "paper_freq"
+672	show_mw("paper's table", P[P.group == "LID on"][col], P[P.group == "LID off"][col], "on", "off")
+673	print(c.groupby(["condition", "date"])["mean_amp"].agg(["size", "median"]).round(2).to_string())
+674	===== 75 markdown None
+675	**Result: reproduced (resting on the stand-in detector).** On-state median 9.71 pA (n = 8) against off-state 13.73 pA (n = 7), P = 0.0093; smoothed-noise detector P = 0.0037; the paper's table P = 0.00031.
+676	===== 76 markdown None
+677	### fig4h-ispn-sr-frequency-unchanged
+678	
+679	> The frequency of Sr2+-oEPSCs in iSPNs does not differ between states.
+680	
+681	Per-cell event frequency, on-state against
+682	off-state; the claims file gives no criterion, so the paper's test is used: two-sided Mann-Whitney,
+683	P < 0.05 for a difference; a claim of absence, reproduced when P >= 0.05. Variants: the smoothed-noise detector, the first 10 sweeps of
+684	each cell, and the paper's own per-cell table.
+685	===== 77 code ['claim:fig4h-ispn-sr-frequency-unchanged']
+686	c = src[src.cell_type == "iSPN"]
+687	show_mw("iSPN freq_hz", c[c.condition == "LID on-state"].freq_hz, c[c.condition == "LID off-state"].freq_hz, "on", "off")
+688	for label, kw in [("variant, noise SD of the smoothed trace", dict(amp_col="amps_smoothed_sd", n_col="n_events_smoothed_sd")),
+689	                  ("variant, first 10 sweeps", dict(max_sweeps=10))]:
+[... 400 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "attempts/zhai-2025-03.yaml"
+}
+```
+
+```
+1	schema_version: 3
+2	id: zhai-2025-03
+3	datasets:
+4	- archive: dandi
+5	  id: 001538
+6	  version: 0.261124.1858
+7	  doi: 10.48324/dandi.001538/0.261124.1858
+8	  relation: primary
+9	paper: doi:10.1126/sciadv.adv8224
+10	date: '2026-11-26'
+11	entry: zhai-2025
+12	provenance:
+13	  kind: agent
+14	  accountable:
+15	    name: CatalystNeuro
+16	  agent:
+17	    harness: Claude Code
+18	    model: claude-opus-5-5
+19	    protocol: pilot-19
+20	  runner:
+[... 608 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep 001538; ls claims/001538; wc -l entries/001538-zhai-2025/* attempts/001538*; ls executed/001538-zhai-2025 2>/dev/null; ls paper 2>/dev/null; cat entries/001538-zhai-2025/README.md; cat entries/001538-zhai-2025/entry.yaml
+cat executed/zhai-2025/.clean-run.json executed/zhai-2025/result.json; ls schemas; grep -n "verifications" -A60 schemas/attempt*.json | head -150
 ```
 
 ```
-001538-zhai-2025-01.yaml
-10.1126-sciadv.adv8224.yaml
-    46 entries/001538-zhai-2025/README.md
-    22 entries/001538-zhai-2025/entry.yaml
-   517 entries/001538-zhai-2025/lid.py
-  1857 entries/001538-zhai-2025/reproduce_zhai_2025.ipynb
-     7 entries/001538-zhai-2025/requirements.in
-   297 entries/001538-zhai-2025/requirements.lock.txt
-   448 attempts/001538-zhai-2025-01.yaml
-  3194 total
-# Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel & Surmeier (2025) from dandiset 001538
-
-Tests the findings of [Zhai et al. (2025)](https://doi.org/10.1126/sciadv.adv8224) that can be tested
-on [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.260527.1302). The dandiset holds the
-somatic and dendritic patch-clamp recordings of dSPNs and iSPNs in the LID off- and on-states and
-under the drug and genetic manipulations, GRAB-ACh3.0 imaging, Sr2+-oEPSC recordings, AIM scores,
-rotation videos and spine image stacks. It holds no patch-clamp recordings from unlesioned or
-6-OHDA-lesioned mice, no spine or rotation counts and no open-field data.
-
-| Claim | Outcome |
-[... 58 more lines not kept]
+{
+ "entry": "zhai-2025",
+ "hash": "bcf284b3fe3ceb37584ea0a5d0b1238bf3105447027192f80e8e5bb56508370a",
+ "finished": 1795713640,
+ "results": [
+  {
+   "notebook": "reproduce_zhai_2025.ipynb",
+   "ok": true,
+   "seconds": 272,
+   "sha256": "45e34dd2f7d53e11a3fbfb50e105ee7555876df60eb0a9af4ef4899eb6ab3cb4"
+  }
+ ]
+}
+{
+ "entry": "zhai-2025",
+ "python": "3.13",
+ "results": [
+  {
+   "notebook": "reproduce_zhai_2025.ipynb",
+   "ok": true,
+[... 70 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat attempts/001538-zhai-2025-01.yaml
+sed -n 460,560p schemas/attempt.schema.json; grep -l "verifications:" attempts/*.yaml | head -3; cat questions/zhai-2025.yaml 2>/dev/null; cat questions/README.md | head -60
 ```
 
 ```
+}
+          },
+          "reviewed": {
+            "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
+            "type": "string"
+          },
+          "findings": {
+            "description": "From protocol pilot-18, in round 2: what the verifier said of each finding the record rates `critical` (docs/protocol.md, the attempt record).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "finding",
+                "agrees"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "The finding's number in this record's `findings`, from 1.",
+                  "type": "integer",
+[... 95 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat questions/allen-2026.yaml | head -30; grep -n "verifications:" -A30 attempts/amjad-2025-02.yaml | head -40; grep -n -i "zenodo" docs/archives.md | head
+```
+
+```
+# Questions from attempt allen-2026-01 (author, 2026-11-25) about the claims file
+# claims/allen-2026.yaml. Each is asked under docs/protocol.md, Author, step 1.6. The attempt applied
+# the criteria as written and showed the reading the questions propose as a variant.
+dataset: DRYAD:rjdfn2zqz
+paper: doi:10.1038/s42003-025-09506-6
+questions:
+- claim: fig4b-shared-down-sets
+  asked: 2026-11-25
+  question: The criterion reads "36" as (a) the sets down-regulated in either treatment or (b) all sets
+    of the Venn diagram. The Results sentence goes on to cite "the intersect GSEA ridgeplot", and the
+    deposited script (squid.zip, R_scritps.Rmd, Figure 4C chunk) plots the sets significant in both
+    treatments with showCategory = 36. Should the criterion's readings include the sets significant
+    in both treatments, in any direction?
+  passage: Results, RNA-seq profiling in the optic lobes, paragraph 2, "only 2 out of 36 GO gene sets
+    were down-regulated in both acute and chronic acidified conditions ... as indicated in the
+    intersect GSEA ridgeplot"; Figure 4C legend, "Ridge plots comparing normalized enrichment scores
+    (NES) of significantly altered GO terms between acute (left) and chronic (right) OA versus control".
+  why: In the authors' GSEA results the two shared down-regulated sets are the two the paper names,
+    but reading (a) gives 122 sets and (b) 646, so the claim is recorded as partially reproduced. The
+    sets significant in both treatments number 36, which would make it reproduced.
+[... 51 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat papers/datasets/zhai-2025.yaml; grep -n "fig4k-confocal-spines" -A40 claims/zhai-2025.yaml | head -60; grep -n "link-grab-rois" -A45 claims/zhai-2025.yaml | head -60
+```
+
+```
+# The datasets this paper is tested on (docs/paper-first.md).
 schema_version: 1
-id: 001538-zhai-2025-01
-dandiset: "001538"
-dandiset_version: 0.260527.1302
 paper: doi:10.1126/sciadv.adv8224
-date: 2026-10-18
-entry: 001538-zhai-2025
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-7
-inputs:
-- what: The paper's per-cell and per-animal tables ("Zhai et al. 2025 Datasets", eleven workbooks),
-    used as reference values for the link claims, for the genotype labels of the AIM mice, and as the
-    data of the claims marked elsewhere (control and 6-OHDA groups, oxo-M, rotations, open field).
-  source: Zenodo doi:10.5281/zenodo.17307059 (record 17307059, the version the paper's key resources
-[... 428 more lines not kept]
+datasets:
+- archive: dandi
+  id: 001538
+  relation: primary
+385:- id: fig4k-confocal-spines
+386-  statement: Confocal spine density of iSPN proximal dendrites is higher than the 2PLSM estimate
+387-    (median 2.084 against 1.243 spines per um), falls after the lesion, rises modestly in the
+388-    off-state and falls in the on-state.
+389-  source: Figures 4I to 4K; Results, Intrinsic excitability and synaptic connectivity of iSPNs
+390-    decreased in the on-state of LID, paragraph 5
+391-  quote: Three-dimensional confocal reconstruction of iSPNs yielded spine density estimates in
+392-    proximal dendrites that were notably higher than those estimated from 2PLSM optical sectioning
+393-    of live tissue ... confocal estimates of iSPN spine density fell in the on-state
+394-  statistics:
+395-  - about: control against 6-OHDA
+396-    test: Mann-Whitney
+397-    p: 0.0001
+[... 74 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat claims/001538/10.1126-sciadv.adv8224.yaml
+sed -n 1,75p claims/zhai-2025.yaml; grep -n "id: fig4h" -A25 claims/zhai-2025.yaml; grep -n "id: fig1i-dspn-dendritic-sch-lower" -A22 claims/zhai-2025.yaml; grep -n "id: fig2bc" -A30 claims/zhai-2025.yaml | grep -n "criterion\|data:"
 ```
 
 ```
@@ -151,2233 +449,1751 @@ cat claims/001538/10.1126-sciadv.adv8224.yaml
 # claim for that data. Groups are formed from the file's condition_subfolder column, not from the
 # session name, because files named for a drug also hold baseline cells.
 #
-[... 300 more lines not kept]
+[... 104 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat entries/001538-zhai-2025/lid.py
+cd entries/zhai-2025 && python - <<'EOF'
+import re
+s=open('zhai.py').read()
+s=s.replace('''def _site_trace(h, rows, col):
+    """Average over trials of the background-subtracted, 6-sample smoothed ROI profile."""''','''def _site_trace(h, rows, col, bg):
+    """Average over trials of the background-subtracted (bg), 6-sample smoothed ROI profile."""''')
+s=s.replace('''    bg = BG_RED if "Alexa" in col or "alexa" in col else BG_GREEN
+''','')
+s=s.replace('''        r, dt, ntr = _site_trace(h, g, "red")
+        gr, _, _ = _site_trace(h, g, "grn")''','''        r, dt, ntr = _site_trace(h, g, "red", BG_RED)
+        gr, _, _ = _site_trace(h, g, "grn", BG_GREEN)''')
+s=s.replace('''def per_cell_somatic(sweeps):
+    """One row per cell and condition: first sweep of each step, rheobase, summed spikes 20-300 pA."""
+    s = sweeps.sort_values("start")
+    key = ["path", "cell", "condition"]
+    first = s.drop_duplicates(key + ["step_pA"], keep="first")''','''def per_cell_somatic(sweeps, keep="first"):
+    """One row per cell and condition: one sweep of each step (the first, or with keep="last" the
+    last), rheobase, summed spikes 20-300 pA."""
+    s = sweeps.sort_values("start")
+    key = ["path", "cell", "condition"]
+    first = s.drop_duplicates(key + ["step_pA"], keep=keep)''')
+open('zhai.py','w').write(s)
+EOF
+grep -n "_site_trace\|keep=" zhai.py
 ```
 
 ```
-"""Loading and measures for dandiset 001538 (Zhai et al. 2025, Science Advances).
-
-Zhai S, Cui Q, Wokosin D, Sun L, Tkatch T, Crittenden JR, Graybiel AM, Surmeier DJ (2025).
-State-dependent modulation of spiny projection neurons controls levodopa-induced dyskinesia in a
-mouse model of Parkinson's disease. Sci Adv 11:eadv8224. doi:10.1126/sciadv.adv8224.
-
-The dandiset holds, among others, these kinds of NWB file, all streamed from the archive at the
-pinned version (nothing is written to disk):
-
-- patch-clamp files (`*_icephys+ophys.nwb`, `*_icephys.nwb`), one per mouse and day: somatic
-  current steps (`CurrentClampSeries_CellN_Somatic`, 21 sweeps of 1 s from -120 to +300 pA) and,
-  for most, the dendritic back-propagation assay (`CurrentClampSeries_CellN_Dendritic`, 4 s sweeps
-  with three brief current injections) with two-photon line scans of Alexa 568 (red, channel 1) and
-  Fluo-4 (green, channel 2) at proximal and distal dendritic sites;
-- Sr2+-oEPSC files (`*_icephys+ogen.nwb`), one cell each, 10 voltage-clamp sweeps;
-- GRAB-ACh3.0 imaging files (`*_ophys.nwb`), one slice region per mouse, with Prairie View region
-  traces per trial and treatment, and ACh and TTX calibration trials;
-- AIM score tables (`ses-pan++ON...` files without `_image`), one file per mouse and session.
-
-Where the parameters come from:
-[... 497 more lines not kept]
+171:def per_cell_somatic(sweeps, keep="first"):
+172:    """One row per cell and condition: one sweep of each step (the first, or with keep="last" the
+176:    first = s.drop_duplicates(key + ["step_pA"], keep=keep)
+196:def _site_trace(h, rows, col, bg):
+248:        r, dt, ntr = _site_trace(h, g, "red", BG_RED)
+249:        gr, _, _ = _site_trace(h, g, "grn", BG_GREEN)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001538-zhai-2025 && python -c "
-import json
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print('=== CELL',i,c['cell_type'],c.get('metadata',{}).get('tags'))
-    print(''.join(c['source']))
-"
+ls ../../executed/zhai-2025/.venv/bin | head; cat > $TMPDIR/load.py <<'EOF'
+import time, pickle, sys, os
+sys.path.insert(0, '.')
+import pandas as pd, zhai
+t0=time.time()
+assets = zhai.list_assets()
+ice = [r for _, r in assets[assets.kind.isin(["icephys", "icephys+ophys"])].iterrows()]
+res = zhai.pmap(zhai.icephys_file, ice, workers=8)
+som = pd.concat([r[0] for r in res], ignore_index=True)
+den = pd.concat([r[1] for r in res], ignore_index=True)
+print("icephys", time.time()-t0, flush=True)
+sr = pd.concat(zhai.pmap(zhai.sr_file, [r for r in ice if r.kind == "icephys"], workers=8), ignore_index=True)
+print("sr", time.time()-t0, flush=True)
+grab = pd.concat(zhai.pmap(zhai.grab_file, [r for _, r in assets[assets.kind == "ophys"].iterrows()], workers=4), ignore_index=True)
+print("grab", time.time()-t0, flush=True)
+aim_assets = assets[assets.nwb & (assets.cell_type == "pan") & assets.kind.isin(["", "image"])]
+aim = pd.concat(zhai.pmap(zhai.aim_file, [r for _, r in aim_assets.iterrows()], workers=16), ignore_index=True)
+T = zhai.paper_tables()
+pickle.dump(dict(assets=assets, som=som, den=den, sr=sr, grab=grab, aim=aim, T=T), open(os.environ['TMPDIR']+'/data.pkl','wb'))
+print("done", time.time()-t0)
+EOF
+date -u; time ../../executed/zhai-2025/.venv/bin/python $TMPDIR/load.py
 ```
 
 ```
 <persisted-output>
-Output too large (63.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/68ed06d9-5a7f-4fa0-ae96-4dc0bc3e043b/tool-results/ber9mhitp.txt
+Output too large (149.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/b15f9e3b-61b3-4744-877c-49c8482c2d8f/tool-results/bmatbkzxe.txt
 
 Preview (first 2KB):
-=== CELL 0 markdown None
-# Reproducing Zhai et al. (2025) from dandiset 001538
-
-**Paper.** Zhai S, Cui Q, Wokosin D, Sun L, Tkatch T, Crittenden JR, Graybiel AM, Surmeier DJ
-(2025). State-dependent modulation of spiny projection neurons controls levodopa-induced
-dyskinesia in a mouse model of Parkinson's disease. *Science Advances* 11, eadv8224.
-[doi:10.1126/sciadv.adv8224](https://doi.org/10.1126/sciadv.adv8224). This attempt used the full
-text (open access, PubMed Central PMC12674127).
-
-**Dandiset.** [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.260527.1302), version
-0.260527.1302. The paper cites no DANDI version (its data statement points to a key resources table
-on Zenodo). This is the only published version; the draft holds the same 468 files with the same
-sizes and differs only in metadata (a link to the journal article among others), which the analysis
-does not use.
-
-**What the dandiset holds.** Patch-clamp recordings of somatic excitability and of the dendritic
+activate
+activate.bat
+activate.csh
+activate.fish
+activate.nu
+activate.ps1
+activate.xsh
+activate_this.py
+deactivate.bat
+debugpy
+Thu Nov 26 17:33:06 UTC 2026
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
 [... 13 more lines not kept]
 ```
 
-**Agent calls Read**
+**Agent calls Bash**
 
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/68ed06d9-5a7f-4fa0-ae96-4dc0bc3e043b/tool-results/ber9mhitp.txt"
-}
+```bash
+grep -v Warning /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/b15f9e3b-61b3-4744-877c-49c8482c2d8f/tool-results/bmatbkzxe.txt | grep -v "return np.nanmean\|^  " | tail -8; date -u
 ```
 
 ```
-1	=== CELL 0 markdown None
-2	# Reproducing Zhai et al. (2025) from dandiset 001538
-3	
-4	**Paper.** Zhai S, Cui Q, Wokosin D, Sun L, Tkatch T, Crittenden JR, Graybiel AM, Surmeier DJ
-5	(2025). State-dependent modulation of spiny projection neurons controls levodopa-induced
-6	dyskinesia in a mouse model of Parkinson's disease. *Science Advances* 11, eadv8224.
-7	[doi:10.1126/sciadv.adv8224](https://doi.org/10.1126/sciadv.adv8224). This attempt used the full
-8	text (open access, PubMed Central PMC12674127).
-9	
-10	**Dandiset.** [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.260527.1302), version
-11	0.260527.1302. The paper cites no DANDI version (its data statement points to a key resources table
-12	on Zenodo). This is the only published version; the draft holds the same 468 files with the same
-13	sizes and differs only in metadata (a link to the journal article among others), which the analysis
-14	does not use.
-15	
-16	**What the dandiset holds.** Patch-clamp recordings of somatic excitability and of the dendritic
-17	back-propagation assay with two-photon line scans, for dSPNs and iSPNs in the LID off- and
-18	on-states and under the drug and genetic manipulations of Figures 1, 3, 6, 7 and 9; GRAB-ACh3.0
-19	imaging (one region per mouse, Figure 5); Sr2+-oEPSC recordings (one cell per mouse, Figures 2 and
-20	4); AIM score tables for 9 mice and rotation videos (Figures 8 and 10); and raw spine image stacks
-[... 633 more lines not kept]
-```
+icephys 134.1124038696289
+sr 144.8997597694397
+grab 263.3928711414337
+done 305.4582917690277
 
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/68ed06d9-5a7f-4fa0-ae96-4dc0bc3e043b/tool-results/ber9mhitp.txt",
- "offset": 654
-}
-```
-
-```
-654	print("\nOn+sul:", np.round(sorted(dend[dend.group == "iSPN on+sul"]["index"].dropna()), 3))
-655	print("By mouse:"); print(by_mouse(dend, "index", ["iSPN on+sul"]).to_string())
-656	=== CELL 64 markdown None
-657	**Result: not reproduced.** The paper's test finds the difference the claim says is absent: on-state with sulpiride 0.506 (7 cells) against on-state 0.340 (9 cells), MW P = 0.0164, effect r = 0.71 (the paper reports P = 0.0545 with 8 and 10 cells). With the stricter basal-ratio rule P = 0.0663. The paper's own medians go the same way (0.499 and 0.345, link section).
-658	=== CELL 65 markdown None
-659	## Claims on the dandiset: ACh release (Figure 5)
-660	=== CELL 66 markdown None
-661	### fig5f-ach-off-elevated
-662	
-663	> Evoked ACh release (GRAB-ACh3.0) in slices from LID off-state mice is greater than in unlesioned
-664	> striatum.
-665	=== CELL 67 code ['claim:fig5f-ach-off-elevated']
-666	nod = glink.set_index("state")["No drug"]
-667	print("Single-pulse normalised area, no drug, unlesioned (a) against off-state (b):", show(mw(nod["CTRL"], nod["OFF"])))
-668	print("Unlesioned:", nod["CTRL"].round(3).tolist(), "; off-state:", nod["OFF"].round(3).tolist())
-669	print("Smallest attainable two-sided P for 3 against 5 values: %.4f" % (2 / 56))
-670	burst = []
-671	for m in grabs:
-672	    gm = lid.grab_measures(m)
-673	    b = gm[(gm.stimulation == "burst_stimulation") & (gm.treatment == "control")]
-[... 261 more lines not kept]
+real	5m7.192s
+user	1m43.433s
+sys	0m7.200s
+Thu Nov 26 17:38:16 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd ../.. && sed -n 1,80p tools/entry.py; grep -n "blocked_by\|proposed\|verifications\|agrees\|response" -n tools/*.py schemas/* 2>/dev/null | head -60; ls
-```
-
-```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 130 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 225,300p schemas/attempt.schema.json; grep -l "verifications:" attempts/*.yaml | head -3
-```
-
-```
-}
-        ]
-      }
-    },
-    "verifications": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "date",
-          "kind",
-          "by",
-          "results"
-        ],
-        "properties": {
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-[... 59 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n -A25 "^verifications:" attempts/000006-economo-2018-01.yaml | head -50
-```
-
-```
-187:verifications:
-188-- date: 2026-10-14
-189-  kind: agent
-190-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-191-  reviewed: The executed notebook of the first run with the conclusion cells and the summary
-192-    removed, the helper module and the claims file. The header still listed the outcomes.
-193-  results:
-194-  - claim: pt-types-transcriptomic
-195-    agrees: true
-196-    outcome: blocked
-197-    reason: The archive holds only 53 NWB ephys files (Units, ElectrodeGroup, BehavioralEvents). No
-198-      RNA-seq (the paper puts it in GEO GSE119182) and no reconstructions.
-199-    response: No change.
-200-  - claim: pt-types-shared-targets
-201-    agrees: true
-202-    outcome: blocked
-203-    reason: There is no anatomy in the dandiset or the asset metadata. The units only carry
-204-      cell_type labels.
-205-    response: No change.
-206-  - claim: pt-upper-thalamus-projection
-[... 6 more lines not kept]
-```
-
-**Agent**
-
-Reading done. Now loading the data in a scratch session to investigate the verifier's dendritic points (B1 to B4).
-
-**Agent calls Bash**
-
-```bash
-ls executed/001538-zhai-2025/ 2>&1; ls -a ~/.cache 2>/dev/null | head; python -c "import h5py, remfile, dandi, pandas, scipy; print('ok')"; which uv
-```
-
-```
-ls: cannot access 'executed/001538-zhai-2025/': No such file or directory
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import h5py, remfile, dandi, pandas, scipy; print('ok')
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'h5py'
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q -p 3.13 zenv && uv pip install -q -p zenv/bin/python -r entries/001538-zhai-2025/requirements.lock.txt && zenv/bin/python -c "import h5py, remfile, dandi; print('ok')"
-```
-
-```
-ok
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001538-zhai-2025 && cat > $TMPDIR/load.py <<'EOF'
-import pickle, sys, os
-sys.path.insert(0, ".")
-import lid
-urls = lid.asset_urls()
-patch_items = [(p, u) for p, u in urls if "_icephys" in p and "+ogen" not in p]
-days = lid.load_many(lid.load_patch, patch_items, workers=12)
-tidy = lid.tidy_tables()
-pickle.dump({"urls": urls, "days": days, "tidy": tidy}, open(os.environ["TMPDIR"] + "/zdata.pkl", "wb"))
-print("done", len(days))
-EOF
-time $TMPDIR/zenv/bin/python $TMPDIR/load.py
-```
-
-```
-done 58
-
-real	2m15.584s
-user	0m32.432s
-sys	0m2.323s
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/inv.py <<'EOF'
-import pickle, sys, os
-sys.path.insert(0, ".")
+cat > $TMPDIR/dev.py <<'EOF'
+import json, pickle, os, sys, warnings
+sys.path.insert(0,'.')
+warnings.filterwarnings("ignore")
 import numpy as np, pandas as pd
-import lid
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 500); pd.set_option("display.max_colwidth", 80)
-D = pickle.load(open(os.environ["TMPDIR"] + "/zdata.pkl", "rb"))
-days, tidy = D["days"], D["tidy"]
-sites = []
-for d in days:
-    if d["dendritic"]:
-        s = lid.dendritic_sites(d); s["date"], s["cell_type"] = d["date"], d["cell_type"]
-        s["group"] = [lid.GROUPS.get((d["cell_type"], c), "?") for c in s.condition]
-        sites.append(s)
-sites = pd.concat(sites, ignore_index=True)
-def cell_index(sites, basal_range=lid.BASAL_RATIO_RANGE):
-    out = []
-    for (date, ct), s in sites.groupby(["date", "cell_type"]):
-        di = lid.dendritic_index(s, basal_range); di["date"], di["cell_type"] = date, ct; out.append(di)
-    out = pd.concat(out, ignore_index=True)
-    out["group"] = [lid.GROUPS.get((ct, c), "?") for ct, c in zip(out.cell_type, out.condition)]
-    return out.sort_values(["group", "date", "cell"]).reset_index(drop=True)
-dend = cell_index(sites)
-for g, spec in lid.TIDY_DENDRITIC.items():
-    paper = lid.tidy_group(tidy, spec)
-    mine = dend[dend.group == g]
-    print("\n==", g, "paper n", len(paper), "mine", len(mine))
-    print(paper.to_string())
-    print(mine[["date","cell","pairs","pairs_kept","unpaired_sites","basal_ratios","index"]].to_string())
-# names of sites in unpaired cells
-bad = dend[dend.unpaired_sites > 0]
-for _, b in bad.iterrows():
-    print(b.group, b.date, b.cell)
-    print(sites[(sites.date == b.date) & (sites.cell == b.cell) & (sites.condition == b.condition)][["compartment","site","n_trials","R0","G0","area"]].to_string())
-for d in days:
-    for r in d["dendritic"]:
-        pass
-names = sorted({(d["date"], r["cell"], r["condition"], r["compartment"], r["ch2_series"]) for d in days for r in d["dendritic"]})
-for b in bad.itertuples():
-    print([n for n in names if n[0] == b.date and n[1] == b.cell])
-EOF
-$TMPDIR/zenv/bin/python $TMPDIR/inv.py
-```
-
-```
-entries/001538-zhai-2025/lid.py:299: RuntimeWarning: Mean of empty slice
-  red = np.nanmean([_smooth(r["ch1"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)
-entries/001538-zhai-2025/lid.py:300: RuntimeWarning: Mean of empty slice
-  green = np.nanmean([_smooth(r["ch2"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)
-
-== dSPN off paper n 10 mine 10
-       cell    Group  Dendritic excitability index
-20  cell_21  LID off                       0.54252
-21  cell_22  LID off                       0.37359
-22  cell_23  LID off                       0.44086
-23  cell_24  LID off                       0.51753
-24  cell_25  LID off                       0.33658
-25  cell_26  LID off                       0.14813
-26  cell_27  LID off                       0.32981
-27  cell_28  LID off                       0.26598
-28  cell_29  LID off                       0.30874
-29  cell_30  LID off                       0.29598
-        date  cell  pairs  pairs_kept  unpaired_sites        basal_ratios     index
-35  20160812     3      1           1               0              [0.73]  0.468301
-36  20161111     1      2           2               0        [0.98, 0.78]  0.372735
-[... 238 more lines not kept]
-```
-
-**Agent**
-
-Found something useful: the three cells with no index each have a single site, and two of those sites hold 6 trials instead of 3. Checking whether those series merge two sites.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/inv2.py <<'EOF'
-import pickle, sys, os
-sys.path.insert(0, ".")
-import numpy as np, pandas as pd, h5py, remfile
-import lid
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 500)
-D = pickle.load(open(os.environ["TMPDIR"] + "/zdata.pkl", "rb"))
-days = D["days"]
-# per-trial measures
-rows = []
-for d in days:
-    for k, r in enumerate(d["dendritic"]):
-        n = min(len(r["ch1"]), len(r["ch2"]))
-        red = lid._smooth(r["ch1"][:n] - 55, 6); green = lid._smooth(r["ch2"][:n] - 161, 6)
-        dt = 1 / r["ch2_rate"]; a, b, e = int(0.5/dt), int(0.95/dt), int(1.5/dt)
-        r0, g0 = np.nanmean(red[a:b]), np.nanmean(green[a:b])
-        rows.append({"date": d["date"], "ct": d["cell_type"], "k": k, "cell": r["cell"], "cond": r["condition"], "comp": r["compartment"],
-                     "series": r["ch2_series"], "R0": r0, "G0": g0, "area": np.nansum((green[b:e]-g0)/r0)*dt, "nspk": len(r["spike_times"]), "n": n})
-T = pd.DataFrame(rows)
-cnt = T.groupby(["date","ct","cell","cond","series"]).size()
-print(cnt.value_counts())
-six = cnt[cnt != 3]
-print(six)
-for (date, ct, cell, cond, series), _ in six.items():
-    print(T[(T.date==date)&(T.ct==ct)&(T.cell==cell)&(T.cond==cond)].round(4).to_string())
-print(T[(T.date=="20190411")&(T.cell==1)].round(4).to_string())
-# order of sites in a normal cell
-print(T[(T.date=="20170706")].round(4).to_string())
-EOF
-$TMPDIR/zenv/bin/python $TMPDIR/inv2.py 2>&1 | grep -v Warn
-```
-
-```
-3    324
-6      3
-1      1
-2      1
-4      1
-Name: count, dtype: int64
-date      ct    cell  cond            series                              
-20160524  iSPN  2     LID off-state   RoiResponseSeriesFluo4Cell2Proximal1    1
-20160526  iSPN  3     KO off-state    RoiResponseSeriesFluo4Cell3Distal1      6
-20160608  iSPN  1     LID on-state    RoiResponseSeriesFluo4Cell1Proximal1    6
-20170204  dSPN  1     LID off-state   RoiResponseSeriesFluo4Cell1Proximal1    6
-20170707  dSPN  1     LID on-state    RoiResponseSeriesFluo4Cell1Distal2      2
-20240430  iSPN  2     M1R antagonist  RoiResponseSeriesFluo4Cell2Distal2      4
-dtype: int64
-        date    ct   k  cell           cond      comp                                series         R0        G0    area  nspk     n
-60  20160524  iSPN  12     2  LID off-state  Proximal  RoiResponseSeriesFluo4Cell2Proximal1  2713.1980  278.3591  0.0184     3  2500
-61  20160524  iSPN  13     2  LID off-state    Distal    RoiResponseSeriesFluo4Cell2Distal1  2906.5663  277.3784  0.0313     3  2500
-62  20160524  iSPN  14     2  LID off-state    Distal    RoiResponseSeriesFluo4Cell2Distal1  3036.6500  307.3235  0.0253     3  2500
-63  20160524  iSPN  15     2  LID off-state    Distal    RoiResponseSeriesFluo4Cell2Distal1  3068.0679  291.9097  0.0301     3  2500
-64  20160524  iSPN  16     2  LID off-state  Proximal  RoiResponseSeriesFluo4Cell2Proximal2  2452.3886  186.4050  0.0423     3  2500
-[... 84 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/inv3.py <<'EOF'
-import pickle, sys, os
-import pandas as pd
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 100)
-D = pickle.load(open(os.environ["TMPDIR"] + "/zdata.pkl", "rb"))
-tidy = D["tidy"]
-for f in ("Fig 8", "Fig 7"):
-    for s, df in tidy[f].items():
-        print(f, "|", s, df.shape, list(df.columns))
-t = tidy["Fig 8"]["Fig 8B_total AIMs"]; print(t.head(20).to_string())
-t7 = tidy["Fig 7"]["Fig 7E_oxoM effect on DE"]; print(t7.to_string())
-EOF
-$TMPDIR/zenv/bin/python $TMPDIR/inv3.py
-```
-
-```
-Fig 8 | Fig 8A_rotations 5th (22, 3) ['Mouse ', 'Genotype', 'Number of contralateral rotations in 30s (5th session)']
-Fig 8 | Fig 8B_total AIMs (115, 4) ['Mouse ID', 'Genotype', 'Session#', 'Total AIM score']
-Fig 8 | Fig 8C_axial AIMs (115, 4) ['Mouse ID', 'Genotype', 'Session#', 'Axial AIM score']
-Fig 8 | Fig 8C_limb AIMs (115, 4) ['Mouse ID', 'Genotype', 'Session#', 'Limb AIM score']
-Fig 8 | Fig 8C_orolingual AIMs (115, 4) ['Mouse ID', 'Genotype', 'Session#', 'Orolingual AIM score']
-Fig 7 | Fig 7C_KO somatic excitability (21, 18) ['Cell ID', 'group', '0 pA: No. of APs', '20 pA: No. of Aps', '40 pA: No. of APs', '60 pA: No. of APs', '80 pA: No. of APs', '100 pA: No. of APs', '120 pA: No. of APs', '140 pA: No. of APs', '160 pA: No. of APs', '180 pA: No. of APs', '200 pA: No. of APs', '220 pA: No. of APs', '240 pA: No. of APs', '260 pA: No. of APs', '280 pA: No. of APs', '300 pA: No. of APs']
-Fig 7 | Fig 7E_oxoM effect on DE (44, 4) ['Expt No.', 'Genotype', 'treatment', 'Dendritic excitability index']
-Fig 7 | Fig 7F_KO dendritic excitabilit (39, 4) ['cell ID', 'Genotype', 'LID state', 'Dendritic excitability index ']
-Fig 7 | Fig 7H_KO spine density (19, 3) ['Cell ID', 'Group', 'Spine density (/um)']
-     Mouse ID Genotype  Session#  Total AIM score
-0   0465 (WT)       WT         1             35.0
-1   0467 (WT)       WT         1             36.0
-2   0466 (WT)       WT         1             31.5
-3   1590 (WT)       WT         1             37.0
-4   2586 (WT)       WT         1             38.0
-5   2587 (WT)       WT         1             35.5
-6    2636(WT)       WT         1             35.5
-7    2638(WT)       WT         1             38.0
-8   5940 (WT)       WT         1             41.0
-9   7744 (WT)       WT         1             44.5
-[... 55 more lines not kept]
-```
-
-**Agent**
-
-Fig. 7E pairing by experiment number is correct. The paper's AIM tables give only session totals, so I'll test which subsets of time points reproduce them. Loading the AIM files:
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/inv4.py <<'EOF'
-import pickle, sys, os, itertools
-sys.path.insert(0, ".")
-import numpy as np, pandas as pd
-import lid
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 300)
-D = pickle.load(open(os.environ["TMPDIR"] + "/zdata.pkl", "rb"))
-urls, tidy = D["urls"], D["tidy"]
-aim_items = [(p, u) for p, u in urls if "_ses-pan++ON" in p and not p.endswith("_image.nwb")]
-aim = pd.concat(lid.load_many(lid.load_aim, aim_items, workers=12), ignore_index=True)
-aim["animal_id"] = aim.animal_id.astype(int)
-pickle.dump(aim, open(os.environ["TMPDIR"] + "/aim.pkl", "wb"))
-t8 = tidy["Fig 8"]["Fig 8B_total AIMs"].copy()
-t8["animal"] = t8["Mouse ID"].astype(str).str.extract(r"(\d+)")[0].astype(int)
-for a in (1945, 2519, 2587, 2828, 6572):
-    g = aim[aim.animal_id == a]
-    print(a)
-    print(g.pivot_table(index="session_number", columns="time_minutes", values="total_score", aggfunc="sum").to_string())
-    print(t8[t8.animal == a][["Session#", "Total AIM score"]].to_string(index=False))
-print(aim.columns.tolist())
-EOF
-$TMPDIR/zenv/bin/python $TMPDIR/inv4.py
-```
-
-```
-1945
-time_minutes    20   40   60   80   100  120
-session_number                              
-1               9.5  8.0  8.0  8.0  NaN  NaN
-2               8.0  8.0  8.0  7.5  NaN  NaN
-3               8.0  8.0  8.5  8.5  8.0  3.0
-4               8.0  8.0  8.0  8.0  9.5  4.0
-5               8.0  8.0  8.0  8.0  7.0  4.0
- Session#  Total AIM score
-        1             27.0
-        2             31.0
-        3             46.0
-        4             48.5
-        5             47.5
-2519
-time_minutes    20   40   60   80   100  120
-session_number                              
-1               7.0  7.0  8.0  7.0  NaN  NaN
-2               7.5  8.0  6.5  6.0  NaN  NaN
-3               7.0  9.0  7.0  6.0  6.0  NaN
-[... 51 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat requirements.in; ls ../../executed 2>/dev/null | head
-```
-
-```
-dandi
-h5py
-numpy
-openpyxl
-pandas
-remfile
-scipy
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "                counts, vrest, duplicates, in_step, out_step, stim_err = {}, [], 0, 0, 0, []\n                digest = hashlib.md5()\n                for i in rows:\n                    data, rate = series(resp[i][\"timeseries\"])\n                    v = data[resp[i][\"idx_start\"]:resp[i][\"idx_start\"] + resp[i][\"count\"]] * 1e3\n                    amp = int(round(current[i]))\n                    if amp in counts:          # a repeated step: keep the first\n                        duplicates += 1\n                        continue",
- "new_string": "                counts, counts_last, vrest, duplicates, in_step, out_step, stim_err = {}, {}, [], 0, 0, 0, []\n                digest = hashlib.md5()\n                for i in rows:\n                    data, rate = series(resp[i][\"timeseries\"])\n                    v = data[resp[i][\"idx_start\"]:resp[i][\"idx_start\"] + resp[i][\"count\"]] * 1e3\n                    amp = int(round(current[i]))\n                    counts_last[amp] = _spike_count(v)\n                    if amp in counts:          # a repeated step: keep the first (counts_last keeps the last)\n                        duplicates += 1\n                        continue"
-}
-```
-
-```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "                out[\"somatic\"].append({\"cell\": int(c), \"condition\": cd, \"counts\": counts, \"n_sweeps\": len(rows),",
- "new_string": "                out[\"somatic\"].append({\"cell\": int(c), \"condition\": cd, \"counts\": counts, \"counts_last\": counts_last,\n                                       \"n_sweeps\": len(rows),"
-}
-```
-
-```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "                   \"md5\": s[\"md5\"], \"stim_error_pA\": s[\"stim_error_pA\"]}\n            for amp in range(20, 301, 20):\n                row[amp] = s[\"counts\"].get(amp, np.nan)",
- "new_string": "                   \"md5\": s[\"md5\"], \"stim_error_pA\": s[\"stim_error_pA\"],\n                   \"counts_last\": [s[\"counts_last\"].get(a, np.nan) for a in range(20, 301, 20)]}\n            for amp in range(20, 301, 20):\n                row[amp] = s[\"counts\"].get(amp, np.nan)"
-}
-```
-
-```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "def dendritic_sites(day: dict, bg_red: float = DEND_BG_RED, bg_green: float = DEND_BG_GREEN) -> pd.DataFrame:\n    \"\"\"Per dendritic site (cell, compartment, site series): R0, G0 and the area of dG/R0.\n\n    The three trials of a site are averaged after background subtraction and smoothing, as in\n    the paper's script; time is the sample index over the series' rate.\n    \"\"\"\n    rows = []\n    groups: dict[tuple, list] = {}\n    for rec in day[\"dendritic\"]:\n        key = (rec[\"cell\"], rec[\"compartment\"], rec[\"ch2_series\"], rec[\"condition\"])\n        groups.setdefault(key, []).append(rec)\n    for (cell, comp, name, cond), recs in groups.items():\n        n = min(min(len(r[\"ch1\"]), len(r[\"ch2\"])) for r in recs)\n        red = np.nanmean([_smooth(r[\"ch1\"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)\n        green = np.nanmean([_smooth(r[\"ch2\"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)\n        rate = recs[0][\"ch2_rate\"]\n        dt = 1.0 / rate\n        a, b = int(DEND_BASE[0] / dt), int(DEND_BASE[1] / dt)\n        c, d = b, int(DEND_AREA[1] / dt)\n        r0, g0 = np.nanmean(red[a:b]), np.nanmean(green[a:b])\n        area = np.nansum((green[c:d] - g0) / r0) * dt\n        # contrast for the clock check: the same window shifted 1.5 s later, after the transient\n        late = np.nansum((green[c + int(1.5 / dt):d + int(1.5 / dt)] - g0) / r0) * dt\n        site = re.search(r\"(Proximal|Distal)(\\d+)$\", name)\n        rows.append({\"cell\": cell, \"compartment\": comp, \"site\": int(site.group(2)) if site else 0,\n                     \"condition\": cond, \"n_trials\": len(recs), \"R0\": r0, \"G0\": g0, \"area\": area,\n                     \"late_area\": late, \"rate\": rate,\n                     \"first_spike_s\": float(np.median([r[\"spike_times\"][0] if len(r[\"spike_times\"]) else np.nan\n                                                       for r in recs])),\n                     \"n_spikes\": float(np.median([len(r[\"spike_times\"]) for r in recs]))})\n    return pd.DataFrame(rows)",
- "new_string": "def _site_measures(recs: list, bg_red: float, bg_green: float) -> dict:\n    \"\"\"R0, G0 and the area of dG/R0 of the trials of one site, averaged after background\n    subtraction and smoothing, as in the paper's script.\"\"\"\n    n = min(min(len(r[\"ch1\"]), len(r[\"ch2\"])) for r in recs)\n    red = np.nanmean([_smooth(r[\"ch1\"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)\n    green = np.nanmean([_smooth(r[\"ch2\"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)\n    rate = recs[0][\"ch2_rate\"]\n    dt = 1.0 / rate\n    a, b = int(DEND_BASE[0] / dt), int(DEND_BASE[1] / dt)\n    c, d = b, int(DEND_AREA[1] / dt)\n    r0, g0 = np.nanmean(red[a:b]), np.nanmean(green[a:b])\n    # contrast for the clock check: the same window shifted 1.5 s later, after the transient\n    late = np.nansum((green[c + int(1.5 / dt):d + int(1.5 / dt)] - g0) / r0) * dt\n    return {\"n_trials\": len(recs), \"R0\": r0, \"G0\": g0, \"area\": np.nansum((green[c:d] - g0) / r0) * dt,\n            \"late_area\": late, \"rate\": rate,\n            \"first_spike_s\": float(np.median([r[\"spike_times\"][0] if len(r[\"spike_times\"]) else np.nan for r in recs])),\n            \"n_spikes\": float(np.median([len(r[\"spike_times\"]) for r in recs]))}\n\n\ndef dendritic_sites(day: dict, bg_red: float = DEND_BG_RED, bg_green: float = DEND_BG_GREEN,\n                    split_merged: bool = True) -> pd.DataFrame:\n    \"\"\"Per dendritic site (cell, compartment, site series): R0, G0 and the area of dG/R0.\n\n    Time is the sample index over the series' rate. A site is recorded in three trials. Three\n    series hold six trials under one name while the cell has no series of the other compartment\n    with that number; their first and last three trials differ in baseline and area, so each holds\n    two sites. With `split_merged` such a series is split into its first and last three trials,\n    and the half with the smaller area is taken as the distal site (bAP-evoked Ca2+ signals fall\n    with distance; an assumption made here, flagged in the column `split`).\n    \"\"\"\n    rows = []\n    groups: dict[tuple, list] = {}\n    for rec in day[\"dendritic\"]:\n        key = (rec[\"cell\"], rec[\"compartment\"], rec[\"ch2_series\"], rec[\"condition\"])\n        groups.setdefault(key, []).append(rec)\n    for (cell, comp, name, cond), recs in groups.items():\n        m = re.search(r\"(Proximal|Distal)(\\d+)$\", name)\n        site = int(m.group(2)) if m else 0\n        other = \"Distal\" if comp == \"Proximal\" else \"Proximal\"\n        has_other = any(k[0] == cell and k[3] == cond and re.search(rf\"{other}{site}$\", k[2]) for k in groups)\n        if split_merged and len(recs) == 6 and not has_other:\n            halves = [_site_measures(recs[:3], bg_red, bg_green), _site_measures(recs[3:], bg_red, bg_green)]\n            halves.sort(key=lambda h: h[\"area\"])\n            for comp_h, h in zip((\"Distal\", \"Proximal\"), halves):\n                rows.append({\"cell\": cell, \"compartment\": comp_h, \"site\": site, \"condition\": cond,\n                             \"series\": name, \"split\": True, **h})\n        else:\n            rows.append({\"cell\": cell, \"compartment\": comp, \"site\": site, \"condition\": cond,\n                         \"series\": name, \"split\": False, **_site_measures(recs, bg_red, bg_green)})\n    return pd.DataFrame(rows)"
-}
-```
-
-```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "        rows.append({\"cell\": cell, \"condition\": cond, \"pairs\": len(pairs), \"pairs_kept\": kept,\n                     \"unpaired_sites\": len(set(prox.index) ^ set(dist.index)),",
- "new_string": "        rows.append({\"cell\": cell, \"condition\": cond, \"pairs\": len(pairs), \"pairs_kept\": kept,\n                     \"unpaired_sites\": len(set(prox.index) ^ set(dist.index)),\n                     \"sites\": \" \".join(f\"{c[0]}{s}\" for c, s in sorted(zip(g.compartment, g.site), key=lambda x: (x[1], x[0]))),\n                     \"split\": bool(g.split.any()),"
-}
-```
-
-```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "  give no threshold; `BASAL_RATIO_RANGE` is a choice made here.",
- "new_string": "  give no threshold; `BASAL_RATIO_RANGE` is a choice made here. Splitting the three series that\n  hold two sites under one name (see `dendritic_sites`) is a choice made here from the data."
-}
-```
-
-```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/inv5.py <<'EOF'
-import pickle, sys, os
-sys.path.insert(0, ".")
-import numpy as np, pandas as pd
-import importlib, lid
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 500)
 from scipy import stats
-D = pickle.load(open(os.environ["TMPDIR"] + "/zdata.pkl", "rb"))
-days, tidy = D["days"], D["tidy"]
-def build(split):
-    sites = []
-    for d in days:
-        if d["dendritic"]:
-            s = lid.dendritic_sites(d, split_merged=split); s["date"], s["cell_type"] = d["date"], d["cell_type"]
-            sites.append(s)
-    sites = pd.concat(sites, ignore_index=True)
-    out = []
-    for (date, ct), s in sites.groupby(["date", "cell_type"]):
-        di = lid.dendritic_index(s); di["date"], di["cell_type"] = date, ct; out.append(di)
-    out = pd.concat(out, ignore_index=True)
-    out["group"] = [lid.GROUPS.get((ct, c), "?") for ct, c in zip(out.cell_type, out.condition)]
-    return out.sort_values(["group", "date", "cell"]).reset_index(drop=True)
-dend = build(True)
-print(dend[dend.split | dend["index"].isna()].to_string())
-def mw(g1, g2):
-    a = dend[dend.group == g1]["index"].dropna(); b = dend[dend.group == g2]["index"].dropna()
-    r = stats.mannwhitneyu(a, b); re_ = stats.mannwhitneyu(a, b, method="exact")
-    return len(a), len(b), round(a.median(),3), round(b.median(),3), r.pvalue, re_.pvalue
-for p in [("dSPN off","dSPN on"),("dSPN on","dSPN on+SCH"),("iSPN off","iSPN on"),("iSPN on","iSPN on+sul"),("Fig6 vehicle","Fig6 M1R antagonist"),("KO off","KO on")]:
-    print(p, mw(*p))
+import zhai
+pd.set_option("display.width", 250); pd.set_option("display.max_columns", 40); pd.set_option("display.max_rows", 400)
+d = pickle.load(open(os.environ['TMPDIR']+'/data.pkl','rb'))
+assets, som_sweeps, den_pairs, sr_sweeps, grab_trials, aim, T = d['assets'], d['som'], d['den'], d['sr'], d['grab'], d['aim'], d['T']
+nb = json.load(open('reproduce_zhai_2025.ipynb'))
+cells = [i for i,c in enumerate(nb['cells']) if c['cell_type']=='code' and i>=3]
+want = [int(x) for x in sys.argv[1].split(',')] if len(sys.argv)>1 else None
+G = globals()
+# always run cell 4 setup quietly
+import io, contextlib
+for i in cells:
+    src=''.join(nb['cells'][i]['source'])
+    show = want is None or i in want
+    if want is not None and i > max(want): break
+    buf = io.StringIO()
+    if show:
+        print(f"===== cell {i}"); exec(src, G)
+    else:
+        with contextlib.redirect_stdout(buf): exec(src, G)
 EOF
-$TMPDIR/zenv/bin/python $TMPDIR/inv5.py 2>&1 | grep -v Warn
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 42,44,46,49,52,55,58,61 2>&1 | tail -120
 ```
 
 ```
-red = np.nanmean([_smooth(r["ch1"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)
-  green = np.nanmean([_smooth(r["ch2"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)
-    cell              condition  pairs  pairs_kept  unpaired_sites        sites  split  basal_ratios     index      date cell_type        group
-21     3           KO off-state      1           1               0        D1 P1   True        [0.91]  0.292684  20160526      iSPN       KO off
-43     1          LID off-state      2           2               0  D1 P1 D2 P2   True  [1.16, 1.17]  0.327236  20170204      dSPN     dSPN off
-74     1           LID on-state      1           1               0        D1 P1   True        [1.32]  0.145557  20160608      iSPN      iSPN on
-90     3  LID on-state with sul      0           0               1           D2  False            []       NaN  20190508      iSPN  iSPN on+sul
-('dSPN off', 'dSPN on') (10, 10, np.float64(0.33), np.float64(0.476), np.float64(0.00579535854433471), np.float64(0.003886206672584382))
-('dSPN on', 'dSPN on+SCH') (10, 9, np.float64(0.476), np.float64(0.419), np.float64(0.06619257972219345), np.float64(0.06525363181709931))
-('iSPN off', 'iSPN on') (10, 10, np.float64(0.524), np.float64(0.339), np.float64(0.00728455700947966), np.float64(0.0051960423477451344))
-('iSPN on', 'iSPN on+sul') (10, 7, np.float64(0.339), np.float64(0.506), np.float64(0.009666803784450843), np.float64(0.009666803784450843))
-('Fig6 vehicle', 'Fig6 M1R antagonist') (9, 7, np.float64(0.451), np.float64(0.269), np.float64(0.022902097902097907), np.float64(0.022902097902097907))
-('KO off', 'KO on') (11, 8, np.float64(0.312), np.float64(0.286), np.float64(0.31004736577492), np.float64(0.31004736577492))
+===== cell 42
+                          n_data  n_paper  median_rel_diff  within_1pct  within_10pct
+sheet  group                                                                         
+Fig 1I LID off                10       10            0.040            4             9
+       LID on                 10       10            0.048            1             9
+       LID on + SCH            9        9            0.040            0             7
+Fig 3F LID off                10       10            0.025            3             8
+       LID on                 10       10            0.013            4            10
+       LID on + sul            8        8            0.002            6             8
+Fig 6D control                 9        9            0.035            3             7
+       M1R antagonist          7        7            0.064            1             4
+Fig 7F ('KO', 'LID off')      11       11            0.027            2            11
+       ('KO', 'LID on')        8        8            0.024            1             7
+
+groups with the paper's n: 10 of 10
+median relative difference from the matched paper value: 0.027 over 92 cells; to the nearest value of the group: 0.017
+
+cells more than 10% from their matched value:
+               group      date  cell  n_pairs    paper_id  index  paper  nearest
+0            LID off  20160812     3        1     cell_21  0.468  0.543    0.441
+[... 76 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/inv6.py <<'EOF'
-import pickle, sys, os
-sys.path.insert(0, ".")
-import h5py, remfile
-D = pickle.load(open(os.environ["TMPDIR"] + "/zdata.pkl", "rb"))
-urls = D["urls"]
-sp = [(p,u) for p,u in urls if not any(x in p for x in ("_icephys","_ophys.nwb","_image.nwb")) and "_ses-pan++ON" not in p]
-print(len(sp)); print([p for p,_ in sp[:3]], [p for p,_ in sp if "confocal" in p][:2])
-def walk(p,u):
-    with h5py.File(remfile.File(u), "r") as f:
-        out = {}
-        for top in ("acquisition","processing","analysis","stimulus","intervals"):
-            if top in f:
-                out[top] = {k: (f[top][k].attrs.get("neurodata_type"), list(f[top][k].keys())[:6] if isinstance(f[top][k], h5py.Group) else None) for k in f[top]}
-        return out
-import json
-print(walk(*sp[0])); print(walk(*[x for x in sp if "confocal" in x[0]][0]))
+cat > $TMPDIR/nbedit.py <<'EOF'
+import json, sys
+p='reproduce_zhai_2025.ipynb'
+nb=json.load(open(p))
+def src(i): return ''.join(nb['cells'][i]['source'])
+def setsrc(i, s):
+    lines = s.split('\n')
+    nb['cells'][i]['source'] = [l+'\n' for l in lines[:-1]] + [lines[-1]]
+def rep(i, old, new):
+    s = src(i); assert old in s, (i, old); setsrc(i, s.replace(old, new))
+def save(): json.dump(nb, open(p,'w'), indent=1, ensure_ascii=False); open(p,'a').write('\n')
 EOF
-$TMPDIR/zenv/bin/python $TMPDIR/inv6.py
+head -c 600 reproduce_zhai_2025.ipynb; tail -c 300 reproduce_zhai_2025.ipynb
 ```
 
 ```
-86
-['sub-SubjectRecordedAt20140426000000/sub-SubjectRecordedAt20140426000000_ses-iSPN++OnState++none++WT++20140426.nwb', 'sub-SubjectRecordedAt20151119000000/sub-SubjectRecordedAt20151119000000_ses-iSPN++OffState++none++WT++20151119.nwb', 'sub-SubjectRecordedAt20151123000000/sub-SubjectRecordedAt20151123000000_ses-iSPN++OffState++none++WT++20151123.nwb'] ['sub-iSPN-confocal-mouse-3823/sub-iSPN-confocal-mouse-3823_ses-iSPN++PD++none++WT++20231026-Cell2-Slide2-Slice4.nwb', 'sub-iSPN-confocal-mouse-3824/sub-iSPN-confocal-mouse-3824_ses-iSPN++CTRL++none++WT++20231022-Cell1-Slide2-Slice2.nwb']
-{'acquisition': {'ImagesDistal1': ('Images', ['ImageZ001', 'ImageZ002', 'ImageZ003', 'ImageZ004', 'ImageZ005', 'ImageZ006']), 'ImagesProximal12': ('Images', ['ImageZ001', 'ImageZ002', 'ImageZ003', 'ImageZ004', 'ImageZ005', 'ImageZ006'])}, 'processing': {}, 'analysis': {}, 'stimulus': {'presentation': (None, []), 'templates': (None, [])}}
-{'acquisition': {'ImagesCell2': ('Images', ['ZStackImage000', 'ZStackImage001', 'ZStackImage002', 'ZStackImage003', 'ZStackImage004', 'ZStackImage005'])}, 'processing': {}, 'analysis': {}, 'stimulus': {'presentation': (None, []), 'templates': (None, [])}}
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "caacf383",
+   "metadata": {},
+   "source": [
+    "# Reproducing Zhai et al. (2025) from dandiset 001538\n",
+    "\n",
+    "Paper: Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier (2025), \"State-dependent\n",
+    "modulation of spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of\n",
+    "Parkinson's disease\", Science Advances, doi:10.1126/sciadv.adv8224.\n",
+    "\n",
+    "Dataset: [DANDI:001538](https://dandiarchive.org/dandiset/001538/0.261124.1858), version\n",
+    "0.261124.1858, stream paper used, and several GRAB regions hold more trials than the\n",
+    "two the Methods give and lack a full calibration trial."
+   ]
+  }
+ ],
+ "metadata": {
+[... 9 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Bash**
 
-Spine files hold image stacks under `acquisition` and nothing under `processing` or `analysis`. Adding a lister to `lid.py`, then editing the notebook.
+```bash
+cat > $TMPDIR/nbedit.py <<'EOF'
+import json, sys, uuid
+p='reproduce_zhai_2025.ipynb'
+nb=json.load(open(p))
+def src(i): return ''.join(nb['cells'][i]['source'])
+def _lines(s):
+    lines = s.split('\n')
+    return [l+'\n' for l in lines[:-1]] + [lines[-1]]
+def setsrc(i, s): nb['cells'][i]['source'] = _lines(s)
+def rep(i, old, new):
+    s = src(i); assert old in s, (i, old); setsrc(i, s.replace(old, new))
+def find(text):
+    r=[i for i,c in enumerate(nb['cells']) if text in ''.join(c['source'])]; assert len(r)==1, (text, r); return r[0]
+def insert(i, kind, s, tags=None):
+    c = dict(cell_type=kind, id=uuid.uuid4().hex[:8], metadata={}, source=_lines(s))
+    if tags: c['metadata']['tags']=tags
+    if kind=='code': c['execution_count']=None; c['outputs']=[]
+    nb['cells'].insert(i, c)
+def save(): json.dump(nb, open(p,'w'), indent=1, ensure_ascii=False)
+EOF
+cd . && ../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = find("def somatic_link(cells):")
+rep(i, '''            j = int(np.argmin(diffs))
+            prow = P.iloc[j]
+            if R is not None:
+                prheo = float(R.iloc[j, 2])
+            else:
+                pos = [s for s in sorted(stepcols) if s > 0 and prow[stepcols[s]] >= 1]
+                prheo = float(pos[0]) if pos else np.nan''', '''            j = int(np.argmin(diffs))
+            prow = P.iloc[j]
+            pos = [s for s in sorted(stepcols) if s > 0 and prow[stepcols[s]] >= 1]
+            fi_rheo = float(pos[0]) if pos else np.nan
+            prheo = float(R.iloc[j, 2]) if R is not None else fi_rheo''')
+rep(i, '''best_row=j, best_diff=diffs[j],''', '''best_row=j, best_diff=diffs[j], n_tied=int(np.sum(np.array(diffs) == diffs[j])),''')
+rep(i, '''rheobase=d.rheobase, paper_rheobase=prheo))''', '''rheobase=d.rheobase, paper_rheobase=prheo, paper_fi_rheobase=fi_rheo))''')
+rep(i, '''print("\\ncells with a repeated step:", int((som_cells.repeated_sweeps > 0).sum()), "of", len(som_cells))
+alt = zhai.per_cell_somatic(som_sweeps.sort_values("start", ascending=False))
+alt_link = somatic_link(alt)
+print(f"variant, the last sweep of a repeated step: exact {(alt_link.best_diff == 0).sum()}, within 3 {(alt_link.best_diff <= 3).sum()} of {len(alt_link)}")''',
+'''reused = slink.groupby(["sheet", "group", "best_row"]).size()
+print(f"\\npaper rows that are the best match of more than one cell: {int((reused > 1).sum())}, "
+      f"taking {int(reused[reused > 1].sum())} cells; cells whose best match is tied between rows: {int((slink.n_tied > 1).sum())}")
+# The rheobase sheets (1F, 3D) are read by row number; check them against the F-I sheet's row
+for sheet, rs in RHEO_SHEET.items():
+    for pg in T[sheet].iloc[:, 1].unique():
+        P = T[sheet][T[sheet].iloc[:, 1] == pg].reset_index(drop=True)
+        R = T[rs][T[rs].iloc[:, 1] == pg].reset_index(drop=True)
+        stepcols = {int(str(c).split(" pA")[0]): c for c in P.columns[2:]}
+        fr = [next((s for s in sorted(stepcols) if s > 0 and P.loc[k, stepcols[s]] >= 1), np.nan) for k in range(len(P))]
+        n = min(len(P), len(R))
+        print(f"{rs}, {pg}: rows {len(R)} (F-I sheet {len(P)}); rheobase equal to the first step with a spike in the same row of the F-I sheet: "
+              f"{int(np.sum(np.array(fr[:n], float) == R.iloc[:n, 2].to_numpy(float)))} of {n}")
+
+print("\\ncells with a repeated step:", int((som_cells.repeated_sweeps > 0).sum()), "of", len(som_cells))
+alt = zhai.per_cell_somatic(som_sweeps, keep="last")
+alt_link = somatic_link(alt)
+print(f"variant, the last sweep of a repeated step: exact {(alt_link.best_diff == 0).sum()}, within 3 {(alt_link.best_diff <= 3).sum()} of {len(alt_link)}")
+fl = som_cells[som_cells.repeated_sweeps > 0][["cell_type", "condition", "date", "cell", "repeated_sweeps", "rheobase", "fi_sum"]].merge(
+    alt[["date", "cell", "condition", "path", "rheobase", "fi_sum"]].assign(path=None).drop(columns="path"),
+    on=["date", "cell", "condition"], suffixes=("_first", "_last"))
+fl = fl.merge(slink[["date", "cell", "condition", "best_diff"]], on=["date", "cell", "condition"]).merge(
+    alt_link[["date", "cell", "condition", "best_diff"]], on=["date", "cell", "condition"], suffixes=("_first", "_last"))
+print("cells with a repeated step, first against last sweep:"); print(fl.to_string())
+print(f"cells whose rheobase changes: {int((fl.rheobase_first != fl.rheobase_last).sum())}; whose summed spikes change: {int((fl.fi_sum_first != fl.fi_sum_last).sum())}")''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 11,15,24 2>&1 | tail -90
+```
+
+```
+18           LID on                        LID on-state  20170707     2      9         20      60.0            80.0
+21           LID on                        LID on-state  20170720     1     15          6     100.0           120.0
+24           LID on                        LID on-state  20190411     1     15         13     100.0            80.0
+27           LID on                        LID on-state  20190503     1     15          6     100.0           120.0
+28           LID on                        LID on-state  20190507     1     13          6     160.0           160.0
+45          LID off                       LID off-state  20160524     2     15          4      80.0            80.0
+46          LID off                       LID off-state  20160524     4     14         11     120.0           120.0
+61           LID on                        LID on-state  20190429     1     15          8     160.0           140.0
+63     LID on + sul         LID on-state with sulpiride  20190426     2     14          6     120.0           120.0
+66     LID on + sul         LID on-state with sulpiride  20190429     2     15         11     100.0           160.0
+67     LID on + sul         LID on-state with sulpiride  20190429     3     15         11     100.0           160.0
+70          control      LID off-state, vehicle control  20200217     1     13          5      80.0            80.0
+82   M1R antagonist  LID off-state with M1R antagonists  20200312     1     14         24      60.0            80.0
+96           KO off        CDGI knockout, LID off-state  20160527     3     14          7     180.0           160.0
+109         control  LID off-state, control (gRNA only)  20221012     1     15         17      80.0            80.0
+120           "M1R"         LID off-state, M1R deletion  20221129     1     15         14     100.0           100.0
+
+paper rows that are the best match of more than one cell: 9, taking 20 cells; cells whose best match is tied between rows: 6
+Fig 1F_dSPN rheoba
+[... 71 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = find("def sr_cells(sw")
+rep(i, '''def sr_cells(sw, amp_col="amps", n_col="n_events", max_sweeps=None):
+    if max_sweeps:
+        sw = sw.sort_values("sweep_start").groupby(["path", "cell"]).head(max_sweeps)''', '''def sr_cells(sw, amp_col="amps", n_col="n_events", max_sweeps=None, last=False):
+    if max_sweeps:
+        g = sw.sort_values("sweep_start").groupby(["path", "cell"])
+        sw = g.tail(max_sweeps) if last else g.head(max_sweeps)''')
+rep(i, '''                  ("variant, first 10 sweeps of each cell", dict(max_sweeps=10))]:''', '''                  ("variant, first 10 sweeps of each cell", dict(max_sweeps=10)),
+                  ("variant, last 10 sweeps of each cell", dict(max_sweeps=10, last=True))]:''')
+for t in ["claim:fig2h", "claim:fig2i", "claim:fig4g"]:
+    j = [k for k,c in enumerate(nb['cells']) if any(x.startswith(t) for x in c['metadata'].get('tags',[]))][0]
+    rep(j, '''                  ("variant, first 10 sweeps", dict(max_sweeps=10))]:''', '''                  ("variant, first 10 sweeps", dict(max_sweeps=10)), ("variant, last 10 sweeps", dict(max_sweeps=10, last=True))]:''')
+j = find("finding-sr-sweeps") if False else [k for k,c in enumerate(nb['cells']) if 'finding-sr-sweeps' in c['metadata'].get('tags',[])][0]
+setsrc(j, '''# Sweeps per Sr2+-oEPSC cell; the paper's frequencies imply 10
+print(src[src.n_sweeps != 10][["cell_type", "date", "cell", "condition", "n_sweeps"]].to_string())
+# For these cells, events in each run of 10 consecutive sweeps against the paper's count (frequency x 3.6 s)
+Psr = paper_sr()
+for _, c in src[src.n_sweeps > 10].iterrows():
+    sw = sr_sweeps[(sr_sweeps.date == c.date) & (sr_sweeps.cell == c.cell)].sort_values("sweep_start")
+    n = sw.n_events.to_numpy()
+    runs = [int(n[k:k + 10].sum()) for k in range(len(n) - 9)]
+    print(f"{c.date} cell {c.cell}: events per sweep {n.tolist()}; sweeps 1-10 onward, events in 10 sweeps {runs}; "
+          f"paper {float(Psr[Psr.key == c.key].paper_n.iloc[0]):.1f}")''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+j=[k for k,c in enumerate(nb['cells']) if 'claim:fig4h-ispn-sr-frequency-unchanged' in c['metadata'].get('tags',[])][0]
+rep(j, '''                  ("variant, first 10 sweeps", dict(max_sweeps=10))]:''', '''                  ("variant, first 10 sweeps", dict(max_sweeps=10)), ("variant, last 10 sweeps", dict(max_sweeps=10, last=True))]:''')
+save()
+print([ (k, c['metadata'].get('tags')) for k,c in enumerate(nb['cells']) if c['cell_type']=='code' and c['metadata'].get('tags') and any('fig2' in t or 'fig4' in t or 'sr' in t for t in c['metadata']['tags'])])
+EOF
+```
+
+```
+[(64, ['claim:link-sr-cells']), (66, ['finding-sr-sweeps']), (68, ['claim:fig2h-dspn-sr-amplitude-on-larger']), (71, ['claim:fig2i-dspn-sr-frequency-unchanged']), (74, ['claim:fig4g-ispn-sr-amplitude-on-smaller']), (77, ['claim:fig4h-ispn-sr-frequency-unchanged'])]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 64,66,68,71,74,77 2>&1 | grep -v "^ *[0-9]* *[0-9]\{8\}\|^\s*[0-9]\+ \+[di]SPN" | tail -60
+```
+
+```
+===== cell 64
+          key cell_type      condition    group  n_sweeps  n_events  paper_n  mean_amp  paper_amp  amp_rel  n_rel _merge
+
+dandiset cells 33, paper cells 33, matched 33, dandiset cells without a paper identifier 0, paper cells not in the dandiset 0
+cells with mean amplitude and event count both within 25% of the paper's: 21 of 33 (64%)
+amplitude within 25%: 25; count within 25%: 26
+median relative difference: amplitude +0.110, count -0.021
+variant, noise SD of the smoothed trace: both within 25% for 8 of 33; median amplitude difference -0.077, count +0.356
+variant, first 10 sweeps of each cell: both within 25% for 21 of 33; median amplitude difference +0.110, count -0.021
+variant, last 10 sweeps of each cell: both within 25% for 22 of 33; median amplitude difference +0.110, count -0.021
+===== cell 66
+Traceback (most recent call last):
+  File "/tmp/claude-1001/dev.py", line 22, in <module>
+    print(f"===== cell {i}"); exec(src, G)
+                              ~~~~^^^^^^^^
+  File "<string>", line 2, in <module>
+AttributeError: 'str' object has no attribute 'n_sweeps'
+```
+
+**Agent calls Bash**
+
+```bash
+sed -i 's/src=/code=/; s/exec(src, G)/exec(code, G)/g' $TMPDIR/dev.py; ../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 66,68,71,74,77 2>&1 | grep -v "^ *[0-9]* *[0-9]\{8\}\|^\s*[0-9]\+ \+[di]SPN\|^LID\|^ \+[0-9]\{8\}" | tail -60
+```
+
+```
+===== cell 66
+   cell_type      date  cell      condition  n_sweeps
+===== cell 68
+dSPN mean_amp: on n=8 median 18.754; off n=10 median 13.442; Mann-Whitney U=70.0, P=0.006216
+variant, noise SD of the smoothed trace: on n=8 median 15.371; off n=10 median 11.261; Mann-Whitney U=71.0, P=0.004388
+variant, first 10 sweeps: on n=8 median 18.754; off n=10 median 13.442; Mann-Whitney U=70.0, P=0.006216
+variant, last 10 sweeps: on n=8 median 18.754; off n=10 median 13.442; Mann-Whitney U=70.0, P=0.006216
+paper's table: on n=8 median 16.665; off n=10 median 11.940; Mann-Whitney U=77.0, P=0.0003199
+                        size  median
+condition     date                  
+===== cell 71
+dSPN freq_hz: on n=8 median 21.250; off n=10 median 16.250; Mann-Whitney U=59.0, P=0.09987
+variant, noise SD of the smoothed trace: on n=8 median 31.389; off n=10 median 26.806; Mann-Whitney U=58.0, P=0.1198
+variant, first 10 sweeps: on n=8 median 21.250; off n=10 median 16.250; Mann-Whitney U=59.0, P=0.09987
+variant, last 10 sweeps: on n=8 median 21.250; off n=10 median 16.250; Mann-Whitney U=59.0, P=0.09987
+paper's table: on n=8 median 20.139; off n=10 median 16.528; Mann-Whitney U=57.5, P=0.1301
+                        size  median
+condition     date                  
+===== cell 74
+iSPN mean_amp: on n=8 median 9.708; off n=7 median 13.734; Mann-Whitney U=6.0, P=0.009324
+[... 14 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 66 2>&1 | tail -8
+```
+
+```
+===== cell 66
+   cell_type      date  cell      condition  n_sweeps
+18      iSPN  20230222     1  LID off-state        12
+30      iSPN  20230406     1  LID off-state        11
+20230222 cell 1: events per sweep [8, 9, 12, 12, 10, 9, 11, 10, 14, 11, 15, 9]; sweeps 1-10 onward, events in 10 sweeps [106, 113, 113]; paper 101.0
+20230406 cell 1: events per sweep [8, 12, 10, 9, 7, 9, 8, 11, 8, 11, 4]; sweeps 1-10 onward, events in 10 sweeps [93, 89]; paper 73.0
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> $TMPDIR/dev.py <<'EOF'
+if len(sys.argv)>2:
+    exec(open(sys.argv[2]).read(), G)
+EOF
+cat > $TMPDIR/x.py <<'EOF'
+sw = sr_sweeps.sort_values("sweep_start")
+def pick(d):
+    if len(d) <= 10: return d
+    n = d.n_events.to_numpy(); key = d.date.iloc[0] + "abcdefgh"[d.cell.iloc[0]-1]
+    pn = float(Psr[Psr.key == key].paper_n.iloc[0])
+    k = int(np.argmin([abs(n[k:k+10].sum() - pn) for k in range(len(n)-9)]))
+    print(key, "start", k); return d.iloc[k:k+10]
+s2 = sw.groupby(["path","cell"], group_keys=False).apply(pick)
+c = sr_cells(s2); c = c[c.cell_type=="iSPN"]
+show_mw("best-matching 10", c[c.condition=="LID on-state"].freq_hz, c[c.condition=="LID off-state"].freq_hz, "on", "off")
+for a in range(3):
+  for b in range(2):
+    pass
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 66 $TMPDIR/x.py 2>&1 | tail -4
+```
+
+```
+File "executed/zhai-2025/.venv/lib/python3.13/site-packages/pandas/core/generic.py", line 6434, in __getattr__
+    return object.__getattribute__(self, name)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AttributeError: 'DataFrame' object has no attribute 'cell'
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/x.py <<'EOF'
+sw = sr_sweeps.sort_values("sweep_start")
+parts=[]
+for (pth, cl), d in sw.groupby(["path","cell"]):
+    if len(d) > 10:
+        n = d.n_events.to_numpy(); key = d.date.iloc[0] + "abcdefgh"[cl-1]
+        pn = float(Psr[Psr.key == key].paper_n.iloc[0])
+        k = int(np.argmin([abs(n[k:k+10].sum() - pn) for k in range(len(n)-9)]))
+        print(key, "start", k); d = d.iloc[k:k+10]
+    parts.append(d)
+c = sr_cells(pd.concat(parts)); c = c[c.cell_type=="iSPN"]
+show_mw("best-matching 10", c[c.condition=="LID on-state"].freq_hz, c[c.condition=="LID off-state"].freq_hz, "on", "off")
+print(c[c.condition=="LID off-state"][["date","cell","n_events","freq_hz"]])
+print(c[c.condition=="LID on-state"][["date","cell","n_events","freq_hz"]])
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 66 $TMPDIR/x.py 2>&1 | tail -22
+```
+
+```
+20230222 cell 1: events per sweep [8, 9, 12, 12, 10, 9, 11, 10, 14, 11, 15, 9]; sweeps 1-10 onward, events in 10 sweeps [106, 113, 113]; paper 101.0
+20230406 cell 1: events per sweep [8, 12, 10, 9, 7, 9, 8, 11, 8, 11, 4]; sweeps 1-10 onward, events in 10 sweeps [93, 89]; paper 73.0
+20230222a start 0
+20230406a start 1
+best-matching 10: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+        date  cell  n_events    freq_hz
+18  20230222     1       106  29.444444
+19  20230222     2        87  24.166667
+24  20230330     1        50  13.888889
+25  20230330     2        63  17.500000
+30  20230406     1        89  24.722222
+31  20230406     2        80  22.222222
+32  20230406     3        94  26.111111
+        date  cell  n_events    freq_hz
+20  20230228     1        36  10.000000
+21  20230228     2        54  15.000000
+22  20230301     1        91  25.277778
+23  20230301     2        20   5.555556
+26  20230331     1        53  14.722222
+27  20230331     2        67  18.611111
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+j=[k for k,c in enumerate(nb['cells']) if 'finding-sr-sweeps' in c['metadata'].get('tags',[])][0]
+setsrc(j, src(j) + '''
+# A reading the paper's own per-cell counts support: for these cells, the 10 consecutive sweeps whose
+# event count is nearest the paper's
+parts = []
+for (pth, cl), d in sr_sweeps.sort_values("sweep_start").groupby(["path", "cell"]):
+    if len(d) > 10:
+        n = d.n_events.to_numpy()
+        pn = float(Psr[Psr.key == d.date.iloc[0] + "abcdefgh"[cl - 1]].paper_n.iloc[0])
+        k = int(np.argmin([abs(n[k:k + 10].sum() - pn) for k in range(len(n) - 9)]))
+        print(f"{d.date.iloc[0]} cell {cl}: nearest run starts at sweep {k + 1}")
+        d = d.iloc[k:k + 10]
+    parts.append(d)
+sr_sweeps_nearest = pd.concat(parts)''')
+for t in ['claim:fig4g-ispn-sr-amplitude-on-smaller', 'claim:fig4h-ispn-sr-frequency-unchanged']:
+    j=[k for k,c in enumerate(nb['cells']) if t in c['metadata'].get('tags',[])][0]
+    col = "mean_amp" if "fig4g" in t else "freq_hz"
+    rep(j, '''P = paper_sr(); P = P[P.ct == "iSPN"]''', f'''v = sr_cells(sr_sweeps_nearest); v = v[v.cell_type == "iSPN"]
+show_mw("variant, the 10 sweeps nearest the paper's count", v[v.condition == "LID on-state"].{col}, v[v.condition == "LID off-state"].{col}, "on", "off")
+P = paper_sr(); P = P[P.ct == "iSPN"]''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 66,74,77 2>&1 | grep -i "variant\|nearest\|P="
+```
+
+```
+20230222 cell 1: nearest run starts at sweep 1
+20230406 cell 1: nearest run starts at sweep 2
+iSPN mean_amp: on n=8 median 9.708; off n=7 median 13.734; Mann-Whitney U=6.0, P=0.009324
+variant, noise SD of the smoothed trace: on n=8 median 7.755; off n=7 median 10.615; Mann-Whitney U=4.0, P=0.00373
+variant, first 10 sweeps: on n=8 median 9.708; off n=7 median 13.734; Mann-Whitney U=6.0, P=0.009324
+variant, last 10 sweeps: on n=8 median 9.708; off n=7 median 13.734; Mann-Whitney U=6.0, P=0.009324
+variant, the 10 sweeps nearest the paper's count: on n=8 median 9.708; off n=7 median 13.734; Mann-Whitney U=6.0, P=0.009324
+paper's table: on n=8 median 7.352; off n=7 median 12.310; Mann-Whitney U=0.0, P=0.0003108
+iSPN freq_hz: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+variant, noise SD of the smoothed trace: on n=8 median 24.028; off n=7 median 32.576; Mann-Whitney U=14.0, P=0.1179
+variant, first 10 sweeps: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=10.5, P=0.04874
+variant, last 10 sweeps: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+variant, the 10 sweeps nearest the paper's count: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+paper's table: on n=8 median 19.028; off n=7 median 20.278; Mann-Whitney U=17.0, P=0.2319
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = find("def dendritic_link(cells):")
+rep(i, '''        D = cells[(cells.cell_type == ct) & (cells.condition == cond)].sort_values(["date", "cell"]).reset_index(drop=True)
+        for i, d in D.iterrows():
+            if sheet.startswith("Fig 6D"):
+                pid = f"{d.date[4:8]}{d.date[:4]}_{'abcdefgh'[int(d.cell) - 1]}"''', '''        D = cells[(cells.cell_type == ct) & (cells.condition == cond)].sort_values(["date", "cell"]).reset_index(drop=True)
+        D["ordinal"] = D.groupby("date").cumcount()  # the cell's place among the group's cells of the day
+        for i, d in D.iterrows():
+            if sheet.startswith("Fig 6D"):
+                pid = f"{d.date[4:8]}{d.date[:4]}_{'abcdefgh'[int(d.ordinal)]}"''')
+rep(i, '''n_data=len(D), n_paper=len(P), paper_id=pid,''', '''n_data=len(D), n_paper=len(P), paper_id=pid, ordinal=int(d.ordinal) + 1,''')
+rep(i, '''print("\\ncells more than 10% from their matched value:")''', '''d6 = dlink[dlink.sheet == "Fig 6D"]
+print(f"Figure 6D: cells matched by date and letter {int(d6.paper.notna().sum())} of {len(d6)}; cells whose place in the day differs from their cell number: {int((d6.ordinal != d6.cell).sum())}")
+print("\\ncells more than 10% from their matched value:")''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 42 2>&1 | grep "6D\|Figure 6D\|groups with"
+```
+
+```
+Fig 6D control                 9        9            0.035            3             7
+groups with the paper's n: 10 of 10
+Figure 6D: cells matched by date and letter 14 of 16; cells whose place in the day differs from their cell number: 3
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/x.py <<'EOF'
+d6 = dlink[dlink.sheet == "Fig 6D"]
+print(d6[["group","date","cell","ordinal","paper_id","index","paper"]].to_string())
+P=T["Fig 6D_M1R antagonist DE"]; print(P.to_string())
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 4 $TMPDIR/x.py 2>&1 | tail -45
+```
+
+```
+Dendritic cells (pairs with basal ratio 0.5 to 2, averaged):
+                                              cells  pairs
+cell_type condition                                       
+dSPN      LID off-state                          10     20
+          LID on-state                           10     17
+          LID on-state with SCH 23390             9     14
+iSPN      CDGI knockout, LID off-state           11     19
+          CDGI knockout, LID on-state             8     14
+          CDGI knockout, naive                    6     12
+          CDGI knockout, naive with oxo-M         6     12
+          LID off-state                          10     21
+          LID off-state with M1R antagonists      7     14
+          LID off-state, vehicle control          9     18
+          LID on-state                           10     18
+          LID on-state with sulpiride             8     14
+          naive                                   5     10
+          naive with oxo-M                        5     10
+
+Sr2+-oEPSC cells:
+                         cells  sweeps_min  sweeps_max
+[... 24 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 42 $TMPDIR/x.py 2>&1 | tail -38
+```
+
+```
+67    M1R antagonist  20200218     3        2  02182020_b  0.366  0.237    0.344
+70    M1R antagonist  20200312     2        2  03122020_b  0.194  0.261    0.213
+72    M1R antagonist  20240430     2        2  04302024_b  0.183  0.213    0.172
+88  ('KO', 'LID on')  20160902     3        2     cell_36  0.500  0.608    0.608
+             group      date  cell  ordinal    paper_id     index     paper
+57         control  20200217     1        1  02172020_a  0.530692  0.550072
+58         control  20200217     2        2  02172020_b  0.451480  0.464814
+59         control  20200225     1        1  02252020_a  0.490109  0.466255
+60         control  20200225     2        2  02252020_b  0.230391  0.265450
+61         control  20200811     1        1  08112020_a  0.461816  0.463228
+62         control  20200812     1        1  08122020_a  0.434750  0.436056
+63         control  20200812     2        2  08122020_b  0.654736  0.649738
+64         control  20240425     1        1  04252024_a  0.420661  0.392376
+65         control  20240425     2        2  04252024_b  0.361104  0.503710
+66  M1R antagonist  20200218     2        1  02182020_a  0.268861       NaN
+67  M1R antagonist  20200218     3        2  02182020_b  0.366224  0.237224
+68  M1R antagonist  20200220     3        1  02202020_a  0.319010       NaN
+69  M1R antagonist  20200312     1        1  03122020_a  0.464535  0.468402
+70  M1R antagonist  20200312     2        2  03122020_b  0.194414  0.260763
+71  M1R antagonist  20240430     1        1  04302024_a  0.167511  0.171766
+[... 18 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = find("def dendritic_link(cells):")
+rep(i, '''        D["ordinal"] = D.groupby("date").cumcount()  # the cell's place among the group's cells of the day
+        for i, d in D.iterrows():
+            if sheet.startswith("Fig 6D"):
+                pid = f"{d.date[4:8]}{d.date[:4]}_{'abcdefgh'[int(d.ordinal)]}"''', '''        D["ordinal"] = D.groupby("date").cumcount()  # the cell's place among the group's analysed cells of the day
+        for i, d in D.iterrows():
+            if sheet.startswith("Fig 6D"):
+                letter = "abcdefgh"[int(d.ordinal)] if by_ordinal else "abcdefgh"[int(d.cell) - 1]
+                pid = f"{d.date[4:8]}{d.date[:4]}_{letter}"''')
+rep(i, '''def dendritic_link(cells):''', '''def dendritic_link(cells, by_ordinal=False):''')
+rep(i, '''d6 = dlink[dlink.sheet == "Fig 6D"]
+print(f"Figure 6D: cells matched by date and letter {int(d6.paper.notna().sum())} of {len(d6)}; cells whose place in the day differs from their cell number: {int((d6.ordinal != d6.cell).sum())}")''', '''d6 = dlink[dlink.sheet == "Fig 6D"]
+print(f"Figure 6D, letter from the file's cell number: {int(d6.paper.notna().sum())} of {len(d6)} cells find their identifier; "
+      f"median relative difference {d6.rel_diff.median():.3f}; cells whose cell number differs from their place among the group's cells of the day: {int((d6.ordinal != d6.cell).sum())}")
+v6 = dendritic_link(den_cells, by_ordinal=True)
+v6 = v6[v6.sheet == "Fig 6D"]
+print(f"variant, letter from the place among the group's cells of the day: {int(v6.paper.notna().sum())} of {len(v6)} find their identifier; "
+      f"median relative difference {v6.rel_diff.median():.3f}")
+print("paper's Figure 6D identifiers:", T["Fig 6D_M1R antagonist DE"].iloc[:, 0].tolist())''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 42 2>&1 | grep -A3 "Figure 6D\|groups with\|median relative"
+```
+
+```
+groups with the paper's n: 10 of 10
+median relative difference from the matched paper value: 0.027 over 92 cells; to the nearest value of the group: 0.017
+Figure 6D, letter from the file's cell number: 16 of 16 cells find their identifier; median relative difference 0.053; cells whose cell number differs from their place among the group's cells of the day: 3
+variant, letter from the place among the group's cells of the day: 14 of 16 find their identifier; median relative difference 0.043
+paper's Figure 6D identifiers: ['02172020_a', '02172020_b', '02252020_a', '02252020_b', '04252024_a', '04252024_b', '08112020_a', '08122020_a', '08122020_b', '02182020_b', '02182020_c', '02202020_c', '03122020_a', '03122020_b', '04302024_a', '04302024_b']
+
+cells more than 10% from their matched value:
+               group      date  cell  n_pairs    paper_id  index  paper  nearest
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/x.py <<'EOF'
+g = grab_trials[grab_trials.stimulation == "single 1 ms pulse"]
+x = g.groupby(["path","region","drug"]).frame_dt.agg(["min","max","size"])
+x["ratio"] = x["max"]/x["min"]
+print("conditions:", len(x), "with dt differing >1%:", int((x.ratio>1.01).sum()))
+print(x[x.ratio>1.01])
+print(grab_trials.frame_dt.round(3).value_counts())
+s = grab_trials[(grab_trials.date=="20240402") & (grab_trials.region.str.contains("Slice1Roi2"))]
+print(s[["region","drug","stimulation","start","stim","n_frames","frame_dt"]].assign(length=s.t.apply(lambda t: round(float(t[-1]),2))).to_string())
+print(grab_trials.drug.unique(), grab_trials.stimulation.unique())
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 4 $TMPDIR/x.py 2>&1 | tail -40
+```
+
+```
+GRAB-ACh3.0 regions by group: {'LesionedControl': 10, 'OffState': 11, 'UnlesionedControl': 13}
+AIM mice by figure and group: {('Figure 10', 'M1R CRISPR'): 10, ('Figure 10', 'control'): 11, ('Figure 8', 'CDGI knockout'): 11, ('Figure 8', 'control'): 10}
+
+Units and ranges
+somatic membrane potential: -125.2 to 53.1 mV (volts in the files, scaled by each series' conversion)
+per file minimum and maximum (mV): [-125.0, -90.0] [32.0, 53.0]
+somatic step currents (pA): [-120, -100, -80, -60, -40, -20, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400]
+somatic sweep length (samples at 10 kHz): [10000, 10001]
+line-scan basal ratio range: [0.672, 1.749] ; pairs outside 0.5 to 2: 0 of 213
+Sr2+ sampling rates (Hz): [10000.0, 20000.0] ; flash time in sweep (s): [0.02]
+GRAB frame interval (s): [0.047, 0.1996] (the paper gives 5.01 frames per second)
+AIM single scores range: [0.0, 4.0] (scale 0 to 4)
+conditions: 124 with dt differing >1%: 0
+Empty DataFrame
+Columns: [min, max, size, ratio]
+Index: []
+frame_dt
+0.200    581
+0.047      2
+Name: count, dtype: int64
+[... 20 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = find("def grab_link(W):")
+rep(i, '''print("paper regions matched by more than one dandiset region:", int(GL.duplicated(["group", "paper_roi"]).sum()))''', '''print("paper regions matched by more than one dandiset region:", int(GL.duplicated(["group", "paper_roi"]).sum()))
+# The criterion's unit is the mouse; a mouse (recording day) matches when all its regions do
+bym = GL.groupby(["group", "date"]).max_diff.max()
+print(f"mice (recording days) whose every region is within 0.05: {int((bym <= 0.05).sum())} of {len(bym)}")
+# One-to-one assignment within each group (each paper region used once), minimising the summed difference
+from scipy.optimize import linear_sum_assignment
+one = []
+for grp, w in W.groupby("group"):
+    cand = PW[PW.group == grp].reset_index(drop=True)
+    drugs = ["No drug", "quinpirole", "sulpiride", "DA"]
+    cost = np.array([[np.nansum([abs(r[d] - p[d]) for d in drugs if d in r and not np.isnan(r[d]) and not np.isnan(p[d])])
+                      for _, p in cand.iterrows()] for _, r in w.iterrows()])
+    ri, ci = linear_sum_assignment(cost)
+    for a, b in zip(ri, ci):
+        r, p = w.iloc[a], cand.iloc[b]
+        one.append(max(abs(r[d] - p[d]) for d in drugs if d in r and not np.isnan(r[d]) and not np.isnan(p[d])))
+one = np.array(one)
+print(f"variant, one-to-one assignment: regions within 0.05 for every treatment {int((one <= 0.05).sum())} of {len(one)}")''')
+j = [k for k,c in enumerate(nb['cells']) if 'finding-grab-calibration' in c['metadata'].get('tags',[])][0]
+setsrc(j, src(j) + '''
+# Frame interval within each single-pulse condition (trials are aligned with one interval per condition)
+fdt = grab_trials[grab_trials.stimulation == "single 1 ms pulse"].groupby(["path", "region", "drug"]).frame_dt.agg(["min", "max"])
+print(f"single-pulse conditions: {len(fdt)}; with frame intervals differing by more than 1%: {int((fdt['max'] > 1.01 * fdt['min']).sum())}; "
+      f"intervals {fdt['min'].min():.4f} to {fdt['max'].max():.4f} s")
+print("frame intervals over all trials (s):", grab_trials.frame_dt.round(3).value_counts().to_dict())
+# 2024-04-02 Slice1Roi2: the description says it has no acetylcholine trial
+s = grab_trials[(grab_trials.date == "20240402") & (grab_trials.region == "Slice1Roi2")]
+print(s[["region", "drug", "stimulation", "start", "n_frames"]].assign(length_s=s.t.apply(lambda t: round(float(t[-1]), 2))).to_string())''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 80,82 2>&1 | tail -45
+```
+
+```
+unlesioned        13     13
+regions whose best match is within 0.05 for every treatment: 16 of 34
+paper regions matched by more than one dandiset region: 11
+mice (recording days) whose every region is within 0.05: 1 of 11
+variant, one-to-one assignment: regions within 0.05 for every treatment 15 of 34
+variant, whole-frame brightness: within 0.05 for 16 of 34; median largest difference 0.055
+variant, Fmin from tetrodotoxin only: within 0.05 for 10 of 33; median largest difference 0.092
+variant, Fmin from the quinpirole baseline only: within 0.05 for 16 of 34; median largest difference 0.053
+variant, first two trials of each condition: within 0.05 for 16 of 34; median largest difference 0.052
+===== cell 82
+regions: 34
+regions without a tetrodotoxin trial, or with an acetylcholine trial shorter than the 2 to 4 s window:
+                group      date      region  n_ach ach_lengths_s  n_ttx
+9     LesionedControl  20240509  Slice2Roi1      2   [28.3, 2.8]      1
+10           OffState  20240524  Slice1Roi1      2    [4.6, 5.2]      0
+19           OffState  20240604  Slice3Roi1      2    [8.6, 3.4]      1
+20           OffState  20240604  Slice4Roi1      1         [2.8]      1
+21  UnlesionedControl  20240402  Slice1Roi1      1         [3.0]      1
+22  UnlesionedControl  20240402  Slice1Roi2      2    [4.4, 1.2]      1
+23  UnlesionedControl  20240402  Slice2Roi1      2    [3.2, 6.0]      1
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = [k for k,c in enumerate(nb['cells']) if 'claim:fig8bc-cdgi-aims' in c['metadata'].get('tags',[])][0]
+rep(i, '''aim_tests("Figure 8", GMAP8)
+''', '''aim_tests("Figure 8", GMAP8)
+pm8 = set(T["Fig 8B_total AIMs"].iloc[:, 0].astype(str).str.extract(r"(\\d+)")[0].astype(int))
+d8 = tot[(tot.figure == "Figure 8") & tot.mouse.isin(pm8)]
+print(f"variant, only the {d8.mouse.nunique()} dandiset mice that are in the paper's table:")
+for part in ["total", "axial", "limb", "orolingual"]:
+    r = zhai.mixed_anova_group(d8, "mouse", "group_label", "session", part)
+    means = d8.groupby("group_label")[part].mean()
+    print(f"  {part}: F({r['df1']},{r['df2']}) = {r['F']:.2f}, P = {r['p']:.3g}; mean per session " + ", ".join(f"{k} {v:.1f}" for k, v in means.items()))
+''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 102 2>&1 | tail -16
+```
+
+```
+===== cell 102
+total: group F(1,19) = 31.24, P = 2.17e-05; mice 21 with all 5 sessions; mean per session CDGI knockout 36.1, control 45.6
+axial: group F(1,19) = 6.87, P = 0.0168; mice 21 with all 5 sessions; mean per session CDGI knockout 17.0, control 19.5
+limb: group F(1,19) = 26.02, P = 6.35e-05; mice 21 with all 5 sessions; mean per session CDGI knockout 9.5, control 12.9
+orolingual: group F(1,19) = 35.70, P = 9.47e-06; mice 21 with all 5 sessions; mean per session CDGI knockout 9.6, control 13.2
+variant, only the 18 dandiset mice that are in the paper's table:
+  total: F(1,16) = 41.33, P = 8.33e-06; mean per session CDGI knockout 34.8, control 45.4
+  axial: F(1,16) = 9.28, P = 0.00769; mean per session CDGI knockout 16.4, control 19.3
+  limb: F(1,16) = 27.83, P = 7.54e-05; mean per session CDGI knockout 9.2, control 12.9
+  orolingual: F(1,16) = 40.11, P = 9.93e-06; mean per session CDGI knockout 9.2, control 13.1
+paper's table, same test:
+  total: F(1,21) = 41.87, P = 2.06e-06
+  axial: F(1,21) = 19.91, P = 0.000215
+  limb: F(1,21) = 25.65, P = 5.14e-05
+  orolingual: F(1,21) = 56.29, P = 2.27e-07
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/x.py <<'EOF'
+P = T["Fig 7E_oxoM effect on DE"]
+print(P.to_string())
+for s in ["Fig 10E_distance traveled", "Fig 10F_time mobile", "Fig 10A_rotations in M1R CRISPR", "Fig 8A_rotations 5th", "Fig 1F_dSPN rheobase", "Fig 3D_iSPN rheobase", "Fig 1I_dSPN dendritic excitabil", "Fig 3F_iSPN dendritic excitabil", "Fig 7E_oxoM effect on DE"]:
+    print(s, list(T[s].columns), T[s].iloc[:, 1].value_counts().to_dict())
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 4 $TMPDIR/x.py 2>&1 | tail -60
+```
+
+```
+somatic step currents (pA): [-120, -100, -80, -60, -40, -20, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400]
+somatic sweep length (samples at 10 kHz): [10000, 10001]
+line-scan basal ratio range: [0.672, 1.749] ; pairs outside 0.5 to 2: 0 of 213
+Sr2+ sampling rates (Hz): [10000.0, 20000.0] ; flash time in sweep (s): [0.02]
+GRAB frame interval (s): [0.047, 0.1996] (the paper gives 5.01 frames per second)
+AIM single scores range: [0.0, 4.0] (scale 0 to 4)
+   Expt No. Genotype         treatment  Dendritic excitability index
+0      WT_1       WT  before (control)                      0.461530
+1      WT_2       WT  before (control)                      0.057845
+2      WT_3       WT  before (control)                      0.156267
+3      WT_4       WT  before (control)                      0.201274
+4      WT_5       WT  before (control)                      0.016933
+5      WT_6       WT  before (control)                      0.167019
+6      WT_7       WT  before (control)                      0.226817
+7      WT_8       WT  before (control)                      0.621609
+8      WT_9       WT  before (control)                      0.256052
+9     WT_10       WT  before (control)                      0.239563
+10     WT_1       WT              oxoM                      0.451697
+11     WT_2       WT              oxoM                      0.171978
+12     WT_3       WT              oxoM                      0.458322
+[... 40 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = [k for k,c in enumerate(nb['cells']) if 'claim:fig7e-oxom-cdgi' in c['metadata'].get('tags',[])][0]
+rep(i, '''# variant on the dandiset's own naive line scans''', '''for g in ["WT", "KO"]:
+    d = P[P.genotype == g].pivot_table(index="expt", columns="treatment", values="index")
+    print(f"variant, {g} unpaired:", end=" "); show_mw("Mann-Whitney", d["oxoM"], d["before (control)"], "oxo-M", "before")
+# variant on the dandiset's own naive line scans''')
+i = find("def tcol(sheet, group, gcol=1):")
+setsrc(i, src(i) + '''
+# The group labels of each sheet used below, with their counts
+for s in ["Fig 1F_dSPN rheobase", "Fig 1I_dSPN dendritic excitabil", "Fig 3D_iSPN rheobase", "Fig 3F_iSPN dendritic excitabil",
+          "Fig 7E_oxoM effect on DE", "Fig 8A_rotations 5th", "Fig 10A_rotations in M1R CRISPR", "Fig 10E_distance traveled", "Fig 10F_time mobile"]:
+    print(f"{s}: {T[s].iloc[:, 1].value_counts(sort=False).to_dict()}")''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 108,122 2>&1 | tail -18
+```
+
+```
+===== cell 108
+Fig 1F_dSPN rheobase: {'control': 10, '6-OHDA': 12, 'LID off': 15, 'LID on': 15, 'LID on + SCH': 10}
+Fig 1I_dSPN dendritic excitabil: {'control': 11, '6-OHDA': 9, 'LID off': 10, 'LID on': 10, 'LID on + SCH': 9}
+Fig 3D_iSPN rheobase: {'Control': 21, '6-OHDA': 11, 'LID off': 12, 'LID on': 11, 'LID on + sul': 7}
+Fig 3F_iSPN dendritic excitabil: {'Control': 14, '6-OHDA': 9, 'LID off': 10, 'LID on': 10, 'LID on + sul': 8}
+Fig 7E_oxoM effect on DE: {'WT': 20, 'KO': 24}
+Fig 8A_rotations 5th: {'WT': 12, 'KO': 10}
+Fig 10A_rotations in M1R CRISPR: {'control': 11, '"-M1R"': 10}
+Fig 10E_distance traveled: {'control': 12, 'MCI-Park': 17, '"-M1R"': 9, '"+L-dopa"': 12, '"+L-dopa, -M1R"': 9}
+Fig 10F_time mobile: {'control': 12, 'MCI-Park': 17, '"-M1R"': 9, '"+L-dopa"': 12, '"+L-dopa, -M1R"': 9}
+===== cell 122
+WT: n=10 dendrites; median before 0.214, oxo-M 0.335; oxo-M higher in 8; Wilcoxon W=3.0, P=0.009766
+KO: n=12 dendrites; median before 0.295, oxo-M 0.324; oxo-M higher in 4; Wilcoxon W=29.0, P=0.4697
+variant, WT unpaired: Mann-Whitney: oxo-M n=10 median 0.335; before n=10 median 0.214; Mann-Whitney U=76.0, P=0.0539
+variant, KO unpaired: Mann-Whitney: oxo-M n=12 median 0.324; before n=12 median 0.295; Mann-Whitney U=69.0, P=0.8852
+variant, dandiset WT pairs recorded before and with oxo-M: n=10; median 0.230 before, 0.344 with; Wilcoxon P=0.003906
+variant, dandiset KO pairs recorded before and with oxo-M: n=12; median 0.297 before, 0.310 with; Wilcoxon P=0.3804
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n -i "open field\|open-field" ../../paper/10.1126-sciadv.adv8224.txt | head; grep -n "Fig. 10\b\|Fig. 10\.\|^Fig. 10" ../../paper/10.1126-sciadv.adv8224.txt | head
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+grep -o -i ".\{300\}distance traveled.\{400\}" ../../paper/10.1126-sciadv.adv8224.txt | head -3
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/x.py <<'EOF'
+sp = assets[assets.nwb & (assets.kind == "") & assets.cell_type.isin(["dSPN", "iSPN"])]
+print(len(sp), sp.path.iloc[0], sp["size"].iloc[0])
+h = zhai.open_h5(sp.asset_id.iloc[0])
+def walk(g, pre=""):
+    for k in g:
+        o = g[k]
+        if hasattr(o, "keys"): print(pre + k + "/", dict(o.attrs).get("neurodata_type", b"")); walk(o, pre + "  ")
+        else: print(pre + k, o.shape, o.dtype)
+for top in ["acquisition", "processing", "analysis", "stimulus", "intervals"]:
+    if top in h: print(top); walk(h[top], "  ")
+print(sorted(sp.kind.unique()), sp.groupby(["cell_type","group"]).size().to_dict())
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 4 $TMPDIR/x.py 2>&1 | tail -30
+```
+
+```
+ImageZ071 (256, 256) uint16
+    ImageZ072 (256, 256) uint16
+    ImageZ073 (256, 256) uint16
+    ImageZ074 (256, 256) uint16
+    ImageZ075 (256, 256) uint16
+    ImageZ076 (256, 256) uint16
+    ImageZ077 (256, 256) uint16
+    ImageZ078 (256, 256) uint16
+    ImageZ079 (256, 256) uint16
+    ImageZ080 (256, 256) uint16
+    ImageZ081 (256, 256) uint16
+    ImageZ082 (256, 256) uint16
+    ImageZ083 (256, 256) uint16
+    ImageZ084 (256, 256) uint16
+    ImageZ085 (256, 256) uint16
+    ImageZ086 (256, 256) uint16
+    ImageZ087 (256, 256) uint16
+    ImageZ088 (256, 256) uint16
+    ImageZ089 (256, 256) uint16
+    ImageZ090 (256, 256) uint16
+[... 10 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = [k for k,c in enumerate(nb['cells']) if 'finding-missing-groups' in c['metadata'].get('tags',[])][0]
+setsrc(i, src(i) + '''
+print("spine-density files by cell type and group:", assets[assets.nwb & (assets.kind == "") & assets.cell_type.isin(["dSPN", "iSPN"])].groupby(["cell_type", "group"]).size().to_dict())
+
+# What a spine file holds: one file per cell type and group, its top-level groups and their contents (metadata only)
+def spine_contents(a):
+    h = zhai.open_h5(a.asset_id)
+    out = {}
+    for top in ["acquisition", "processing", "analysis"]:
+        kinds = {}
+        def visit(name, o):
+            nt = zhai._str(o.attrs.get("neurodata_type", "")) or ("dataset" if not hasattr(o, "keys") else "group")
+            kinds[nt] = kinds.get(nt, 0) + 1
+        h[top].visititems(visit)
+        out[top] = kinds
+    return dict(cell_type=a.cell_type, group=a.group, **out)
+sp1 = assets[assets.nwb & (assets.kind == "") & assets.cell_type.isin(["dSPN", "iSPN"])].groupby(["cell_type", "group"]).head(1)
+print(pd.DataFrame(zhai.pmap(spine_contents, [r for _, r in sp1.iterrows()])).to_string())''')
+save()
+EOF
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 9 2>&1 | tail -16
+```
+
+```
+===== cell 9
+groups among current-clamp files: ['M1RAntag', 'M1RCRISPR', 'Naive', 'OffState', 'OnState']
+files of unlesioned or lesioned control mice with patch-clamp data: 0
+files that mention open field or confocal imaging in their name: 0
+spine-density files (raw image stacks only): 93
+spine-density files by cell type and group: {('dSPN', 'LesionedControl'): 5, ('dSPN', 'OffState'): 8, ('dSPN', 'OnState'): 9, ('dSPN', 'UnlesionedControl'): 6, ('iSPN', 'LesionedControl'): 10, ('iSPN', 'OffState'): 29, ('iSPN', 'OnState'): 12, ('iSPN', 'UnlesionedControl'): 14}
+  cell_type              group                                                 acquisition processing analysis
+0      iSPN  UnlesionedControl  {'Images': 3, 'GrayscaleImage': 273, 'ImageReferences': 3}         {}       {}
+1      iSPN    LesionedControl  {'Images': 7, 'GrayscaleImage': 721, 'ImageReferences': 7}         {}       {}
+2      iSPN           OffState  {'Images': 7, 'GrayscaleImage': 867, 'ImageReferences': 7}         {}       {}
+3      iSPN            OnState  {'Images': 7, 'GrayscaleImage': 728, 'ImageReferences': 7}         {}       {}
+4      dSPN  UnlesionedControl  {'Images': 5, 'GrayscaleImage': 583, 'ImageReferences': 5}         {}       {}
+5      dSPN           OffState  {'Images': 2, 'GrayscaleImage': 275, 'ImageReferences': 2}         {}       {}
+6      dSPN    LesionedControl  {'Images': 7, 'GrayscaleImage': 614, 'ImageReferences': 7}         {}       {}
+7      dSPN            OnState  {'Images': 8, 'GrayscaleImage': 796, 'ImageReferences': 8}         {}       {}
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; ../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 11,15,18,21,24,27,30,33,36,39 2>&1 | grep -i "P=\|variant\|exact\|cells:" | head -40
+```
+
+```
+Thu Nov 26 17:44:15 UTC 2026
+                       n_data  n_paper  exact  within3  rheobase_equal
+cells: 123; exact match 90 (73.2%); best match within 3 spikes 105 (85.4%)
+variant, the last sweep of a repeated step: exact 90, within 3 105 of 123
+dSPN rheobase: on n=15 median 140.000; off n=15 median 220.000; Mann-Whitney U=5.5, P=8.864e-06
+variant, last sweep of a repeated step: on n=15 median 140.000; off n=15 median 220.000; Mann-Whitney U=5.5, P=8.864e-06
+dSPN summed spikes 20-300 pA: on n=15 median 88.000; off n=15 median 36.000; Mann-Whitney U=207.5, P=8.803e-05
+dSPN rheobase: on n=15 median 140.000; on + SCH n=10 median 140.000; Mann-Whitney U=74.5, P=1
+iSPN rheobase: on n=11 median 160.000; off n=12 median 120.000; Mann-Whitney U=119.5, P=0.0008287
+variant, last sweep of a repeated step: on n=11 median 160.000; off n=12 median 120.000; Mann-Whitney U=119.5, P=0.0008287
+iSPN summed spikes 20-300 pA: on n=11 median 65.000; off n=12 median 118.500; Mann-Whitney U=1.0, P=7.196e-05
+iSPN rheobase: on n=11 median 160.000; on + sulpiride n=7 median 120.000; Mann-Whitney U=55.0, P=0.1429
+iSPN rheobase: vehicle n=8 median 120.000; M1R antagonist n=10 median 140.000; Mann-Whitney U=35.0, P=0.6812
+variant, summed spikes 20-300 pA: vehicle n=8 median 139.000; M1R antagonist n=10 median 111.000; Mann-Whitney U=49.0, P=0.4499
+CDGI KO iSPN rheobase: off n=13 median 140.000; on n=8 median 210.000; Mann-Whitney U=7.0, P=0.001035
+iSPN rheobase: control n=6 median 160.000; M1R deletion n=8 median 120.000; Mann-Whitney U=35.5, P=0.1469
+variant, summed spikes 20-300 pA: control n=6 median 99.000; M1R deletion n=8 median 138.500; Mann-Whitney U=14.5, P=0.2448
+```
+
+**Agent calls Bash**
+
+```bash
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 6,7,42 2>&1 | grep -v "^ *[0-9]\+ \+[0-9]\{8\}\|^Sr2+\|^ \+path" | grep -i "dendritic\|cells\|pairs\|regions\|mice\|LID\|control\|antag\|KO" | head -40
+```
+
+```
+dendritic: proximal area in the analysis window median 0.041, late window 0.002; distal 0.015 against 0.001
+dendritic pairs with analysis-window area larger than the late window (proximal): 213 of 213
+somatic cells: 123 ; cells sharing their sweep minima and maxima with another cell: 0
+dendritic pairs: 213 ; pairs with the same areas as another pair: 0
+GRAB regions: 34 ; regions whose trials start with the same frames as another region's: 0
+AIM mice: 42 ; mice whose 5 sessions of scores equal another mouse's: 0
+Fig 1I LID off                10       10            0.040            4             9
+       LID on                 10       10            0.048            1             9
+       LID on + SCH            9        9            0.040            0             7
+Fig 3F LID off                10       10            0.025            3             8
+       LID on                 10       10            0.013            4            10
+       LID on + sul            8        8            0.002            6             8
+Fig 6D control                 9        9            0.035            3             7
+       M1R antagonist          7        7            0.064            1             4
+Fig 7F ('KO', 'LID off')      11       11            0.027            2            11
+       ('KO', 'LID on')        8        8            0.024            1             7
+median relative difference from the matched paper value: 0.027 over 92 cells; to the nearest value of the group: 0.017
+Figure 6D, letter from the file's cell number: 16 of 16 cells find their identifier; median relative difference 0.053; cells whose cell number differs from their place among the group's cells of the day: 3
+variant, letter from the place among the group's cells of the day: 14 of 16 find their identifier; median relative difference 0.043
+cells more than 10% from their matched value:
+[... 13 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "questions/zhai-2025.yaml",
+ "content": "# Questions from attempt zhai-2025-03 (author-revise-1, 2026-11-26) about the claims file\n# claims/zhai-2025.yaml, raised by the round-1 verifier and asked under docs/protocol.md, \"Hand over for\n# verification\". The attempt applied the criterion as far as it can be applied and showed the\n# paper's unit as the main reading.\ndataset: DANDI:001538\npaper: doi:10.1126/sciadv.adv8224\nquestions:\n- claim: link-grab-rois\n  asked: 2026-11-26\n  question: The criterion matches \"each mouse's vector of single-pulse areas\" to \"the paper's region\"\n    and asks that \"every mouse\" (or half of the mice) match within 0.05 per treatment. The paper's\n    unit for Figure 5F is the region (ROI), and a mouse holds several regions. Should the criterion\n    match and count regions (each region's vector against the paper's regions), and is the 0.05\n    threshold meant per region?\n  passage: Figure 5 legend, \"n = 13 ROIs from 3 mice\" style counts of ROIs per group, and Results, ACh\n    Release was elevated in PD and LID off-state and inhibited by D2R signaling, paragraph 3, where\n    the statistics are on ROIs; the claims file's own fig5f criteria say \"one value per region (ROI),\n    as the paper's n counts ROIs\".\n  why: Counted per region, 16 of 34 regions match within 0.05 for every treatment (47%); counted per\n    mouse (recording day), with a mouse matching when all its regions do, 1 of 11 mice match. Both are\n    under the half the criterion asks for partially reproduced, so the outcome (not reproduced) does\n    not change under either reading, but the counts reported differ.\n"
+}
+```
+
+```
+File created successfully at: questions/zhai-2025.yaml (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+grep -o -i ".\{200\}ROIs.\{200\}" ../../paper/10.1126-sciadv.adv8224.txt | head -5
+```
+
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Edit**
 
 ```json
 {
  "replace_all": false,
- "file_path": "entries/001538-zhai-2025/lid.py",
- "old_string": "def load_many(fn, items, workers: int = 8):",
- "new_string": "def file_contents(path: str, url: str) -> dict:\n    \"\"\"What a file holds outside its metadata: the acquisition objects with their types and\n    number of members, and the names in processing and analysis.\"\"\"\n    with h5py.File(remfile.File(url), \"r\") as f:\n        acq = {k: (_text(f[\"acquisition\"][k].attrs.get(\"neurodata_type\", \"\")), len(f[\"acquisition\"][k]))\n               for k in f.get(\"acquisition\", {})}\n        return {\"path\": path, \"acquisition_types\": sorted({t for t, _ in acq.values()}),\n                \"acquisition_objects\": len(acq), \"images\": sum(n for _, n in acq.values()),\n                \"processing\": sorted(f.get(\"processing\", {})), \"analysis\": sorted(f.get(\"analysis\", {}))}\n\n\ndef load_many(fn, items, workers: int = 8):"
+ "file_path": "questions/zhai-2025.yaml",
+ "old_string": "  passage: Figure 5 legend, \"n = 13 ROIs from 3 mice\" style counts of ROIs per group, and Results, ACh\n    Release was elevated in PD and LID off-state and inhibited by D2R signaling, paragraph 3, where\n    the statistics are on ROIs; the claims file's own fig5f criteria say \"one value per region (ROI),\n    as the paper's n counts ROIs\".",
+ "new_string": "  passage: Figure 5 legend, \"unlesioned control n = 13 regions of interest (ROIs) from three mice; 6-OHDA\n    n = 10 ROIs from three mice; off-state n = 11 ROIs from five mice\"; Methods, Data acquisition and\n    statistical analysis, \"The stated n indicates ... the number of ROIs (in ACh sensor imaging)\". The\n    claims file's own fig5f criteria use one value per region (ROI)."
 }
 ```
 
 ```
-The file entries/001538-zhai-2025/lid.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Now the notebook edits: the new outputs the verifier asked for, and the dendritic split.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit_nb.py <<'PYEOF'
-import json, sys
-P = "reproduce_zhai_2025.ipynb"
-nb = json.load(open(P))
-C = nb["cells"]
-def src(i): return "".join(C[i]["source"])
-def setsrc(i, s): C[i]["source"] = s.splitlines(keepends=True)
-def rep(i, old, new):
-    s = src(i); assert old in s, (i, old[:60]); setsrc(i, s.replace(old, new, 1))
-def code(s, tags=None):
-    c = {"cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [], "source": s.splitlines(keepends=True)}
-    if tags: c["metadata"]["tags"] = tags
-    return c
-def md(s): return {"cell_type": "markdown", "metadata": {}, "source": s.splitlines(keepends=True)}
-
-# fig7e: the KO pairing table and an unpaired variant
-rep(102, """          f"increases {(w['oxoM'] > w['before (control)']).sum()}, Wilcoxon P = {res.pvalue:.4g}")
-""", """          f"increases {(w['oxoM'] > w['before (control)']).sum()}, Wilcoxon P = {res.pvalue:.4g}")
-    print(f"  variant, unpaired Mann-Whitney: P = {stats.mannwhitneyu(w['before (control)'], w['oxoM']).pvalue:.4g}")
-    if gt == "KO":
-        print("  KO pairs (rows paired by the table's experiment number):")
-        print(w.assign(change=w["oxoM"] - w["before (control)"]).round(3).to_string())
-""")
-
-# SCH: the cell that differs most from the paper, and the result without it or with the paper's value
-rep(47, """print("\\nBy mouse:"); print(by_mouse(dend, "index", ["dSPN on+SCH"]).to_string())""",
-"""print("\\nBy mouse:"); print(by_mouse(dend, "index", ["dSPN on+SCH"]).to_string())
-far = dpairs[dpairs.group == "dSPN on+SCH"].sort_values("rel_diff").iloc[-1]
-print(f"\\nSCH cell farthest from the paper's value (matched by order): {far.date} cell {far.cell}, index {far['index']:.3f}, "
-      f"paper {far.paper:.3f}, sites {far.sites}")
-print(sites[(sites.date == far.date) & (sites.cell == far.cell)][["compartment", "site", "series", "n_trials", "R0", "G0", "area"]].round(4).to_string(index=False))
-sch_on = dend[dend.group == "dSPN on"]["index"]
-sch_rest = dend[(dend.group == "dSPN on+SCH") & ~((dend.date == far.date) & (dend.cell == far.cell))]["index"]
-print("Variant, without that cell:", show(mw(sch_on, sch_rest)))
-print("Variant, with the paper's value for that cell:", show(mw(sch_on, pd.concat([sch_rest, pd.Series([far.paper])]))))""")
-
-# dend_test: the sites as labelled
-rep(44, """dend_all = cell_index(sites, None)
-""", """dend_all = cell_index(sites, None)
-dend_lab = cell_index(sites_lab)
-""")
-rep(44, """("all pairs", dend_all)]""", """("all pairs", dend_all), ("sites as labelled", dend_lab)]""")
-
-# AIM: per time point for the Figure 8 mice
-rep(31, """      "; wild-type or control:", alink[alink.paper_genotype.isin(["WT", "control"])].animal.tolist())""",
-"""      "; wild-type or control:", alink[alink.paper_genotype.isin(["WT", "control"])].animal.tolist())
-print("\\nFigure 8 mice: dandiset total score per time point (min), its session sum, the sum over 20 to 80 min, and the paper's session total")
-for a in alink[alink.paper_fig == "Fig 8"].animal:
-    pv = aim[aim.animal_id == a].pivot_table(index="session_number", columns="time_minutes", values="total_score", aggfunc="sum")
-    pv["sum"] = pv.sum(axis=1)
-    pv["sum 20-80"] = pv[[20, 40, 60, 80]].sum(axis=1)
-    pv["paper"] = t8[t8.animal == a].set_index("Session#")["Total AIM score"]
-    print(f"mouse {a}:"); print(pv.to_string())""")
-
-# GRAB: one-to-one assignment
-rep(28, """print("Mice with a match within 0.05 for every treatment:", int((glink.max_diff <= 0.05).sum()), "of", len(glink))""",
-"""print("Mice with a match within 0.05 for every treatment:", int((glink.max_diff <= 0.05).sum()), "of", len(glink))
-print("Paper regions used as best match by more than one mouse:", glink.groupby(["state", "best_roi"]).size().loc[lambda s: s > 1].to_dict())
-one = []
-for st, x in glink.groupby("state"):
-    cols = [c for c in ["No drug", "quinpirole", "sulpiride", "DA"] if c in x and x[c].notna().all()]
-    cand = p5wide.loc[pgroup[st]][cols].dropna()
-    cost = np.array([[np.abs(cand.loc[r, cols].to_numpy(float) - x.loc[i, cols].to_numpy(float)).max() for r in cand.index] for i in x.index])
-    ri, ci = linear_sum_assignment(np.array([[np.abs(cand.loc[r, cols].to_numpy(float) - x.loc[i, cols].to_numpy(float)).sum() for r in cand.index] for i in x.index]))
-    one += [{"state": st, "date": x.loc[x.index[a], "date"], "roi": cand.index[b], "max_diff": round(cost[a, b], 3)} for a, b in zip(ri, ci)]
-one = pd.DataFrame(one)
-print("One-to-one assignment (each paper region used once):"); print(one.to_string(index=False))
-print("Mice within 0.05 for every treatment under the one-to-one assignment:", int((one.max_diff <= 0.05).sum()), "of", len(one))""")
-
-# Sr2+: the per-cell amplitude reading and a figure of detected events
-rep(25, """print(f"Cells with mean amplitude within 25% of the paper's events: {ok_amp.sum()}; with event count within 25%: {ok_n.sum()}; both: {(ok_amp & ok_n).sum()} of {len(sr_link)}")""",
-"""print(f"Cells with mean amplitude within 25% of the paper's events: {ok_amp.sum()}; with event count within 25%: {ok_n.sum()}; both: {(ok_amp & ok_n).sum()} of {len(sr_link)}")
-ok_cell = (sr_link.mean_amp - sr_link.paper_cell_amp).abs() <= 0.25 * sr_link.paper_cell_amp
-print(f"Reading the paper's amplitude as its per-cell value (Fig. 2H, 4G sheets): within 25% {ok_cell.sum()}; with the event count also: {(ok_cell & ok_n).sum()} of {len(sr_link)}")
-print("Paper's per-cell amplitude against the mean of its histogram events, median ratio %.3f (range %.3f to %.3f)"
-      % ((sr_link.paper_cell_amp / sr_link.paper_event_mean).median(), (sr_link.paper_cell_amp / sr_link.paper_event_mean).min(), (sr_link.paper_cell_amp / sr_link.paper_event_mean).max()))""")
-C.insert(26, code("""# The detector on two cells: the one with the largest shortfall of events and one within 25% on both.
-show_ids = [sr_link.assign(r=sr_link.events / sr_link.paper_events).sort_values("r").paper_id.iloc[0],
-            sr_link[ok_amp & ok_n].paper_id.iloc[0]]
-fig, axes = plt.subplots(2, 3, figsize=(13, 5.5), sharex=True)
-for row, pid in zip(axes, show_ids):
-    s = srs[[r["paper_id"] for r in sr_rows].index(pid)]
-    lo, hi = np.inf, -np.inf
-    for ax, w in zip(row, s["sweeps"][:3]):
-        onset = w["led_onset_s"] if w["led_trace_nonzero"] else s["epoch_stim_s"]
-        x = sosfiltfilt(butter(4, lid.SR_LOWPASS_HZ, fs=w["rate"], output="sos"), w["current"] - np.median(w["current"]))
-        t = np.arange(len(x)) / w["rate"] - onset
-        keep = (t >= 0) & (t <= 0.45)
-        e = lid.detect_events(w["current"], w["rate"], onset)
-        ax.plot(t[keep] * 1e3, x[keep], lw=0.5, color="0.3")
-        ax.plot(e.t * 1e3, np.interp(e.t, t, x), "v", color="tab:red", ms=5)
-        ax.axvspan(lid.SR_WINDOW[0] * 1e3, lid.SR_WINDOW[1] * 1e3, color="tab:blue", alpha=0.07)
-        ax.set_title(f"{pid} {w['name'][-8:]}: {len(e)} events", fontsize=9)
-        lo, hi = min(lo, x[keep].min()), max(hi, x[keep].max())
-    row[0].set_ylabel("current (pA, low-passed)")
-    print(f"{pid}: plotted current {lo:.1f} to {hi:.1f} pA, all inside the axes; the paper lists {int(sr_link[sr_link.paper_id == pid].paper_events.iloc[0])} events over 10 sweeps, "
-          f"the detector finds {int(sr_link[sr_link.paper_id == pid].events.iloc[0])}")
-for ax in axes[1]:
-    ax.set_xlabel("time after the light pulse (ms)")
-fig.suptitle("Detected events (red) in the first three sweeps; shaded: detection window 40 to 400 ms")
-plt.tight_layout(); plt.show()""", ["claim:link-sr-cells"]))
-
-# dendritic link: order matching over all cells with sites, per-cell table, basal ratios
-rep(22, """    mine = dend[(dend.group == g) & dend["index"].notna()]
-    rows.append({"group": g, "cells": len(mine), "paper_n": len(paper), "median": mine["index"].median(), "paper_median": np.median(pv)})""",
-"""    allc = dend[dend.group == g]
-    mine = allc[allc["index"].notna()]
-    rows.append({"group": g, "cells_with_sites": len(allc), "cells": len(mine), "paper_n": len(paper), "median": mine["index"].median(), "paper_median": np.median(pv)})""")
-rep(22, """            pairs_rows.append({"group": g, "how": "identifier", "date": c.date, "cell": c.cell, "paper_id": key,
-                               "index": c["index"], "paper": float(hit.iloc[0, -1]) if len(hit) else np.nan})
-    elif len(mine) == len(paper):
-        for (_, c), p in zip(mine.iterrows(), pv):
-            pairs_rows.append({"group": g, "how": "order", "date": c.date, "cell": c.cell, "paper_id": "",
-                               "index": c["index"], "paper": p})""",
-"""            pairs_rows.append({"group": g, "how": "identifier", "date": c.date, "cell": c.cell, "paper_id": key, "sites": c.sites,
-                               "split": c.split, "basal": c.basal_ratios, "index": c["index"], "paper": float(hit.iloc[0, -1]) if len(hit) else np.nan})
-    elif len(allc) == len(paper):
-        for k, ((_, c), p) in enumerate(zip(allc.iterrows(), pv)):
-            pairs_rows.append({"group": g, "how": "order", "date": c.date, "cell": c.cell, "paper_id": f"row {k + 1}", "sites": c.sites,
-                               "split": c.split, "basal": c.basal_ratios, "index": c["index"], "paper": p})""")
-rep(22, """print("Matched cells:", dpairs.paper.notna().sum(), """, """dpairs = dpairs[dpairs["index"].notna()].reset_index(drop=True)
-print("\\nMatched cells:", dpairs.paper.notna().sum(), """)
-s22 = src(22).replace('print("\\nMatched cells:"', 'print("Matched cells:"', 1)
-s22 = s22.replace("""print("Groups whose count equals the paper's n:", int((dsum.cells == dsum.paper_n).sum()), "of", len(dsum))""",
-"""print("Groups whose count of cells with an index equals the paper's n:", int((dsum.cells == dsum.paper_n).sum()), "of", len(dsum),
-      "; whose count of cells with dendritic sites does:", int((dsum.cells_with_sites == dsum.paper_n).sum()))
-print("\\nEvery matched cell (sites: P proximal, D distal, with their number; split: a series holding two sites, see the data check):")
-print(dpairs.round(3).to_string(index=False))
-print("\\nLargest differences:"); print(dpairs.sort_values("rel_diff", ascending=False).head(5)[["group", "date", "cell", "paper_id", "sites", "index", "paper", "rel_diff"]].round(3).to_string(index=False))
-br = np.concatenate([b for b in dend.basal_ratios])
-print("\\nBasal ratios of all %d pairs: %.2f to %.2f, median %.2f; outside 0.8 to 1.25: %d; outside 0.5 to 2: %d"
-      % (len(br), br.min(), br.max(), np.median(br), ((br < 0.8) | (br > 1.25)).sum(), ((br < 0.5) | (br > 2)).sum()))
-lab = dend_lab_link = cell_index(sites_lab)
-print("Variant, sites as labelled (no split): cells with an index", int(lab["index"].notna().sum()), "of", len(lab))""")
-setsrc(22, s22)
-
-# somatic link: order, one-to-one, repeated steps
-rep(19, """    for _, c in som[som.group == g].iterrows():
-        v = c[amps].to_numpy(float)
-        ok = ~np.isnan(v)
-        dist = np.abs(P[:, ok] - v[ok]).sum(axis=1)
-        j = int(np.argmin(dist))
-        link_rows.append({"group": g, "date": c.date, "cell": c.cell, "best_row": paper["cell id"].iloc[j],
-                          "spike_diff": dist[j], "exact": dist[j] == 0, "n_exact_rows": int((dist == 0).sum()),
-                          "rheobase": c.rheobase, "paper_rheobase": prheo[j]})""",
-"""    costs[g] = []
-    for _, c in som[som.group == g].sort_values(["date", "cell"]).iterrows():
-        v = c[amps].to_numpy(float)
-        ok = ~np.isnan(v)
-        dist = np.abs(P[:, ok] - v[ok]).sum(axis=1)
-        costs[g].append(dist)
-        j = int(np.argmin(dist))
-        vl = np.asarray(c.counts_last, float)
-        dist_last = np.abs(P[:, ok] - vl[ok]).sum(axis=1).min() if c.duplicates else np.nan
-        link_rows.append({"group": g, "date": c.date, "cell": c.cell, "best_row": paper["cell id"].iloc[j], "best_pos": j,
-                          "spike_diff": dist[j], "exact": dist[j] == 0, "n_exact_rows": int((dist == 0).sum()),
-                          "rheobase": c.rheobase, "paper_rheobase": prheo[j], "duplicates": c.duplicates, "spike_diff_last": dist_last})""")
-rep(19, "link_rows = []\n", "link_rows, costs = [], {}\n")
-rep(19, """print(link_som[~link_som.exact].to_string(index=False))""",
-"""print(link_som[~link_som.exact].drop(columns=["best_pos"]).to_string(index=False))
-
-print("\\nOrder: position of each cell's best-match row among the paper's rows of its group, cells in the dandiset's date and cell order")
-for g, x in link_som.groupby("group", sort=False):
-    pos = x.best_pos.tolist()
-    print(f"  {g}: {pos}; rising steps {sum(b > a for a, b in zip(pos, pos[1:]))} of {len(pos) - 1}; "
-          f"position equal to the cell's rank {sum(p == i for i, p in enumerate(pos))} of {len(pos)}")
-print("Paper rows used as best match by more than one cell:", link_som.groupby(["group", "best_row"]).size().loc[lambda s: s > 1].to_dict())
-d1 = np.concatenate([np.array(c)[linear_sum_assignment(np.array(c))] for c in costs.values()])
-print(f"One-to-one assignment (each paper row used once): exact {int((d1 == 0).sum())} ({(d1 == 0).mean():.1%}), "
-      f"within 3 spikes {int((d1 <= 3).sum())} ({(d1 <= 3).mean():.1%}) of {len(d1)}")
-dup = link_som[link_som.duplicates > 0]
-print(f"\\nCells with a repeated step ({len(dup)}): best-match difference keeping the first sweep against keeping the last; "
-      f"first closer {int((dup.spike_diff < dup.spike_diff_last).sum())}, last closer {int((dup.spike_diff > dup.spike_diff_last).sum())}, equal {int((dup.spike_diff == dup.spike_diff_last).sum())}")
-print(dup[["group", "date", "cell", "duplicates", "spike_diff", "spike_diff_last"]].to_string(index=False))""")
-
-# spine files: new sanity cell after the duplicates check (cell 16)
-C.insert(17, md("""The spine image files: what they hold besides their metadata."""))
-C.insert(18, code("""spine_items = [(p, u) for p, u in urls if kind(p) in ("confocal spine stacks", "2PLSM spine stacks")]
-spines = pd.DataFrame(lid.load_many(lid.file_contents, spine_items, workers=12))
-spines["kind"] = [kind(p) for p in spines.path]
-spines["state"] = [p.split("_ses-")[1].split("++")[1] if "++" in p else "" for p in spines.path]
-print("Spine image files by kind and state:")
-print(spines.groupby(["kind", "state"]).agg(files=("path", "size"), image_objects=("acquisition_objects", "sum"), images=("images", "sum")).to_string())
-print("Neurodata types in acquisition:", sorted({t for ts in spines.acquisition_types for t in ts}))
-print("Files with a processing module:", int((spines.processing.str.len() > 0).sum()), "; with an analysis entry:", int((spines.analysis.str.len() > 0).sum()), "of", len(spines))""", ["sanity"]))
-
-# dendritic sanity: the series with other trial counts, and the split
-rep(7, """sites = pd.concat(sites, ignore_index=True)
-""", """sites = pd.concat(sites, ignore_index=True)
-sites_lab = pd.concat([lid.dendritic_sites(d, split_merged=False).assign(date=d["date"], cell_type=d["cell_type"]) for d in days if d["dendritic"]], ignore_index=True)
-print("Sites (series) with other than 3 trials, as labelled:")
-print(sites_lab[sites_lab.n_trials != 3][["date", "cell_type", "cell", "condition", "series", "n_trials"]].to_string(index=False))
-print("The 6-trial series split into their first and last three trials (the half with the smaller area taken as distal):")
-print(sites[sites.split][["date", "cell_type", "cell", "series", "compartment", "n_trials", "R0", "G0", "area"]].round(4).to_string(index=False))
-""")
-
-# imports and mw
-rep(1, "from scipy import stats\n", "import matplotlib.pyplot as plt\nfrom scipy import stats\nfrom scipy.optimize import linear_sum_assignment\nfrom scipy.signal import butter, sosfiltfilt\n")
-rep(1, '''    """Two-sided Mann-Whitney test: n, medians, U, P and the rank-biserial effect (positive when b > a)."""
-    a, b = np.asarray(a, float), np.asarray(b, float)
-    a, b = a[~np.isnan(a)], b[~np.isnan(b)]
-    u, p = stats.mannwhitneyu(a, b, alternative="two-sided")
-    return {"n_a": len(a), "n_b": len(b), "median_a": np.median(a), "median_b": np.median(b),
-            "U": u, "P": p, "effect_r": 1 - 2 * u / (len(a) * len(b))}''',
-'''    """Two-sided Mann-Whitney test: n, medians, U, P and the rank-biserial effect (positive when b > a).
-
-    P is scipy's default (exact for small samples without ties, otherwise asymptotic); P_exact is
-    the exact P where there are no ties (NaN otherwise), as Prism reports for small samples."""
-    a, b = np.asarray(a, float), np.asarray(b, float)
-    a, b = a[~np.isnan(a)], b[~np.isnan(b)]
-    u, p = stats.mannwhitneyu(a, b, alternative="two-sided")
-    ties = len(np.unique(np.concatenate([a, b]))) < len(a) + len(b)
-    p_exact = np.nan if ties else stats.mannwhitneyu(a, b, alternative="two-sided", method="exact").pvalue
-    return {"n_a": len(a), "n_b": len(b), "median_a": np.median(a), "median_b": np.median(b),
-            "U": u, "P": p, "P_exact": p_exact, "effect_r": 1 - 2 * u / (len(a) * len(b))}''')
-rep(1, 'if k == "P" else', 'if k in ("P", "P_exact") else')
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False)
-open(P, "a").write("\n")
-print("ok")
-PYEOF
-python $TMPDIR/edit_nb.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/edit_nb.py", line 16, in <module>
-    rep(102, """          f"increases {(w['oxoM'] > w['before (control)']).sum()}, Wilcoxon P = {res.pvalue:.4g}")
-    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    """, """          f"increases {(w['oxoM'] > w['before (control)']).sum()}, Wilcoxon P = {res.pvalue:.4g}")
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-            print(w.assign(change=w["oxoM"] - w["before (control)"]).round(3).to_string())
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    """)
-    ^^^^
-  File "/tmp/claude-1001/edit_nb.py", line 8, in rep
-    s = src(i); assert old in s, (i, old[:60]); setsrc(i, s.replace(old, new, 1))
-                       ^^^^^^^^
-AssertionError: (102, '          f"increases {(w[\'oxoM\'] > w[\'before (control)\']).s')
+The file questions/zhai-2025.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && python - <<'EOF'
-s = open("edit_nb.py").read()
-s = s.replace('''Wilcoxon P = {res.pvalue:.4g}")
-""", """          f"increases''', '''Wilcoxon P = {res.pvalue:.4g}")""", """          f"increases''', 1)
-s = s.replace('''print(w.assign(change=w["oxoM"] - w["before (control)"]).round(3).to_string())
-""")''', '''print(w.assign(change=w["oxoM"] - w["before (control)"]).round(3).to_string())""")''', 1)
-open("edit_nb.py", "w").write(s)
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+def setmd(start, text):
+    i = find(start); setsrc(i, text)
+setmd("**Result: partially reproduced.** Every group holds the paper's number of cells (12 of 12 groups)",
+"**Result: partially reproduced.** Every group holds the paper's number of cells (12 of 12 groups). Of 123 cells, 90 (73.2%) match a row of the paper's table exactly and 105 (85.4%) within 3 spikes, below the 80% and 95% the criterion asks for reproduced and above the 50% exact for partially reproduced. Rheobase equals that of the best-matching row in 105 cells. The best matches are not one to one: 9 paper rows are the best match of more than one cell (20 cells), and 6 cells tie between rows. The rheobase sheets (1F, 3D) are read by row number; in 115 of 124 rows their rheobase equals the first step with a spike in the same row of the F-I sheet, so the two sheets' rows mostly line up. Taking the last sweep of a repeated step changes none of the link counts: of the 14 cells with a repeated step, none changes rheobase and one changes its summed spikes, by 1.")
+setmd("**Result: reproduced.** On-state rheobase median 140 pA (n = 15)",
+"**Result: reproduced.** On-state rheobase median 140 pA (n = 15) against off-state 220 pA (n = 15), Mann-Whitney P = 8.9e-06. The last-sweep variant gives the same, as no cell's rheobase changes with it.")
+setmd("**Result: reproduced.** All 10 groups hold the paper's number of cells",
+"**Result: reproduced.** All 10 groups hold the paper's number of cells, and the index differs from the matched paper value by a median of 2.7% (1.7% to the nearest value of the group). Twelve cells differ by more than 10%; one of them, 2019-04-11 cell 1 (on-state with SCH), is 0.584 against the paper's 0.228 because only its second pair of sites is in the file (cell `finding-sch-cell-pair`). In Figure 6D the paper's letters follow the files' cell numbers: all 16 cells find their identifier that way, and 14 of 16 when the letter is taken as the cell's place among the group's cells of the day, because the paper names 02182020_b, 02182020_c and 02202020_c with no _a in the group.")
+setmd("**Result: reproduced.** On-state index median 0.473",
+"**Result: reproduced.** On-state index median 0.476 against off-state 0.329 (10 cells each), P = 0.0058; the paper's table gives P = 0.014.")
+setmd("**Result: not reproduced.** The SCH median is lower",
+"**Result: not reproduced.** The SCH median is lower (0.419, n = 9, against 0.476, n = 10) but P = 0.066. Without 2019-04-11 cell 1, whose first pair of sites is missing from the file, P = 0.027 (n = 8); the paper's table gives P = 0.016. The exclusion is shown to locate the difference and does not decide the outcome: the paper analysed this cell, with a pair the file does not hold.")
+setmd("**Result: reproduced.** On-state median 0.341 against off-state 0.525",
+"**Result: reproduced.** On-state median 0.339 against off-state 0.524 (10 cells each), P = 0.0073.")
+setmd("**Result: reproduced.** On-state median 0.341 (n = 10) against sulpiride 0.496",
+"**Result: reproduced.** On-state median 0.339 (n = 10) against sulpiride 0.497 (n = 8), P = 0.0545, the paper's value; the test does not reach P < 0.05, by a small margin.")
+setmd("**Result: reproduced.** Vehicle median 0.449 (n = 9)",
+"**Result: reproduced.** Vehicle median 0.451 (n = 9) against M1R antagonist 0.269 (n = 7), P = 0.023.")
+setmd("**Result: reproduced.** KO off-state median 0.314",
+"**Result: reproduced.** KO off-state median 0.312 (n = 11) against KO on-state 0.286 (n = 8), P = 0.31; in wild type off-state 0.524 against on-state 0.339, P = 0.0073.")
+setmd("**Result: partially reproduced.** All 33 dandiset cells match a paper identifier",
+"**Result: partially reproduced.** All 33 dandiset cells match a paper identifier and all 33 paper cells are in the dandiset. Mean amplitude and event count are both within 25% of the paper's for 21 of 33 cells (64%), below the 75% the criterion asks; amplitude alone for 25 and count alone for 26. Median differences are +11% in amplitude and -2% in count. With the first 10 sweeps 21 cells are within 25%, with the last 10 sweeps 22. The detector is a stand-in for TaroTools with visual checking; with the noise SD of the smoothed trace only 8 cells are within 25%.")
+setmd("**Result: reproduced (resting on the stand-in detector and on using every sweep).**",
+"**Result: reproduced (resting on the stand-in detector and on which sweeps are used).** Frequency medians 14.9 Hz on and 24.2 Hz off, P = 0.064 with every sweep. Two off-state cells hold 12 and 11 sweeps where the paper's frequencies imply 10. Taking the last 10 sweeps, or the run of 10 consecutive sweeps whose event count is nearest the paper's for each cell (sweeps 1 to 10 and 2 to 11), also gives P = 0.064; taking the first 10 gives P = 0.049, which would find a difference. The outcome rests on the nearest-run reading, the one the paper's per-cell counts support. The smoothed-noise detector gives P = 0.118 and the paper's table P = 0.23.")
+setmd("**Result: not reproduced.** The dandiset holds the paper's number of regions",
+"**Result: not reproduced.** The dandiset holds the paper's number of regions in each group (13 unlesioned, 10 6-OHDA, 11 off-state), but only 16 of 34 regions have a paper region within 0.05 for every treatment (47%, under the half the criterion asks for partially reproduced), and 11 paper regions are the best match of more than one dandiset region. Assigning paper regions one to one gives 15 of 34. Counted by mouse (recording day), as the criterion words it, 1 of 11 mice has every region within 0.05. The variants (whole-frame brightness, Fmin rules, two trials) give 10 to 16 of 34.")
+setmd("**Result: reproduced.** On the dandiset's scores (10 control and 11 CDGI KO mice",
+"**Result: reproduced.** On the dandiset's scores (10 control and 11 CDGI KO mice, all with 5 sessions) the group effect has P = 2.2e-05 (total, F(1,19) = 31.2), 0.017 (axial), 6.4e-05 (limb) and 9.5e-06 (orolingual), with the KO lower in each. On the 18 mice that are also in the paper's table, P = 8.3e-06, 0.0077, 7.5e-05 and 9.9e-06. These are the lab's scoring sheets, which differ from the published Figure 8 (link-aim-mice); axial is weaker than in the paper (F = 6.87 against 19.91 on the paper's table).")
+setmd("**Result: reproduced.** Wild type: oxo-M raises the index in 8 of 10 dendrites",
+"**Result: reproduced.** Wild type: oxo-M raises the index in 8 of 10 dendrites, Wilcoxon P = 0.0098; KO: P = 0.47 (the paper reports 0.910). The table pairs rows by experiment number (WT_1 to WT_10, KO_1 to KO_12), so the pairing is not open; an unpaired Mann-Whitney test gives KO P = 0.89 and wild type P = 0.054. The dandiset's own naive pairs agree with the paired result (WT P = 0.0039, KO P = 0.38).")
+setmd("**Result: reproduced.** Control against MCI-Park P = 1.1e-05",
+"**Result: reproduced.** Control against MCI-Park P = 1.1e-05 (distance) and 7.0e-06 (time mobile); levodopa with against without M1R deletion P = 0.00033 and 0.00057, the deletion higher; MCI-Park against deletion alone P = 0.63 and 0.47. The sheet's \"-M1R\" group (9 mice) is MCI-Park with M1R deletion, as the Figure 10 legend names it (n = 9), and these two P values equal the paper's 0.6340 and 0.4657.")
+save()
 EOF
-cd - >/dev/null && git diff --stat reproduce_zhai_2025.ipynb; python $TMPDIR/edit_nb.py
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/edit_nb.py", line 118, in <module>
-    rep(22, """print("Matched cells:", dpairs.paper.notna().sum(), """, """dpairs = dpairs[dpairs["index"].notna()].reset_index(drop=True)
-    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    print("\\nMatched cells:", dpairs.paper.notna().sum(), """)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/edit_nb.py", line 8, in rep
-    s = src(i); assert old in s, (i, old[:60]); setsrc(i, s.replace(old, new, 1))
-                       ^^^^^^^^
-AssertionError: (22, 'print("Matched cells:", dpairs.paper.notna().sum(), ')
+(Bash completed with no output)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && python - <<'EOF'
-s = open("edit_nb.py").read()
-s = s.replace('''rep(22, """print("Matched cells:", dpairs.paper.notna().sum(), """, """dpairs''', '''rep(22, """print("\\\\nMatched cells:", dpairs.paper.notna().sum(), """, """dpairs''', 1)
-s = s.replace('''s22 = src(22).replace('print("\\\\nMatched cells:"', 'print("Matched cells:"', 1)''', "s22 = src(22)", 1)
-open("edit_nb.py", "w").write(s)
+cat > $TMPDIR/x.py <<'EOF'
+print([k for k in T if "pine" in k or "4K" in k or "2B" in k or "4B" in k])
 EOF
-grep -n "Matched cells\|s22 = " edit_nb.py; cd - >/dev/null; python $TMPDIR/edit_nb.py
+../../executed/zhai-2025/.venv/bin/python $TMPDIR/dev.py 4 $TMPDIR/x.py 2>&1 | tail -1; grep -n "fig2bc-dspn-spines" -A30 ../../claims/zhai-2025.yaml | grep -n "data:\|criterion"
 ```
 
 ```
-118:rep(22, """print("\\nMatched cells:", dpairs.paper.notna().sum(), """, """dpairs = dpairs[dpairs["index"].notna()].reset_index(drop=True)
-119:print("\\nMatched cells:", dpairs.paper.notna().sum(), """)
-120:s22 = src(22)
-121:s22 = s22.replace("""print("Groups whose count equals the paper's n:", int((dsum.cells == dsum.paper_n).sum()), "of", len(dsum))""",
-ok
-```
-
-**Agent**
-
-Notebook edited. Adding matplotlib, relocking, then running the entry.
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/^h5py$/h5py\nmatplotlib/' requirements.in && cat requirements.in && cd ../.. && python tools/entry.py lock entries/001538-zhai-2025 2>&1 | tail -3 && git diff --stat
-```
-
-```
-dandi
-h5py
-matplotlib
-numpy
-openpyxl
-pandas
-remfile
-scipy
-wrote entries/001538-zhai-2025/requirements.lock.txt
- entries/001538-zhai-2025/lid.py                    |  88 +++++++---
- entries/001538-zhai-2025/reproduce_zhai_2025.ipynb | 183 ++++++++++++++++++---
- entries/001538-zhai-2025/requirements.in           |   1 +
- entries/001538-zhai-2025/requirements.lock.txt     |  18 ++
- 4 files changed, 243 insertions(+), 47 deletions(-)
+['Fig 2B_dSPN total spines', 'Fig 2C_dSPN mushroom spines', 'Fig 7H_KO spine density', 'Fig 4B_iSPN total spines', 'Fig 4C_iSPN mushroom spines', 'Fig 4K_confocal spine density', 'SupFig 2B_contra rotations', 'SupFig 5_>0.4 um spine density', 'Fig 9F_M1R CRISPR spine density']
 ```
 
 **Agent calls Bash**
 
 ```bash
-git diff entries/001538-zhai-2025/requirements.lock.txt | grep "^[-+]" | grep -v "^+#\|^-#\|    #" | head -30
+grep -n '"missing_datasets"' -A30 ../../schemas/attempt.schema.json | head -40
 ```
 
 ```
---- a/entries/001538-zhai-2025/requirements.lock.txt
-+++ b/entries/001538-zhai-2025/requirements.lock.txt
-+contourpy==1.4.0
-+cycler==0.12.1
-+fonttools==4.67.0
-+kiwisolver==1.5.1
-+matplotlib==3.11.2
-+pillow==13.0.0
-+pyparsing==3.3.3
+88:    "missing_datasets": {
+89-      "description": "Datasets the paper's claims rest on that this attempt could not use; claims that need one are blocked with dataset_missing.",
+90-      "type": "array",
+91-      "items": {
+92-        "type": "object",
+93-        "additionalProperties": false,
+94-        "required": [
+95-          "why"
+96-        ],
+97-        "properties": {
+98-          "archive": {
+99-            "type": "string"
+100-          },
+101-          "id": {
+102-            "type": "string"
+103-          },
+104-          "name": {
+105-            "type": "string"
+106-          },
+107-          "why": {
+[... 11 more lines not kept]
 ```
-
-**Agent**
-
-Only additions, no other versions changed. Running the entry:
 
 **Agent calls Bash**
 
 ```bash
-time python tools/entry.py all entries/001538-zhai-2025 2>&1 | tail -30
+../../executed/zhai-2025/.venv/bin/python - <<'EOF'
+import os; exec(open(os.environ['TMPDIR']+'/nbedit.py').read())
+i = find("## Blocked claims")
+setsrc(i, '''## Blocked claims
+
+- fig2bc-dspn-spines, fig4bc-ispn-spines, fig6f-m1r-antag-spines, fig7h-cdgi-ko-spines,
+  fig9f-m1r-crispr-spines: the dandiset holds the raw 2PLSM z-stacks (cell `finding-missing-groups`
+  counts the files by cell type and group, and lists what one file of each holds: image stacks
+  under `acquisition`, and nothing under `processing` or `analysis`), so no spine counts,
+  annotations or segmentations. The paper deconvolved the stacks in AutoQuant X3 and counted
+  spines semi-automatically in NeuronStudio, with mushroom spines classified there; neither can
+  be run here. Not runnable. The paper's own spine tables are in its Zenodo deposit, but re-running
+  its statistics on them would not test the dandiset.
+- fig4k-confocal-spines: the confocal images of sparsely labelled iSPNs are not in the dandiset.
+  They are in the paper's raw-data deposit on Zenodo (record 17260198, one 13.4 GB zip), and the
+  paper counted spines in Imaris 10 with supervised learning and manual correction, which cannot
+  be run here. Not runnable.''')
+i = find("| link-somatic-cells | partially reproduced (90 of 123 cells exact) |")
+rep(i, "| link-grab-rois | not reproduced (16 of 34 within 0.05) |", "| link-grab-rois | not reproduced (16 of 34 regions within 0.05; 1 of 11 mice) |")
+rep(i, "| fig1i-dspn-dendritic-sch-lower | not reproduced (P = 0.079) |", "| fig1i-dspn-dendritic-sch-lower | not reproduced (P = 0.066) |")
+rep(i, "| fig2h, fig2i, fig4g, fig4h (Sr2+-oEPSC) | reproduced, resting on the stand-in detector |", "| fig2h, fig2i, fig4g, fig4h (Sr2+-oEPSC) | reproduced, resting on the stand-in detector (fig4h also on which 10 sweeps of two cells are used) |")
+rep(i, '''AIM group effect is the between-mouse F of the mixed design. Seven claims rest on the paper's
+own tables, as the claims file says.''', '''AIM group effect is the between-mouse F of the mixed design. Seven claims rest on the paper's
+own tables, as the claims file says. After the first verification round the red-channel background
+of the dendritic index was corrected (55, where 161 had been subtracted from both channels), the
+last-sweep variant of the somatic measures was made to take the last sweep, and the Sr2+ claims
+gained the last-10 and nearest-run sweep variants; no outcome changed.''')
+rep(i, '''One dendritic cell lacks
+the pair of sites the paper used, which changes the outcome of fig1i-dspn-dendritic-sch-lower.''', '''One dendritic cell lacks
+the pair of sites the paper used, which changes the outcome of fig1i-dspn-dendritic-sch-lower
+(P = 0.066 with it, 0.027 without it).''')
+save()
+EOF
+grep -n "not runnable\|blocked" $TMPDIR/nb.txt | head
 ```
 
 ```
-/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
-  _validate(nbdict, ref, version, version_minor, relax_add_props)
-Installed kernelspec registry-001538-zhai-2025 in executed/001538-zhai-2025/.venv/share/jupyter/kernels/registry-001538-zhai-2025
+34:| fig2bc-dspn-spines | dandiset (raw image stacks) | blocked, not runnable |
+39:| fig4bc-ispn-spines, fig4k-confocal-spines | dandiset | blocked |
+42:| fig6f-m1r-antag-spines, fig7h-cdgi-ko-spines, fig9f-m1r-crispr-spines | dandiset (raw image stacks) | blocked, not runnable |
+1073:| fig2bc, fig4bc, fig6f, fig7h, fig9f (2PLSM spines), fig4k (confocal) | blocked, not runnable |
+```
+
+**Agent calls Bash**
+
+```bash
+cd  && date -u && time python tools/entry.py all entries/zhai-2025 2>&1 | tail -30; date -u
+```
+
+```
+Thu Nov 26 17:49:24 UTC 2026
+Installed kernelspec registry-zhai-2025 in executed/zhai-2025/.venv/share/jupyter/kernels/registry-zhai-2025
 0 error(s)
-pass  reproduce_zhai_2025.ipynb  (599 s)
+pass  reproduce_zhai_2025.ipynb  (398 s)
 
-real	10m11.548s
-user	2m9.779s
-sys	0m7.921s
+real	6m50.519s
+user	2m9.808s
+sys	0m12.977s
+Thu Nov 26 17:56:14 UTC 2026
 ```
 
 **Agent**
 
-Ran in 10 minutes without errors. Reading the outputs:
+Run passes. Now checking the executed outputs against the conclusions.
 
 **Agent calls Bash**
 
 ```bash
-cd executed/001538-zhai-2025 && ls && python -c "
+python - <<'EOF' > $TMPDIR/out.txt
 import json
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-print(nb['nbformat'], nb['nbformat_minor'])
+nb=json.load(open('executed/zhai-2025/reproduce_zhai_2025.ipynb'))
 for i,c in enumerate(nb['cells']):
     if c['cell_type']!='code': continue
-    print('=== CELL',i,c.get('metadata',{}).get('tags'))
+    out=''
     for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o: print('[', list(o['data'].keys()), ']', ''.join(o['data'].get('text/plain',''))[:200])
-" > $TMPDIR/out.txt; wc -l $TMPDIR/out.txt
+        if 'text' in o: out+=''.join(o['text'])
+        elif 'data' in o and 'text/plain' in o['data']: out+=''.join(o['data']['text/plain'])
+    print('=====',i,c['metadata'].get('tags')); print(out)
+EOF
+grep -n "P=\|variant\|exact\|within\|mice\|regions\|rows\|cells whose\|Figure 6D\|median relative" $TMPDIR/out.txt | grep -v "^\S*: *[0-9]\+ " | head -120
 ```
 
 ```
-reproduce_zhai_2025.ipynb
-result.json
-977 /tmp/claude-1001/out.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt"
-}
-```
-
-```
-1	4 5
-2	=== CELL 1 None
-3	226 NWB files listed at dandiset 001538 version 0.260527.1302; loaded 58 patch-clamp, 14 Sr2+-oEPSC, 11 GRAB-ACh, 45 AIM and 12 video files in 202 s
-4	Paper tables (Zenodo 17307059): ['Fig 1', 'Fig 10', 'Fig 2', 'Fig 3', 'Fig 4', 'Fig 5', 'Fig 6', 'Fig 7', 'Fig 8', 'Fig 9', 'SupFigs']
-5	
-6	=== CELL 3 ['sanity']
-7	NWB files by kind and session-name fields:
-8	kind           cell_type  state      drug     genotype  
-9	               dSPN       OffState   none     WT            19
-10	                          OnState    none     WT             9
-11	               iSPN       CTRL       none     WT             3
-12	                          OFF        none     WT             3
-13	                          ON         none     WT             2
-14	                          OffState   M1RaThp  WT             5
-15	                                     none     CDGIKO         6
-16	                                              WT            25
-17	                                              iSPN-M1RKO     3
-18	                          OnState    none     CDGIKO         3
-19	                                              WT             5
-20	                          PD         none     WT             3
-[... 621 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt",
- "offset": 642
-}
-```
-
-```
-642	Variant, cells recorded in both conditions (n = 5):
-643	    date  cell  rheobase_on  rheobase_sch
-644	20190411     1        100.0          80.0
-645	20190412     1        120.0         120.0
-646	20190501     1        120.0         140.0
-647	20190503     1        100.0          80.0
-648	20190507     2        140.0         140.0
-649	Wilcoxon: statistic 2.0, P = 1.000 ; median paired difference (SCH - on): 0.0
-650	
-651	By mouse:
-652	                      size  median
-653	group       date                  
-654	dSPN on+SCH 20190411     2   110.0
-655	            20190412     2   140.0
-656	            20190501     2   130.0
-657	            20190503     2   110.0
-658	            20190507     2   140.0
-659	
-660	=== CELL 47 ['claim:fig1i-dspn-dendritic-on-higher']
-661	Index, off (a) against on (b):
-[... 317 more lines not kept]
+90:GRAB-ACh3.0 regions by group: {'LesionedControl': 10, 'OffState': 11, 'UnlesionedControl': 13}
+91:AIM mice by figure and group: {('Figure 10', 'M1R CRISPR'): 10, ('Figure 10', 'control'): 11, ('Figure 8', 'CDGI knockout'): 11, ('Figure 8', 'control'): 10}
+129:GRAB regions: 34 ; regions whose trials start with the same frames as another region's: 0
+130:AIM mice: 42 ; mice whose 5 sessions of scores equal another mouse's: 0
+134:files of unlesioned or lesioned control mice with patch-clamp data: 0
+149:                       n_data  n_paper  exact  within3  rheobase_equal
+165:cells: 123; exact match 90 (73.2%); best match within 3 spikes 105 (85.4%)
+168:cells whose best match differs by more than 3 spikes:
+189:paper rows that are the best match of more than one cell: 9, taking 20 cells; cells whose best match is tied between rows: 6
+190:Fig 1F_dSPN rheobase, control: rows 10 (F-I sheet 10); rheobase equal to the first step with a spike in the same row of the F-I sheet: 9 of 10
+191:Fig 1F_dSPN rheobase, 6-OHDA: rows 12 (F-I sheet 12); rheobase equal to the first step with a spike in the same row of the F-I sheet: 12 of 12
+192:Fig 1F_dSPN rheobase, LID off: rows 15 (F-I sheet 15); rheobase equal to the first step with a spike in the same row of the F-I sheet: 13 of 15
+193:Fig 1F_dSPN rheobase, LID on: rows 15 (F-I sheet 15); rheobase equal to the first step with a spike in the same row of the F-I sheet: 13 of 15
+194:Fig 1F_dSPN rheobase, LID on + SCH: rows 10 (F-I sheet 10); rheobase equal to the first step with a spike in the same row of the F-I sheet: 8 of 10
+195:Fig 3D_iSPN rheobase, Control: rows 21 (F-I sheet 21); rheobase equal to the first step with a spike in the same row of the F-I sheet: 21 of 21
+196:Fig 3D_iSPN rheobase, 6-OHDA: rows 11 (F-I sheet 11); rheobase equal to the first step with a spike in the same row of the F-I sheet: 11 of 11
+197:Fig 3D_iSPN rheobase, LID off: rows 12 (F-I sheet 12); rheobase equal to the first step with a spike in the same row
+[... 103 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd ../../entries/001538-zhai-2025 && cat > $TMPDIR/edit2.py <<'PYEOF'
-import json
-P = "reproduce_zhai_2025.ipynb"
-nb = json.load(open(P)); C = nb["cells"]
-def find(s): 
-    r = [i for i, c in enumerate(C) if s in "".join(c["source"])]; assert len(r) == 1, (s, r); return r[0]
-def rep(i, old, new):
-    s = "".join(C[i]["source"]); assert old in s, (i, old[:50]); C[i]["source"] = s.replace(old, new, 1).splitlines(keepends=True)
-i = find("def dend_test")
-rep(i, "dend_lab = cell_index(sites_lab)\n", "dend_lab = cell_index(sites_lab)\ndend_full = cell_index(sites[sites.n_trials >= 3])\n")
-rep(i, '("sites as labelled", dend_lab)]', '("sites as labelled", dend_lab), ("sites with 3+ trials", dend_full)]')
-i = find("Variant, sites as labelled (no split)")
-rep(i, """print("Variant, sites as labelled (no split): cells with an index", int(lab["index"].notna().sum()), "of", len(lab))""",
-"""print("Variant, sites as labelled (no split): cells with an index", int(lab["index"].notna().sum()), "of", len(lab))
-full = cell_index(sites[sites.n_trials >= 3])
-chg = dpairs.merge(full[["date", "cell", "condition", "index"]].rename(columns={"index": "index_3trials"}),
-                   left_on=["date", "cell"], right_on=["date", "cell"]).merge(dend[["date", "cell", "condition", "group"]], on=["date", "cell", "condition", "group"])
-chg = chg[(chg["index"] - chg.index_3trials).abs() > 1e-9]
-print("Variant, sites with fewer than 3 trials dropped (%s): cells whose index changes" % sites[sites.n_trials < 3][["date", "cell", "compartment", "site", "n_trials"]].values.tolist())
-print(chg[["group", "date", "cell", "index", "index_3trials", "paper"]].round(3).to_string(index=False))""")
-for k, c in enumerate(C):
-    c.setdefault("id", f"cell-{k:03d}") if False else None
-missing = [k for k, c in enumerate(C) if "id" not in c]
-for k in missing:
-    C[k]["id"] = f"rev1-{k:03d}"
-print("ids added:", missing)
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False); open(P, "a").write("\n")
-PYEOF
-python $TMPDIR/edit2.py
+sed -n 720,800p $TMPDIR/out.txt | grep -v "^ \+[0-9]\+ \+[0-9]\{4\}" | head -60; grep -n "nearest run\|spine-density files by\|acquisition" $TMPDIR/out.txt
 ```
 
 ```
-ids added: [17, 18, 28]
-```
+===== 99 ['claim:link-aim-mice', 'finding-fig8-aims']
+time points per session: {3: 3, 4: 34, 5: 119, 6: 54}
+sessions where the lab's total equals the sum of the three scores: 208 of 210
 
-**Agent calls Bash**
-
-```bash
-cd ../.. && python tools/entry.py all entries/001538-zhai-2025 2>&1 | tail -3 && cd executed/001538-zhai-2025 && python -c "
-import json
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    t=''.join(''.join(o.get('text','')) for o in c.get('outputs',[]))
-    if 'Variant, sites with fewer' in t: print(t[t.index('Variant, sites as'):])
-    if 'sites with 3+' in t: print(t[:900])
-"
-```
-
-```
-Installed kernelspec registry-001538-zhai-2025 in executed/001538-zhai-2025/.venv/share/jupyter/kernels/registry-001538-zhai-2025
-0 error(s)
-pass  reproduce_zhai_2025.ipynb  (604 s)
-Variant, sites as labelled (no split): cells with an index 89 of 92
-Variant, sites with fewer than 3 trials dropped ([['20160524', 2, 'Proximal', 1, 1], ['20170707', 1, 'Distal', 2, 2]]): cells whose index changes
-   group     date  cell  index  index_3trials  paper
- dSPN on 20170707     1  0.610          0.630  0.581
-iSPN off 20160524     2  1.062          0.553  0.527
-
-Index, off (a) against on (b):
-                       n_a   n_b  median_a  median_b     U        P  P_exact  effect_r
-main                  10.0  10.0    0.3298    0.4756  13.0  0.00580  0.00389    0.7400
-no background         10.0  10.0    0.3299    0.4771  12.0  0.00459  0.00288    0.7600
-basal 0.8-1.25         8.0   8.0    0.3290    0.4756   7.0  0.00699  0.00699    0.7812
-all pairs             10.0  10.0    0.3298    0.4756  13.0  0.00580  0.00389    0.7400
-sites as labelled     10.0  10.0    0.3525    0.4756  15.0  0.00911  0.00684    0.7000
-sites with 3+ trials  10.0  10.0    0.3298    0.4756  13.0  0.00580  0.00389    0.7400
-
-Off: [0.139 0.265 0.293 0.317 0.327 0.332 0.373 0.451 0.468 0.475]
-On:  [0.374 0.393 0.42  0.424 0.475 0.477 0.547 0.61  0.617 0.725]
-[... 85 more lines not kept]
-```
-
-**Agent**
-
-Run is clean. Now updating the conclusion cells, header and summary to the new numbers.
-
-**Agent calls Bash**
-
-```bash
-cd ../../entries/001538-zhai-2025 && python -c "
-import json
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-    s=''.join(c['source'])
-    if c['cell_type']=='markdown' and (s.startswith('**Result') or i in (8,17,19,20) ): print(i, s[:110].replace('\n',' '))
-"
-```
-
-```
-8 The dendritic assay evokes three spikes, the first at 1.00 s, and the Ca2+ signal rises after it: the area in 
-17 The spine image files: what they hold besides their metadata.
-19 ## Links to the paper's per-cell tables  The paper deposited per-cell and per-animal tables (Zenodo doi:10.528
-20 ### link-somatic-cells  > The dandiset's somatic current-step recordings are those behind the paper's somatic 
-22 **Result: partially reproduced.** Every group the dandiset holds has the paper's n (12 of 12 groups, 123 cells
-25 **Result: reproduced.** 89 of 92 cells have an index; three have no proximal and distal site of the same numbe
-29 **Result: partially reproduced.** All 14 cells match a paper identifier; the dandiset holds 14 of the paper's 
-32 **Result: not reproduced.** The dandiset holds one region per mouse, 11 of the paper's 34 regions (3 of 13 unl
-35 **Result: not reproduced.** 7 of the 9 dandiset mice are in the paper's tables (4124 and 5871 are not). The tw
-39 **Result: reproduced.** On-state median 140 pA against off-state 220 pA (15 cells each), MW P = 8.86e-06, effe
-42 **Result: reproduced.** Summed spikes from 20 to 300 pA: median 88 on against 36 off, MW P = 8.8e-05 (P = 0.00
-45 **Result: reproduced.** Rheobase on-state 140 pA (15 cells) against on-state with SCH 140 pA (10 cells), MW P 
-48 **Result: reproduced.** Index on-state 0.476 against off-state 0.353 (10 cells each), MW P = 0.0091, effect r 
-51 **Result: partially reproduced.** The criterion (P < 0.05) is not met, though the effect has the stated direct
-55 **Result: reproduced.** iSPN rheobase on-state 160 pA (11 cells) against off-state 120 pA (12 cells), MW P = 0
-58 **Result: reproduced.** Summed spikes 65 on against 118.5 off, MW P = 7.2e-05 (0.000165 for cells with every s
-61 **Result: reproduced.** Rheobase on-state 160 pA (11 cells) against on-state with sulpiride 120 pA (7 cells), 
-64 **Result: reproduced.** Index on-state 0.340 (9 cells) against off-state 0.524 (10 cells), MW P = 0.0128, eff
-[... 16 more lines not kept]
-```
-
-**Agent**
-
-Let me look at the new Sr2+ detector figure before describing it.
-
-**Agent calls Bash**
-
-```bash
-cd ../../executed/001538-zhai-2025 && python -c "
-import json,base64,os
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for c in nb['cells']:
-    for o in c.get('outputs',[]):
-        if 'data' in o and 'image/png' in o['data']:
-            open(os.environ['TMPDIR']+'/sr.png','wb').write(base64.b64decode(o['data']['image/png'])); print('ok')
-"
-```
-
-```
-ok
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/sr.png"
-}
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd ../../entries/001538-zhai-2025 && cat > $TMPDIR/edit3.py <<'PYEOF'
-import json
-P = "reproduce_zhai_2025.ipynb"
-nb = json.load(open(P)); C = nb["cells"]
-def find(s, kind=None):
-    r = [i for i, c in enumerate(C) if s in "".join(c["source"]) and (kind is None or c["cell_type"] == kind)]; assert len(r) == 1, (s, r); return r[0]
-def setsrc(i, s): C[i]["source"] = s.splitlines(keepends=True)
-def rep(i, old, new):
-    s = "".join(C[i]["source"]); assert old in s, (i, old[:50]); setsrc(i, s.replace(old, new, 1))
-
-# sul variant
-i = find('print("By mouse:"); print(by_mouse(dend, "index", ["iSPN on+sul"]).to_string())')
-rep(i, 'print("By mouse:"); print(by_mouse(dend, "index", ["iSPN on+sul"]).to_string())',
-'''print("By mouse:"); print(by_mouse(dend, "index", ["iSPN on+sul"]).to_string())
-sul_all = dend[dend.group == "iSPN on+sul"].reset_index(drop=True)
-paper_sul = lid.tidy_group(tidy, lid.TIDY_DENDRITIC["iSPN on+sul"]).iloc[:, -1].to_numpy(float)
-k = int(np.flatnonzero(sul_all["index"].isna())[0])
-print(f"\\nCell without an index: {sul_all.date[k]} cell {sul_all.cell[k]} (sites {sul_all.sites[k]}); the paper's value at its rank: {paper_sul[k]:.3f}")
-print("Variant, with the paper's value for that cell:",
-      show(mw(dend[dend.group == "iSPN on"]["index"], pd.concat([sul_all["index"].dropna(), pd.Series([paper_sul[k]])]))))''')
-
-# spine: statement after the output
-i = find("The spine image files: what they hold besides their metadata.")
-C[i], C[i + 1] = C[i + 1], C[i]
-setsrc(i + 1, """The 86 spine files hold only image stacks (`Images` objects in acquisition): 75 two-photon files of
-off- and on-state dendrites and 11 confocal files of unlesioned, 6-OHDA, off- and on-state dendrites.
-None has a processing module or an analysis entry, so no spine counts, reconstructions or
-annotations are stored.""")
-
-# dendritic data check
-i = find("The dendritic assay evokes three spikes", "markdown")
-s = "".join(C[i]["source"]).rstrip("\n")
-setsrc(i, s + """
-
-Six site series do not hold the usual three trials. Three hold six trials under one name while the
-cell has no series of the other compartment with that number (iSPN 20160526 cell 3 `Distal1`, iSPN
-20160608 cell 1 `Proximal1`, dSPN 20170204 cell 1 `Proximal1`). In each, the first and last three
-trials differ in baseline (G0 or R0) and their areas differ 3.4- to 6.9-fold, so each series holds
-two sites. The analysis splits them and takes the half with the smaller area as the distal site.
-This gives the three cells an index of 0.293, 0.146 and 0.327, against the paper's 0.299, 0.146
-and 0.309 (link section). The sites as labelled are shown as a variant. One series holds a single
-trial (iSPN 20160524 cell 2 `Proximal1`), one two and one four.""")
-
-R = {}
-R["**Result: partially reproduced.** Every group the dandiset holds"] = """**Result: partially reproduced.** Every group the dandiset holds has the paper's n (12 of 12 groups, 123 cells). 90 of 123 cells (73.2%) match a row of the paper's table exactly over 20 to 300 pA and 105 (85.4%) within 3 spikes, below the 80% and 95% the criterion asks for; 108 have the same rheobase as their best match. The mismatches fall in most groups, most often in dSPN on (6 of 15 exact). The best matches are not one-to-one (9 paper rows are the best match of two or three cells); with each row used once, 89 cells (72.4%) match exactly and 103 (83.7%) within 3 spikes. The best-match rows follow the dandiset's order by date and cell number: in 8 of 12 groups every cell's best match is the row at its own rank, and in the others 10 of 15 (dSPN off), 11 of 15 (dSPN on), 11 of 12 (iSPN off) and 10 of 11 (iSPN on) are. Of the 14 cells with a repeated step, keeping the last sweep in place of the first gives the same best-match difference in 13 and a closer one in 1."""
-R["**Result: reproduced.** 89 of 92 cells have an index"] = """**Result: reproduced.** With the three series that hold two sites split (data check), 91 of 92 cells have an index; iSPN on+sul 20190508 cell 3 has only a distal site. Cells with an index equal the paper's n in 9 of 10 groups, and cells with dendritic sites in 10 of 10, so every group is matched by order or by identifier. Over 91 matched cells the index differs from the paper's by a median of 2.9% (78 within 10%, Spearman correlation 0.938). Two cells differ by more than the paper's value: dSPN on+SCH 20190411 cell 1 (0.584 against 0.228), which has only its second pair of sites, and iSPN off 20160524 cell 2 (1.062 against 0.527), whose first proximal site has one trial; dropping sites with fewer than 3 trials gives that cell 0.553. The basal-ratio rule (0.5 to 2) drops none of the 165 pairs (0.67 to 1.75); 38 lie outside 0.8 to 1.25. With the sites as labelled, 89 of 92 cells have an index."""
-R["**Result: partially reproduced.** All 14 cells match a paper identifier"] = """**Result: partially reproduced.** All 14 cells match a paper identifier; the dandiset holds 14 of the paper's 33 cells, one per mouse. In every cell the detector here finds fewer events and a higher mean amplitude than the paper's events, and only 2 cells are within 25% on both, so the event detection differs from the paper's. Reading the paper's amplitude as its per-cell value (0.70 to 0.96 times the mean of its histogram events) also gives 2 of 14. The figure shows why in 20230405b, where the detector finds 2 events against the paper's 73: the detection window opens on the slow decay of a large synchronous current (peak -125 to -165 pA), and the small events on that decay stay below the threshold. In 07062023c it finds 47 against 56. With the paper's own per-cell amplitudes the 4 on-state dSPNs are all above the 3 off-state ones and the 4 on-state iSPNs all below the 3 off-state ones (MW P = 0.057 each, the smallest attainable)."""
-R["**Result: not reproduced.** The dandiset holds one region per mouse"] = """**Result: not reproduced.** The dandiset holds one region per mouse, 11 of the paper's 34 regions (3 of 13 unlesioned, 3 of 10 6-OHDA, 5 of 11 off-state). Only 5 of the 11 mice have a paper region within 0.05 on every treatment, so the regions cannot be identified in the paper's table. One paper region is the best match of two off-state mice; with each region used once, 5 of 11 mice are still within 0.05."""
-R["**Result: not reproduced.** 7 of the 9 dandiset mice"] = """**Result: not reproduced.** 7 of the 9 dandiset mice are in the paper's tables (4124 and 5871 are not). The two Figure 10 mice (5844 control, 5846 M1R deletion) have session totals equal to the paper's in all 10 sessions, but the five Figure 8 mice agree in only 5 of 25 sessions (mouse 1945, session 1, 33.5 here against 27.0). The paper's tables give session totals only. Its totals for these mice equal neither the dandiset's sums over 20 to 80 min nor, except in those 5 sessions, the sums over all time points; mouse 1945 session 1 has four time points that sum to 33.5. So the scores differ, not only the time points summed. Of the paper's 23 Figure 8 mice the dandiset holds 4 KO and 1 wild type, and of its 21 Figure 10 mice one per group. The genotype labels in the dandiset contradict each other (data check); the paper's labels are the ones used."""
-R["**Result: reproduced.** Index on-state 0.476 against off-state 0.353"] = """**Result: reproduced.** Index on-state 0.476 against off-state 0.330 (10 cells each), MW P = 0.0058 (exact 0.0039), effect r = 0.74. It holds in every variant: without background P = 0.0046, with a basal-ratio rule of 0.8 to 1.25 (8 cells each) P = 0.0070, with the sites as labelled P = 0.0091."""
-R["**Result: partially reproduced.** The criterion (P < 0.05) is not met"] = """**Result: not reproduced.** The criterion (P < 0.05 with the SCH median lower) is not met, though the difference has the stated direction: on-state with SCH 0.419 (9 cells) against on-state 0.476 (10 cells), MW P = 0.0662 (exact 0.0653), effect r = -0.51. With the stricter basal-ratio rule P = 0.524. The difference from the paper comes from one cell. SCH 20190411 cell 1 has an index of 0.584 here and 0.228 in the paper's table, and the dandiset holds only its second pair of sites. Without that cell P = 0.0266; with the paper's value for it P = 0.016 (exact 0.0133, the P the paper reports). The other eight SCH cells differ from the paper's values by 2.4% to 10.9%."""
-R["**Result: reproduced.** Index on-state 0.340 (9 cells) against off-state 0.524"] = """**Result: reproduced.** Index on-state 0.339 (10 cells) against off-state 0.524 (10 cells), MW P = 0.0073 (exact 0.0052), effect r = -0.72. Without background P = 0.0073; with the sites as labelled (9 on-state cells) P = 0.0128; dropping sites with fewer than 3 trials P = 0.0091. With the stricter basal-ratio rule (9 cells each) P = 0.077, so the result depends on keeping pairs whose basal ratios differ by more than 25%."""
-R["**Result: not reproduced.** The paper's test finds the difference"] = """**Result: not reproduced.** The paper's test finds the difference the claim says is absent: on-state with sulpiride 0.506 (7 cells) against on-state 0.339 (10 cells), MW P = 0.0097, effect r = 0.74 (the paper reports P = 0.0545 with 8 and 10 cells). With the sites as labelled P = 0.0164 and with the stricter basal-ratio rule P = 0.0663. The paper's own medians go the same way (0.499 and 0.345, link section). The sulpiride cell without an index here (20190508 cell 3, only a distal site) has 0.217 in the paper's table; with that value P = SULP."""
-R["**Result: reproduced.** KO index off-state 0.347"] = """**Result: reproduced.** KO index off-state 0.312 (11 cells) against on-state 0.286 (8 cells), MW P = 0.310, effect r = -0.30 (P = 0.659 with the stricter rule, 0.315 with the sites as labelled), while the wild-type difference is significant (P = 0.0073)."""
-R["**Result: reproduced.** On the paper's table, oxo-M raises"] = """**Result: reproduced.** On the paper's table, oxo-M raises the index in wild type (8 of 10 increase, Wilcoxon P = 0.009766, as the paper reports) and not in KO (4 of 12, P = 0.4697; the paper reports 0.910). Pairs are formed by the table's experiment number (KO_1 to KO_12, printed). An unpaired Mann-Whitney test on the same values gives 0.885 for KO and 0.0539 for wild type; neither test gives the reported 0.910."""
-for k, v in R.items():
-    setsrc(find(k, "markdown"), v)
-
-i = 0
-rep(i, "| fig2bc, fig4bc, fig4k, fig6f, fig7h, fig9f (spine density) | dandiset | blocked: raw stacks only; counting used AutoQuant, NeuronStudio or Imaris with manual correction |",
-       "| fig2bc, fig4bc, fig4k, fig6f, fig7h, fig9f (spine density) | dandiset | blocked: methods underspecified; raw stacks only, no counts stored, and counting used AutoQuant, NeuronStudio or Imaris with manual correction (fig4bc also lacks control and 6-OHDA stacks) |")
-i = find("## Summary", "markdown")
-s = "".join(C[i]["source"])
-s = s.replace("| fig1i-dspn-dendritic-sch-lower | dandiset | partially reproduced |", "| fig1i-dspn-dendritic-sch-lower | dandiset | not reproduced |")
-s = s.replace("blocked: not runnable |", "blocked: methods underspecified |")
-s = s.replace("""made here (0.5 to 2; it drops no pair), and sites are paired by number.""",
-"""made here (0.5 to 2; it drops no pair, and the stricter 0.8 to 1.25 changes the iSPN on-state result
-to P = 0.077), and sites are paired by number. Three site series that hold six trials are split into
-two sites, the half with the smaller area taken as distal.""")
-s = s.replace("""paper's TaroTools detection with visual verification. Mann-Whitney P values are computed with
-scipy (exact without ties, asymptotic with ties), where Prism was used.""",
-"""paper's TaroTools detection with visual verification. Mann-Whitney P values are computed with
-scipy (exact for small samples without ties, otherwise asymptotic), where Prism was used; the exact
-P is printed beside it where there are no ties.""")
-s = s.replace("""- The dendritic stimulus series are all zero,""",
-"""- Three dendritic site series hold two sites under one name (six trials), one site has a single
-  trial, and two cells lack sites the paper's values need: dSPN on+SCH 20190411 cell 1 has only
-  its second pair (0.584 here against 0.228 in the paper, which decides
-  fig1i-dspn-dendritic-sch-lower) and iSPN on+sul 20190508 cell 3 only a distal site.
-- The spine files hold image stacks only, with no processing or analysis entries.
-- The dendritic stimulus series are all zero,""")
-C[i]["source"] = s.splitlines(keepends=True)
-for k, c in enumerate(C):
-    if "id" not in c: c["id"] = f"rev1-{k:03d}"
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False); open(P, "a").write("\n")
-print("ok")
-PYEOF
-python $TMPDIR/edit3.py && grep -c "SULP" reproduce_zhai_2025.ipynb
-```
-
-```
-ok
-1
+Figure 8: dandiset mice 21, paper mice 23, matched 18; matched sessions 90, totals equal 12; group labels agree for 18 of 18 mice
+dandiset mice not in the paper: [4123, 4124, 5871] ; paper mice not in the dandiset: [2346, 2347, 7741, 7742, 7744]
+median absolute difference over matched sessions 2.50; largest 19.5
+    mouse group_label  session  total  total_p
+0     465     control        1   48.5     35.0
+1     465     control        2   48.0     43.5
+2     465     control        3   59.5     49.5
+3     465     control        4   54.0     44.5
+4     465     control        5   52.0     48.5
+5     466     control        1   35.5     31.5
+6     466     control        2   38.5     35.0
+7     466     control        3   43.0     52.0
+8     466     control        4   39.0     45.5
+9     466     control        5   42.5     48.0
+10    467     control        1   43.5     36.0
+11    467     control        2   41.0     39.5
+[... 44 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
 python -c "
-import json
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-s=''.join(nb['cells'][-1]['source']); print(s[s.index('**How'):])
-" ; cd ../.. && python tools/entry.py all entries/001538-zhai-2025 2>&1 | tail -2 && cd executed/001538-zhai-2025 && python -c "
-import json
-nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for c in nb['cells']:
-    t=''.join(''.join(o.get('text','')) for o in c.get('outputs',[]))
-    if 'Cell without an index' in t: print(t[t.index('Cell without'):])
-    if 'Spine image files' in t: print(t)
-"
+import yaml,sys
+d=yaml.safe_load(open('attempts/zhai-2025-03.yaml'))
+open('/tmp/claude-1001/rt.yaml','w').write(yaml.safe_dump(d, sort_keys=False, allow_unicode=True, width=105))
+"; diff attempts/zhai-2025-03.yaml $TMPDIR/rt.yaml | head -20; diff attempts/zhai-2025-03.yaml $TMPDIR/rt.yaml | wc -l
 ```
 
 ```
-**How the analysis differs from the paper's.** Spike counts, rheobase, the dendritic index and the
-GRAB-ACh area follow the paper's scripts, but the dendritic background is the script's constant for
-every session (the files carry none), the basal-ratio rule for keeping dendritic pairs is a choice
-made here (0.5 to 2; it drops no pair, and the stricter 0.8 to 1.25 changes the iSPN on-state result
-to P = 0.077), and sites are paired by number. Three site series that hold six trials are split into
-two sites, the half with the smaller area taken as distal. The GRAB-ACh stimulus time
-comes from the trial table (3 s in six files where the script assumes 10 s). Sr2+-oEPSC events
-were found with a threshold detector written here, which finds fewer, larger events than the
-paper's TaroTools detection with visual verification. Mann-Whitney P values are computed with
-scipy (exact for small samples without ties, otherwise asymptotic), where Prism was used; the exact
-P is printed beside it where there are no ties.
-
-**What was found about the dandiset.**
-
-- The somatic and dendritic patch-clamp data of Figures 1, 3, 6, 7 and 9 are there for every group
-  except the unlesioned control and 6-OHDA groups, with the paper's cell counts; most cells' spike
-  counts match the paper's table exactly. The groups must be read from `condition_subfolder`: files
-  named for SCH 23390 or sulpiride hold baseline cells and cells recorded in both conditions.
-- The Sr2+-oEPSC data hold one cell per mouse (14 of 33), the GRAB-ACh data one region per mouse
-  (11 of 34), and the AIM data 9 mice, two of which are not in the paper; too few for the paper's
-[... 29 more lines not kept]
+24,27c24,26
+< - what: The paper's per-cell and per-mouse tables (Fig 1 to Fig 10 and SupFigs datasets, xlsx), used for
+<     the link claims and for the claims on data not in the dandiset.
+<   source: doi:10.5281/zenodo.17307059 (Zenodo record 17307059, file Zhai et al. 2025 Datasets.zip, md5
+<     112da5b1b00208262bd7887dd51b54ee)
+---
+> - what: The paper's per-cell and per-mouse tables (Fig 1 to Fig 10 and SupFigs datasets, xlsx), used for the
+>     link claims and for the claims on data not in the dandiset.
+>   source: doi:10.5281/zenodo.17307059 (Zenodo record 17307059, file Zhai et al. 2025 Datasets.zip, md5 112da5b1b00208262bd7887dd51b54ee)
+39,51c38,49
+<   notes: Groups are matched by condition label to the paper's sheets (Figures 1E, 3C, 6C, 7C, 9D). All
+<     12 groups hold the paper's n (123 cells). 90 of 123 cells (73.2%) have an exact match over the steps
+<     from 20 to 300 pA, and 105 (85.4%) a best match within 3 spikes, below the 80% and 95% for reproduced.
+<     18 cells differ by more than 3 spikes, most of them on-state dSPNs (6 of 15 exact) and sulpiride iSPNs
+<     (4 of 7 exact). Rheobase equals that of the best-matching row in 105 cells. The dandiset's description
+<     says spike counts match the paper's table exactly in 90 of 123 cells, which this attempt finds too.
+<   deviations:
+<   - Spike counts and rheobase follow the paper's script (Zenodo 14145776, count_events with threshold
+<     0 and rheobaseCal), as the claims file fixes. When a cell holds a step twice the first sweep is used,
+<     a choice the script does not make; the last sweep gives the same results (14 of 123 cells have a repeated
+[... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd ../../entries/001538-zhai-2025 && python - <<'EOF'
-import json
-P = "reproduce_zhai_2025.ipynb"
-nb = json.load(open(P)); C = nb["cells"]
-n = 0
-for c in C:
-    s = "".join(c["source"])
-    t = s.replace("with that value P = SULP.", "with that value P = 0.0545, the P the paper reports, so the difference in outcome comes from that one cell.")
-    t = t.replace("and iSPN on+sul 20190508 cell 3 only a distal site.", "and iSPN on+sul 20190508 cell 3 only a distal site (with the paper's\n  0.217 for it, the sulpiride test gives the paper's P = 0.0545, which decides\n  fig3f-ispn-dendritic-sul-no-change).")
-    if t != s: c["source"] = t.splitlines(keepends=True); n += 1
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False); open(P, "a").write("\n")
-print(n)
-EOF
-grep -n "—\|rather" reproduce_zhai_2025.ipynb lid.py | head
-```
+cat > $TMPDIR/rec.py <<'PYEOF'
+import yaml
+p = 'attempts/zhai-2025-03.yaml'
+d = yaml.safe_load(open(p))
+O = {o['claim']: o for o in d['outcomes']}
 
-```
-2
-```
+SOM_DEV = ("Spike counts and rheobase follow the paper's script (Zenodo 14145776, count_events with threshold 0 and "
+           "rheobaseCal), as the claims file fixes. When a cell holds a step twice the first sweep is used, a choice the "
+           "script does not make. 14 of 123 cells have a repeated step; taking the last sweep changes no cell's rheobase "
+           "and one cell's summed spikes, by 1 (2020-02-17 cell 1, vehicle control, 170 to 171), so every somatic result "
+           "is the same under it.")
+DEN_DEV = ("The index follows the paper's dendritic script (Zenodo 14163502): backgrounds of 55 (red) and 161 (green), "
+           "with the claims file's basal-ratio window, pairing and averaging. The files' ROI profiles (Prairie View's mean "
+           "along the scan line) are used as the script's Prof 1 and Prof 2. No pair falls outside the basal-ratio window "
+           "(ratios 0.672 to 1.749).")
+for k, o in O.items():
+    devs = o.get('deviations', [])
+    for j, x in enumerate(devs):
+        if x.startswith("Spike counts and rheobase follow the paper's script"): devs[j] = SOM_DEV
+        if x.startswith("The index follows the paper's dendritic script"): devs[j] = DEN_DEV
 
-**Agent**
+o = O['link-somatic-cells']
+o['notes'] = ("Groups are matched by condition label to the paper's sheets (Figures 1E, 3C, 6C, 7C, 9D). All 12 groups hold "
+    "the paper's n (123 cells). 90 of 123 cells (73.2%) have an exact match over the steps from 20 to 300 pA, and 105 (85.4%) "
+    "a best match within 3 spikes, below the 80% and 95% for reproduced and above the 50% exact for partially reproduced. "
+    "18 cells differ by more than 3 spikes, most of them on-state dSPNs (6 of 15 exact) and sulpiride iSPNs (4 of 7 exact). "
+    "Rheobase equals that of the best-matching row in 105 cells. Best matches are not one to one: 9 paper rows are the best "
+    "match of more than one cell (20 cells), and 6 cells tie between rows. The rheobase sheets (1F, 3D) are read by row "
+    "number; in 115 of 124 rows their rheobase equals the first step with a spike in the same row of the F-I sheet. The last "
+    "sweep of a repeated step gives the same counts (90 exact, 105 within 3). The dandiset's description says spike counts "
+    "match the paper's table exactly in 90 of 123 cells, which this attempt finds too.")
 
-Now the README and entry.yaml.
+o = O['link-dendritic-cells']
+o['notes'] = ("All 10 groups hold the paper's n (92 cells). The index differs from the matched paper value by a median of "
+    "2.7% (1.7% to the nearest value of the group); 12 cells differ by more than 10%. 2019-04-11 cell 1 (on-state with SCH) "
+    "is 0.584 against the paper's 0.228, as only its second pair is in the file. Two off-state iSPNs (2016-05-23 cell 4, "
+    "2016-05-24 cell 2) look swapped against the assumed row order (0.763 and 0.962 against rows of 0.947 and 0.527). In "
+    "Figure 6D all 16 cells find their identifier when the letter is the file's cell number (median difference 5.3%), and 14 "
+    "of 16 when it is the cell's place among the group's analysed cells of the day.")
+o['deviations'] = [DEN_DEV,
+    "Outside Figure 6D the paper's rows are taken in the dandiset's order by date and cell, as the criterion says.",
+    "Figure 6D: the criterion takes the letter as the cell's place in the day (a, b, c for the first, second and third cell). "
+    "The letter is read as the file's cell number, which counts every cell recorded that day; the paper's identifiers "
+    "02182020_b, 02182020_c and 02202020_c have no _a in the group, so the letters count cells outside the group too. The "
+    "place among the group's analysed cells is shown as a variant (14 of 16 identifiers found)."]
 
-**Agent calls Bash**
+O['fig1i-dspn-dendritic-on-higher']['notes'] = ("On-state median 0.476 against off-state 0.329 (10 cells each), U = 87, "
+    "P = 0.0058 (paper 0.0115; the paper's table gives 0.014).")
+o = O['fig1i-dspn-dendritic-sch-lower']
+o['notes'] = ("SCH median 0.419 (n = 9) against on-state 0.476 (n = 10), U = 68, P = 0.066, lower but not significant. "
+    "2019-04-11 cell 1 has only its second pair in the file (index 0.584; the paper's value is 0.228). Without that cell "
+    "P = 0.027 (n = 8), and the paper's own table gives P = 0.016, so the difference comes from the missing pair (finding 3). "
+    "The exclusion locates the difference and does not decide the outcome, as the paper analysed this cell with a pair the "
+    "file does not hold.")
+O['fig3f-ispn-dendritic-on-lower']['notes'] = ("On-state median 0.339 against off-state 0.524 (10 cells each), U = 14, "
+    "P = 0.0073 (paper 0.0029).")
+O['fig3f-ispn-dendritic-sul-no-change']['notes'] = ("On-state median 0.339 (n = 10) against sulpiride 0.497 (n = 8), U = 18, "
+    "P = 0.0545, the paper's value; the test does not reach P < 0.05, by a small margin.")
+O['fig6d-m1r-antag-dendritic-lower']['notes'] = ("Vehicle median 0.451 (n = 9) against M1R antagonist 0.269 (n = 7), U = 53, "
+    "P = 0.023 (paper 0.012).")
+O['fig7f-cdgi-ko-dendritic-unchanged']['notes'] = ("KO off-state median 0.312 (n = 11) against KO on-state 0.286 (n = 8), "
+    "U = 57, P = 0.31 (paper 0.395), so the test finds no difference. The wild-type part holds (P = 0.0073).")
 
-```bash
-python - <<'EOF'
-p = "README.md"; s = open(p).read()
-s = s.replace("| SCH 23390 reverses the dSPN dendritic index (Fig. 1I) | Partially reproduced |", "| SCH 23390 reverses the dSPN dendritic index (Fig. 1I) | Not reproduced |")
-s = s.replace("| Spine density (Fig. 2, 4, 6, 7, 9; six claims) | Blocked: not runnable, counting needs manual software |",
-              "| Spine density (Fig. 2, 4, 6, 7, 9; six claims) | Blocked: methods underspecified, raw stacks only and counting needs manual correction |")
-s = s.replace("It takes about five minutes, most of it streaming the\n  files.", "It takes about ten minutes, most of it streaming the\n  files.")
-open(p, "w").write(s)
-p = "entry.yaml"; s = open(p).read(); s = s.replace("runtime_minutes: 5", "runtime_minutes: 10"); open(p, "w").write(s)
-EOF
-git diff README.md entry.yaml | grep "^[-+]"
-```
+SR_DEV2 = ("Two off-state iSPNs hold 12 and 11 sweeps (2023-02-22 cell 1, 2023-04-06 cell 1) where the paper's frequencies "
+    "imply 10. The main result uses every sweep; the first 10, the last 10, and the run of 10 consecutive sweeps whose event "
+    "count is nearest the paper's for the cell (sweeps 1 to 10 and 2 to 11) are shown as variants.")
+for k in ['link-sr-cells', 'fig2h-dspn-sr-amplitude-on-larger', 'fig2i-dspn-sr-frequency-unchanged',
+          'fig4g-ispn-sr-amplitude-on-smaller', 'fig4h-ispn-sr-frequency-unchanged']:
+    devs = O[k]['deviations']
+    for j, x in enumerate(devs):
+        if x.startswith("Every sweep of a cell is used"): devs[j] = SR_DEV2
+O['link-sr-cells']['notes'] = ("All 33 dandiset cells match a paper identifier (date and letter, the letter being the file's "
+    "cell number) and all 33 paper cells are in the dandiset. Mean amplitude and event count are both within 25% for 21 of 33 "
+    "cells (64%), below the 75% for reproduced; amplitude alone for 25, count alone for 26; median differences +11% in "
+    "amplitude and -2% in count. With the noise SD of the smoothed trace only 8 of 33 are within 25%; with the first 10 sweeps "
+    "21 of 33, with the last 10 sweeps 22 of 33.")
+O['fig2h-dspn-sr-amplitude-on-larger']['notes'] += " The first and last 10 sweeps give the same P (no dSPN holds more than 10)."
+O['fig4g-ispn-sr-amplitude-on-smaller']['notes'] = ("On-state median 9.71 pA (8 cells, 4 mice) against off-state 13.73 pA "
+    "(7 cells, 3 mice), U = 6, P = 0.0093. Smoothed-noise detector P = 0.0037; the first 10, last 10 and nearest-run sweeps "
+    "give the same P as every sweep; the paper's table P = 0.00031.")
+o = O['fig4h-ispn-sr-frequency-unchanged']
+o['notes'] = ("Frequency medians 14.9 Hz on-state and 24.2 Hz off-state, U = 11.5, P = 0.064 with every sweep, so the test "
+    "finds no difference. Readings of which sweeps the paper used for the two cells with 12 and 11 sweeps: last 10, P = 0.064; "
+    "the run of 10 consecutive sweeps whose event count is nearest the paper's (sweeps 1 to 10 for 2023-02-22 cell 1, 106 "
+    "events against the paper's 101; sweeps 2 to 11 for 2023-04-06 cell 1, 89 against 73), P = 0.064; first 10, P = 0.049, "
+    "which would find a difference. The outcome rests on the nearest-run reading, the one the paper's own per-cell counts "
+    "support, and is close to the threshold under every reading. Smoothed-noise detector P = 0.118; the paper's table gives "
+    "P = 0.23. Open for the paper's authors: which sweeps of these two cells were analysed, and the TaroTools settings "
+    "(template, filter, noise window).")
+o['deviations'].append("Assumed: for the two cells with more than 10 sweeps, the paper used the 10 consecutive sweeps whose "
+    "event count is nearest its per-cell value (its frequencies imply 10 sweeps; Methods, Data acquisition and statistical "
+    "analysis, give no rule). Under this reading P equals the every-sweep value; under the first 10 sweeps the outcome "
+    "would be not reproduced.")
 
-```
---- a/entries/001538-zhai-2025/README.md
-+++ b/entries/001538-zhai-2025/README.md
--| SCH 23390 reverses the dSPN dendritic index (Fig. 1I) | Partially reproduced |
-+| SCH 23390 reverses the dSPN dendritic index (Fig. 1I) | Not reproduced |
--| Spine density (Fig. 2, 4, 6, 7, 9; six claims) | Blocked: not runnable, counting needs manual software |
-+| Spine density (Fig. 2, 4, 6, 7, 9; six claims) | Blocked: methods underspecified, raw stacks only and counting needs manual correction |
--- `reproduce_zhai_2025.ipynb`: the analysis. It takes about five minutes, most of it streaming the
-+- `reproduce_zhai_2025.ipynb`: the analysis. It takes about ten minutes, most of it streaming the
---- a/entries/001538-zhai-2025/entry.yaml
-+++ b/entries/001538-zhai-2025/entry.yaml
--  runtime_minutes: 5
-+  runtime_minutes: 10
-```
+o = O['link-grab-rois']
+o['notes'] = ("The dandiset holds the paper's number of regions per group (13 unlesioned, 10 6-OHDA, 11 off-state). Only 16 "
+    "of 34 regions have a paper region within 0.05 for every treatment (47%, under half), and 11 paper regions are the best "
+    "match of more than one dandiset region; a one-to-one assignment gives 15 of 34. Counted per mouse (recording day), a "
+    "mouse matching when every region does, 1 of 11 mice match. Variants give 10 to 16 of 34 regions (whole-frame brightness "
+    "16, Fmin from tetrodotoxin only 10 of 33, from the quinpirole baseline 16, first two trials 16). The frame interval is "
+    "the same within every single-pulse condition (0.1996 s). The differences may come from the ROI and calibration choices "
+    "of this attempt as much as from the files; the group-level claims of Figure 5F hold.")
+o['deviations'][1] = ("The criterion speaks of each mouse's vector; the files hold several regions per mouse and the paper's "
+    "n counts regions, so each region is matched, and the per-mouse count is shown too. Both are under half. Whether the "
+    "criterion means regions is asked of a reader (questions/zhai-2025.yaml).")
 
-**Agent**
+O['fig8bc-cdgi-aims']['notes'] = ("On the dandiset's scores, 10 control and 11 CDGI KO mice with all 5 sessions: group "
+    "F(1,19) = 31.24, P = 2.2e-05 (total; per-session means 45.6 against 36.1), axial F = 6.87, P = 0.017, limb F = 26.02, "
+    "P = 6.4e-05, orolingual F = 35.70, P = 9.5e-06, KO lower in each. On the 18 mice that are also in the paper's table, "
+    "F(1,16) = 41.33, 9.28, 27.83 and 40.11 (P = 8.3e-06, 0.0077, 7.5e-05, 9.9e-06). The same test on the paper's table "
+    "gives the paper's F values (41.87, 19.91, 25.65, 56.29); axial is weaker on the dandiset's scores. The link fails for "
+    "Figure 8 because the scores differ from the published figure (the preprint's sheets) and 3 of the 21 mice are not in "
+    "the paper; the claim is tested on the scores the dandiset holds, and its effect is present in them.")
+O['fig7e-oxom-cdgi']['notes'] = ("Paper's Figure 7E table, rows paired by experiment number (WT_1 to WT_10, KO_1 to KO_12, "
+    "each before and with oxo-M, so the pairing is fixed by the table). Wild type, 10 dendrites, oxo-M higher in 8, Wilcoxon "
+    "P = 0.0098 (paper 0.0098); KO, 12 dendrites, P = 0.47 (paper 0.910). An unpaired Mann-Whitney test gives KO P = 0.89 "
+    "and wild type P = 0.054, so the paper's KO value may come from another test. The dandiset holds these naive recordings "
+    "too: per proximal/distal pair recorded in both conditions, WT P = 0.0039 (n = 10) and KO P = 0.38 (n = 12).")
+O['fig10ef-open-field']['notes'] += (" The sheet's \"-M1R\" group (9 mice) is MCI-Park with M1R deletion, as the Figure 10 "
+    "legend names it (n = 9); its P values against MCI-Park equal the paper's 0.6340 and 0.4657.")
+O['fig2bc-dspn-spines']['notes'] = ("The dandiset holds the raw 2PLSM z-stacks of the dendritic segments (93 files over the "
+    "spine experiments) but no spine counts or classes: one file of each cell type and group, opened, holds image stacks "
+    "under acquisition (Images, GrayscaleImage) and nothing under processing or analysis. The paper deconvolved them in "
+    "AutoQuant X3.0.4 and counted and classified spines semi-automatically in NeuronStudio (Methods, Imaging of spines); "
+    "neither can be run here, and a different counter would not test the paper's numbers. The paper's own spine tables are "
+    "in its Zenodo deposit, but re-running its statistics on them would not test the dandiset.")
 
-Now the attempt record: outcome notes, the outcome change, block reasons, findings, and the round-1 verification.
+F = d['findings']
+F[2]['statement'] = ("The dSPN recorded on 2019-04-11 (cell 1, on-state with SCH 23390) holds only its second pair of "
+    "dendritic sites. Its index from the file is 0.584; the paper's value is 0.228. With it, the SCH effect of Figure 1I is "
+    "not significant on the dandiset (P = 0.066); without it P = 0.027. The description states the missing pair.")
+F[4]['statement'] = ("Two Sr2+-oEPSC cells hold more sweeps than the 10 the paper's frequencies imply (2023-02-22 cell 1, 12; "
+    "2023-04-06 cell 1, 11), and the files do not say which sweeps the paper used. The iSPN frequency test gives P = 0.064 "
+    "with every sweep, the last 10, or the 10 nearest the paper's counts, and P = 0.049 with the first 10.")
+F[5]['statement'] = F[5]['statement'].replace("The description says 2024-04-02 Slice1Roi2 has no acetylcholine trial, but its "
+    "trial table lists two (4.4 and 1.2 s long).", "The description says 2024-04-02 Slice1Roi2 has no acetylcholine trial, but its "
+    "trial table lists two (4.4 and 1.2 s long), and the attempt computes Fmax from the first; which is right cannot be told "
+    "from the files.")
+assert "which is right" in F[5]['statement']
+F[6]['statement'] = ("The Sr2+-oEPSC events were detected with TaroTools in Igor Pro and checked by eye (Methods, Data "
+    "acquisition and statistical analysis). The settings (filter, template or derivative criterion, the window the noise SD "
+    "is taken from) and the sweeps used for cells with more than 10 are not given. For the authors: which settings and "
+    "sweeps were used? This attempt assumed the noise SD of the recorded trace 500 to 900 ms after the flash and, for the "
+    "two cells with 12 and 11 sweeps, the 10 consecutive sweeps nearest the paper's per-cell count; the iSPN frequency "
+    "claim would change with the first 10 sweeps.")
 
-**Agent calls Bash**
-
-```bash
-cd ../.. && cat > $TMPDIR/att.py <<'PYEOF'
-p = "attempts/001538-zhai-2025-01.yaml"
-s = open(p).read()
-def rep(old, new):
-    global s
-    assert s.count(old) == 1, old[:70]
-    s = s.replace(old, new)
-
-# link-somatic
-rep("""    rheobase as their best match. dSPN on has the fewest exact matches (6 of 15). Where cells match,
-    the paper's rows follow the dandiset's order by date and cell number.""",
-"""    rheobase as their best match. dSPN on has the fewest exact matches (6 of 15). The best matches
-    are not one-to-one (9 paper rows are the best match of two or three cells); with each row used
-    once, 89 cells (72.4%) match exactly and 103 (83.7%) within 3 spikes. The best-match rows follow
-    the dandiset's order by date and cell number, every cell at its own rank in 8 of 12 groups and
-    10 of 15, 11 of 15, 11 of 12 and 10 of 11 cells in the others. Of the 14 cells with a repeated
-    step, keeping the last sweep in place of the first gives the same best-match difference in 13
-    and a closer one in 1.""")
-# link-dendritic
-rep("""  notes: 89 of 92 cells have an index; three have no proximal and distal site of the same number.
-    Counts equal the paper's n in 7 of 10 groups (iSPN on 9 against 10, iSPN on+sul 7 against 8, KO
-    off 10 against 11). Over 63 matched cells the index differs from the paper's by a median of 4.0%
-    (50 within 10%, Spearman 0.911). The Figure 6D cells, matched by date and letter, differ by
-    medians of 3.5% and 6.4%. Matching by order was possible in 7 groups whose counts equal the
-    paper's.""",
-"""  notes: Three site series hold six trials, two sites under one name; split, they give their cells
-    0.293, 0.146 and 0.327 against the paper's 0.299, 0.146 and 0.309. With the split, 91 of 92 cells
-    have an index (iSPN on+sul 20190508 cell 3 has only a distal site). Counts of cells with an index
-    equal the paper's n in 9 of 10 groups, and counts of cells with dendritic sites in 10 of 10, so
-    every group is matched, by order or (Figure 6D) by date and letter. Over 91 matched cells the
-    index differs from the paper's by a median of 2.9% (78 within 10%, Spearman 0.938). Two cells
-    differ by more than the paper's value, dSPN on+SCH 20190411 cell 1 (0.584 against 0.228; only its
-    second pair of sites is in the dandiset) and iSPN off 20160524 cell 2 (1.062 against 0.527; its
-    first proximal site has one trial, and without it the cell gives 0.553). The best-match rows of
-    the somatic link follow the dandiset's order (link-somatic-cells), which supports matching by
-    order. With the sites as labelled, 89 of 92 cells have an index.""")
-rep("""  - The background constants of the paper's script (55 red, 161 green) are used for every session,
-    as the files carry no per-session background.
-- claim: link-sr-cells""",
-"""  - The background constants of the paper's script (55 red, 161 green) are used for every session,
-    as the files carry no per-session background.
-  - Three six-trial series are split into their first and last three trials, the half with the
-    smaller area taken as distal, a choice made here from the data; the sites as labelled are a
-    variant.
-- claim: link-sr-cells""")
-# link-sr
-rep("""    than the paper's events; 2 of 14 cells are within 25% on both. The paper's frequency equals its""",
-"""    than the paper's events; 2 of 14 cells are within 25% on both, and also 2 of 14 when the paper's
-    amplitude is read as its per-cell value (0.70 to 0.96 times the mean of its histogram events).
-    In 20230405b (2 events against 73) the detection window opens on the slow decay of a large
-    synchronous current, and the small events on it stay below the threshold (figure in the
-    notebook). The paper's frequency equals its""")
-# link-grab
-rep("""    treatment (the 20240402 mouse within 0.007), so the regions cannot be identified.""",
-"""    treatment (the 20240402 mouse within 0.007), so the regions cannot be identified. One paper
-    region is the best match of two off-state mice; with each region used once, 5 of 11 are still
-    within 0.05.""")
-# link-aim
-rep("""    contradict each other, so the paper's labels were used.
-  deviations:
-  - The paper's session total is taken to be the sum over the session's time points; the Figure 8
-    mice have 4 time points in some dandiset sessions and 6 in others, which may explain part of the
-    difference.""",
-"""    contradict each other, so the paper's labels were used. The paper's tables give session totals
-    only; for the Figure 8 mice they equal neither the dandiset's sums over 20 to 80 min nor, outside
-    those 5 sessions, the sums over all time points (1945 session 1 has four time points summing to
-    33.5), so the scores differ, not only the time points summed.
-  deviations:
-  - The paper's session total is taken to be the sum over the session's time points; the Figure 8
-    mice have 4 time points in some dandiset sessions and 6 in others.""")
-# fig1f sch
-rep("""    0 pA (Wilcoxon P = 1.0).
-- claim: fig1i-dspn-dendritic-on-higher""",
-"""    0 pA (Wilcoxon P = 1.0). Five cells are in both groups, so the unpaired test's samples are not
-    independent; the criterion follows the paper's test.
-- claim: fig1i-dspn-dendritic-on-higher""")
-rep("""  notes: Index on-state 0.476 against off-state 0.353 (10 cells each), P = 0.0091, effect r = 0.70;
-    without background P = 0.00728; with a basal-ratio rule of 0.8 to 1.25 (8 cells each)
-    P = 0.0148.
-  deviations:
-  - Background constants from the paper's script; basal-ratio rule (0.5 to 2) chosen here, dropping
-    no pair.""",
-"""  notes: Index on-state 0.476 against off-state 0.330 (10 cells each), P = 0.0058 (exact 0.0039),
-    effect r = 0.74; without background P = 0.0046; with a basal-ratio rule of 0.8 to 1.25 (8 cells
-    each) P = 0.0070; with the sites as labelled P = 0.0091.
-  deviations:
-  - Background constants from the paper's script; basal-ratio rule (0.5 to 2) chosen here, dropping
-    no pair; one six-trial series split into two sites.""")
-rep("""- claim: fig1i-dspn-dendritic-sch-lower
-  outcome: partially_reproduced
-  notebook: reproduce_zhai_2025.ipynb
-  output: claim:fig1i-dspn-dendritic-sch-lower
-  notes: The criterion (P < 0.05) is not met but the effect has the stated direction. On-state with
-    SCH 0.419 (9 cells) against on-state 0.476 (10 cells), P = 0.0662, effect r = -0.51; with the
-    stricter basal-ratio rule P = 0.524. The paper's own SCH median is 0.338, lower than here, and
-    one SCH cell differs from the paper's value by more than its size when matched by order.
-  deviations:
-  - The criterion gives only the reproduced case; the outcome partially reproduced is chosen
-    because the difference is in the stated direction with a moderate effect but not significant.""",
-"""- claim: fig1i-dspn-dendritic-sch-lower
-  outcome: not_reproduced
-  notebook: reproduce_zhai_2025.ipynb
-  output: claim:fig1i-dspn-dendritic-sch-lower
-  notes: The criterion (P < 0.05 with the SCH median lower) is not met, though the difference has the
-    stated direction. On-state with SCH 0.419 (9 cells) against on-state 0.476 (10 cells), P = 0.0662
-    (exact 0.0653), effect r = -0.51; with the stricter basal-ratio rule P = 0.524. The difference
-    from the paper comes from one cell, SCH 20190411 cell 1, whose index is 0.584 here and 0.228 in
-    the paper's table; the dandiset holds only its second pair of sites. Without that cell P = 0.0266;
-    with the paper's value for it P = 0.016 (exact 0.0133, the paper's P). The other eight SCH cells
-    differ from the paper's values by 2.4% to 10.9%.
-  deviations:
-  - Matching the SCH cells to the paper's rows by order is an assumption (link-dendritic-cells).""")
-# fig3d sul
-rep("""    120 and 160 to 100 pA), so the absence rests on the test's power.""",
-"""    120 and 160 to 100 pA), so the absence rests on the test's power. Those two cells are in both
-    groups, so the unpaired samples are not independent; the criterion follows the paper's test.""")
-rep("""  notes: Index on-state 0.340 (9) against off-state 0.524 (10), P = 0.0128, effect r = -0.69;
-    without background P = 0.0128; with the stricter basal-ratio rule P = 0.0774.
-  deviations:
-  - One on-state cell of the paper's 10 has no index here (no paired sites).""",
-"""  notes: Index on-state 0.339 (10) against off-state 0.524 (10), P = 0.0073 (exact 0.0052), effect
-    r = -0.72; without background P = 0.0073; with the sites as labelled (9 on-state cells)
-    P = 0.0128; dropping sites with fewer than 3 trials P = 0.0091. With the stricter basal-ratio rule
-    (0.8 to 1.25, 9 cells each) P = 0.0774, so the result depends on keeping pairs whose basal
-    ratios differ by more than 25%.
-  deviations:
-  - One on-state cell gets its index only from splitting a six-trial series into two sites.
-  - The Methods keep pairs with similar G0/R0 without a threshold; the 0.5 to 2 rule chosen here
-    drops no pair.""")
-rep("""  notes: The paper's test finds the difference the claim says is absent. On-state with sulpiride
-    0.506 (7 cells) against on-state 0.340 (9 cells), P = 0.0164, effect r = 0.71; the paper reports
-    P = 0.0545 with 8 and 10 cells, and its own medians go the same way (0.499 and 0.345). With the
-    stricter basal-ratio rule P = 0.0663. The paper's P is close to the threshold and one cell per
-    group is missing here, so the difference in outcome is small in substance.
-  deviations:
-  - One cell of each group has no index here (no paired sites).""",
-"""  notes: The paper's test finds the difference the claim says is absent. On-state with sulpiride
-    0.506 (7 cells) against on-state 0.339 (10 cells), P = 0.0097, effect r = 0.74; the paper reports
-    P = 0.0545 with 8 and 10 cells, and its own medians go the same way (0.499 and 0.345). With the
-    sites as labelled P = 0.0164, with the stricter basal-ratio rule P = 0.0663. The sulpiride cell
-    without an index (20190508 cell 3, only a distal site in the dandiset) has 0.217 in the paper's
-    table; with that value P = 0.0545, the paper's P, so the difference in outcome comes from that
-    one cell.
-  deviations:
-  - One sulpiride cell has no index here (only a distal site).""")
-rep("""    supported.
-  deviations:
-  - One region per mouse, 8 of the paper's 21 regions in these two groups.""",
-"""    supported.
-  deviations:
-  - One region per mouse, 8 of the paper's 21 regions in these two groups.
-  - The test cannot find any difference short of complete separation, so this claim of absence
-    passes with little power.""")
-rep("""  notes: KO index off-state 0.347 (10) against on-state 0.286 (8), P = 0.315, effect r = -0.30
-    (P = 0.601 with the stricter rule); wild type P = 0.0128.
-  deviations:
-  - One KO off-state cell of the paper's 11 has no index here.""",
-"""  notes: KO index off-state 0.312 (11) against on-state 0.286 (8), P = 0.310, effect r = -0.30
-    (P = 0.659 with the stricter rule, 0.315 with the sites as labelled); wild type P = 0.0073.
-  deviations:
-  - One KO off-state cell gets its index only from splitting a six-trial series into two sites.""")
-rep("""    r = -0.48; summed spikes P = 0.245.
-  deviations:""",
-"""    r = -0.48; summed spikes P = 0.245. The control group is 6 cells from 2 mice, so the absence
-    rests on little power.
-  deviations:""")
-rep("""    KO 4 of 12 increase, P = 0.4697 (reported 0.910).""",
-"""    KO 4 of 12 increase, P = 0.4697 (reported 0.910). Pairs are formed by the table's experiment
-    number (printed); an unpaired Mann-Whitney test gives 0.885 for KO and 0.0539 for wild type, so
-    neither test gives the reported 0.910.""")
-# spines
-rep("""- claim: fig2bc-dspn-spines
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: The dandiset holds the two-photon z-stacks of dSPN dendrites (off- and on-state) but no spine
-    counts. The paper deconvolved them in AutoQuant X3 and counted spines semi-automatically in
-    NeuronStudio with manual classification of mushroom spines, which cannot be run here.""",
-"""- claim: fig2bc-dspn-spines
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notes: The dandiset holds the two-photon z-stacks of dSPN dendrites (off- and on-state) but no spine
-    counts; none of the 86 spine files has a processing module or analysis entry. The paper
-    deconvolved them in AutoQuant X3 and counted spines semi-automatically in NeuronStudio with
-    manual classification of mushroom spines, a procedure that cannot be repeated from its
-    description (also not runnable here, AutoQuant being commercial software).""")
-rep("""- claim: fig4bc-ispn-spines
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: Two-photon z-stacks of iSPN dendrites are in the dandiset (off- and on-state, CDGI KO,
-    M1R antagonist, M1R deletion) but no counts; counting needs AutoQuant deconvolution and
-    semi-automatic NeuronStudio reconstruction with manual checks. Control and 6-OHDA stacks were
-    not found.""",
-"""- claim: fig4bc-ispn-spines
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notes: Two-photon z-stacks of iSPN dendrites are in the dandiset (off- and on-state, CDGI KO,
-    M1R antagonist, M1R deletion) but no counts; counting needs AutoQuant deconvolution and
-    semi-automatic NeuronStudio reconstruction with manual checks, which the paper does not
-    describe well enough to repeat. The control and 6-OHDA stacks the lesion part needs are not in
-    the dandiset (data_missing); the off- and on-state part is blocked by the counting alone.""")
-rep("""- claim: fig4k-confocal-spines
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: Ten confocal stacks of sparsely labelled iSPN dendrites (control, 6-OHDA, off and on) and one
-    larger Olympus stack are in the dandiset, of the paper's 87 dendrites. Counting used Imaris 10
-    with trained pixel classification and manual correction, which cannot be run here.""",
-"""- claim: fig4k-confocal-spines
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notes: Eleven confocal files of sparsely labelled iSPN dendrites (3 control, 3 6-OHDA, 3 off and 2
-    on) are in the dandiset, of the paper's 87 dendrites, with no counts. Counting used Imaris 10
-    with trained pixel classification and manual correction, which cannot be repeated from its
-    description (and Imaris is commercial software).""")
-for c in ("fig6f-m1r-antag-spines", "fig7h-cdgi-ko-spines", "fig9f-m1r-crispr-spines"):
-    rep(f"""- claim: {c}
-  outcome: blocked
-  blocked_by: not_runnable""", f"""- claim: {c}
-  outcome: blocked
-  blocked_by: methods_underspecified""")
-# findings
-rep("""- kind: metadata_insufficient
-  statement: The dandiset holds the raw spine image stacks and the rotation videos but no spine
-    counts or rotation counts,""",
-"""- kind: metadata_error
-  statement: Three dendritic site series hold six trials, two sites under one name, while the cell has
-    no series of the other compartment with that number (iSPN 20160526 cell 3 Distal1, iSPN 20160608
-    cell 1 Proximal1, dSPN 20170204 cell 1 Proximal1); their first and last three trials differ in
-    baseline and area. Split, they give the paper's values for these cells. One series holds a
-    single trial (iSPN 20160524 cell 2 Proximal1), one two and one four.
-- kind: data_missing
-  statement: Two dendritic cells lack the sites the paper's values need. dSPN on+SCH 20190411 cell 1
-    has only its second pair of sites, which gives 0.584 against the paper's 0.228; with the paper's
-    value the SCH test gives the paper's P (0.0133), without it P = 0.066. iSPN on+sul 20190508 cell 3
-    has only a distal site; with the paper's 0.217 the sulpiride test gives the paper's P (0.0545),
-    without it P = 0.0097. These two cells decide fig1i-dspn-dendritic-sch-lower and
-    fig3f-ispn-dendritic-sul-no-change.
-- kind: metadata_insufficient
-  statement: The dandiset holds the raw spine image stacks and the rotation videos but no spine
-    counts or rotation counts (none of the 86 spine files has a processing module or analysis
-    entry),""")
-open(p, "w").write(s)
-print("ok")
+R = []
+def res(claim, agrees, outcome, reason, response):
+    R.append(dict(claim=claim, agrees=agrees, outcome=outcome, reason=reason, response=response))
+NOCH = "No change of outcome."
+res('link-somatic-cells', True, 'partially_reproduced',
+    "All 12 groups have the paper's n. 90/123 cells (73.2%) match exactly, under the 80% bar, and 105/123 (85.4%) are within 3 spikes, under the 95% bar.",
+    NOCH + " Problem 2: per_cell_somatic now takes keep='last', so the last-sweep variant takes the last sweep; it gives the same link counts. Problem 5: the cell now reports how many paper rows are reused (9 rows, 20 cells), how many best matches tie (6), and checks the rheobase sheets against the F-I sheets row by row (115 of 124 rows agree).")
+res('link-dendritic-cells', True, 'reproduced',
+    "10/10 groups have the paper's n and the median relative difference is 0.027. This is provisional because of the background bug in problem 1.",
+    NOCH + " Problem 1 fixed: _site_trace now takes the background, 55 for red and 161 for green. After the fix the median relative difference is still 0.027 (0.017 to the nearest value). Problem 10: the 6D letter is now shown both ways; the cell number finds all 16 identifiers and the place among the group's cells of the day 14 of 16, because the paper's letters count cells outside the group (02182020_b and _c, 02202020_c). The cell number is kept and the deviation says why.")
+res('link-sr-cells', True, 'partially_reproduced',
+    "All 33 cells match a paper identifier. Only 21/33 (64%) are within 25% on both amplitude and count, under the 75% bar.",
+    NOCH + " The last-10-sweeps variant is added (22 of 33).")
+res('link-grab-rois', True, 'not_reproduced',
+    "Region counts equal the paper's (13/10/11), but only 16/34 regions match within 0.05 on every treatment (under half), and 11 paper regions are matched more than once. Grouped by mouse (date), only 1 of 11 mice matches.",
+    NOCH + " Problem 6: the per-mouse count (1 of 11) and a one-to-one assignment (15 of 34) are now printed. Point 12 (the criterion's unit) is asked of a reader in questions/zhai-2025.yaml; the claim is not changed.")
+res('link-aim-mice', True, 'not_reproduced',
+    "Figure 8: 12 of 90 matched session totals are equal, 3 dandiset mice are not in the paper and 5 paper mice are missing. Figure 10: 103/105 equal. The dandiset description says the Figure 8 sheets match the preprint, not the published figure.",
+    NOCH)
+for c, r in [('fig1f-dspn-rheobase-on-lower', "P=8.9e-6, on-state median 140 against off-state 220."),
+             ('fig1e-dspn-fi-on-higher', "P=8.8e-5, on-state higher.")]:
+    res(c, True, 'reproduced', r, NOCH + " The last-sweep variant now takes the last sweep (problem 2); no cell's rheobase changes and the P values are the same.")
+res('fig1f-dspn-sch-no-change', True, 'reproduced', "P=1.", NOCH + " Under the corrected last-sweep variant no cell's rheobase changes, so the test is the same (per-cell table in the link-somatic-cells cell).")
+res('fig1i-dspn-dendritic-on-higher', True, 'reproduced', "P=0.0091, on-state higher.",
+    NOCH + " After the background fix, on-state median 0.476 against 0.329, P = 0.0058.")
+res('fig1i-dspn-dendritic-sch-lower', True, 'not_reproduced',
+    "P=0.079. The cell of 2019-04-11 lacks the pair the paper used (dandiset description, item 3). Excluding it gives P=0.034, but that is not a reading the paper allows. The background bug could change this outcome.",
+    NOCH + " After the background fix P = 0.066 (without the 2019-04-11 cell, 0.027). The notes and conclusion now say that the exclusion only locates the difference and does not decide the outcome (problem 4).")
+res('fig1-dspn-lesion-and-off-somatic', True, 'reproduced', "On the paper's table, P=0.0003 and 9.5e-5, both in the stated direction.", NOCH)
+res('fig1-dspn-lesion-dendritic-unchanged', True, 'reproduced', "P=0.82 and 0.90.", NOCH)
+res('fig2h-dspn-sr-amplitude-on-larger', True, 'reproduced', "P=0.0062, on-state larger, robust across variants.", NOCH + " The last-10-sweeps variant is added (same P).")
+res('fig2i-dspn-sr-frequency-unchanged', True, 'reproduced', "P=0.0999, all variants >=0.05.", NOCH + " The last-10-sweeps variant is added (same P).")
+res('fig2bc-dspn-spines', True, 'blocked',
+    "Blocked (other). Raw z-stacks only. Spine counting needs AutoQuant deconvolution and semi-manual NeuronStudio. The 93 spine files have empty variableMeasured and no file name mentions confocal, Imaris, spines or counts.",
+    "Outcome kept as blocked, with blocked_by kept as not_runnable: the protocol gives not_runnable when the paper's software cannot be run here, which is the reason the verifier gives. Problem 13: the notebook now opens one spine file of each cell type and group and lists what it holds (image stacks under acquisition, nothing under processing or analysis).")
+res('fig3d-ispn-rheobase-on-higher', True, 'reproduced', "P=0.00083, on-state higher.", NOCH + " The corrected last-sweep variant gives the same P.")
+res('fig3c-ispn-fi-on-lower', True, 'reproduced', "P=7.2e-5, on-state lower.", NOCH)
+res('fig3d-ispn-sul-no-change', True, 'reproduced', "P=0.143.", NOCH + " Under the corrected last-sweep variant no cell's rheobase changes.")
+res('fig3f-ispn-dendritic-on-lower', True, 'reproduced', "P=0.0058.", NOCH + " After the background fix P = 0.0073.")
+res('fig3f-ispn-dendritic-sul-no-change', True, 'reproduced',
+    "Reproduced (fragile). P=0.05453, right at the threshold. The background bug could flip it.",
+    NOCH + " After the background fix P is still 0.05453 (medians 0.339 and 0.497).")
+res('fig3-ispn-lesion-and-off-somatic', True, 'reproduced', "P=0.0004 and 0.0006 on the paper's table.", NOCH)
+res('fig3-ispn-lesion-dendritic-up', True, 'reproduced', "P=0.035 and 0.024, later group higher.", NOCH)
+res('fig4g-ispn-sr-amplitude-on-smaller', True, 'reproduced', "P=0.0093, on-state smaller, robust across variants.", NOCH + " The last-10 and nearest-run sweep variants are added (same P).")
+res('fig4h-ispn-sr-frequency-unchanged', False, 'partially_reproduced',
+    "With all sweeps P=0.064. With the first 10 sweeps, the count the paper's frequencies imply, P=0.049. The outcome depends on a choice the paper leaves open. The main analysis uses all sweeps, although the paper's frequencies (and the dandiset description) imply 10 sweeps per cell; only first 10 was tried, not last 10, and the outcome flips between readings.",
+    "Outcome kept as reproduced, with the disagreement recorded. The last 10 sweeps (P = 0.064) and the 10 consecutive sweeps whose event count is nearest the paper's per-cell value (P = 0.064) are now run. Of the readings with 10 sweeps, only the first 10 gives P < 0.05. The outcome now rests, as a stated assumption, on the nearest-run reading, which the paper's own per-cell counts support. A claim of absence is judged on the paper's test, which either finds the difference or does not, so partially reproduced does not apply to it; the notes say how close to the threshold every reading is.")
+res('fig4bc-ispn-spines', True, 'blocked', "Blocked (other). Same as fig2bc.", "Outcome kept as blocked, with blocked_by not_runnable, as for fig2bc-dspn-spines.")
+res('fig4k-confocal-spines', True, 'blocked',
+    "Blocked (data_missing). No confocal files in the archive. They are in Zenodo 17260198, and counting used Imaris.",
+    "Outcome kept as blocked, with blocked_by not_runnable. The protocol does not allow data_missing for data that are public elsewhere, and these are on Zenodo; what stops the test is the Imaris counting, which cannot be run here.")
+for c, r in [('fig5f-ach-off-elevated', "P=5e-5, off-state higher, all variants agree."),
+             ('fig5f-ach-off-like-6ohda', "P=0.245; variants 0.22 to 0.79."),
+             ('fig5f-ach-6ohda-elevated', "P=0.00022."),
+             ('fig5f-ach-d2-control', "Wilcoxon: sulpiride raises 13/13 and quinpirole lowers 13/13 regions, P=0.00024 each."),
+             ('fig5f-ach-da-suppresses', "Dopamine P=0.002 and 0.00098, lowering every region; sulpiride after the lesion P=0.92.")]:
+    res(c, True, 'reproduced', r, NOCH + " Problem 7: the frame interval is now checked within each single-pulse condition (all 0.1996 s), so the single dt per condition aligns every trial.")
+res('fig6c-m1r-antag-somatic-unchanged', True, 'reproduced', "P=0.68.", NOCH)
+res('fig6d-m1r-antag-dendritic-lower', True, 'reproduced', "P=0.016, antagonist lower.", NOCH + " After the background fix P = 0.023.")
+res('fig6f-m1r-antag-spines', True, 'blocked', "Blocked (other). Same as fig2bc.", "Outcome kept as blocked, with blocked_by not_runnable, as for fig2bc-dspn-spines.")
+res('fig7c-cdgi-ko-somatic-oscillation', True, 'reproduced', "P=0.001, on-state higher.", NOCH)
+res('fig7e-oxom-cdgi', True, 'reproduced',
+    "On the paper's table, wild type P=0.0098 with oxo-M higher, KO P=0.47 (the paper reports 0.91). Pairing the paper's KO rows by expt gives P=0.47 where the paper reports 0.91. The pairing may differ from the authors'.",
+    NOCH + " Problem 9: the table names each row's experiment (KO_1 to KO_12, each before and with oxo-M), so the pairing is fixed by the table. An unpaired Mann-Whitney variant is added: KO P = 0.89, near the paper's 0.91, so the paper's KO value may come from another test; wild type P = 0.054 under it.")
+res('fig7f-cdgi-ko-dendritic-unchanged', True, 'reproduced', "KO P=0.27.", NOCH + " After the background fix KO P = 0.31.")
+res('fig7h-cdgi-ko-spines', True, 'blocked', "Blocked (other). Same as fig2bc.", "Outcome kept as blocked, with blocked_by not_runnable, as for fig2bc-dspn-spines.")
+res('fig8a-cdgi-rotations', True, 'reproduced', "P=0.012, KO higher.", NOCH)
+res('fig8bc-cdgi-aims', True, 'reproduced',
+    "Reproduced, with caveat. All four group effects P<0.05 with KO lower. Axial is much weaker than in the paper (F=6.87 against 19.91). These are the preprint score sheets, and link-aim-mice fails. The test runs on 21 preprint-sheet mice, 3 of which are not in the paper.",
+    NOCH + " Problem 8: a variant on the 18 mice that are also in the paper's table is added (F = 41.33, 9.28, 27.83, 40.11, all P < 0.008). The notes now state the weaker axial effect and the 3 mice.")
+res('fig9d-m1r-crispr-somatic-unchanged', True, 'reproduced', "P=0.147.", NOCH)
+res('fig9f-m1r-crispr-spines', True, 'blocked', "Blocked (other). Same as fig2bc.", "Outcome kept as blocked, with blocked_by not_runnable, as for fig2bc-dspn-spines.")
+res('fig10a-m1r-rotations', True, 'reproduced', "P=0.0078.", NOCH)
+res('fig10b-m1r-aims', True, 'reproduced', "F(1,19) = 28.7, 13.8, 41.4 and 44.6, all P<0.002. The last three equal the paper's.", NOCH)
+res('fig10ef-open-field', True, 'reproduced', "All six tests in the stated direction.",
+    NOCH + " The group labels of every Zenodo sheet used are now printed; the \"-M1R\" group of 10E and 10F holds 9 mice, the Figure 10 legend's MCI-Park with M1R deletion.")
+assert {r['claim'] for r in R} == set(O), set(O) - {r['claim'] for r in R}
+order = [o['claim'] for o in d['outcomes']]
+R.sort(key=lambda r: order.index(r['claim']))
+d['verifications'] = [dict(date='2026-11-26', kind='agent',
+    by='Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)',
+    reviewed=("Round 1: the executed notebook with the conclusion cells and the summary removed, the helper module and the "
+        "claims file, with the paper's full text under paper/. The verifier checked the archive's file list and asset "
+        "metadata for the blocked claims and tested _site_trace, per_cell_somatic and mixed_anova_group on synthetic inputs. "
+        "Not reviewed by it: problem 11 (the stand-in event detector) needed no change, as the amplitude claims hold under "
+        "both noise variants; it is kept as an assumption."),
+    results=R)]
+yaml.safe_dump(d, open(p, 'w'), sort_keys=False, allow_unicode=True, width=100)
 PYEOF
-python $TMPDIR/att.py
+python $TMPDIR/rec.py && grep -c "claim:" attempts/zhai-2025-03.yaml
 ```
 
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/att.py", line 161, in <module>
-    rep("""    r = -0.48; summed spikes P = 0.245.
-    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      deviations:""",
-      ^^^^^^^^^^^^^^^
-    """    r = -0.48; summed spikes P = 0.245. The control group is 6 cells from 2 mice, so the absence
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        rests on little power.
-        ^^^^^^^^^^^^^^^^^^^^^^
-      deviations:""")
-      ^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/att.py", line 5, in rep
-    assert s.count(old) == 1, old[:70]
-           ^^^^^^^^^^^^^^^^^
-AssertionError:     r = -0.48; summed spikes P = 0.245.
-  deviations:
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s = open("att.py").read()
-s = s.replace('''rep("""    r = -0.48; summed spikes P = 0.245.
-  deviations:""",
-"""    r = -0.48; summed spikes P = 0.245. The control group''', '''rep("""    summed spikes P = 0.245.
-  deviations:""",
-"""    summed spikes P = 0.245. The control group''')
-open("att.py", "w").write(s)
-EOF
-cd  && python $TMPDIR/att.py
-```
-
-```
-ok
-```
-
-**Agent**
-
-Now the round-1 verification record.
-
-**Agent calls Bash**
-
-```bash
-cat >> attempts/001538-zhai-2025-01.yaml <<'EOF'
-verifications:
-- date: 2026-10-18
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
-    the helper module and the claims file.
-  results:
-  - claim: link-somatic-cells
-    agrees: true
-    outcome: partially_reproduced
-    reason: All 12 groups have the paper's n, but only 73.2% of cells match exactly (80% needed) and
-      85.4% match within 3 spikes (95% needed). Best matches are not one-to-one (dSPN off row 23 used
-      twice, dSPN on row 39 three times and row 44 twice), which can only inflate the counts. The
-      first of a repeated step is kept (14 cells), and nothing checks this against the paper's script.
-    response: Added a one-to-one assignment (89 exact, 72.4%; 103 within 3 spikes, 83.7%), the
-      best-match row position of every cell against the dandiset's date and cell order, and the
-      best-match difference keeping the last of a repeated step (equal in 13 of 14 cells, closer in
-      1). The outcome is unchanged.
-  - claim: link-dendritic-cells
-    agrees: true
-    outcome: reproduced
-    reason: Cell counts equal the paper's n in 7 of 10 groups, and the median relative difference is
-      0.040 (Spearman 0.91). Two cells are far off (1.559 in dSPN on+SCH, 1.014 in iSPN off). Matching
-      by order is assumed and never checked against the somatic best-match order; the two large
-      differences could be misaligned rows. Proximal and distal sites are paired only by number, and
-      three cells get no index. The 0.5 to 2 basal-ratio rule drops 0 of 162 pairs, so the paper's
-      rule of keeping pairs with similar G0/R0 is never applied. It asked for a per-cell table with
-      date, cell, index, the paper's value and the basal ratios for every group.
-    response: Added the per-cell table for all 91 matched cells with sites, basal ratios and the
-      paper's values, the somatic order check, and the basal-ratio range (0.67 to 1.75; 38 of 165
-      pairs outside 0.8 to 1.25). The check found three series that hold two sites under one name
-      (six trials); split, they give two of the three missing cells the paper's values (0.146 and
-      0.293 against 0.146 and 0.299), and the third missing cell has only a distal site. Now 9 of 10
-      groups have the paper's n, all 10 are matched, and the median difference is 2.9% (Spearman
-      0.938). The two large differences are not misalignments; the SCH cell holds only its second
-      pair of sites, and the iSPN off cell has a proximal site with one trial (0.553 without it,
-      paper 0.527). The basal-ratio rule was fixed before the analysis and is kept; its stricter
-      variant is shown for every claim and its effect stated in the notes. Recorded as findings.
-  - claim: link-sr-cells
-    agrees: true
-    outcome: partially_reproduced
-    reason: All 14 cells match a paper identifier, but only 2 of 14 are within 25% on both event count
-      and amplitude. The detector works on synthetic events but finds far fewer events than the paper
-      on real cells (20230405b, 2 against 73). The 25% criterion compares against the mean of the
-      paper's histogram events, not the paper's per-cell amplitude, and these differ (11.13 against
-      12.37). It asked for traces with detected events marked for 20230405b and one cell that agrees.
-    response: Added the figure for 20230405b and 07062023c, which shows the 20230405b window opening on
-      the decay of a large synchronous current, and the count under the per-cell amplitude reading
-      (also 2 of 14). The outcome is unchanged.
-  - claim: link-grab-rois
-    agrees: true
-    outcome: not_reproduced
-    reason: The dandiset holds part of the regions (3/13, 3/10, 5/11). Only 5 of 11 mice match within
-      0.05 on every treatment, short of half. Off-state ROI 29 is used twice as a best match.
-    response: Added a one-to-one assignment; 5 of 11 mice are still within 0.05.
-  - claim: link-aim-mice
-    agrees: true
-    outcome: not_reproduced
-    reason: 7 of 9 mice are in the paper, but only 15 of 35 matched session totals are equal. All five
-      Fig. 8 mice differ; the two Fig. 10 mice agree exactly. It asked for a per-time-point
-      comparison for the five mismatched mice, to tell a scoring difference (for example the 120-min
-      point) from different data.
-    response: The paper's tables give session totals only, so a per-time-point comparison with the
-      paper is not possible. Added the dandiset's scores per time point for the five mice beside the
-      paper's totals, with the sums over all points and over 20 to 80 min; neither sum explains the
-      differences (1945 session 1 has four points summing to 33.5 against 27.0), so the scores
-      differ.
-  - claim: fig1f-dspn-rheobase-on-lower
-    agrees: true
-    outcome: reproduced
-    reason: P = 8.9e-6; medians 140 (on) against 220 (off). Some cells miss a step, so rheobase can come
-      out 20 pA high, but the margins are large.
-    response: No change.
-  - claim: fig1e-dspn-fi-on-higher
-    agrees: true
-    outcome: reproduced
-    reason: P = 8.8e-5, on-state higher (88 against 36); the same with complete cells only.
-    response: No change.
-  - claim: fig1f-dspn-sch-no-change
-    agrees: true
-    outcome: reproduced
-    reason: P = 1.0; the paired Wilcoxon (n = 5) also gives P = 1.0. The on-state and on+SCH groups
-      share 5 cells, so the unpaired samples are not independent; the criterion follows the paper.
-    response: Stated the shared cells in the notes.
-  - claim: fig1i-dspn-dendritic-on-higher
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.0091, on-state higher; holds in all variants.
-    response: Re-run with the split series, P = 0.0058, and in every variant.
-  - claim: fig1i-dspn-dendritic-sch-lower
-    agrees: false
-    outcome: not_reproduced
-    reason: P = 0.066 (paper 0.0133). The SCH median is 0.419 against the paper's 0.338; one SCH cell
-      differs 2.6-fold from the paper and may drive this. Replacing each of the top five SCH values in
-      turn with value/2.559 gives P = 0.014 to 0.041, so the claim may fail because of one computed
-      index, not the data. The stricter 0.8 to 1.25 basal-ratio variant gives P = 0.52.
-    response: Changed to not_reproduced, since the criterion gives only the reproduced case and P is
-      above 0.05. Identified the cell (20190411 cell 1, 0.584 against 0.228). Its index is computed
-      from the only pair of sites the dandiset holds for it, with three trials each, so the
-      difference is in the data deposited, not the computation. Without it P = 0.0266; with the
-      paper's value P = 0.0133, the paper's P. Recorded as a data_missing finding.
-  - claim: fig2h-dspn-sr-amplitude-on-larger
-    agrees: true
-    outcome: blocked
-    reason: The archive has 3 off and 4 on cells, so the smallest P is 0.057. Both the detector and the
-      paper's per-cell values put on above off at that floor.
-    response: No change.
-  - claim: fig2i-dspn-sr-frequency-unchanged
-    agrees: true
-    outcome: blocked
-    reason: Same 3 against 4; P = 0.229 says nothing for an absence claim.
-    response: No change.
-  - claim: fig2bc-dspn-spines
-    agrees: true
-    outcome: blocked
-    reason: Blocked by methods_underspecified. Raw 2PLSM stacks only; counting needs AutoQuant
-      deconvolution and semi-automated NeuronStudio counting. All 86 stack files have empty
-      variableMeasured, which points to no stored annotations; a listing of each spine file's
-      processing modules would confirm it.
-    response: Changed blocked_by from not_runnable to methods_underspecified, as the manual counting
-      is the part that cannot be repeated. Added the listing; none of the 86 files has a processing
-      module or analysis entry.
-  - claim: fig3d-ispn-rheobase-on-higher
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.00083; medians 160 against 120.
-    response: No change.
-  - claim: fig3c-ispn-fi-on-lower
-    agrees: true
-    outcome: reproduced
-    reason: P = 7.2e-5, on-state lower.
-    response: No change.
-  - claim: fig3d-ispn-sul-no-change
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.143. Weak, medians 160 against 120, only 2 paired cells; the groups share cells, so
-      the unpaired samples are not independent, and the absence passes with little power.
-    response: Stated the shared cells and the low power in the notes.
-  - claim: fig3f-ispn-dendritic-on-lower
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.0128, on-state lower. Fragile, the 0.8 to 1.25 basal-ratio variant gives P = 0.077.
-    response: Re-run with the split series (10 on-state cells), P = 0.0073; the stricter variant still
-      gives 0.077, now stated in the conclusion and notes.
-  - claim: fig3f-ispn-dendritic-sul-no-change
-    agrees: true
-    outcome: not_reproduced
-    reason: P = 0.0164 (paper 0.0545), sulpiride higher (0.506 against 0.340). n is 9 and 7, against the
-      paper's 10 and 8; the missing cells come from pairing sites by number.
-    response: With the split series the on-state group has the paper's 10 cells and P = 0.0097. The
-      missing sulpiride cell has only a distal site in the dandiset; with the paper's value for it
-      P = 0.0545, the paper's P. Recorded as a data_missing finding.
-  - claim: fig4g-ispn-sr-amplitude-on-smaller
-    agrees: true
-    outcome: blocked
-    reason: 3 against 4. The paper's per-cell values put off above on (P = 0.057), but the detector
-      does not (P = 0.229).
-    response: No change.
-  - claim: fig4h-ispn-sr-frequency-unchanged
-    agrees: true
-    outcome: blocked
-    reason: 3 against 4; P = 0.114.
-    response: No change.
-  - claim: fig4bc-ispn-spines
-    agrees: true
-    outcome: blocked
-    reason: Blocked by data_missing and methods_underspecified. No 2PLSM stacks from control or 6-OHDA
-      mice, only off/on and manipulation sessions; counting method as for fig2bc.
-    response: Changed blocked_by to methods_underspecified, which blocks the whole claim; the missing
-      control and 6-OHDA stacks are stated in the notes.
-  - claim: fig4k-confocal-spines
-    agrees: true
-    outcome: blocked
-    reason: Blocked by methods_underspecified. Confocal stacks only (CTRL 3+1, PD 3, OFF 3, ON 2 files).
-      Counting used Imaris with supervised learning and manual correction.
-    response: Changed blocked_by to methods_underspecified and corrected the file counts in the notes.
-  - claim: fig5f-ach-off-elevated
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.0357, the smallest P possible for 3 against 5, with off-state higher. The
-      unnormalised dF/F0 variant gives P = 0.25.
-    response: No change.
-  - claim: fig5f-ach-off-like-6ohda
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.143; little power with 3 against 5.
-    response: Stated the low power as a deviation.
-  - claim: fig5f-ach-6ohda-elevated
-    agrees: true
-    outcome: blocked
-    reason: 3 against 3, smallest P 0.10. All 3 lesioned values (0.18 to 0.27) are above all 3 controls
-      (0.09 to 0.11).
-    response: No change.
-  - claim: fig5f-ach-d2-control
-    agrees: true
-    outcome: blocked
-    reason: 3 pairs, smallest P 0.25. Direction holds in 3 of 3 for both drugs.
-    response: No change.
-  - claim: fig5f-ach-da-suppresses
-    agrees: true
-    outcome: blocked
-    reason: 3 lesioned pairs and 5 off-state pairs (smallest P 0.0625). Dopamine is lower than no drug
-      in 8 of 8.
-    response: No change.
-  - claim: fig6c-m1r-antag-somatic-unchanged
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.681 (sum of spikes, P = 0.45).
-    response: No change.
-  - claim: fig6d-m1r-antag-dendritic-lower
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.0229, antagonist lower.
-    response: No change.
-  - claim: fig6f-m1r-antag-spines
-    agrees: true
-    outcome: blocked
-    reason: Blocked by methods_underspecified. Raw stacks only.
-    response: Changed blocked_by to methods_underspecified.
-  - claim: fig7c-cdgi-ko-somatic-oscillation
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.00104, on-state higher (210 against 140).
-    response: No change.
-  - claim: fig7f-cdgi-ko-dendritic-unchanged
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.315. KO off has n = 10 against the paper's 11.
-    response: With the split series KO off has the paper's 11 cells; P = 0.310.
-  - claim: fig7h-cdgi-ko-spines
-    agrees: true
-    outcome: blocked
-    reason: Blocked by methods_underspecified. Raw stacks only.
-    response: Changed blocked_by to methods_underspecified.
-  - claim: fig8bc-cdgi-aims
-    agrees: true
-    outcome: blocked
-    reason: Only 1 wild-type mouse by the paper's labels (2587). Dandiset genotype labels contradict each
-      other, and the link fails.
-    response: No change.
-  - claim: fig9d-m1r-crispr-somatic-unchanged
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.147; the control group is 6 cells from 2 mice.
-    response: Stated the low power in the notes.
-  - claim: fig9f-m1r-crispr-spines
-    agrees: true
-    outcome: blocked
-    reason: Blocked by methods_underspecified. Raw stacks only.
-    response: Changed blocked_by to methods_underspecified.
-  - claim: fig10b-m1r-aims
-    agrees: true
-    outcome: blocked
-    reason: One mouse per group.
-    response: No change.
-  - claim: fig1-dspn-lesion-and-off-somatic
-    agrees: true
-    outcome: reproduced
-    reason: Paper's table, P = 0.0003 (lower after lesion) and 9.5e-5 (higher in off-state).
-    response: No change.
-  - claim: fig1-dspn-lesion-dendritic-unchanged
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.82 and 0.90 (paper 0.824 and 0.905).
-    response: No change.
-  - claim: fig3-ispn-lesion-and-off-somatic
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.0004 and 0.0006, both in the stated direction (paper gives 0.002).
-    response: No change.
-  - claim: fig3-ispn-lesion-dendritic-up
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.035 and 0.024, later group higher.
-    response: No change.
-  - claim: fig7e-oxom-cdgi
-    agrees: true
-    outcome: reproduced
-    reason: WT P = 0.0098, oxo-M higher; KO P = 0.47. The paper reports 0.910 for KO; the pivot on expt
-      may pair the wrong rows. The criterion is met either way. It asked for the KO pairing table.
-    response: Added the KO pairing table; rows pair by the table's experiment number (KO_1 to KO_12),
-      so the pairing is right. Added an unpaired test (KO 0.885), which also does not give 0.910.
-  - claim: fig8a-cdgi-rotations
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.012, KO higher (paper 0.0092).
-    response: No change.
-  - claim: fig10a-m1r-rotations
-    agrees: true
-    outcome: reproduced
-    reason: P = 0.0078, deletion higher.
-    response: No change.
-  - claim: fig10ef-open-field
-    agrees: true
-    outcome: reproduced
-    reason: Distance and time mobile both meet the criterion; control against MCI-Park P = 1e-5 and
-      7e-6; levodopa against levodopa with deletion P = 0.0003 and 0.0006; MCI-Park against deletion
-      alone P = 0.63 and 0.47.
-    response: No change. The notebook now also prints the exact Mann-Whitney P where there are no
-      ties (the verifier's point that scipy is asymptotic for n > 8 while Prism is exact); no outcome
-      changes.
-EOF
-python tools/entry.py check entries/001538-zhai-2025 2>&1 | tail -5; grep -n ": .*: " attempts/001538-zhai-2025-01.yaml | grep -v "^\S*:\s*- \|^[0-9]*:  *[a-z_]*: [^:]*$" | head
-```
-
-```
-0 error(s)
-```
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
 python - <<'EOF'
 import yaml
-d = yaml.safe_load(open("attempts/001538-zhai-2025-01.yaml"))
-def walk(x, path=""):
-    if isinstance(x, dict):
-        for k, v in x.items(): walk(v, f"{path}.{k}")
-    elif isinstance(x, list):
-        for i, v in enumerate(x): walk(v, f"{path}[{i}]")
-    elif isinstance(x, str) and (": " in x or "—" in x or "rather" in x): print(path, x[:80])
-walk(d)
-print(len(d["outcomes"]), len(d["verifications"][0]["results"]))
-from collections import Counter
-print(Counter(o["outcome"] for o in d["outcomes"]))
+p='attempts/zhai-2025-03.yaml'
+d=yaml.safe_load(open(p))
+v=d['verifications'][0]
+v['reviewed']=v['reviewed'].split(" Not reviewed by it")[0]
+for r in v['results']:
+    if r['claim']=='link-sr-cells':
+        r['response'] += " Problem 11: the detector stays a stand-in for TaroTools, stated as an assumption on every Sr2+ claim; the amplitude claims hold under both noise variants."
+yaml.safe_dump(d, open(p,'w'), sort_keys=False, allow_unicode=True, width=100)
 EOF
-grep -n "—\|rather" entries/001538-zhai-2025/*.ipynb entries/001538-zhai-2025/*.py entries/001538-zhai-2025/README.md
-```
-
-```
-45 45
-Counter({'reproduced': 24, 'blocked': 15, 'not_reproduced': 4, 'partially_reproduced': 2})
-```
-
-**Agent**
-
-Record is valid and its outcome counts match the verifier's (24, 2, 4, 15). Final run so the executed copy carries the updated text:
-
-**Agent calls Bash**
-
-```bash
-python tools/entry.py all entries/001538-zhai-2025 2>&1 | tail -2 && python - <<'EOF'
-import json
-nb = json.load(open("executed/001538-zhai-2025/reproduce_zhai_2025.ipynb"))
-import re
-txt = "\n".join("".join(o.get("text", "")) for c in nb["cells"] for o in c.get("outputs", []))
-for k in ["P_exact': 0.0133", "'P': 0.0266", "'P': 0.0545", "exact 89 (72.4%)", "median relative difference 0.029; within 10%: 78", "0.00967", "0.00728", "0.310", "Files with a processing module: 0"]:
-    print(k, k in txt)
-EOF
-git status --short
+grep -n "—\|rather" attempts/zhai-2025-03.yaml questions/zhai-2025.yaml entries/zhai-2025/reproduce_zhai_2025.ipynb entries/zhai-2025/zhai.py entries/zhai-2025/README.md; python tools/entry.py check entries/zhai-2025 2>&1 | tail -15
 ```
 
 ```
 0 error(s)
-pass  reproduce_zhai_2025.ipynb  (597 s)
-P_exact': 0.0133 True
-'P': 0.0266 True
-'P': 0.0545 True
-exact 89 (72.4%) True
-median relative difference 0.029; within 10%: 78 True
-0.00967 True
-0.00728 True
-0.310 True
-Files with a processing module: 0 True
- M attempts/001538-zhai-2025-01.yaml
- M entries/001538-zhai-2025/README.md
- M entries/001538-zhai-2025/entry.yaml
- M entries/001538-zhai-2025/lid.py
- M entries/001538-zhai-2025/reproduce_zhai_2025.ipynb
- M entries/001538-zhai-2025/requirements.in
- M entries/001538-zhai-2025/requirements.lock.txt
-?? .bash_profile
-?? .bashrc
-[... 9 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls tools; cat entries/zhai-2025/README.md
+```
+
+```
+__pycache__
+agent_run.py
+archive_transcripts.sh
+archives
+author_notes.py
+authors.py
+backfill_summaries.py
+blind.sh
+build_dryad_targets.py
+build_figshare_targets.py
+build_openneuro_targets.py
+build_osf_targets.py
+build_reuse_targets.py
+build_site.py
+build_sparc_targets.py
+build_targets.py
+build_zenodo_targets.py
+changed_entries.py
+claims_check.py
+colab.py
+[... 67 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n "attempt.schema\|questions" tools/entry.py | head; sed -i 's/It takes about eight minutes/It takes about seven minutes/' entries/zhai-2025/README.md; python -c "
+import yaml,json,jsonschema
+s=json.load(open('schemas/attempt.schema.json')); d=yaml.safe_load(open('attempts/zhai-2025-03.yaml'))
+jsonschema.validate(d,s); print('attempt ok')
+yaml.safe_load(open('questions/zhai-2025.yaml')); print('questions ok')"
+```
+
+```
+attempt ok
+questions ok
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; python tools/entry.py all entries/zhai-2025 2>&1 | tail -4; date -u
+```
+
+```
+Thu Nov 26 17:58:21 UTC 2026
+Installed kernelspec registry-zhai-2025 in executed/zhai-2025/.venv/share/jupyter/kernels/registry-zhai-2025
+0 error(s)
+pass  reproduce_zhai_2025.ipynb  (396 s)
+Thu Nov 26 18:05:08 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+import json
+nb=json.load(open('executed/zhai-2025/reproduce_zhai_2025.ipynb'))
+for c in nb['cells']:
+    t=c['metadata'].get('tags',[])
+    if any(x in t for x in ['claim:fig4h-ispn-sr-frequency-unchanged','claim:fig1i-dspn-dendritic-sch-lower','claim:fig3f-ispn-dendritic-sul-no-change']):
+        print(''.join(''.join(o.get('text','')) for o in c['outputs'])[:600])
+    if c['outputs'] if c['cell_type']=='code' else False:
+        for o in c['outputs']:
+            if o.get('output_type')=='error': print('ERROR', o['ename'])
+EOF
+```
+
+```
+dSPN dendritic index: on n=10 median 0.476; on + SCH n=9 median 0.419; Mann-Whitney U=68.0, P=0.06619
+variant, without 2019-04-11 cell 1: on n=10 median 0.476; on + SCH n=8 median 0.384; Mann-Whitney U=65.0, P=0.02665
+paper table: on n=10 median 0.463; on + SCH n=9 median 0.338; Mann-Whitney U=75.0, P=0.01601
+                                      size  median
+condition                   date                  
+LID on-state with SCH 23390 20190411     2   0.443
+                            20190412     2   0.457
+                            20190501     1   0.220
+                            201905
+iSPN dendritic index: on n=10 median 0.339; on + sulpiride n=8 median 0.497; Mann-Whitney U=18.0, P=0.05453
+
+iSPN freq_hz: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+variant, noise SD of the smoothed trace: on n=8 median 24.028; off n=7 median 32.576; Mann-Whitney U=14.0, P=0.1179
+variant, first 10 sweeps: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=10.5, P=0.04874
+variant, last 10 sweeps: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+variant, the 10 sweeps nearest the paper's count: on n=8 median 14.861; off n=7 median 24.167; Mann-Whitney U=11.5, P=0.0636
+paper's table: on n=8 median 19.028; off n=7 median 20.278; Mann-Whi
 ```
 
 **Agent**
 
-I revised the attempt for round 1. The entry re-runs cleanly (about 10 minutes), `tools/entry.py check` reports 0 errors, and every conclusion matches the new outputs. Nothing is committed.
+No outcome changed in this revision. The entry re-ran cleanly with `python tools/entry.py all entries/zhai-2025` (0 errors, 396 s), and every conclusion, note and finding now uses the new numbers. The attempt record passes its schema check, and I recorded round 1 under `verifications` for all 45 claims.
 
-**Outcome changes**
-- **fig1i-dspn-dendritic-sch-lower**: partially reproduced → not reproduced, as the verifier said. The criterion only defines the reproduced case, and P = 0.066 is above 0.05. The difference comes from one cell, 20190411 cell 1, which gives 0.584 here against the paper's 0.228. The dandiset holds only its second pair of sites. With the paper's value for that cell, the exact P is 0.0133, which is the P the paper reports.
-- **Six spine claims**: the reason for the block changed from `not_runnable` to `methods_underspecified`, as the verifier said. For fig4bc, the notes add that the control and 6-OHDA stacks are missing. All six stay blocked.
-- All other outcomes are the same. The counts are 24 reproduced, 2 partially reproduced, 4 not reproduced and 15 blocked, matching the verifier.
+**Fixes for the verifier's problems**
+1. **Dendritic background bug:** fixed. `_site_trace` now subtracts 55 from red and 161 from green. The effect is small, and every dendritic outcome stays the same:
+   - link-dendritic-cells still has a median difference of 0.027.
+   - fig1i-sch: P goes from 0.079 to 0.066, still not reproduced. Without the 2019-04-11 cell it is 0.027; the conclusion now says this exclusion only shows where the difference comes from.
+   - fig3f-sul stays at P = 0.0545.
+   - fig1i-on P = 0.0058, fig3f-on 0.0073, fig6d 0.023, fig7f KO 0.31.
+2. **Last-sweep variant:** it now really takes the last sweep (`per_cell_somatic(keep="last")`). A per-cell table of the 14 cells with a repeated step shows no rheobase changes and only one cell's summed spikes changes, by 1. So the rheobase claims of absence come out the same under it.
+3. **fig4h sweeps:** I added two readings, the last 10 sweeps (P = 0.064) and the 10 consecutive sweeps whose count is nearest the paper's for each cell (P = 0.064). Only the first 10 sweeps gives P = 0.049.
+   - I kept **reproduced**, marked as resting on the nearest-run reading, which the paper's own per-cell counts support, and recorded the disagreement.
+   - The verifier would give partially reproduced. I did not use that, because a claim of absence is judged only by whether the paper's test finds the difference.
+4. **Somatic link:** now reports that 9 paper rows are the best match for 20 cells, 6 cells tie between rows, and the rheobase and F-I sheets agree row by row in 115 of 124 rows.
+5. **GRAB link:**
+   - Counted per mouse, 1 of 11 match; with a one-to-one assignment of regions, 15 of 34.
+   - The frame interval is the same within every condition (0.1996 s), so one interval per condition is safe.
+   - The notebook now lists the trials of 2024-04-02 Slice1Roi2. The conflict with the dandiset description is stated in the finding; the files cannot settle it.
+6. **Figure 6D letters:** the paper's identifiers follow the files' cell numbers (all 16 found). Reading the letter as the cell's place among the group's cells finds 14 of 16. I kept the cell number and wrote a deviation saying why.
+7. **Other added outputs:**
+   - fig8bc on the 18 mice that are also in the paper: still reproduced.
+   - fig7e with an unpaired test: KO P = 0.89, close to the paper's 0.91.
+   - The group labels of each Zenodo sheet: "-M1R" is MCI-Park with M1R deletion, 9 mice.
+   - One spine file per cell type and group, opened: image stacks only, nothing under processing or analysis.
+8. **Claims-file question:** the link-grab-rois criterion says "mouse" where the paper's unit is the region. I added this as a question in `questions/zhai-2025.yaml` and did not change the claim.
 
-**What I added or corrected**
-- **Dendritic index (B1–B4):** checking the per-cell table turned up a data problem. Three line-scan series hold six trials, which is two sites stored under one name. I now split each into its first and last three trials and take the half with the smaller area as the distal site. That assumption is stated, and the sites as labelled are shown as a variant.
-  - Two cells that had no index now get one, matching the paper's values (0.146 and 0.293, against 0.146 and 0.299).
-  - Every group now matches the paper's rows. The median difference from the paper is 2.9%, with a Spearman correlation of 0.938.
-  - The verifier's second large difference (1.062 against 0.527) is a proximal site with only one trial. Dropping it gives 0.553.
-- **fig3f-ispn-dendritic-sul-no-change** stays not reproduced (P = 0.0097). The one sulpiride cell without an index has only a distal site in the dandiset. With the paper's value for it, P = 0.0545, the paper's figure.
-- I recorded two new findings: the series holding two sites, and the two cells whose missing sites decide the two dendritic claims above.
-- **Outputs the verifier asked for:**
-  - one-to-one matching for the somatic link (72.4% exact) and the GRAB link (5 of 11), with outcomes unchanged;
-  - a check that the paper's somatic rows follow the dandiset's order, which supports matching dendritic cells by order;
-  - for cells with a repeated step, keeping the first or the last sweep makes no difference in 13 of 14;
-  - exact Mann-Whitney P values printed next to scipy's, with no outcome changing;
-  - a listing of the 86 spine files: none has a processing module or analysis entry, so no counts are stored;
-  - the Fig. 7E KO pairing table (the pairing is correct; an unpaired test gives 0.885, so neither test gives the paper's 0.910);
-  - AIM scores per time point for the five Fig. 8 mice. The paper's totals don't match any way of summing them, so the scores themselves differ;
-  - a figure of the Sr2+ detector on 20230405b and on 07062023c, a cell where it comes close to the paper's count. On 20230405b the detection window starts on the decay of a large synchronous current, and the small events on it stay below the threshold.
-- Notes now state the low power and the cells shared between groups for the absence claims, and that the iSPN on-state result depends on the basal-ratio rule (P = 0.077 under the stricter variant).
-- I added matplotlib for the figure and relocked; only new packages were added. The runtime in `entry.yaml` and the README is now 10 minutes. The round is recorded under `verifications` for all 45 claims.
+**Not done, and why**
+- **Blocked reasons:** I kept `not_runnable` for the six spine claims. The verifier suggested `other` for the five 2PLSM claims and `data_missing` for fig4k. The protocol gives `not_runnable` when the paper's software (AutoQuant, NeuronStudio, Imaris) cannot run here, and does not allow `data_missing` for data that are public elsewhere. I recorded this under each claim's `response`.
+- **Event detector:** it stays a stand-in for TaroTools, stated as an assumption. The verifier marked this as not affecting a conclusion.
+- **Paper listing:** the paper should also be listed on Zenodo record 17260198 (`ZENODO:17260198`), the authors' raw-data deposit. It holds the confocal spine images, and I did not use it because counting them needs Imaris.
 
-**What I did not do**
-- I kept the 0.5–2 basal-ratio rule as the main analysis because it was fixed before the analysis ran; the stricter rule is shown as a variant for every claim.
-- A per-time-point AIM comparison with the paper isn't possible, because the paper's tables give session totals only.
-- I didn't change the claims file.
-- No paper text was downloaded this round, so nothing new is under `paper/`.
+Nothing was committed.
 
 ## End of run
 
-53 turns, 54 minutes, result: success.
+61 turns, 33 minutes, $4.47 at API prices, result: success.

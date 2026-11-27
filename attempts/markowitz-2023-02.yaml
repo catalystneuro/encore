@@ -1,0 +1,1491 @@
+schema_version: 3
+id: markowitz-2023-02
+datasets:
+- archive: dandi
+  id: 000559
+  version: 0.261113.1911
+  doi: 10.48324/dandi.000559/0.261113.1911
+  relation: primary
+paper: doi:10.1038/s41586-022-05611-2
+date: '2026-11-19'
+entry: markowitz-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44575771296
+outcomes:
+- claim: ed2a-syllable-repertoire
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:ed2a-syllable-repertoire
+  measured:
+  - 36
+  - 400
+  - 561
+  notes: Reading (a), the DLS photometry experiments of the 16 dLight mice (233 experiments, 671,828 durations),
+    gives 36 syllables above 1% mean usage, median 400 ms, mean 561 ms and s.d. 627 ms, all within tolerance. Over
+    the 14 photometry mice alone 37 syllables pass 1%; with usage as a share of frames 35. Reading (b) was computed
+    only on the 1,340 Opto-DA experiments' offline labels (optoda.ipynb), median 467 ms, mean 651 ms, 35 syllables;
+    it was not pooled with the photometry experiments.
+  deviations:
+  - Reading (b) was run on the Opto-DA experiments only, not on every open-field experiment of the dandiset pooled.
+  - Usage is the share of a mouse's run-length instances, averaged over mice (all_behavior_00 as the claims file
+    cites it).
+- claim: fig1e-velocity-timescales
+  outcome: partially_reproduced
+  notebook: photometry.ipynb
+  output: claim:fig1e-velocity-timescales
+  notes: Transient rate (upward crossings of 1.96) holds under both readings of significance, significantly negative
+    at all 20 bin sizes below 10 s and significantly positive at 73 (legend's per-bin test) or 27 (code's Holm test
+    with runs of 5) of 100 bin sizes of 10 s or more, sign change near 16 s; with integer bin sizes 38 or 36 of
+    50. Binned amplitude is negative at every bin size (-0.119 at 0.25 s, -0.205 at 5.25 s, -0.051 at 59.75 s)
+    and never significantly positive; the 1-s.d. rate is never significantly positive either. Without the 20-s
+    sliding z-score neither measure is significantly positive at any bin size (amplitude -0.274, rate -0.166 at
+    59.75 s). Holds for one measure of two. Seed range not computed.
+  deviations:
+  - The DLS baseline set is the code's reading (the dLight+ChrimsonR mice's pure post days dropped), 164 experiments
+    of 14 mice; the paper counts 216 experiments in Fig. 1b.
+  - The code's two-sided test is computed from the z of the observed mean r against the 1,000 shuffles (normal approximation),
+    as an empirical P from 1,000 shuffles cannot pass Holm over 120 bin sizes.
+  - The 20-s sliding z-score is the Methods' pre-processing for all dLight (Photometry pre-processing); a variant
+    without it is shown.
+  - The five-seed range was not computed, for time.
+- claim: ed3c-keypoint-velocity
+  outcome: partially_reproduced
+  notebook: photometry.ipynb
+  output: claim:ed3c-keypoint-velocity
+  measured:
+  - -0.170
+  - -0.026
+  notes: Five keypoint mice, 25-min sessions, 400-ms bins. The reader's answer (questions/markowitz-2023.yaml) amended
+    the criterion to process dLight with the Methods' RANSAC fit with slope and bias, the main reading of the claims
+    file's definitions, and made the fig_s03 notebook's fit without intercept a variant. Under the amended criterion
+    2D velocity and dLight correlate at r = -0.170 pooled (per-mouse mean -0.169, mice -0.128 to -0.220; one-sided
+    shuffle P = 0.001 under all five seeds), within -0.16 +- 0.016, and forelimb velocity and partialled dLight at
+    r = -0.026 pooled (per-mouse mean -0.027; P = 0.001, 0.001 to 0.002 over the five seeds), outside -0.02 +- 0.002
+    under both readings and rounding to -0.03, so one expected value of two is met. With the fit without intercept,
+    on which the round-2 outcome (reproduced) rested, the values are -0.167 and -0.019 (P = 0.001 and 0.002), both
+    within tolerance. Changed to partially reproduced in round 3. Photometry and keypoint series
+    start at 0 s, have equal lengths in every session and share the 30-Hz rate.
+  deviations:
+  - dF/F0 computed from the files' raw SignalF and UVReferenceF with a centred 5-s 10th-percentile F0 (Methods,
+    Photometry pre-processing), then processed as the claims file's definitions give it; spine centroid from the
+    rostral, medial and caudal spine keypoints.
+  - Keypoints and photometry are paired by sample index; the files give both series a start at 0 s, equal lengths
+    and a 30-Hz rate, and no other alignment.
+- claim: fig1f-syllable-vs-movement-onset
+  outcome: partially_reproduced
+  notebook: photometry.ipynb
+  output: claim:fig1f-syllable-vs-movement-onset
+  notes: Movement initiations are the changepoint-score peaks (derivative per second), all detections (25 to 30
+    per minute, mean speed in the second before 43 to 77 mm/s) or those preceded by relative stillness (2.3 to 5.5
+    per minute, speed rising from 12 to 27 mm/s before to 55 to 107 mm/s after). With initiations from stillness,
+    reading (a), the mean absolute z of 1-Hz high-passed snippets from -1 to +1 s, favours syllable onsets in 13
+    of 14 mice (medians 2.25 against 1.17, P = 0.00024) and reading (b), the peak from 0 to 0.3 s, does not (9
+    of 14, P = 0.36). With all detections, the criterion's definition, (b) favours syllables (13 of 14, P = 0.00024,
+    also with 100 shuffles and under quality control (b)) and (a) favours movement (3 of 14, P = 0.004). Syllable
+    onsets outnumber initiations from stillness about 30 to 1, and the shuffle z grows with the event count. With
+    syllable onsets drawn down to each mouse's initiation count (100 shuffles), against initiations from stillness
+    reading (a) has syllables higher in 5 of 14 (P = 0.068) under the claim's seed and in 2 to 4 of 14 (P 0.0023
+    to 0.013, favouring movement) under seeds +1000 to +4000, and reading (b) shows no difference (6 to 10 of 14,
+    P 0.27 to 0.90); against all detections, (b) favours syllables in 14 of 14 and (a) favours movement in 14 of
+    14 (P = 0.00012 under all five seeds). The round-2 outcome (reproduced) rested on reading (a) with initiations
+    from stillness, which the count-matched check removes; under the criterion's definition (b) meets the rule and
+    (a) is significant the other way, so the claim holds in part (changed to partially reproduced in round 3). The 6 dLight-only mice have higher reading (b) syllable peaks than the 8 dLight+ChrimsonR mice
+    (medians 3.83 and -0.10, U = 48 of 48, P = 0.001); in them alone (b) favours syllables in 6 of 6 under both
+    definitions (P = 0.031).
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - Movement initiations use the derivative of the smoothed z-scored speed per second; per frame the cubed score
+    never reaches the find_peaks height of 1. A variant keeps those preceded by relative stillness (mean smoothed
+    speed in the second before below the experiment's 25th percentile), as the Methods describe the events ("moments
+    where mice transitioned from periods of relative stillness to movement"); the percentile is an assumption.
+  - Reading (a) uses 100 shuffles (the legend's number) and a second-order Butterworth high-pass, a standard choice;
+    reading (b) 1,000 and 100. The count-matched check uses 100 shuffles for the drawn syllable onsets.
+  assumed: true
+  seed_sensitive: false
+- claim: fig1f-dip-then-peak
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig1f-dip-then-peak
+  notes: Mean of 14 mice below the 95% shuffle interval from -0.97 to +0.2 s, minimum -16.33 at 0 s; above it from
+    +0.27 to +0.4 s and from +0.63 s, maximum 1.67 at +1.0 s, the edge of the assumed window, where the average
+    is still rising. Minimum precedes maximum in 13 of 14 mice. In 5 of the 8 dLight+ChrimsonR mice the syllable-onset
+    average has its maximum within 0 to +1 s at 0.97 to 1.0 s; in the 6 dLight-only mice at 0.30 to 0.33 s.
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - The window of -1 to +1 s is the claims file's assumption.
+  - The five-seed range was not computed, for time.
+  assumed: true
+- claim: fig1h-syllable-dlight-differs
+  outcome: partially_reproduced
+  notebook: photometry.ipynb
+  output: claim:fig1h-syllable-dlight-differs
+  measured:
+  - 280.39
+  - 518
+  notes: 518 mouse-syllable pairs (14 mice x 37 syllables; minimum 73 and median 677 instances per pair). Kruskal-Wallis
+    H = 280.39 (a), 300.77 (b), 289.64 (c), 292.45 (d), all with P below 1e-38; H is above 209.29 +- 20.93 under
+    every reading. With the post days (target removed) reading (a) gives H = 277.95, under quality control (b)
+    282.86.
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - The 37 syllables are those above 1% mean usage over the 14 photometry mice; over all 16 dLight mice 36 pass.
+  - The five-seed range of reading (d) was not computed; readings (a) to (c) use no random draws.
+- claim: fig1j-weak-kinematic-correlation
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig1j-weak-kinematic-correlation
+  notes: 28,000 instances (2,000 per mouse). Held-out r under reading (a) 0.090 (velocity) and 0.025 (angular velocity);
+    under reading (b) 0.079 and 0.017. The raw Pearson correlations are negative (-0.091, -0.028, -0.079, -0.019);
+    shuffle P 0.001 except (b) angular velocity, 0.003. All |r| are below the claims file's assumed bound of 0.3.
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - Five repeats of fivefold cross-validation in place of 100 (the spread over repeats is in the third decimal),
+    and the shuffle P from 1,000 permutations of the plain Pearson r in place of refitting the Huber model, which
+    took 26 minutes for 200 shuffles in preparation.
+  - Angular velocity is taken as its absolute value.
+  assumed: true
+- claim: fig1l-identity-not-decodable
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run. A timing outside the notebook, of sklearn random forests with 20 trees and unlimited depth on 33,000
+    rows, took 0.97 s with the peak input and 2.8 s with the 20-value waveform input. Scaled to 1,000 trees, the
+    334,000 training rows of a fold, five folds and 101 fits (observed and 100 shuffles), the estimate is about
+    83 h and 238 h, over the run's limit. A forest reduced in trees and rows would fit, but for a claim of absence
+    it would lose the power the test depends on, so it was not run as the claim's test.
+- claim: fig2a-food-reward-transients
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: photometry.ipynb
+  notes: 'The food-reward experiments are not in the dandiset: no session or subject is described as one, and the
+    dandiset''s release notes for 0.261113.1911 say their raw data were not available for the conversion. The spontaneous
+    half alone (reading (b)) is shown in photometry.ipynb: peaks above 1.5 z in the 164 DLS baseline experiments
+    average 2.25 +- 0.69 z (paper 2.12 +- 0.80) over 232,152 peaks (paper 5,247); the reward half cannot be computed.'
+- claim: fig2b-dlight-usage-across-syllables
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2b-dlight-usage-across-syllables
+  measured: 0.194
+  notes: 719 mouse-syllable pairs with at least 100 instances. Held-out r = 0.194 (repeats 0.169 to 0.207), null
+    95th percentile 0.035, one-sided P = 0.001. Raw Pearson 0.21. The code's variant gives 0.192. Seed range not
+    computed; P is at its floor.
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - All syllables with at least 100 instances in the mouse enter, as the Methods say; entropy destinations are the
+    37 syllables.
+  - The five-seed range was not computed, for time.
+- claim: fig2i-dlight-entropy-across-syllables
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2i-dlight-entropy-across-syllables
+  measured: 0.197
+  notes: Held-out r = 0.197 (repeats 0.163 to 0.210), null 95th percentile 0.037, one-sided P = 0.001, n = 719.
+    Seed range not computed; P is at its floor.
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - The five-seed range was not computed, for time.
+- claim: fig2b-across-experiments
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2b-across-experiments
+  measured: 0.186
+  notes: 335 syllable-mouse pairs averaging at least 50 instances per experiment; 164 experiments. Held-out r =
+    0.186 (repeats 0.095 to 0.228), null 95th percentile 0.068, one-sided P = 0.003. Seed range not computed.
+  deviations:
+  - The DLS baseline set is the code's reading; the paper queries 379 experiments.
+  - The five-seed range was not computed, for time.
+- claim: fig2e-dlight-predicts-future-usage
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2e-dlight-predicts-future-usage
+  notes: 362,296 index instances of the 37 syllables in 2,072 mouse-syllable-segment groups. Correlation significantly
+    positive at every n from 10 to 390 (z 7.00 at n = 10, 2.25 at 170, 2.07 at 390; one-sided P = 0.001), and under
+    the code's two-sided Holm test. The last segment (1,680 to 1,800 s) has no index instance with 390 following
+    syllables, so z is averaged over four segments. Seed range not computed; P is at its floor.
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - Index instances without 390 following syllables in the experiment (and the first 5) are left out at every n,
+    so that all n share one set of instances; this empties the last segment.
+  - Index syllables are the 37; the paper's 760 syllable-experiment pairs could not be matched.
+  - Experiment time is measured from the first syllable onset of the experiment for the segment edges.
+  - The code's two-sided test uses a normal approximation to the shuffle z.
+  - The five-seed range was not computed, for time.
+- claim: fig2e-not-autocorrelation
+  outcome: partially_reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2e-not-autocorrelation
+  notes: The reader's answer (questions/markowitz-2023.yaml) amended the criterion to the Fig. 2e legend's one-sided
+    test for all three curves, a curve counting as declined at n when it is not significantly positive there, and
+    added a partially reproduced case; the bins stay those of the figure. The usage correlation is significant at
+    every n from 10 to 390 (P = 0.001). The autocorrelation is significantly positive at n = 10 (z 5.63, P = 0.001)
+    and declined from n = 30 on (z -1.16 to -4.34). The velocity curve is declined at n = 10 (z -11.73) and significantly
+    positive at every n from 30 to 390 (z 0.85 to 2.18, P 0.001 to 0.046). No n has both declined and neither curve
+    is significantly positive at every n, so the criterion's partial case applies. Under the seeds plus 1000 and 2000
+    the outcome is the same (velocity P at n = 390 0.049 and 0.038); under the seeds plus 3000 and 4000 the velocity
+    curve is not significant at n = 390 (P 0.079 and 0.054), both curves are declined there and the outcome would
+    be reproduced. Before the answer the outcome was the same, as a judgment between two cases that did not cover
+    the result; the answer makes it the criterion's own case, so it no longer rests on an assumption.
+  deviations:
+  - As fig2e-dlight-predicts-future-usage.
+  - The seed range reruns the shuffles of fig2e-dlight-predicts-future-usage, whose generator the criterion shares,
+    under its seed plus 1000 to 4000.
+  seed_sensitive: true
+- claim: fig2g-usage-crosscorrelation
+  outcome: not_reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2g-usage-crosscorrelation
+  notes: 'Permutation null of the criterion, P at the peak lag: reading (a), non-overlapping windows, z 1.73 at lag
+    0, P = 0.039 (0.040 to 0.044 under seeds +1000 to +4000); reading (b), 3-min windows sliding by 30 s, z 2.05
+    at -7.5 min, the edge of the lag range, P = 0.024 (0.012 to 0.015). Against the shuffles'' maximum over lags,
+    P = 0.194 (a) and 0.304 (b). With circular shifts of the dLight window series, which keep its autocorrelation,
+    reading (b) gives z 1.12 at -7.5 min, P = 0.130 at that lag (0.131 to 0.145 over seeds) and 0.711 against the
+    maximum over lags (0.718 to 0.744). No reading reaches P < 0.05 once the peak is compared with the shuffles''
+    peaks.'
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice; the paper counts 216 in Fig. 1b.
+  - Non-overlapping windows allow lags of whole windows only, so reading (a) spans +-6 min.
+  - Syllable-experiment series with any empty window are left out.
+  - The criterion's "the peak correlation exceeds all shuffles" is read as a comparison of the observed peak with
+    each shuffle's peak over lags, which corrects for choosing the lag; P at the peak lag alone is also given.
+  assumed: true
+- claim: fig2h-specific-to-syllable
+  outcome: not_reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2h-specific-to-syllable
+  notes: Offset 0 z = 7.00 (Holm P = 0.011), but offsets -1 (z = 5.29), +1 (z = 5.47) and +2 (z = 1.45, Holm P = 0.011)
+    are also significant, and -1 and +1 exceed half of offset 0's z; offsets -5 to -2 and +3 to +5 are negative.
+    The neighbours' counts correlate with the offset-0 count at r = 0.06 to 0.13, and with it regressed out the z
+    of -1 and +1 stay at 4.87 and 5.07, so the overlap of the windows does not account for them; with the 200 shuffles
+    of that check their Holm P is 0.05, the smallest that test can give. Seed range not computed.
+  deviations:
+  - As fig2e-dlight-predicts-future-usage.
+  - The check with the offset-0 count regressed out uses 200 shuffles.
+- claim: fig2k-dlight-predicts-sequence-variability
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:fig2k-dlight-predicts-sequence-variability
+  notes: 464,570 index instances of 14 mice. The reader's answer (questions/markowitz-2023.yaml) amended the criterion's
+    null to the Methods' shuffle of dLight peak values, 1,000 shuffles within mouse and segment before binning, and
+    made the code's null (randomize_cols) a variant. Against it the dLight bin's correlation with the entropy of the
+    following transitions is significantly positive at n = 5 and 10 under reading (a), the Methods' bins per mouse
+    and syllable (Pearson z 1.24 and 1.93, P = 0.003 and 0.001; Spearman z 1.21 and 2.11, P = 0.006 and 0.001), and
+    so under all four other seeds (Pearson P 0.005 to 0.020, 200 shuffles each). Under reading (b), the code's equal-count
+    bins per mouse, it is significantly negative (Pearson z -2.45 and -1.57, P = 0.001 and 0.002 for a negative correlation),
+    under all five seeds. The criterion takes a result under either reading. The raw correlations are negative under
+    both readings (Pearson -0.380 and -0.517 under (a), -0.064 and -0.056 under (b)); under (a) they are less negative
+    than the shuffles' mean (-0.427 and -0.554). Against the code's null, now a variant (200 shuffles), both readings
+    are significantly positive (Pearson z 2.99 to 6.02, P = 0.005). The outcome is the one verified, which rested
+    on the code's null under both readings; it now rests on reading (a) alone.
+  deviations:
+  - Details the claims file leaves to the code are taken from dlight_06 and the fig_2k notebook at commit 14ed714
+    (sequences of n syllables from the index instance, the matrix truncated to the 37 syllables, aggregation per
+    mouse, segment and bin, dm_entropy with the Perks prior and rows normalised, correlation over mice and bins per
+    segment and n).
+  - Index instances need 49 following syllables in the experiment.
+  - Only n = 5 and 10 are run, where the criterion decides; the seed range and the code's null use 200 shuffles.
+  - The DLS baseline set is the code's reading, 164 experiments of 14 mice.
+- claim: ed6b-encoding-model-average
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within the author runs; it was set aside for claims with cheaper analyses. The Bayesian model with
+    NUTS over three feature sets, 50 repeats of fivefold cross-validation and 1,000 shuffles needs tens of thousands
+    of sampler runs. The data it needs are in the dandiset.
+- claim: ed6e-encoding-model-instantaneous
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within the author runs; it was set aside for claims with cheaper analyses. The data it needs are
+    in the dandiset.
+- claim: ed7-dms-fewer-transients
+  outcome: reproduced
+  notebook: photometry.ipynb
+  output: claim:ed7-dms-fewer-transients
+  measured: 101
+  notes: '14 DLS (164 experiments) against 8 DMS mice (75 experiments, 105,897 transients). Per-mouse mean rate per
+    s, DLS median 0.882, DMS 0.822; U = 101, f = 0.90, P = 0.0012 (Holm 0.0047); U within 97 +- 9.7. Per-mouse median
+    (code) U = 102, P = 0.0009. Under quality control (b) (157 DLS and 64 DMS experiments) U = 107, P = 0.0001.'
+  deviations:
+  - The DLS baseline set is the code's reading, 164 experiments; the paper counts 216 in Fig. 1b.
+  - DMS experiments are all 75 DMS files with photometry passing quality control (a); the paper reports 64, which
+    is the count under the code's rule (b).
+- claim: ed7b-dms-transient-shape
+  outcome: not_reproduced
+  notebook: photometry.ipynb
+  output: claim:ed7b-dms-transient-shape
+  measured:
+  - 28
+  - 20
+  - 20
+  notes: 'Time to peak U = 28, P = 0.0213; width U = 20, P = 0.0137; area U = 20, P = 0.0128; all three 0.0385 after
+    Holm. Area is significant, where the paper reports P = 0.052, so the significance pattern fails, and none of
+    the U values is within tolerance (28 against 4, 20 against 16, 20 against 27). Under quality control (b) area
+    is also significant (Holm 0.0257).'
+  deviations:
+  - As ed7-dms-fewer-transients.
+  - Time to peak is read on the 30-Hz average; the interpolated version is shown as a variant.
+- claim: ed7d-dms-smaller-peaks
+  outcome: not_reproduced
+  notebook: photometry.ipynb
+  output: claim:ed7d-dms-smaller-peaks
+  measured:
+  - 42
+  - 78
+  notes: 'Peaks of shuffle-normalised averages from -5 to +15 samples. Syllable onsets, DLS median 2.65, DMS 0.27,
+    U = 78, P = 0.145. Movement initiations from stillness, DLS 1.69, DMS 2.87, U = 42, P = 0.365; all detections,
+    DLS -3.93, DMS -3.05, U = 42, P = 0.365. The paper reports U = 109 and 110. The syllable half fails whatever
+    the definition of movement initiations; quality control (b) gives the same pattern. With only the 6 dLight-only
+    DLS mice, whose syllable-onset peaks are higher than the dLight+ChrimsonR mice''s, the syllable half holds (U
+    = 46 of 48, P = 0.003) but the movement half is significant with DMS higher (from stillness U = 4, P = 0.008;
+    all detections U = 7, P = 0.029).'
+  deviations:
+  - As fig1f-syllable-vs-movement-onset (movement initiations; assumption).
+  - The five-seed range was not computed, for time.
+  assumed: true
+- claim: ed7-dms-no-usage-prediction
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on ed6b-encoding-model-average, which was not run.
+- claim: ed7e-velocity-both-areas
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on ed7-dms-no-usage-prediction, which was not run.
+- claim: fig3c-calibration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The open-loop calibration experiments are not in the dandiset: the dLight+ChrimsonR files are closed-loop
+    reinforcement sessions and two 2-s excitation sessions, and no file holds randomly timed 250-ms pulses; only
+    8 dLight+ChrimsonR subjects are present, not the two calibration mice, and the release notes say the 2-s and
+    3-s ChrimsonR sessions were not converted.'
+- claim: fig3e-optoda-learning
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3e-optoda-learning
+  measured: 152
+  notes: '191 mouse-target pairs (20 Opto-DA and 12 control mice, 5 to 7 targets each). Log2 fold change, Opto-DA
+    median 0.215, control 0.175; one-sided U = 152, f = 0.63, P = 0.110. With offline labels U = 129, P = 0.370.
+    The code''s Monday-baseline rule changes the baseline of none of the 191 pairs.'
+  deviations:
+  - Baseline is the target's own session numbers -1 and 0 on the most recent day before stimulation (TargetSessions);
+    189 of 191 pairs had it on the day before.
+  - Counts are run-length instances of the online labels with onsets in the first 30 min of each experiment.
+  - Four sessions the lab marked excluded are left out (three stimulation sessions, one post).
+- claim: fig3f-cumulative-counts
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3f-cumulative-counts
+  measured: 160
+  notes: 'Change in counts above baseline, Opto-DA median 32.2, control 23.2; one-sided U = 160, f = 0.67, P = 0.062.
+    With offline labels P = 0.103; with the Monday-baseline rule the same as the main test.'
+  deviations:
+  - As fig3e-optoda-learning.
+- claim: fig3e-learner-count
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3e-learner-count
+  measured: 7
+  notes: Largest control mean change 60.5 (snc-dls-ctrl-7); 7 of 20 Opto-DA mice exceed it (1528, 1529, 1544, 15822,
+    15823, 240, dls-ai32jr-3). All 7 are among the nine learners the paper's notebook prints; its other two, 3442
+    and dls-ai32jr-1, have mean changes of 48.5 and 19.7 here.
+  deviations:
+  - As fig3e-optoda-learning.
+  - The paper's nine learners are read from the output of cell 78 of its optoda-learning notebook at commit 14ed714
+    (inputs), only to report the overlap.
+- claim: fig3h-stim-post-correlation
+  outcome: partially_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3h-stim-post-correlation
+  measured: 0.868
+  notes: 'Learners (7), r = 0.868, one-sided shuffle P = 0.031 (0.025 to 0.038 under seeds +1000 to +4000). Controls
+    (12), r = 0.633, P = 0.025 (0.030 to 0.041), significant where the paper reports P = 0.082.'
+  deviations:
+  - Learners are the 7 found here, not 9.
+  - Post is the target's sessions 3 and 4; pairs without both are left out.
+  seed_sensitive: false
+- claim: fig3i-optoda-entropy
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3i-optoda-entropy
+  notes: '377 250-ms stimulation experiments with both trial types (236 Opto-DA, 141 control). With all trials, Opto-DA
+    entropy change after stimulation is above catch trials in every five-syllable bin (first bin median difference
+    0.07 bits, f = 0.57, Holm P = 0.017) and no control bin is significant (smallest Holm P 0.22). Stimulation trials
+    outnumber catch trials (median 58 against 20 per experiment) and the pooled plug-in entropy depends on the number
+    of trials. With stimulation trials drawn down to the catch count in each experiment, the Opto-DA first bin has
+    f = 0.46, Holm P = 0.86 (f 0.46 to 0.50, Holm P 0.97 to 1.0 under seeds +1000 to +4000); one later bin reaches
+    Holm P = 0.011 under one seed of five; no control bin is significant. Compared between the arms, which share
+    the imbalance, the per-experiment stimulation minus catch difference does not differ between Opto-DA and control
+    experiments in any bin, with all trials (f 0.50 to 0.57, Holm P 0.16 to 1.0) or with matched counts (Holm P
+    1.0).'
+  deviations:
+  - Each online detection is aligned to the instance it falls in; entropy is the conditional entropy of transitions
+    pooled over a condition's trials in an experiment, Perks prior 1/K, minus the same over the 5 syllables before
+    onset.
+  - Catch-trial z-scoring uses catch values over experiments within each arm.
+  - The comparison with stimulation trials drawn down to the catch count decides the outcome (assumption). The paper
+    does not say whether entropy is pooled over trials; pooled over unequal trial counts the estimate is biased
+    toward the larger set, which the verifier raised and the matched comparison removes.
+  assumed: true
+  seed_sensitive: false
+- claim: fig3jk-post-predictable
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3jk-post-predictable
+  notes: 'Post-stimulation day, top-ranked baseline transitions, learners against controls, inbound log2 ratio 0.374
+    (95% bootstrap -0.048 to 0.773; 42 learner and 68 control pairs), outbound 0.234 (-0.127 to 0.546; 41 and 67).
+    Both intervals include 0 under each of the four further seeds (lower bounds -0.055 to -0.027 inbound, -0.112
+    to -0.069 outbound), so the criterion''s rule is not met. Ratios are positive at ranks 1 to 5. The stimulation-day
+    variant (the Fig. 3k legend''s wording) has both intervals above 0 (0.443, 0.043 to 0.809; 0.508, 0.180 to 0.820).'
+  deviations:
+  - The 10 baseline-ranked transitions per pair are kept (a standard choice; the top rank decides), pairs with fewer
+    are left out.
+  - Learners are the 7 found here, not 9.
+- claim: ed10-target-specific
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within the author runs; it was set aside for claims with cheaper analyses. The fig_s10a notebook
+    builds it on simulated triggers on baseline days and a precomputed table of per-syllable count changes, which
+    this attempt did not rebuild. The inputs are in the dandiset.
+- claim: ed10d-optoda-vigour
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:ed10d-optoda-vigour
+  notes: The direction of stimulation (fastest or slowest quartile) is needed to form the up and down groups. Of
+    the 94 velocity-modulation files of 9 mice, only those of mice 5891 to 5894 state it, in the session description
+    (12 up, 8 down); the 50 files of the five dls-ai32jr mice do not, and the TargetSessions table has no such column.
+    In these files the target detections are not on the clock of the syllable labels (2,845 of 3,423 fall after
+    the last syllable onset, 1.0% on target instances against 2.9% of instances); shifted by -2700.03 s, 99.4%
+    fall on target instances. With the shift the direction can be read from the stimulated instances' velocity,
+    which agrees with the stated direction in 16 of 17 files (the other has one stimulation). With the direction
+    stated or read, the criterion's inclusion rule keeps 11 up and 6 down experiments of 5 mice (paper 18 and
+    12 of 5); up exceeds down in medians (0.32 against -0.11) but U = 47 of 66, f = 0.71, P = 0.180 (paper U = 167,
+    P = 0.013). Without the usage rule 11 up and 7 down give P = 0.211; with stated directions only, 4 up and 1
+    down, P = 0.400. Blocked (metadata_insufficient) until round 3, which agreed with the change to not reproduced.
+  deviations:
+  - The detection times are shifted by the offset that puts the most detections on target instances, and the direction of a file without a stated one is the sign of its stimulated instances' mean velocity
+    z within the file's target instances (assumption).
+  - The baseline of the usage rule is the mean target usage (share of instances) of the mouse's velocity-modulation
+    files without stimulation (habituation, baseline and recording sessions; assumption, the Methods say "separate
+    recording experiments with no stimulation").
+  - Stimulation bins at 15, 30 and 45 stimulations; the per-experiment value is the mean of the bins after the first.
+  assumed: true
+- claim: ed10e-no-duration-change
+  outcome: reproduced
+  notebook: optoda.ipynb
+  output: claim:ed10e-no-duration-change
+  notes: 'Stimulated minus catch duration per mouse, target and experiment, experiment 1, 42 learner and 72 control
+    pairs, U = 1525, f = 0.50, P = 0.941; experiment 2, 42 and 69, U = 1352, f = 0.47, P = 0.557 (Holm 1.0 for both).'
+  deviations:
+  - Learners are the 7 found here; the paper has 107 learner and 144 control pairs.
+- claim: ed10i-no-place-preference
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:ed10i-no-place-preference
+  notes: 'The reader''s answer (questions/markowitz-2023.yaml) amended the criterion''s experiment-wide test from the
+    per-mouse mean of the target-onset JSD to one JSD per mouse over the centroids at the onsets of all syllables
+    (the fig_s10h, s10i notebook, cells 33 and 34), with the centroids of all frames as a variant; both tests must
+    give P >= 0.05. Target performance, stimulation days against other days, 120 Opto-DA and 72 control pairs (192,
+    as the paper), median JSD 0.149 against 0.176, U = 3813, f = 0.44, P = 0.174; by mouse U = 99, P = 0.425; with
+    each histogram''s own edges P = 0.216 and 0.861. Experiment-wide, 20 Opto-DA and 12 control mice, median JSD
+    0.0073 against 0.0120, U = 48, f = 0.20, P = 0.005, Opto-DA lower; own edges P = 0.025 (f = 0.26); all frames
+    P = 0.003 (f = 0.18), with own edges P = 0.007 (f = 0.21). Under the amended criterion the claim is not reproduced;
+    the effect found is the opposite of a place preference (Opto-DA mice''s positions on stimulation days closer to
+    those on other days than the controls''). The round-2 outcome (reproduced) rested on the earlier experiment-wide test (P
+    = 0.425) and was changed to not reproduced in round 3. Two pairs with an empty histogram are left out. Arena coordinates
+    have the same ranges in every lab group.'
+  deviations:
+  - The shared grid spans the 0.5 to 99.5 percentiles of all positions at syllable onsets.
+  - Other days are every non-stimulation 250-ms session of the target (-1, 0, 3, 4).
+- claim: fig3l-no-kinematic-effect
+  outcome: reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3l-no-kinematic-effect
+  notes: No bin of 2D, angular or height velocity or acceleration is significant in Opto-DA mice (Holm P 1.0 for
+    every variable; f 0.46 to 0.53). Variants without pre-onset subtraction (smallest Opto-DA Holm P 0.135) and
+    per mouse find none.
+  deviations:
+  - Ten five-syllable bins after onset; pre-onset value from the five syllables before; angular velocity as absolute
+    value.
+- claim: fig3m-long-stim-velocity
+  outcome: not_reproduced
+  notebook: optoda.ipynb
+  output: claim:fig3m-long-stim-velocity
+  notes: '36 3-s pulsed experiments of 3 Opto-DA mice and 24 of 2 controls. Opto-DA, Holm P 1.0 in every bin, f
+    0.43 to 0.55. Controls, smallest Holm P 0.372. Without pre-onset subtraction no bin is significant either. The
+    light followed the stimulated detections (first pulse 0 s after, a median of 75 pulses in the next 3 s, none
+    after catch detections); a median of 35 stimulation and 21.5 catch trials per experiment entered the test.'
+  deviations:
+  - As fig3l-no-kinematic-effect.
+- claim: fig4b-endo-da-influence-consistent
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within the author runs. It needs per mouse and syllable z-scored Fig. 2e and Fig. 2k curves (the
+    notebook computes them averaged over pairs) and a Bayesian regression with leave-two-out cross-validation. The
+    data are in the dandiset.
+- claim: fig4c-endo-da-predicts-learning
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4b-endo-da-influence-consistent, which was not run.
+- claim: fig4f-catch-dlight-predicts-learning
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4c-endo-da-predicts-learning, which was not run.
+- claim: fig4h-decoding-model
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within the author runs; it was set aside for claims with cheaper analyses. The DLS baseline data
+    it needs are in the dandiset.
+- claim: fig4h-additive-model-optoda
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4h-decoding-model, which was not run.
+- claim: fig4i-extra-da-matches-calibration
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4h-decoding-model and fig4h-additive-model-optoda, which were not run, and on fig3c-calibration,
+    whose open-loop data are not in the dandiset. The criterion's comparison distribution, evoked peaks of stimulated
+    trials in the 250-ms ChrimsonR stimulation experiments, is in the dandiset, so the main block is the models
+    not run.
+- claim: fig5-rl-model
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within the author runs; it was set aside for claims with cheaper analyses. The data it needs are
+    in the dandiset.
+inputs:
+- what: The names of the nine learner mice printed in the output of cell 78 of the paper's notebook "fig_3e, 3f,
+    3g, 3h, 4d, 4e, s9g, s9h-optoda learning.ipynb", read by optoda.ipynb only to report their overlap with the
+    learners found here (fig3e-learner-count).
+  source: https://github.com/dattalab/dopamine-reinforces-spontaneous-behavior at commit 14ed714c4f49be1f4728a080eb65c4ee42f74c23
+verifications:
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebooks (photometry.ipynb and optoda.ipynb) with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper's full text. The verifier read the archive's
+    asset list and per-asset metadata for the blocked claims and tested helpers on synthetic inputs (movement_onsets,
+    jsd). It had no attempt record.
+  results:
+  - claim: ed2a-syllable-repertoire
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) gives 36 syllables (37 +- 3.7), median 400 ms, mean 561 ms, all within tolerance. Reading
+      (b), in optoda, misses (467 and 651 ms), but the criterion needs only one reading. Reading (b) uses only the
+      Opto-DA files, not all open-field experiments as the criterion says (does not affect a conclusion).
+    response: No change of outcome. The deviation on reading (b) is stated in the record; reading (b) was not pooled
+      with the photometry experiments, as it does not decide the outcome. The DLS set now counts 235 experiments
+      and 677,935 durations after the session classification was corrected; the numbers are unchanged to the ms.
+  - claim: fig1e-velocity-timescales
+    agrees: true
+    outcome: partially_reproduced
+    reason: Transient rate at 1.96 z holds under both significance readings. Amplitude is never significantly positive
+      at bin sizes of 10 s or more and never changes sign, so one measure of two. The 20-s centred sliding z-score
+      could suppress the long-timescale positive amplitude correlation, and whether Fig. 1e had this window is
+      unchecked; the integer-bin variant is missing. Experiment-bin pairs skipped for zero s.d. still count in
+      cnt, which pulls the null toward 0.
+    response: Fixed the count (each mouse's null now divides by the experiments that entered each bin size; no pair
+      was skipped). Added the integer-bin variant (rate holds, amplitude does not) and a variant without the sliding
+      z-score (neither measure significantly positive at any bin size). The Methods give the 20-s window for all
+      dLight pre-processing; the notebook cites the passage. Outcome unchanged.
+  - claim: ed3c-keypoint-velocity
+    agrees: true
+    outcome: partially_reproduced
+    reason: 2D velocity r = -0.170 pooled and -0.169 per mouse, within -0.16 +- 0.016. Forelimb r = -0.026 / -0.027
+      rounds to -0.03, so it misses. It uses RANSAC with an intercept, where the criterion cites fig_s03 cell 15,
+      which fits without one, and the notebook does not state the deviation. Keypoint starting_time and series
+      lengths against the photometry timestamps were not checked.
+    response: Changed to reproduced. The criterion processes dLight as the fig_s03 notebook, whose fit has no intercept;
+      with it the values are -0.167 and -0.019 (P = 0.001 and 0.006), both within tolerance. The Methods' fit with
+      intercept is shown as the variant. The notebook now prints, per session, the photometry timestamps, the keypoint
+      starting_time, rate and frame count (all start at 0 s with equal lengths at 30 Hz).
+  - claim: fig1f-syllable-vs-movement-onset
+    agrees: false
+    outcome: partially_reproduced
+    reason: Reading (b) gives syllable > movement in 14/14 mice, P = 0.00012, which meets the criterion. Reading (a)
+      is significant the other way (P = 0.011). Reading (b) wins only because the movement-aligned averages are
+      deep dips in every mouse. movement_onsets multiplies the derivative by FS before cubing; on synthetic noise
+      this yields about 1,400 initiations per 30 min, the data about 700 per experiment, and these are not the Methods'
+      stillness-to-movement transitions.
+    response: Kept reproduced, with a revised assumption. The notebook now prints detections per minute and the speed
+      around them; the per-second detections (25 to 30 a minute) mostly start from movement, as the verifier found.
+      Detections preceded by relative stillness (speed rising from 12 to 27 mm/s to 55 to 107 mm/s) are adopted as
+      the Methods' events. With them reading (a), the code's notebook reading, gives syllable above movement in
+      13 of 14 mice (P = 0.00024), and reading (b) does not (P = 0.36); with all detections the readings reverse.
+      One reading meets the criterion under either definition; the outcome is marked as resting on the stillness
+      rule, and a question to the authors is recorded.
+  - claim: fig1f-dip-then-peak
+    agrees: true
+    outcome: reproduced
+    reason: Minimum -15.4 at 0 s, below the shuffle interval. Maximum 1.75 at +0.33 s, above it. Minimum comes first.
+    response: No change of outcome. With the corrected DLS set the minimum is -16.33 at 0 s and the maximum 1.67 at
+      +1.0 s, above the interval from +0.27 to +0.4 s and from +0.63 s.
+  - claim: fig1h-syllable-dlight-differs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 518 pairs and P <= 1e-38 under all four readings, but H = 274-289 against 209 +- 21. A clock or processing
+      problem in the reinforcement-photometry files was never ruled out; the alignment was checked once, pooled
+      over all 14 mice, with the best shift at -6 samples, and per-mouse syllable peaks split by group.
+    response: Added a per-mouse clock check over all baseline experiments of each mouse. The best label shift is -3
+      samples in 7 of 8 dLight+ChrimsonR mice, all 6 dLight-only mice and 6 of 8 DMS mice, so the groups do not
+      differ, and the clock ranges of the series are printed by group. Added quality control (b). Outcome unchanged
+      (H 281.50 to 300.77).
+  - claim: fig1j-weak-kinematic-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Held-out |r| = 0.074 and 0.018 under (a), 0.060 and 0.006 under (b); all are below 0.3. Five cross-validation
+      repeats instead of 100 and a raw-Pearson null are stated and do not matter for the |r| < 0.3 rule.
+    response: No change. Numbers updated with the corrected DLS set (0.089 and 0.021 under (a)).
+  - claim: fig1l-identity-not-decodable
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The data are present, so a subsampled random forest is feasible.
+    response: Kept blocked (too_large). A forest reduced in trees and training rows would fit in the time but would
+      lose the power that a claim of absence rests on, so it was not run as the claim's test; the record says so.
+  - claim: fig2a-food-reward-transients
+    agrees: true
+    outcome: blocked
+    reason: No session description mentions food or reward. The spontaneous half (reading b, all DLS baseline experiments)
+      is testable; the reward half is not.
+    response: Kept blocked (data_missing). The spontaneous half is now computed in photometry.ipynb (2.25 +- 0.69
+      z over 232,152 peaks) and given in the notes.
+  - claim: fig2b-dlight-usage-across-syllables
+    agrees: true
+    outcome: reproduced
+    reason: Held-out r = 0.178, shuffle P = 0.001, n = 703 pairs.
+    response: No change of outcome; with the corrected DLS set r = 0.195, P = 0.001, n = 719.
+  - claim: fig2i-dlight-entropy-across-syllables
+    agrees: true
+    outcome: reproduced
+    reason: Held-out r = 0.199, P = 0.001.
+    response: No change; r = 0.199, P = 0.001, n = 719.
+  - claim: fig2b-across-experiments
+    agrees: true
+    outcome: reproduced
+    reason: Held-out r = 0.197, P = 0.002. This uses 145 experiments where the criterion gives 379. The experiment
+      set is never reconciled; taking only the first ts_session_number per file can misclassify files that serve
+      as baseline for one target and post day for another, and quality-control reading (b) was never run.
+    response: Fixed the classification (38 dLight+ChrimsonR files are baseline for one target and post day for another;
+      they are now baseline files), which raises the code-reading set to 164 experiments (206 with the post days).
+      The sanity cell prints the counts at each step and quality control (b) (354 of 376 files pass; 157 DLS and
+      64 DMS baseline experiments, the latter the paper's count). Outcome unchanged (r = 0.189, P = 0.003).
+  - claim: fig2e-dlight-predicts-future-usage
+    agrees: true
+    outcome: reproduced
+    reason: One-sided P <= 0.002 at every n from 10 to 390. fig2e_table requires 390 following syllables for every
+      n, so segment 5 is empty and z is averaged over 4 of the 5 segments (does not affect a conclusion).
+    response: No change of outcome. The notebook now prints the index instances per segment and says that the last
+      segment is empty; the record states it.
+  - claim: fig2e-not-autocorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: At no n are both curves inside the shuffle band, so the reproduced rule fails. The autocorrelation turns
+      significantly negative (z about -4), which cannot explain a positive usage effect, so the not-reproduced rule
+      is not met either. The criterion does not cover this case; n >= 10 syllables cannot resolve the paper's few
+      hundred milliseconds.
+    response: No change.
+  - claim: fig2g-usage-crosscorrelation
+    agrees: false
+    outcome: not_reproduced
+    reason: Reading (a) gives P = 0.10. Reading (b) gives P = 0.039 (0.034-0.054 over seeds), which nominally meets
+      the partial rule, but that P is uncorrected for picking the peak among 31 lags, and its null is miscalibrated,
+      as permuting dLight across overlapping windows destroys the autocorrelation that the observed curve keeps.
+    response: Changed to not_reproduced. Added P against the shuffles' maximum over lags (0.093 and 0.221) and, for
+      reading (b), a circular-shift null that keeps the autocorrelation (P = 0.122 at the peak lag, 0.683 against
+      the maximum). The criterion's "peak correlation exceeds all shuffles" is read as comparing peaks, an assumption
+      recorded on the outcome.
+  - claim: fig2h-specific-to-syllable
+    agrees: true
+    outcome: not_reproduced
+    reason: Offsets -1 and +1 are also significant after Holm, with z = 4.3 and 5.2 against 6.7 at offset 0, so both
+      the reproduced and the partial rule fail. Each offset's window overlaps the offset-0 window, and the significance
+      at +-1 may be structural; the notebook shows no check of this.
+    response: Added the check. The neighbours' counts correlate with the offset-0 count at r = 0.10 to 0.13, and with
+      it regressed out their z stay near 5, so the overlap does not explain them. Outcome unchanged.
+  - claim: fig2k-dlight-predicts-sequence-variability
+    agrees: true
+    outcome: blocked
+    reason: Absent from both notebooks. It is not listed as blocked and was not attempted, although the data needed
+      are loaded.
+    response: Changed to reproduced. The claim is now tested in photometry.ipynb, with the details the claims file
+      leaves to the code taken from dlight_06 and fig_2k at commit 14ed714; the correlation is significantly positive
+      at n = 5 and 10 under both binnings (P = 0.001).
+  - claim: ed6b-encoding-model-average
+    agrees: true
+    outcome: blocked
+    reason: The notebook says "see the record", which I did not have. The data are present.
+    response: No change; the notes say the model was not run for time and that the data are in the dandiset.
+  - claim: ed6e-encoding-model-instantaneous
+    agrees: true
+    outcome: blocked
+    reason: As ed6b.
+    response: No change; as ed6b.
+  - claim: ed7-dms-fewer-transients
+    agrees: true
+    outcome: reproduced
+    reason: U = 100 (97 +- 9.7), DMS lower, P = 0.0016, Holm-corrected 0.0065.
+    response: No change of outcome; U = 101, P = 0.0012 (Holm 0.0047), and U = 107 under quality control (b).
+  - claim: ed7b-dms-transient-shape
+    agrees: true
+    outcome: not_reproduced
+    reason: Time-to-peak U = 32 against 4, and its Holm P = 0.058, so it is not significant. Width U = 20 against
+      16 +- 1.6. The significance pattern fails.
+    response: No change of outcome. With the corrected DLS set time to peak and width are significant after Holm,
+      but area is too (Holm 0.0385), so the pattern still fails.
+  - claim: ed7d-dms-smaller-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: Movement initiations U = 51, P = 0.76; syllable transitions U = 77, P = 0.17. The paper has U = 110 and
+      109. The movement half rests on movement_onsets, whose detections are not stillness-to-movement transitions.
+    response: No change of outcome. The movement half is now also computed for initiations from stillness (U = 42,
+      P = 0.365); the syllable half fails either way (U = 78, P = 0.145).
+  - claim: ed7-dms-no-usage-prediction
+    agrees: true
+    outcome: blocked
+    reason: '"See the record". The data are present.'
+    response: No change.
+  - claim: ed7e-velocity-both-areas
+    agrees: true
+    outcome: blocked
+    reason: As above.
+    response: No change.
+  - claim: fig3c-calibration
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive. Only 8 dlight-chrimson subjects are present; no two calibration mice and no
+      open-loop session descriptions exist.
+    response: No change; the notes add the subject count.
+  - claim: fig3e-optoda-learning
+    agrees: true
+    outcome: not_reproduced
+    reason: U = 152, f = 0.63, P = 0.11. The Monday-baseline variant the criterion names was not run.
+    response: Added the Monday-baseline variant; it changes no pair's baseline, so the result is the same. No change
+      of outcome.
+  - claim: fig3f-cumulative-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: U = 160, P = 0.062.
+    response: No change; the Monday variant gives the same.
+  - claim: fig3e-learner-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 7 learners, against 9 +- 0.9. The overlap with the paper's nine learners was not reported.
+    response: Added the overlap, read from the paper's notebook output at commit 14ed714 (inputs). All 7 are among
+      its nine; the other two have mean changes of 48.5 and 19.7 against the control maximum of 60.5. No change
+      of outcome.
+  - claim: fig3h-stim-post-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Learners r = 0.868 (within tolerance), P = 0.031, but with n = 7. Controls are also significant (P = 0.025).
+    response: No change.
+  - claim: fig3i-optoda-entropy
+    agrees: true
+    outcome: reproduced
+    reason: Opto-DA first bin Holm P = 0.017 with higher entropy after stimulation; no control bin is significant.
+      Stimulation trials outnumber catch trials 3:1, so the plug-in entropy has a sample-size bias; controls also
+      show stim > catch in every bin (f 0.51-0.58). The Opto-DA first bin is still significant.
+    response: Changed to not_reproduced. Following the point on sample-size bias, the test was repeated with stimulation
+      trials drawn down to the catch count in each experiment; the Opto-DA effect disappears (first bin f = 0.46,
+      Holm P = 0.86; Holm P 0.97 to 1.0 under the four further seeds). The matched comparison is adopted as an
+      assumption and the unmatched one is shown.
+  - claim: fig3jk-post-predictable
+    agrees: false
+    outcome: not_reproduced
+    reason: Main reading (post day), the top-rank 95% bootstrap intervals include 0 (inbound -0.05 to 0.77, outbound
+      -0.13 to 0.55). Only the stimulation-day variant meets the rule.
+    response: Changed to not_reproduced. The criterion has no partial case and its variant does not decide; the
+      intervals include 0 under all five seeds, now printed.
+  - claim: ed10-target-specific
+    agrees: true
+    outcome: blocked
+    reason: '"See the record". All the inputs are already loaded in optoda.ipynb.'
+    response: No change; not run in the time. The notes now say what the fig_s10a analysis needs that was not rebuilt.
+  - claim: ed10d-optoda-vigour
+    agrees: true
+    outcome: blocked
+    reason: 20 velocity-modulation stimulation sessions state a direction ("-up" 12, "-down" 8, mice 5891-5894).
+      The 34 others do not, so the claim is testable in part.
+    response: Kept blocked (metadata_insufficient). The sanity cell now prints stimulations per file; under the
+      criterion's rule of at least 50 stimulations only 4 up and 2 down experiments with a stated direction remain,
+      too few for the test.
+  - claim: ed10e-no-duration-change
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.94 and 0.56. This rests on 7 learners.
+    response: No change.
+  - claim: ed10i-no-place-preference
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under the criterion's two tests, by pair (P = 0.31) and by mouse (P = 0.52), it is reproduced. The
+      notebook's experiment-wide test, closer to the paper's "experiment-wide" statistic, gives P = 0.005, with
+      Opto-DA JSD lower than controls (f = 0.20). The claims file reads the experiment-wide statistic as per-mouse
+      means of the target-onset JSD, a misreading; the experiment-wide result suggests a rig or coordinate difference
+      between groups that was never checked. jsd returns a negative value, not NaN, when one histogram is empty.
+    response: Kept reproduced, as the criterion's tests decide, and recorded the disagreement. Added the misreading
+      as a question for a reader (questions/markowitz-2023.yaml). Fixed jsd to return NaN for an empty histogram
+      (2 pairs left out; 192 pairs remain, P = 0.174 and 0.425). Added arena coordinate ranges by lab group, which
+      are the same in every group.
+  - claim: fig3l-no-kinematic-effect
+    agrees: true
+    outcome: reproduced
+    reason: No Opto-DA bin is significant for any variable, and none in the per-mouse variant either.
+    response: No change.
+  - claim: fig3m-long-stim-velocity
+    agrees: true
+    outcome: not_reproduced
+    reason: Every Opto-DA bin has Holm P = 1.0, with f from 0.43 to 0.55. Stimulated and catch trial counts per arm
+      in the 3-s files, and confirmation that light followed stimulated detections there, were not shown.
+    response: Added both. The first pulse comes 0 s after a stimulated detection, with 75 pulses in the next 3 s
+      and none after catch detections; a median of 35 stimulation and 21.5 catch trials per experiment. No change
+      of outcome.
+  - claim: fig4b-endo-da-influence-consistent
+    agrees: true
+    outcome: blocked
+    reason: '"See the record". The ChrimsonR baseline and stimulation files are present.'
+    response: No change; the notes now say what was not run.
+  - claim: fig4c-endo-da-predicts-learning
+    agrees: true
+    outcome: blocked
+    reason: As fig4b.
+    response: No change.
+  - claim: fig4f-catch-dlight-predicts-learning
+    agrees: true
+    outcome: blocked
+    reason: As fig4b.
+    response: No change.
+  - claim: fig4h-decoding-model
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The DLS baseline data are present.
+    response: No change.
+  - claim: fig4h-additive-model-optoda
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The data are present.
+    response: No change.
+  - claim: fig4i-extra-da-matches-calibration
+    agrees: true
+    outcome: blocked
+    reason: Blocked as other, not data_missing. The criterion's comparison distribution is the evoked peaks of stimulated
+      trials in the 250-ms ChrimsonR stimulation experiments, which are in the archive. The calibration mice are
+      not needed.
+    response: Changed blocked_by to other; the notes say the main block is the decoding models not run.
+  - claim: fig5-rl-model
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The data are present.
+    response: No change.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebooks of the round-1 revision (photometry.ipynb and optoda.ipynb, with conclusions
+    and summaries), the helper module, the attempt record, the claims file, the round-1 report and the paper. Besides
+    the outcomes it reported statements the numbers do not support (the 166 experiments of fig2b-across, the fig4i row
+    of photometry cell 0, the count of DLS files without photometry in the photometry summary, the README runtime and
+    its list of blocked claims, and the floor of the fig2h check); each is corrected in this revision.
+  results:
+  - claim: ed2a-syllable-repertoire
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change of outcome. With the two excitation sessions removed from the baseline sets, reading (a) counts
+      233 experiments and 671,828 durations; the values are unchanged.
+  - claim: fig1e-velocity-timescales
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change; the numbers are unchanged after the experiment-set correction.
+  - claim: ed3c-keypoint-velocity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with a note. This follows the criterion ("processed as in the fig_s03 notebook"), but the claims
+      file's header makes the Methods' fit with intercept the main reading and the no-intercept fit a variant; under
+      that rule the forelimb r of -0.026 misses. The outcome rests on this choice and should be marked assumed. The header
+      rule and the claim's criterion name different fits, and the two fits give different outcomes (claims-file inconsistency).
+    response: 'Marked assumed: true, with a deviation saying the outcome rests on the criterion''s fig_s03 processing.
+      The inconsistency within the claims file is added to questions/markowitz-2023.yaml for a reader; the claim is unchanged.'
+  - claim: fig1f-syllable-vs-movement-onset
+    agrees: false
+    outcome: partially_reproduced
+    reason: Would be partially reproduced. Reading (a) is z-scored against shuffles and that z grows with the square
+      root of the number of events; cell 15 compares 23,122 to 43,107 syllable onsets per mouse with 696 to 1,553 initiations
+      from stillness, about a 30-fold difference, so 2.25 against 1.17 can come from event count alone. With all detections
+      reading (a) favours movement (P = 0.004). Under the criterion's own definition (all detections) reading (b) meets
+      the rule and reading (a) is significant in the opposite direction. The 25th-percentile stillness rule is not a
+      reasonable basis for the outcome without a count-matched comparison. Cell 16's statement that the outcome rests
+      on the stillness rule does not separate the definition from the difference in event count.
+    response: 'Kept reproduced, as round 2 may not change it, and proposed partially_reproduced. Added the count-matched
+      comparison: with syllable onsets drawn down to each mouse''s initiation count under five seeds, reading (a) no
+      longer favours syllables over initiations from stillness (5 of 14, P = 0.068 under the claim''s seed; 2 to 4 of
+      14, P 0.0023 to 0.013, favouring movement under the others), reading (b) shows no difference, and against all detections
+      (b) favours syllables and (a) favours movement in 14 of 14 mice (P = 0.00012). The conclusion cell is rewritten;
+      the stillness rule is now a variant.'
+  - claim: fig1f-dip-then-peak
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The criterion is met, but the maximum (1.67) falls at +1.0 s, the edge of the window the claims file
+      assumed.
+    response: No change of outcome. The notes and the conclusion now say the maximum is at the window's edge, where the
+      average is still rising, and that the rise above the interval at +0.27 to +0.4 s is the peak the criterion needs;
+      in 5 of 8 dLight+ChrimsonR mice the syllable-onset maximum is at 0.97 to 1.0 s.
+  - claim: fig1h-syllable-dlight-differs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change; H 280.39 to 300.77 after the experiment-set correction.
+  - claim: fig1j-weak-kinematic-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; fig1j's bound is a stated and reasonable assumption.
+    response: No change; numbers updated (0.090 and 0.025 under reading (a)).
+  - claim: fig1l-identity-not-decodable
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the too_large block is justified as stated.
+    response: No change.
+  - claim: fig2a-food-reward-transients
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is justified as stated.
+    response: No change.
+  - claim: fig2b-dlight-usage-across-syllables
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every Ic analysis may include 2 stimulation sessions (2 of 166 experiments), unlikely to change an
+      outcome but unverified.
+    response: 'Fixed: the two 2-s excitation sessions with session numbers 0 and 4 entered Ic; Ic is now built from the
+      code-reading set (164 experiments) and checked against it. r = 0.194, P = 0.001; no change of outcome.'
+  - claim: fig2i-dlight-entropy-across-syllables
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. As fig2b, the Ic set may include 2 stimulation sessions.
+    response: Fixed as fig2b; r = 0.197, P = 0.001; no change of outcome.
+  - claim: fig2b-across-experiments
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The conclusion and notes say "Over 166 experiments", where the code-reading set is 164 and the deviation
+      says this set was used; an excitation session with post-day session numbers enters Ic, which is probably where
+      the 2 extra come from.
+    response: 'Confirmed and fixed: the 2 extra were the two 2-s excitation sessions (session numbers 0 and 4). Now 164
+      experiments, 335 pairs, r = 0.186, P = 0.003; no change of outcome.'
+  - claim: fig2e-dlight-predicts-future-usage
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. As fig2b, the Ic set may include 2 stimulation sessions.
+    response: Fixed as fig2b; z 7.00 at n = 10 to 2.07 at n = 390, P = 0.001 at every n; no change.
+  - claim: fig2e-not-autocorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The criterion has no partial case, so this outcome is a judgment and should carry assumed: true.
+      The criterion has no case for an autocorrelation that turns significantly negative, and n >= 10 syllables cannot
+      resolve "a few hundred milliseconds" (criterion gap).'
+    response: 'Marked assumed: true with a deviation saying the outcome is a judgment between the criterion''s two cases.
+      The criterion gap is added to questions/markowitz-2023.yaml for a reader. Numbers updated after the experiment-set
+      correction (velocity inside the band at n = 370 and 390 only).'
+  - claim: fig2g-usage-crosscorrelation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change of outcome. After the experiment-set correction P at the peak lag is 0.039 (a) and 0.024 (b),
+      and 0.194 and 0.304 against the shuffles' maximum over lags.
+  - claim: fig2h-specific-to-syllable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The conclusion's "The overlap of the windows does not explain them" is supported by the z values
+      (4.78 and 5.07), but with 200 shuffles the neighbours' Holm P is 0.05, the floor of that test (minor).
+    response: No change of outcome. The conclusion and notes now say that the Holm P of 0.05 is the smallest that check
+      can give with 200 shuffles (z 4.87 and 5.07 after the correction).
+  - claim: fig2k-dlight-predicts-sequence-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees because the criterion says so. The raw correlations are negative (-0.36 and -0.46 under reading (a))
+      and turn positive only against the destination-permuting null. The Methods z-score against "Pearson coefficients
+      estimated after shuffling dLight peak values"; the criterion uses the code's null, against its own rule that the
+      Methods give the main reading, and neither null was run as a variant. With raw r negative, the Methods' null could
+      reverse the outcome (claims-file misreading).
+    response: Added the Methods' null as a variant (dLight values permuted among a mouse's instances, 200 shuffles, n
+      = 5 and 10). Reading (a) stays significantly positive (P = 0.025 and 0.005); reading (b) turns significantly negative.
+      The misreading is added to questions/markowitz-2023.yaml for a reader; outcome unchanged.
+  - claim: ed6b-encoding-model-average
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: ed6e-encoding-model-instantaneous
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: ed7-dms-fewer-transients
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: ed7b-dms-transient-shape
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: ed7d-dms-smaller-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; ed7d's movement definition is a stated and reasonable assumption, and its syllable half fails either
+      way. The within-DLS group split (syllable-onset peaks of -4.28 to 2.73 in dLight+ChrimsonR mice against 2.73 to
+      5.02 in dLight-only mice) is not a clock problem but is unexplained, and bears on the syllable half.
+    response: 'No change of outcome. Added the group split: the dLight-only mice''s reading (b) peaks are higher (U =
+      48 of 48, P = 0.001) and their maxima come at 0.30 to 0.33 s against 0.97 to 1.0 s in 5 of 8 dLight+ChrimsonR mice.
+      With the dLight-only mice alone against DMS the syllable half holds (P = 0.003) but the movement half is significant
+      in the opposite direction, so the claim is still not reproduced. The difference is recorded as a finding; its cause
+      is not found.'
+  - claim: ed7-dms-no-usage-prediction
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: ed7e-velocity-both-areas
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig3c-calibration
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is justified as stated. Photometry cell 0 lists fig4i as data_missing where
+      the record has blocked_by other.
+    response: No change; cell 0 now lists fig4i as blocked (other).
+  - claim: fig3e-optoda-learning
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: fig3f-cumulative-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: fig3e-learner-count
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: fig3h-stim-post-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: fig3i-optoda-entropy
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The trial-matched assumption is stated and reasonable. Comparing stimulation minus catch between
+      the two arms, which share the same 3:1 imbalance, would settle it with more power than discarding two-thirds of
+      the stimulation trials.
+    response: 'Added the between-arm comparison: the per-experiment stimulation minus catch difference does not differ
+      between Opto-DA and control experiments in any bin, with all trials (Holm P 0.16 to 1.0) or matched counts (Holm
+      P 1.0). No change of outcome.'
+  - claim: fig3jk-post-predictable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: ed10-target-specific
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: ed10d-optoda-vigour
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees only in part. The direction of stimulation can be recovered from the data: in up sessions the stimulated
+      instances sit above the target''s 75th velocity percentile, and in down sessions below its 25th. The five dls-ai32jr
+      mice, whose direction is unstated, may be the paper''s five. The block is not settled until this is tried.'
+    response: 'Kept blocked, as round 2 may not change it, and proposed not_reproduced. Tried in optoda.ipynb: the detection
+      times of the velocity-modulation files are 2700.03 s off the syllable clock (recorded as a finding); once shifted,
+      the stimulated instances'' velocity gives the direction, agreeing with the stated one in 16 of 17 files. The criterion''s
+      test then runs on 11 up and 6 down experiments of 5 mice, U = 47, P = 0.180.'
+  - claim: ed10e-no-duration-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: ed10i-no-place-preference
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees because the criterion says so; correct on the criterion''s two tests. The misreading from round 1
+      still stands: the criterion reads the paper''s experiment-wide statistic (n = 32 mice) as target-onset JSD per
+      mouse, and the notebook''s experiment-wide test gives P = 0.005, with Opto-DA lower than controls.'
+    response: No change; the misreading is in questions/markowitz-2023.yaml since round 1, for a reader.
+  - claim: fig3l-no-kinematic-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: fig3m-long-stim-velocity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows the criterion and the printed numbers.
+    response: No change.
+  - claim: fig4b-endo-da-influence-consistent
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig4c-endo-da-predicts-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig4f-catch-dlight-predicts-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig4h-decoding-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig4h-additive-model-optoda
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig4i-extra-da-matches-calibration
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+  - claim: fig5-rl-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the block is justified as stated.
+    response: No change.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The four proposed changes of outcome of the round-2 revision and the analyses behind them (photometry.ipynb
+    cells 15, 16, 62 and 63; optoda.ipynb cells 34, 35 and 37 to 39), with the attempt record, the claims file and
+    the reader's answers. Nothing else was reviewed.
+  results:
+  - claim: ed3c-keypoint-velocity
+    agrees: true
+    outcome: partially_reproduced
+    reason: The amended criterion makes the Methods' RANSAC fit with slope and bias the main reading, and process_dlight(intercept=True)
+      in markowitz.py does this. 2D velocity gives r = -0.170 pooled and -0.169 per mouse, inside -0.16 +- 0.016, with
+      P = 0.001 under all five seeds. Forelimb against partialled dLight gives -0.026 pooled and -0.027 per mouse. Both
+      are outside -0.02 +- 0.002 and round to -0.03, so the criterion's rounding allowance does not apply. One of two
+      expected values is met. The fit was set by the reader's answer, not picked by the author, and the no-intercept
+      variant (-0.167 and -0.019) is shown as a variant. The keypoint and photometry series have equal lengths, start
+      at 0 s and run at 30 Hz in all 5 sessions. QC correlations are 0.26 to 0.37.
+    response: Changed to partially_reproduced and removed proposed. The notebook's summary, the README and the notes
+      now give this outcome.
+  - claim: fig1f-syllable-vs-movement-onset
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees, with a note. The count-matched check confirms the round-2 concern. Against initiations from stillness,
+      reading (a) loses its syllable advantage once counts are matched: 5/14 mice, P = 0.068 under the claim''s seed,
+      and 2-4/14 favouring movement under the other four seeds. Against all detections, which is the criterion''s definition,
+      reading (b) favours syllables in 14/14 mice under all five seeds. Reading (a) favours movement in 0/14, P = 0.00012.
+      Read literally, the criterion ("Reproduced when, under a reading, ...") is met by reading (b) and would give reproduced.
+      It has no rule for readings that are significant in opposite directions, which is a gap in the claims file. I
+      still judge partial, as in rounds 1 and 2. Reading (b) is met mainly because the movement averages dip deeply
+      (median -5.45), and the syllable peak is about zero in the 8 dLight+ChrimsonR mice (median -0.10). The outcome
+      should keep assumed: true, and it does.'
+    response: Changed to partially_reproduced and removed proposed; assumed stays true. The gap in the criterion (no
+      rule for readings significant in opposite directions) is added to questions/markowitz-2023.yaml for a reader;
+      the claim is unchanged.
+  - claim: ed10d-optoda-vigour
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The clock shift comes from the data and is independent of the outcome. At -2700.03 s, 99.4% of detections
+      fall on target instances, against 13.4% for the best shift more than 2 s away and 1.0% unshifted. The light onsets
+      match the stimulated detections in 51/51 files. The direction read from velocity agrees with the stated direction
+      in 16/17 files, and the one miss had a single stimulation. The signal is modest: stimulated instances fall above
+      the 75th or below the 25th percentile in 0.24-0.67 of cases, but the files with a stated direction look the same.
+      The measure, binning and inclusion rule (cell 38) follow the criterion. Up against down gives U = 47 of 66, P =
+      0.180, so P >= 0.05 and the result is not reproduced. Two caveats. First, 12 of the 17 included experiments rest
+      on an inferred direction. Second, the baseline for the usage rule is an assumption, though dropping the rule gives
+      P = 0.211. The outcome should therefore carry assumed: true, which it currently lacks, and blocked_by should be
+      removed when the outcome changes.'
+    response: Changed to not_reproduced, removed blocked_by and proposed, and set assumed to true. The notebook's
+      ed10d section, its summary and the README no longer call the claim blocked.
+  - claim: ed10i-no-place-preference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The amended criterion makes the main experiment-wide reading one JSD per mouse over centroids at all syllable
+      onsets. That test gives 20 vs 12 mice, U = 48, f = 0.20, P = 0.005. The criterion says "not reproduced when either
+      is below", so it is applied as written. The test choice comes from the reader''s answer. All variants agree: own
+      edges P = 0.025, all frames P = 0.003, all frames with own edges P = 0.007. A JSD sampling bias from different
+      onset counts would be about ten times smaller with frames (>= 590,000 per mouse), so it does not explain the result.
+      The target-performance test still passes (P = 0.174 by pair, 0.425 by mouse). The difference runs opposite to
+      a place preference: Opto-DA divergences are lower than the controls''. Its cause is not identified. Arena coordinate
+      ranges match across lab groups, but session and onset counts were not compared between arms.'
+    response: Changed to not_reproduced and removed proposed. The notebook's conclusion and summary say the cause of
+      the difference is not identified and that session and onset counts were not compared between arms.
+findings:
+- kind: data_missing
+  about: data
+  statement: The food-reward photometry experiments (Methods, 6 mice), the open-loop dLight calibration experiments
+    (2 dLight+ChrimsonR mice) and the dLight+ChrimsonR closed-loop sessions with 2-s and 3-s stimulation are not
+    in the dandiset; only two 2-s excitation sessions of the dLight+ChrimsonR mice are. The release notes of 0.261113.1911
+    state the first and last are missing.
+- kind: other
+  about: data
+  statement: The dandiset holds 10 DMS mice where the paper reports 8; dms-dlight-7 and dms-dlight-9 have no photometry.
+    Of the photometry session files, 92 of 167 DMS and 22 of 97 dLight-only DLS files, and 10 of 236 dLight+ChrimsonR
+    files, have behaviour but no photometry series, without a note saying why. dls-dlight-6 and dls-dlight-8 have
+    no photometry, consistent with the two mice the paper excluded.
+- kind: selection_undocumented
+  about: data
+  statement: The DLS photometry experiments without stimulation number 164 (dLight-only mice and the dLight+ChrimsonR
+    files that are a baseline day of some target) or 204 with the pure post-stimulation days, against 216 in Fig.
+    1b and 378 baseline experiments in the Methods. The DMS experiments with photometry number 75 under the Methods'
+    quality control and 64 under the code's rule, which matches the paper. Which files form the paper's DLS sets
+    is not recorded. 38 dLight+ChrimsonR files are the baseline day of one target and the post day of another (two
+    rows of their TargetSessions table), and two 2-s excitation sessions carry session numbers 0 and 4, those of
+    a baseline and a post day.
+- kind: metadata_error
+  about: data
+  statement: The OptogeneticSeries description says onsets are recorded as 1 and offsets as 0, but the onset values
+    are the power, 0.01 W.
+- kind: other
+  about: data
+  statement: Over the stimulation files 70.7% of target detections are stimulated, where the Methods give 75%.
+- kind: other
+  about: data
+  statement: One dLight+ChrimsonR session of dlight-chrimson-6 has a dF/F of up to 10,804% and a dLight-reference
+    correlation of 0.998, and is not marked excluded in its TargetSessions table; it fails the Methods' quality
+    control. One dls-dlight-7 session has a raw dF/F of up to 228 (22,798%); it passes the Methods' rule and fails
+    the code's.
+- kind: metadata_insufficient
+  about: data
+  statement: The keypoint files give the keypoint reference frame as 'TBD', hold raw fluorescence without timestamps
+    linking it to the keypoints other than a shared start at 0 s and equal lengths at 30 Hz, and their sessions last
+    25 min.
+- kind: metadata_insufficient
+  about: data
+  statement: The velocity-modulation files do not record whether stimulation targeted the fastest or the slowest
+    quartile of the target's velocity, except in the session descriptions of mice 5891 to 5894 ('Stim session -up',
+    '-down'); the five dls-ai32jr mice's 50 files and the remaining files of the other four mice do not say. The
+    dandiset has 9 mice with such files, the paper 5. The direction can be read from the velocities of the stimulated
+    instances once their detection times are corrected (next finding); this agrees with the stated direction in
+    16 of 17 files.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. Movement initiations (Methods, Movement initiation analyses) are peaks of
+    the cubed derivative of the smoothed z-scored speed with height 1. Taking the derivative per frame gives no
+    peak above 1 in these data; per second gives 25 to 30 a minute, mostly during movement. Which units were used,
+    and were the events restricted to starts from stillness, as the Methods' description says? This attempt used
+    per second and kept detections preceded by speed below the experiment's 25th percentile.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. For Fig. 1f, what quantity is compared between syllable onsets and movement
+    initiations, and were the event counts matched? Syllable onsets outnumber initiations about 4 to 1 (all detections)
+    or 30 to 1 (from stillness), and the shuffle-normalised z grows with the count. With counts matched, the peak
+    of the shuffle-normalised average from 0 to 0.3 s favours syllable onsets over all detections in 14 of 14 mice,
+    while the mean absolute z of 1-Hz high-passed snippets from -1 to +1 s, as the fig_1f notebook computes, favours
+    movement initiations in 14 of 14.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. For Fig. 3i, is the post-onset transition entropy computed per trial or pooled
+    over a condition's trials, and are stimulation and catch trials matched in number? Stimulation trials are about
+    three times as many as catch trials; pooled, the Opto-DA effect is significant, and with stimulation trials drawn
+    down to the catch count it is not.
+- kind: metadata_error
+  about: data
+  statement: In the velocity-modulation files the TargetDetections times and the OptogeneticSeries light onsets
+    are 2700.03 s later than the clock of the syllable labels and the other behavioural series. 2,845 of 3,423
+    detections and 1,901 of 2,479 light onsets fall after the last syllable onset of their file, and 1.0% of detections
+    fall on an instance of the target syllable; shifted by -2700.03 s, 99.4% do. In the reinforcement files the
+    detections fall on target instances without a shift (median 99.7%).
+- kind: other
+  about: data
+  statement: The syllable-onset dLight averages differ between the two DLS groups. The peak of the shuffle-normalised
+    average from 0 to 0.3 s has a median of 3.83 in the 6 dLight-only mice and -0.10 in the 8 dLight+ChrimsonR mice
+    (reinforcement-photometry files; U = 48 of 48, P = 0.001), and the average reaches its maximum within 0 to +1
+    s at 0.30 to 0.33 s in every dLight-only mouse but at 0.97 to 1.0 s in 5 of the 8 dLight+ChrimsonR mice. A label
+    shift check gives the same best shift (-3 samples) in both groups, so a clock offset does not explain it, and
+    the files do not say what else differs.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. For Extended Data Fig. 10d, which experiments form the baseline of the inclusion
+    rule ("separate recording experiments with no stimulation"), and how was the direction of each velocity-modulation
+    experiment recorded? This attempt read the direction from the stimulated instances' velocities where the files
+    do not state it, and took as baseline the mouse's velocity-modulation files without stimulation; with these
+    choices up does not exceed down significantly (11 up and 6 down experiments, P = 0.180).
+- kind: other
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: The re-referenced, z-scored dLight trace that the paper's photometry analyses use is not stored, nor the
+    fit of the reference behind it. The 376 files with a dLight dF/F series hold the dLight and reference dF/F, the
+    smoothed references and, in 363, the raw photometry, so the trace has to be recomputed from the Methods.
+reconciliation:
+  earlier: markowitz-2023-01
+  date: '2026-11-20'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: Version 0.261113.1911 adds a TargetDetections table with a stimulated column. Of the 604 stimulation files
+      that hold it, 601 have catch detections, 21740 of 77405 detections in all (earlier_findings.ipynb, finding 1).
+  - finding: 2
+    status: fixed
+    note: Every mouse's files now state a genotype (DAT-IRES-Cre::Ai32 for the Opto-DA mice, DAT-IRES-Cre for the
+      controls and dLight+ChrimsonR mice, wild type C57BL/6J for the dLight-only mice), and the subject description
+      names the opsin or its absence. The one snc-eyfp mouse (3155) says its genotype is not given in the source.
+  - finding: 3
+    status: fixed
+    note: All 1934 mouse files other than the 5 keypoint sessions hold a TargetSessions table with session_number and
+      experiment_type, and the 5 stimulated files described as recording sessions are numbered 1 or 2 there. 23
+      files without light pulses also carry a stimulation number (10 dLight+ChrimsonR habituation files, 7
+      velocity-modulation files and 6 reinforcement files that are a baseline day of another target).
+  - finding: 4
+    status: fixed
+    note: The 1434 files of the Ai32 and no-opsin control mice now state 470 nm and a 470-nm light source; only the
+      236 dLight+ChrimsonR files state 635 nm and the Opto Engine MRL-III-635.
+  - finding: 5
+    status: fixed
+    note: The 23 dLight-only mice (269 files) are described as C57BL/6J, wild type, with no opsin, and none of their
+      files names Ai32.
+  - finding: 6
+    status: fixed
+    note: No offline (1840 files) or online (1934 files) syllable series of this version has a non-ascending step,
+      and every one has a median interval of 0.03337 s.
+  - finding: 7
+    status: fixed
+    note: None of the 36 files of mouse 3155 has repeated or non-ascending syllable timestamps. Two of them hold 53822
+      and 53862 rows, the numbers of repeats the earlier attempt counted, which fits the duplicate rows having been
+      removed.
+  - finding: 8
+    status: fixed
+    note: All 236 dLight+ChrimsonR files hold offline and online syllable series of 35545 to 53902 rows, and no file
+      of the dandiset has an empty one.
+  - finding: 9
+    status: still_present
+    now: 1
+    note: The new attempt's finding 1 reports the dLight+ChrimsonR closed-loop sessions with 2-s and 3-s stimulation
+      missing (two 2-s excitation sessions are present), and its finding 3 counts 164 or 204 DLS experiments without
+      stimulation against 216 in Fig. 1b and 378 in the Methods.
+  - finding: 10
+    status: still_present
+    now: 1
+    note: The new attempt's finding 1 reports the food-reward photometry experiments missing, as the release notes of
+      0.261113.1911 also say.
+  - finding: 11
+    status: still_present
+    now: 2
+    note: The new attempt's finding 2 reports the behaviour-only photometry files (92 DMS, 22 dLight-only DLS and 10
+      dLight+ChrimsonR files, all files of dls-dlight-6, dls-dlight-8, dms-dlight-7 and dms-dlight-9) with no note
+      saying why, and its finding 6 a session that fails quality control and is not marked excluded.
+  - finding: 12
+    status: still_present
+    now: 15
+    note: The 376 files with a dLight dF/F series hold the dLight and reference dF/F, the smoothed references and, in
+      363, the raw photometry, and no re-referenced or z-scored trace or fit (earlier_findings.ipynb, finding 12).
+  outcomes:
+  - claim: fig1l-identity-not-decodable
+    earlier: reproduced
+    cause: claims_changed
+    note: The earlier criterion, written by that attempt's author, used a 100-tree forest and called identity not
+      decodable below twice chance (0.0541), which 0.0271 and 0.0323 met. The new criterion asks for the paper's
+      forest of 1,000 trees and 100 label shuffles, which this attempt estimated at about 83 h and 238 h and blocked
+      as too_large without running.
+    confidence: high
+  - claim: fig2e-dlight-predicts-future-usage
+    earlier: partially_reproduced
+    cause: claims_changed
+    note: The earlier criterion used five equal 360-s segments, r per experiment and syllable, and raw r against
+      shuffles, and failed at n = 110 to 170 (P = 0.09, 0.15, 0.18 and 0.05). The new criterion takes the paper's
+      segments, pools a mouse's experiments and z-scores r against shuffles per segment, and is significant at every
+      n from 10 to 390 (z 7.00 at n = 10, 2.25 at 170).
+    confidence: medium
+  - claim: ed7-dms-no-usage-prediction
+    earlier: not_reproduced
+    cause: claims_changed
+    note: The earlier criterion applied the Fig. 2e lagged test to DMS, which was significant at 9 of 10 values of n.
+      The new criterion is the encoding-model comparison of Extended Data Fig. 7e and depends on
+      ed6b-encoding-model-average, which this attempt did not run, so it is blocked with it.
+    confidence: high
+  - claim: fig3e-optoda-learning
+    earlier: reproduced
+    cause: claims_changed
+    note: The earlier criterion took the latest Monday baseline day up to five days before stimulation, as the paper's
+      code does (U = 198, P = 0.0013); the new one takes the most recent previous baseline day, with the Monday rule
+      as a variant (U = 152, P = 0.110). The new attempt's Monday variant (optoda.ipynb, cell 4, target_table) looks
+      for a Monday only among the target's own baseline rows, so it changed none of the 191 baselines and does not
+      test the code's rule.
+    confidence: high
+  - claim: fig3f-cumulative-counts
+    earlier: reproduced
+    cause: claims_changed
+    note: The same change of baseline day as for fig3e-optoda-learning. With the Monday baseline the earlier attempt
+      found U = 182, P = 0.0083 (control median -2.3); with the day before, this attempt found U = 160, P = 0.062
+      (control median 23.2).
+    confidence: high
+  - claim: fig3h-stim-post-correlation
+    earlier: reproduced
+    cause: claims_changed
+    note: Both attempts find the learners correlated (r = 0.891 and 0.868, n = 7) and the controls correlated too (r =
+      0.591, P = 0.017 and r = 0.633, P = 0.025, where the paper reports P = 0.082). The new criterion adds that the
+      controls must not be significant, so the same result is partially reproduced under it.
+    supports: partially_reproduced
+    confidence: high
+  - claim: fig3i-optoda-entropy
+    earlier: blocked
+    cause: dataset_changed
+    note: Version 0.260528.0858 did not mark catch trials, so the earlier attempt could not run the test; 0.261113.1911
+      marks them in TargetDetections, and this attempt ran it on 377 experiments. Its outcome rests on an assumption,
+      stimulation trials drawn down to the catch count (Opto-DA first bin Holm P = 0.86); with all trials the Opto-DA
+      first bin has Holm P = 0.017.
+    confidence: high
+  - claim: fig3l-no-kinematic-effect
+    earlier: blocked
+    cause: dataset_changed
+    note: Without catch trials in 0.260528.0858 the earlier attempt used substitute ones, which differed from
+      stimulation trials in 9 of 12 no-opsin controls, and blocked the claim. With the catch trials of 0.261113.1911
+      this attempt finds no Opto-DA bin significant for any variable (Holm P 1.0, f 0.46 to 0.53).
+    supports: reproduced
+    confidence: high
+  - claim: fig3m-long-stim-velocity
+    earlier: blocked
+    cause: dataset_changed
+    note: As for fig3l-no-kinematic-effect, the earlier substitute catch trials gave significant differences in both
+      controls and the claim was blocked. With the catch trials of 0.261113.1911 every Opto-DA bin has Holm P 1.0 in
+      36 experiments of 3 mice; the earlier variant with catch trials at least 2 s from any pulse also found 0 of 3
+      Opto-DA mice significant.
+    supports: not_reproduced
+    confidence: high
+  - claim: fig1f-syllable-vs-movement-onset
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier claims file gave this claim no criterion, and that attempt did not run it, for time, though the
+      data were in its version. The new claims file gives two readings, and this attempt found they disagree (with
+      all detections, 13 of 14 mice favour syllable onsets under one and 3 of 14 under the other).
+    confidence: medium
+  - claim: fig2k-dlight-predicts-sequence-variability
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier claims file gave this claim no criterion, and that attempt did not run it, for time. This
+      attempt tested it under the new criterion after its first verification round, positive under reading (a)
+      (Pearson z 1.24 and 1.93, P = 0.003 and 0.001 at n = 5 and 10) and negative under reading (b).
+    confidence: medium
+  - claim: ed10d-optoda-vigour
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier claims file gave this claim no criterion, and that attempt did not run it, for time; the light
+      onsets of the velocity-modulation files and the missing up or down labels are the same in both versions. This
+      attempt ran the new criterion with the direction read from velocity where the files do not state it (11 up and
+      6 down experiments, P = 0.180).
+    confidence: medium
+  protocol: The earlier attempt was made under pilot-7, when the author wrote its own claims file. From pilot-9 every
+    part of a criterion's method comes from the paper and its code, with every plausible reading run, and from
+    pilot-10 a separate reader writes the claims file from the full text and the author may not change it. So this
+    attempt was tested on a new claims file with 44 claims where the earlier had 24, and the changed criteria explain
+    nine of the twelve outcomes that differ. pilot-12 made the repeat blind and added this reconciliation, pilot-13
+    raised the notebook limit to 60 minutes (the photometry notebook takes about 45), and pilot-14 files claims and
+    records by paper, which moved them from claims/000559 to claims/markowitz-2023.yaml. pilot-8 (quotes and
+    statistics in the claims) changed no outcome. docs/pilot-notes.md has no notes for pilot-11, pilot-15 or
+    pilot-16.

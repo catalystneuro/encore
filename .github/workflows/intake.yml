@@ -1,0 +1,117 @@
+name: Intake
+run-name: "Intake: ${{ inputs.request || (github.event.issue.number && format('#{0}', github.event.issue.number)) || inputs.run_url }}"
+
+# Takes an attempt made from encore-runner, or a fork of it, into the registry (encore-protocol docs/outside-runs.md).
+# A runner makes the whole attempt in its own repository and touches the registry twice. It says when it starts
+# (`what: start`), and the intake makes the branch attempt/<paper> to name it. At the end it sends the attempt
+# (`what: attempt`), and tools/intake.py checks every run's signature, that each run started from what the one
+# before it left, and each role's changes, and pushes the runs as attempt/<paper>. `what: run` takes one run at a
+# time, as attempts begun before 2026-11-25 were taken.
+#
+# Either reaches the intake in one of two ways. encore-runner dispatches this workflow from its own runs,
+# with a token only it holds. A fork's owner opens an "Outside attempt" issue with the run's address. Runs from the
+# repositories in the variable ENCORE_INTAKE_AUTO (default encorescience/encore-runner, "*" for all) are taken as soon
+# as they pass; any other waits for someone in queue/priority.yaml: their dispatch with `approve` ticked, their own
+# issue, or the `approved` label they add to someone else's. The issue's text is read only by the Python script,
+# never expanded into a shell command, and nothing in a submission is run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_url:
+        description: "The run's address: https://github.com/OWNER/REPO/actions/runs/ID"
+        required: true
+      what:
+        description: "start: the runner has begun an attempt; attempt: the finished attempt; run: one run"
+        type: choice
+        options: [run, start, attempt]
+        default: run
+      paper:
+        description: "The paper's key, for start and attempt"
+        default: ""
+      approve:
+        description: "Take it even if its repository's runs wait for a person (counts only for someone in queue/priority.yaml)"
+        type: boolean
+        default: false
+      request:
+        description: "An id for this intake, so that whoever dispatched it can find its run"
+        default: ""
+      dry_run:
+        description: "Check it and push nothing"
+        type: boolean
+        default: false
+  issues:
+    types: [opened, labeled]
+
+# actions: read, to download another public repository's artifact; attestations: read, to check its signature.
+permissions:
+  contents: write
+  issues: write
+  actions: read
+  attestations: read
+
+# One at a time, so that two runs on the same attempt cannot both pass the check of the branch's head.
+concurrency:
+  group: intake
+  cancel-in-progress: false
+
+jobs:
+  intake:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(github.event.issue.labels.*.name, 'outside-run') && github.event.issue.state == 'open' &&
+       (github.event.action == 'opened' || github.event.label.name == 'approved'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: bash tools/protocol.sh
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - run: pip install --no-cache-dir pyyaml jsonschema
+
+      - name: The intake's labels
+        if: github.event_name == 'issues'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create outside-run --color 0052CC --description "A run from a fork of encore-runner, for the intake" 2>/dev/null || true
+          gh label create approved --color 0E8A16 --description "Approved by someone in queue/priority.yaml" 2>/dev/null || true
+
+      - name: Take the run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ENCORE_INTAKE_AUTO: ${{ vars.ENCORE_INTAKE_AUTO }}
+          RUN_URL: ${{ inputs.run_url }}
+          WHAT: ${{ inputs.what }}
+          PAPER: ${{ inputs.paper }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE: ${{ github.event.issue.number }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          APPROVE: ${{ inputs.approve }}
+          ACTOR: ${{ github.actor }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+          SENDER: ${{ github.event.sender.login }}
+        run: |
+          # Whose approval this run carries: the dispatcher's, if they ticked `approve`; the issue's author, when it
+          # is opened; whoever added the `approved` label. intake.py counts it only for someone in queue/priority.yaml.
+          case "$EVENT/$ACTION" in
+            workflow_dispatch/*) by=$([ "$APPROVE" = true ] && echo "$ACTOR" || true) ;;
+            issues/opened) by=$AUTHOR ;;
+            *) by=$SENDER ;;
+          esac
+          args=(--approved-by "$by")
+          [ "$DRY_RUN" != true ] || args+=(--dry-run)
+          if [ -n "$ISSUE" ]; then
+            python tools/intake.py --issue-body-env ISSUE_BODY --issue "$ISSUE" "${args[@]}"
+          else
+            python tools/intake.py "$RUN_URL" --what "${WHAT:-run}" --paper "$PAPER" "${args[@]}"
+          fi
