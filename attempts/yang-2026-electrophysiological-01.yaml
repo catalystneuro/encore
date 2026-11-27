@@ -1,0 +1,533 @@
+schema_version: 3
+id: yang-2026-electrophysiological-01
+datasets:
+- archive: dandi
+  id: '000020'
+  version: 0.210913.1639
+  doi: 10.48324/dandi.000020/0.210913.1639
+  relation: reuses
+paper: doi:10.64898/2026.01.08.698522
+date: '2026-11-27'
+entry: yang-2026-electrophysiological
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45917424932
+outcomes:
+- claim: fig1c-cells-per-protocol
+  outcome: partially_reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig1c-cells-per-protocol
+  measured:
+  - 3276
+  - 3275
+  - 2166
+  notes: Cells in the paper's lines with at least one quality-controlled sweep. Ramp 3275 (expected 3220
+    +/- 322) and brief pulse 2166 (2154 +/- 215) are within tolerance. Long pulse is 3276 with every long
+    square step, 1957 with the suprathreshold family (X4PS_SupraThresh, C1LSCOARSE) and 1881 with the
+    steps named LP (X2LP, X3LP); none is within 2270 +/- 227. Counted over all cells, whatever their line,
+    the counts are 4433, 2677, 2596, 4431 and 2595, none within. Two of the three counts match under one
+    reading, so the claim holds in part.
+  deviations:
+  - Quality control uses this attempt's thresholds (complete trace, baseline -100 to -40 mV, baseline
+    SD below 1 mV, ramp R^2 above 0.99); Methods 2 lists the criteria without thresholds. Counts change
+    by at most 2 cells without the baseline criteria.
+  - The paper does not say whether the counts are taken before or after restricting to the shown driver
+    lines; both are shown, and only the restricted counts match for ramp and brief pulse (assumption).
+  - The LP-named long-pulse reading is added from the stimulus names (X2LP, X3LP), as Methods 1 assigns
+    sweeps by stimulus description.
+  assumed: true
+- claim: fig1d-driver-line-coverage
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig1d-driver-line-coverage
+  measured:
+  - 9
+  - 9
+  - 11
+  - 8
+  notes: All 9 long-pulse and ramp lines and all 11 brief-pulse lines the figures name are in the data.
+    With every long square step, and for the ramp, they are exactly the 9 largest lines (9th Oxtr 156
+    cells, 10th Chrna2 146); for the brief pulse they are the 11 largest (11th Htr3a 91, 12th Nos1 79).
+    8 lines are shared by all three sets (Slc32a1 is not in the brief set), within 7 +/- 1. No single
+    minimum count selects the named lines in both the ramp (threshold between 147 and 156) and the brief
+    pulse (between 80 and 91). With the suprathreshold or LP long-pulse readings Slc32a1 has 60 or 48
+    cells and is not among the 9 largest.
+  deviations:
+  - Driver line is the marker gene of the first driver allele in the genotype (Cre, or FlpO where there
+    is no Cre, which gives Sncg); Methods 1 says Cre-line labels were used. The lines analysed are the
+    9 (long pulse, ramp) and 11 (brief pulse) the figures name.
+  - Assumption, the inclusion rule is read as the largest lines of each protocol; the paper gives no rule.
+  assumed: true
+- claim: fig2a-longpulse-low-dimensional
+  outcome: not_reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2a-longpulse-low-dimensional
+  measured:
+  - 41.9
+  - 18.8
+  - 85.2
+  notes: No reading of 24 (three sweep families, two feature sets, two imputations, two spike criteria)
+    has all three values within tolerance. Main reading PC1 41.9%, PC2 18.8%, PC1 to PC5 85.2% (expected
+    39 +/- 3.9, 15 +/- 1.5, 76 +/- 7.6). PC1 is 28.7 to 41.9% and PC2 18.7 to 25.3% over the readings;
+    PC2 is above tolerance in all.
+  deviations:
+  - Quality control uses this attempt's thresholds (complete trace, baseline -100 to -40 mV, baseline
+    SD below 1 mV, ramp R^2 above 0.99); Methods 2 lists the criteria without thresholds. Counts change
+    by at most 2 cells without the baseline criteria.
+  - Per-sweep features are this attempt's definitions of the names in Supplementary Table 1 (geometry.py);
+    the paper gives names, not definitions.
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  - Command bins 0-50, 50-100, 100-200, 200-400 and 400 pA or more (standard choice); strong depolarization
+    is a peak of 20 mV or more and high spiking a rate of 20 Hz or more (standard choices).
+- claim: fig2b-longpulse-continuous-biased
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2b-longpulse-continuous-biased
+  notes: Bimodality coefficients of PC1 and PC2 0.533 and 0.444 (below 0.556); silhouette of line labels
+    -0.185. Observed mean centroid distance 1.896 (all PCs), 1.845 (5), 1.652 (2) against null maxima
+    0.491, 0.459, 0.413 over 1000 label permutations; fraction of permutations at or above the observed
+    value 0.0 under all five seeds.
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  - Continuity is judged from the scatter and density plot as the claims file says; the bimodality coefficient
+    and silhouette are printed to back the reading and are this attempt's choice.
+  assumed: true
+- claim: fig2d-longpulse-loadings
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2d-longpulse-loadings
+  notes: Main reading. PC1 holds 6 of the 8 Figure 2D1 features among its 8 largest loadings with the
+    stated signs (rates, counts, high-spiking and spiking fraction one sign, subthreshold fraction the
+    other). PC2 holds 7 of 8 of Figure 2D2 with first-spiking current, max rate, max count, subthreshold
+    fraction and rate slope positive, and spiking fraction and baseline noise negative. Both PCs hold
+    under the 4 readings on every long square step without bins and the 4 LP readings without bins; with
+    the command-binned features PC2 holds in no reading, and no suprathreshold reading holds. Baseline
+    variability is read as median baseline noise.
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  - Per-sweep features are this attempt's definitions of the names in Supplementary Table 1 (geometry.py);
+    the paper gives names, not definitions.
+  assumed: true
+- claim: fig2c-longpulse-centroid-distances
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2c-longpulse-centroid-distances
+  notes: Main reading, all PCs. Largest distances Sncg to Pvalb 4.62 and Pvalb to Vip 4.02, then Pvalb
+    to Sst 3.35. The two largest are the Pvalb pairs with Sncg and Vip in 60 of 72 reading and PC-count
+    combinations.
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  assumed: true
+- claim: fig2e-longpulse-pc2-pvalb-high-vip-low
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig2e-longpulse-pc2-pvalb-high-vip-low
+  notes: 'Main reading. By the median, Pvalb is highest (3.70) and Vip lowest (-1.84); by the mean also
+    Pvalb highest and Vip lowest. The order holds in 15 of 48 combinations: all 8 on every long square
+    step without bins, 6 of 8 on the LP steps without bins, 1 of 16 on the suprathreshold steps; with
+    bins on every long square or LP step Sncg is lowest.'
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  - PC2 is oriented so that first-spiking current loads positively, as the claims file says.
+  assumed: true
+- claim: fig3a-ramp-variance
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig3a-ramp-variance
+  measured:
+  - 36.2
+  - 21.1
+  - 85.4
+  notes: 'Reading (b), all 14 ramp features, with dV/dt spikes: PC1 36.2%, PC2 21.1%, PC1 to PC5 85.4%
+    (expected 33 +/- 3.3, 21 +/- 2.1, 87 +/- 8.7), under both imputations. With 0 mV spikes PC1 is 38.9%,
+    outside. Reading (a), the 8 features of Figure 3D, gives PC1 60.7 to 65.6% and PC1 to PC5 99.5 to
+    99.6%: at a fixed ramp slope (25 pA/s in nearly all sweeps) recruitment current and latency are almost
+    the same quantity.'
+  deviations:
+  - Quality control uses this attempt's thresholds (complete trace, baseline -100 to -40 mV, baseline
+    SD below 1 mV, ramp R^2 above 0.99); Methods 2 lists the criteria without thresholds. Counts change
+    by at most 2 cells without the baseline criteria.
+  - Per-sweep features are this attempt's definitions of the names in Supplementary Table 1 (geometry.py);
+    the paper gives names, not definitions.
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  - Mean and median imputation give the same values to 0.1%.
+  assumed: true
+- claim: fig3b-ramp-continuous-biased
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig3b-ramp-continuous-biased
+  notes: Main ramp geometry. Bimodality coefficients 0.488 and 0.348; silhouette -0.22. Observed mean
+    centroid distance 1.474 (all PCs), 1.474 (5), 1.440 (2) against null maxima 0.371, 0.371, 0.355; fraction
+    0.0 under five seeds.
+  deviations:
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  assumed: true
+- claim: fig3d-ramp-loadings
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig3d-ramp-loadings
+  notes: Main ramp geometry (8 features, dV/dt). PC1 top 4 are the recruitment and latency features (0.420
+    to 0.421); PC2 top 4 are the rate and count features (0.281 to 0.533), recruitment and latency of
+    opposite sign (-0.248 to -0.253). With 0 mV spikes PC1 holds and PC2 does not (latency -0.276 above
+    max rate 0.244), which would be partially reproduced; with all 14 features PC1 holds and PC2 does
+    not.
+  deviations:
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  assumed: true
+- claim: fig3e-ramp-recruitment-current-order
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig3e-ramp-recruitment-current-order
+  notes: 'Line medians with dV/dt spikes: Pvalb 280.0 pA, Slc32a1 190.7, Gad2 180.6, Ndnf 178.2, Oxtr
+    172.3, Htr3a 155.6, Sst 129.6, Sncg 79.1, Vip 61.0; with 0 mV spikes the same order at the ends (Pvalb
+    280.0, Sncg 80.1, Vip 62.4). Cells never recruited have no value (55 of 450 Pvalb, 32 of 501 Vip,
+    0 of 212 Sncg under dV/dt). For scale, the paper''s plot shows Pvalb near 270 pA and Vip and Sncg
+    below 100 pA.'
+  deviations:
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Both spike readings give the outcome, so it rests on no spike assumption.
+- claim: fig4a-brief-response-variance
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig4a-brief-response-variance
+  measured:
+  - 47.8
+  - 18.1
+  - 92.2
+  notes: 'Reading (b) with gain, 50 ms window: PC1 47.8%, PC2 18.1%, PC1 to PC5 92.2% (expected 47 +/-
+    4.7, 19 +/- 1.9, 95 +/- 9.5), under both imputations; the only feature set and window of 16 readings
+    that matches. With a 10 ms window the same set gives PC1 53.0%, outside. Reading (a) gives PC2 25.7
+    to 33.6%, outside.'
+  deviations:
+  - Quality control uses this attempt's thresholds (complete trace, baseline -100 to -40 mV, baseline
+    SD below 1 mV, ramp R^2 above 0.99); Methods 2 lists the criteria without thresholds. Counts change
+    by at most 2 cells without the baseline criteria.
+  - Per-sweep features are this attempt's definitions of the names in Supplementary Table 1 (geometry.py);
+    the paper gives names, not definitions.
+  - Assumption, main brief-response geometry. The 10 features of Figure 4C plus the two gains (the Results
+    name input-normalized gain among the response features, and Figure 4C shows 10 amplitude features,
+    which reading (a) cannot hold), with peak and mean taken from pulse onset to 50 ms after the pulse.
+    The 50 ms window is assumed because the paper separates fast from total voltage response (Results,
+    brief pulse, paragraph 2) and the total response of these cells decays over tens of ms; the fast response
+    is onset to 2 ms after the pulse (standard choice).
+  - 'Reading (b) maps the Figure 4C names to: median fast-response mean, mean over sweeps of mean response,
+    median mean response, max fast-response mean, max mean response, median peak, median fast peak, lower-quartile
+    peak, mean peak, max peak (this attempt''s mapping).'
+  assumed: true
+- claim: fig4b-brief-continuous-biased
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig4b-brief-continuous-biased
+  notes: Main brief geometry, 11 lines. Bimodality coefficients 0.325 and 0.195; silhouette -0.14. Observed
+    mean centroid distance 1.747 (all PCs), 1.685 (5), 1.279 (2) against null maxima 0.540, 0.522, 0.453;
+    fraction 0.0 under five seeds. Centroid distances 0.384 to 4.138.
+  deviations:
+  - Assumption, main brief-response geometry. The 10 features of Figure 4C plus the two gains (the Results
+    name input-normalized gain among the response features, and Figure 4C shows 10 amplitude features,
+    which reading (a) cannot hold), with peak and mean taken from pulse onset to 50 ms after the pulse.
+    The 50 ms window is assumed because the paper separates fast from total voltage response (Results,
+    brief pulse, paragraph 2) and the total response of these cells decays over tens of ms; the fast response
+    is onset to 2 ms after the pulse (standard choice).
+  assumed: true
+- claim: fig4c-brief-response-pc1-loadings
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig4c-brief-response-pc1-loadings
+  notes: Main reading. Top 5 PC1 loadings are median and mean-over-sweeps mean response, median fast-response
+    mean, median peak and median fast peak, all positive; every amplitude feature has that sign; gains
+    0.188 and 0.241. Holds for all 8 readings (b); fails for readings (a), where max peak and max fast
+    peak load against the others and, with gain, median peak gain enters the top 5. The largest loadings
+    are read as the top 5.
+  deviations:
+  - Assumption, main brief-response geometry. The 10 features of Figure 4C plus the two gains (the Results
+    name input-normalized gain among the response features, and Figure 4C shows 10 amplitude features,
+    which reading (a) cannot hold), with peak and mean taken from pulse onset to 50 ms after the pulse.
+    The 50 ms window is assumed because the paper separates fast from total voltage response (Results,
+    brief pulse, paragraph 2) and the total response of these cells decays over tens of ms; the fast response
+    is onset to 2 ms after the pulse (standard choice).
+  - The criterion's largest absolute loadings are read as the top 5, the number of feature kinds the statement
+    names (assumption); the top-3 rule holds in all 16 readings.
+  assumed: true
+- claim: fig4e-brief-response-base-alignment
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig4e-brief-response-base-alignment
+  measured:
+  - 0.886
+  - 0.876
+  - 2166
+  notes: Main reading, 2166 cells. Response PC1 against base PC2 |Pearson r| 0.886, |Spearman r| 0.876
+    (expected 0.875 +/- 0.0875, 0.900 +/- 0.09); base PC2 is the best-matching base PC under every reading.
+    All readings (b) match (Pearson 0.883 to 0.905); readings (a) give Pearson 0.959 to 0.986, within
+    tolerance only for (a) without gain at 10 ms.
+  deviations:
+  - Assumption, main brief-response geometry. The 10 features of Figure 4C plus the two gains (the Results
+    name input-normalized gain among the response features, and Figure 4C shows 10 amplitude features,
+    which reading (a) cannot hold), with peak and mean taken from pulse onset to 50 ms after the pulse.
+    The 50 ms window is assumed because the paper separates fast from total voltage response (Results,
+    brief pulse, paragraph 2) and the total response of these cells decays over tens of ms; the fast response
+    is onset to 2 ms after the pulse (standard choice).
+  - The base geometry is all 23 brief-pulse features of Supplementary Table 1 (the claims file's reading).
+  assumed: true
+- claim: fig4f-brief-gain-vip-cck-high
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig4f-brief-gain-vip-cck-high
+  notes: 'Line medians of per-cell median peak gain (mV/pA): Cck 0.0855, Vip 0.0805, Sncg 0.0618, Ndnf
+    0.0604, Calb2 0.0573, Htr3a 0.0566, Sst 0.0547, Gad2 0.0504, Crh 0.0503, Pvalb 0.0477, Oxtr 0.0471;
+    Pvalb below the median of medians (0.0566). Both windows give identical medians. Over sweeps without
+    a spike, Cck and Vip remain first and second and Pvalb tenth. For scale, the paper''s plot shows Vip
+    and Cck near 0.08 and Pvalb near 0.045.'
+  deviations:
+  - Quality control uses this attempt's thresholds (complete trace, baseline -100 to -40 mV, baseline
+    SD below 1 mV, ramp R^2 above 0.99); Methods 2 lists the criteria without thresholds. Counts change
+    by at most 2 cells without the baseline criteria.
+  - Gain is the peak voltage response (pulse onset to pulse end plus 10 or 50 ms, from the pre-pulse mean)
+    divided by the command amplitude, over all X5SP_Search_DA_0 sweeps including those with a spike.
+- claim: disc-brief-gain-sncg-cck-non-pvalb
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:disc-brief-gain-sncg-cck-non-pvalb
+  notes: Cck ranks 1 (0.0855) and Sncg 3 (0.0618) of 11, both above Pvalb (0.0477, rank 10), under both
+    windows. The upper half of 11 is read as ranks 1 to 5.
+  deviations:
+  - The upper half of 11 line medians is read as the top 5 (standard choice; Sncg at rank 3 is in it under
+    any reading).
+- claim: fig5a-longpc2-ramppc1-centroids
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig5a-longpc2-ramppc1-centroids
+  measured: 0.9
+  notes: Main readings. Spearman r = 0.900, p = 0.0009 over 9 lines (expected 0.883 +/- 0.088); Pearson
+    0.945. Pvalb highest on both axes (2.201, 2.466). Vip lowest on long PC2 (-1.064); on ramp PC1 Sncg
+    is lowest (-1.498) and Vip second (-1.393), so the statement's Vip low on both holds only loosely
+    for the ramp. Over 128 combinations of long and ramp readings r ranges from -0.317 to 1.0 and 32 hold.
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  assumed: true
+- claim: fig5b-long-ramp-distance-alignment
+  outcome: partially_reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig5b-long-ramp-distance-alignment
+  measured:
+  - 0.881
+  - 36
+  notes: Main readings. Spearman r 0.881 (all PCs), 0.878 (5), 0.877 (2) over 36 pairs, p about 1e-12;
+    Pearson 0.921. The alignment is positive and significant at p < 0.001 as the paper states, but stronger
+    than 0.707 +/- 0.071, so the value is outside tolerance under every PC reading. Over 384 reading combinations
+    r is 0.447 to 0.969 and 32 fall within tolerance.
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Assumption, spikes detected where dV/dt rises through 20 V/s with a peak above -20 mV within 2 ms,
+    the criterion of the Allen pipeline the paper cites for standardized phenotyping (ref. 2, Gouwens
+    et al. 2019); the 0 mV crossing named by the claims file is shown as the other reading.
+  assumed: true
+- claim: fig5c-balanced-correlations-positive
+  outcome: partially_reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig5c-balanced-correlations-positive
+  measured:
+  - 0.87
+  - 0.784
+  - 0.592
+  - 0.454
+  - 0.703
+  - 0.632
+  notes: All PCs, cells per line the smallest retained count (156 for long against ramp over 9 lines,
+    91 for pairs with the brief geometries over 8 shared lines), 1000 draws without replacement. Medians
+    0.870 (expected 0.79), 0.784 (0.65), 0.592 (0.65), 0.454 (0.62), 0.703 (0.62), 0.632 (0.61); all positive,
+    2 of 6 within tolerance. Every reading (PCs all, 5, 2; cells 'smallest' or 20) gives all medians positive
+    and at most 2 within. Five seeds move each median by at most 0.008 (all PCs, smallest).
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Assumption, main brief-response geometry. The 10 features of Figure 4C plus the two gains (the Results
+    name input-normalized gain among the response features, and Figure 4C shows 10 amplitude features,
+    which reading (a) cannot hold), with peak and mean taken from pulse onset to 50 ms after the pulse.
+    The 50 ms window is assumed because the paper separates fast from total voltage response (Results,
+    brief pulse, paragraph 2) and the total response of these cells decays over tens of ms; the fast response
+    is onset to 2 ms after the pulse (standard choice).
+  - Gain geometry is PCA of the two gains, the peak-response command slope and its fit (the claims file's
+    reading).
+  - Assumption, cells per line is the smallest retained count, the natural reading of 'the same number
+    of cells was randomly sampled from each retained driver line' (Methods 6); 20 shown.
+  assumed: true
+- claim: fig5d-f-true-above-shuffle-null
+  outcome: reproduced
+  notebook: reproduce_yang_2026.ipynb
+  output: claim:fig5d-f-true-above-shuffle-null
+  notes: 'All PCs, smallest retained count, labels shuffled in both geometries: every pair has empirical
+    p below 0.05 (largest 0.038, long against gain; 0.038 at most over five seeds) and null medians -0.042
+    to 0.003. With labels shuffled in one geometry, long against gain gives p 0.051 (0.052 with one added)
+    and the others below 0.05; with 5 PCs both shuffles hold for all pairs. With 20 cells per line, long
+    against gain gives p 0.106 to 0.185.'
+  deviations:
+  - Assumption, main long-pulse reading. Sweeps from every long square step family (C1LS*, X1PS, X2LP,
+    X3LP, X4PS), the only sweep reading under which the 9 largest lines are the paper's 9 (Figure 2B);
+    features of Supplementary Table 1 without the command-binned ones, as Figure 2D shows none among the
+    top 8 loadings of either PC; mean imputation, the scikit-learn default (Methods 7); features with
+    more than 50% missing dropped (claims file).
+  - Assumption, main ramp geometry. The 8 features of Figure 3D (the recruitment-focused set, Methods
+    3 and 4), mean imputation. Ramp sweeps are C1RP25PR1S141203 and X7Ramp; recruitment current is the
+    command at the first spike, post-recruitment rate is spikes over the time from the first spike to
+    the end of the recorded ramp.
+  - Assumption, main brief-response geometry. The 10 features of Figure 4C plus the two gains (the Results
+    name input-normalized gain among the response features, and Figure 4C shows 10 amplitude features,
+    which reading (a) cannot hold), with peak and mean taken from pulse onset to 50 ms after the pulse.
+    The 50 ms window is assumed because the paper separates fast from total voltage response (Results,
+    brief pulse, paragraph 2) and the total response of these cells decays over tens of ms; the fast response
+    is onset to 2 ms after the pulse (standard choice).
+  - Assumption, the null permutes labels in both geometries; the paper says 'within each balanced sample',
+    which fits both, and the one-geometry reading fails one pair narrowly at all PCs.
+  assumed: true
+findings:
+- kind: other
+  about: data
+  severity: critical
+  statement: One recording is deposited twice under two subjects and two genotypes. Sessions 680563483
+    (sub-673135474, Vip-IRES-Cre;Ai14) and 680897463 (sub-673135516, Ndnf-IRES2-dgCre;Slc32a1-IRES2-FlpO;Ai65)
+    hold identical sweeps (same stimuli, amplitudes and responses to four decimals, and the same first
+    sweep). At most one genotype can be right, and nothing in the files says which; this attempt leaves
+    both out of the line analyses.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The driver line is not a field of the files; it must be parsed from the genotype string,
+    where 994 cells carry both a Cre and a Flp allele, and 213 Sncg cells, 62 Th cells and 9 others carry
+    a Flp allele only. Which allele names the cell's group is not described.
+- kind: other
+  about: data
+  severity: minor
+  statement: 'Many sweeps stop before the end of their series and are filled with exact zeros, not NaN,
+    so the voltage reads 0 mV after the recording ends: 13% of long square sweeps and 16% of ramp sweeps
+    fail a complete-trace check. The zeros are evident from the values.'
+- kind: other
+  about: data
+  severity: none
+  statement: 'Checks passed. Units (volts with a conversion to mV), the 50 kHz sampling rate (127 sweeps
+    at 200 kHz), the ramp slope of 25 pA/s, and the clock shared by command and voltage are consistent
+    with the data: the voltage moves with the command sign 5 to 25 ms after onset (mean -9.31 mV for negative
+    and +17.98 mV for positive steps, 0.00 mV before onset), and recruitment current divided by latency
+    gives 25.01 pA/s.'
+- kind: other
+  about: data
+  severity: none
+  statement: Two stimulus sets are in the dandiset. 2597 cells have sweeps of the newer one (names beginning
+    X) and 1837 only the older one (names beginning C1). X5SP_Search_DA_0, the paper's brief pulse, exists
+    only in the newer set, so the brief-pulse geometry can cover at most 2597 cells, consistent with the
+    paper's 2154.
+- kind: methods_unavailable
+  statement: 'Which sweeps form the long-pulse geometry, and which cells are counted? No reading of the
+    stimulus families gives about 2270 long-pulse cells (every long square step 3276 in the 9 lines, the
+    suprathreshold family 1957, the LP-named steps 1881), while the ramp (3275) and brief pulse (2166)
+    match once restricted to the named lines. The variance explained by long-pulse PCs (PC2 above 18.7%
+    in every reading against 15%) may differ for the same reason. Question for the authors: which stimulus
+    descriptions, quality-control thresholds and line restriction define the long-pulse cells?'
+- kind: methods_unavailable
+  statement: 'Spike detection, response windows and feature definitions are not given. Results that depend
+    on them here: ramp PC2 loadings (fig3d) and ramp variance (fig3a) hold with a dV/dt criterion of 20
+    V/s but not with a 0 mV crossing; the brief-pulse variance (fig4a) holds with a 50 ms response window
+    but not with 10 ms. Question for the authors: which spike criterion, which brief-pulse response and
+    fast-response windows, and which exact feature lists make up the sustained-response, recruitment-focused,
+    response-focused, gain-focused and base sets?'
+- kind: methods_unavailable
+  statement: 'Balanced resampling and the null are not specified. The number of cells drawn per line,
+    the exclusion rule, the number of PCs, and whether labels are shuffled in one geometry or both change
+    the results here: with the smallest retained count medians are 0.42 to 0.87, with 20 cells 0.25 to
+    0.66; long pulse against gain passes the shuffle test at p 0.038 with both geometries shuffled and
+    fails at p 0.051 with one. Question for the authors: what are these settings, how is the empirical
+    p formed, and what do the stars of Figure 5C mean?'
+- kind: methods_unavailable
+  statement: 'The driver-line inclusion rule is not stated. The lines shown are exactly the 9 largest
+    (long pulse and ramp) and 11 largest (brief pulse) groups by first driver allele, but no single minimum
+    cell count selects both sets. Question for the authors: how were lines chosen, and is the driver line
+    the Cre allele or the first driver allele (Sncg has only a Flp allele)?'
+- kind: paper_inconsistency
+  statement: Figure 1D prints 7 lines shared by all three geometries, while the lines named in Figures
+    2 to 4 give 8 (the 9 long-pulse and ramp lines less Slc32a1), as the data do; Figure 1D labels the
+    ramp circle Short pulse, and the Figure 4B legend lists 9 lines while Figures 4D and 4F show 11.
