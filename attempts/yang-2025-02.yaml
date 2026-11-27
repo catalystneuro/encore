@@ -364,6 +364,24 @@ findings:
     tested, and which baseline set the 5 SD threshold. This attempt assumed an LFP line-length rule for (1), BIC
     order and out minus in for (2), relative change for (3) and the HFO App dialog defaults over the 600 s file
     epoch, with the post window cut at the next train, for (4).
+- kind: metadata_error
+  found: on_prompt
+  severity: minor
+  statement: Sixteen epoch names (date and seizure number) occur in two groups of the same rat, and in each
+    case the two epochs hold different data (different MD5 of the stored values, 600000 samples each). They are
+    R1_2023_9_20-ictal1 to 3 in R1-06 (base3) and R1-07 (DG-stim); R3_2023_9_9-ictal1 in R3-01 and R3-02;
+    R3_2023_9_25-ictal1 to 3 in R3-03 and R3-04; R3_2023_10_18-ictal1, R3_2023_10_20-ictal1 and -ictal2 in R3-05
+    (DG-stim) and R3-07 (CA1-stim); R3_2023_10_22-ictal1 in R3-05 and R3-06; R4_2023_9-15-ictal1 in R4-03 and
+    R4-04; R4_2023_9-17-ictal1 and -ictal2 in R4-04 and R4-05; and R7_2024_1_3-ictal1 and -ictal2 in R7-05 and
+    R7-06. An epoch name does not identify a seizure across the files. R5's first baseline group (R5-00) holds
+    epochs dated 2023-09-08 to 2023-10-25, a span of seven weeks against the 5 to 10 days per group of Methods C.
+- kind: metadata_error
+  found: on_prompt
+  severity: minor
+  statement: The electrodes table, the same in all 56 files, gives the ANT electrode at AP -1.2, ML +2.0, DV -5.6
+    mm, where Methods A gives DV -6.0 mm; the DG, CA1 and CA3 coordinates match Methods A. Every file gives the
+    subject's age as P2M and weight as 300-350g, although each rat's session start dates span 19 to 106 days and
+    Methods A gives 7-9 weeks and 250-300 g for the rats as obtained.
 inputs:
 - what: HFO App source code, read only for the defaults of its short line length detector (no data)
   source: https://github.com/zelanolab/hfoapp at commit 1ccff19cf493a551c914c6c69a33e5fbbcfdf164
@@ -685,3 +703,80 @@ verifications:
     reason: Agrees with the stated outcome; its assumptions are stated and reasonable.
     response: No change of outcome. With the baseline seizures that carry trains left out, baseline +8.1, paired p
       0.57 and 0.44.
+reconciliation:
+  earlier: yang-2025-01
+  date: '2026-11-27'
+  blind: false
+  blind_note: In its author-revise-1 run the author listed transcripts/yang-2025 and read the first 3000 characters
+    of the earlier attempt's author-revise-1-report.md, which was still in that folder (tools/blind.sh moves the
+    earlier transcripts out only for the author role). That text gives the earlier attempt's round-1 revisions
+    and some of its results, among them that no outcome changed, 21 of 28 groups and the counts 8 and 20 for
+    figs2-target-assignment, the dependence of fig5b-iis-post-seizure on R7, and the HFO App repository and commit
+    1ccff19. The author reported it in that run's report; the transcript then shows a GitHub search for the HFO
+    App, and every outcome had been set in the author run before and none changed after. The author and author-revise-2
+    runs read nothing of the earlier attempt; the audit's lines in author-answers.md and author-answers-report.md
+    are the earlier attempt's own transcripts (run 42729502254, 2026-11-10).
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Finding 1 reports the same, the files hold only 600 s epochs around seizures, with no seizure or stimulation
+      times, no interictal recordings and no recording durations.
+  - finding: 2
+    status: still_present
+    now: 6
+    note: Finding 6 names the same baseline epochs with trains (R1_2023_8_29-ictal1, R1_2023_8_30-ictal1, R4_2023_9_6-ictal1
+      to 3, R5_2023_10_25-ictal1, R6_2023_9_17-ictal1), seven where the earlier attempt counted eleven; the R7 CA3
+      stimulation epochs without trains are in finding 4.
+  - finding: 3
+    status: still_present
+    now: 8
+    note: Checked in earlier_findings.ipynb, 16 epoch names occur in two groups of a rat and none of the 16 pairs holds
+      the same data; R3-07 is dated 2023-10-18 to 10-20 and R5-00 2023-09-08 to 10-25. The R3-07 dates are also in
+      finding 5.
+  - finding: 4
+    status: still_present
+    now: 3
+    note: Finding 3 gives the same order of stimulated sites for R5 (CA1, ANT, DG, CA3) and R6 (ANT, DG, CA1, CA3)
+      against Figure S2.
+  - finding: 5
+    status: still_present
+    now: 2
+    note: Finding 2 says that how the 600 s windows were cut and what the -small suffix means is not described; the
+      files hold 20 -small and 2 -large names (earlier_findings.ipynb), and the groups of 5 (R1 base2) and 4 (R7 CA3)
+      seizures appear in this attempt's notes and finding 4.
+  - finding: 6
+    status: still_present
+    now: 9
+    note: Checked in earlier_findings.ipynb, the electrodes table of all 56 files gives the ANT depth as DV -5.6 mm
+      (Methods A -6.0), and all 56 files give P2M and 300-350g while each rat's session dates span 19 to 106 days.
+  - finding: 7
+    status: still_present
+    now: 7
+    note: Finding 7 asks the paper's authors the same open points on onset and end marking, GC settings and cf_w sign,
+      the normalization formula and the HFO App settings and windows; it does not repeat the earlier questions on
+      the post hoc test, the PSD measure and the pairing of the Figure 6 tests.
+  outcomes:
+  - claim: fig2-r1-target-shifts
+    earlier: partially_reproduced
+    cause: reading
+    choice: How seizure onset is marked from the LFP when the files hold no times; the earlier attempt took the centre
+      of the first 1 s window of 1-40 Hz line length above 2 times the channel median in a run reaching 3, this
+      one the start of the first window of 1-45 Hz line length above 1.5 in a run above 2.
+    note: At the same GC reading (BIC order up to 20, out minus in, 1 kHz) the earlier attempt's R1 top nodes are CA1,
+      ANT, ANT, DG (2 of 4; 3 of 4 with AIC order, its recorded reading) and this one's ANT, ANT, CA3, DG. A check
+      on R1's 35 baseline seizures found the earlier onsets a median 1.00 s later (quartiles 0.75 and 1.88 s); with
+      this attempt's onsets both attempts' GC code give 4 of 4, with the earlier onsets 2 (earlier code) or 3 (this
+      code), so the onset rule decides it, as this attempt's own onset variants (2 to 4 of 4) show.
+    confidence: high
+  - claim: fig3a-some-nontarget-shorten
+    earlier: partially_reproduced
+    cause: reading
+    choice: How seizure onset and end are marked from the LFP when the files hold no times (the two attempts used
+      different line-length rules and stimulation train detectors), which sets every seizure duration.
+    note: Both use reading (c) and find the same 3 named groups significantly shorter (R2 ANT, R3 CA1, R7 CA3); the
+      difference is R7, where the earlier attempt has R7 CA3 at -0.1899 against the R7 ANT target's -0.2561 (less
+      effective, 3 of 5) and this one -0.2258 against -0.1995 (more effective, 2 of 5), over the same 4 CA3 seizures.
+      The earlier attempt's own Figure S2 order and device-end variants also give 2 of 5, and this one's variants
+      give 1 or 2.
+    confidence: high
