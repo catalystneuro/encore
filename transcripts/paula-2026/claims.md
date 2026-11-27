@@ -1,106 +1,11 @@
-# paula-2026 · claims · run 44850108810
+# paula-2026 · claims · run 45975047098
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls; ls paper claims tools; grep -n "^#" docs/protocol.md
-```
-
-```
-LICENSE
-LICENSE-data
-README.md
-attempts
-bunfig.toml
-claims
-docs
-encore_science
-entries
-n-desk.png
-n-phone.png
-n-phone2.png
-node_modules
-ov-papers-rows.png
-package-lock.json
-package.json
-paper
-papers
-pnpm-lock.yaml
-pyproject.toml
-[... 396 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "docs/protocol.md",
- "limit": 200
-}
-```
-
-```
-1	# Protocol for an attempt
-2	
-3	Version: `pilot-18`. Record this version in the attempt's provenance.
-4	
-5	This is what agents, or people, do to attempt a target and deposit the
-6	result. A target is a dataset in a public archive and a paper it names. How
-7	each archive's datasets are named, versioned and read is in
-8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-9	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-10	
-11	An attempt has three roles, each a separate run with a separate context:
-12	
-13	- The **reader** reads the paper and writes the claims file: every finding,
-14	  and how each is to be tested, taken from the paper. A second reader checks
-15	  it against the paper. Readers never see the dataset's data.
-16	- The **author** tests the claims on the dataset. It reads the paper to
-17	  understand the claims, but the claims file binds it: it cannot change a
-18	  claim's statement, expected values or criterion. A method detail the file
-19	  lacks it takes from the paper, citing the passage, and it asks a reader
-20	  only when it believes the file misreads the paper.
-[... 180 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "claims/fouke-2025.yaml"
-}
-```
-
-```
-1	# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
-2	# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
-3	# from its Results, figure legends and STAR Methods. The version of record is not open access.
-4	#
-5	# When these criteria were written, the author had seen the data check only: the file list,
-6	# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
-7	# the extent of positions. No claim's analysis had been run. The author had also read the
-8	# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
-9	# which include per-stimulus median speeds and angular velocities and its statistics.
-10	#
-11	# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
-12	# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
-13	# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
-14	# use outside data and depend on that claim.
-15	#
-16	# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
-17	# trial is one stim_index; tracked frames only; positions smoothed with a Savitzky-Golay filter
-18	# (21 frames, order 2); trials rejected when the absolute cumulative heading change exceeds
-19	# 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or the mean speed exceeds
-20	# 100 mm/s; measures taken from 3 s to 35 s after the first frame (the 3 s stationary phase is
-[... 302 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  wc -l paper/*.txt; head -40 paper/*.txt
+grep -n "^#" docs/protocol.md | head -50; ls paper/ claims/ | head -50
 ```
 
 Result: not kept, because it reads the paper's text.
@@ -108,7 +13,7 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 40,274p paper/*.txt | grep -v '^\[' | grep -v '^$' | head -50; grep -c '^\[' paper/*.txt
+sed -n 1,200p docs/protocol.md; ls -la paper/
 ```
 
 Result: not kept, because it reads the paper's text.
@@ -116,33 +21,350 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 40,274p paper/*.txt | grep -v '^\[' | grep -v '^$' | tail -n +50 | cut -c1-150; ls papers/datasets/ | grep paula; cat papers/datasets/paula-2026.yaml 2>/dev/null
+head -40 paper/10.1103-wndc-k654.txt; grep -n -i "supplement\|appendix" paper/10.1103-wndc-k654.txt | head -60; wc -l paper/*.txt; cat papers/datasets/paula-2026.yaml
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1103-wndc-k654.txt",
+ "offset": 40,
+ "limit": 900
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,120p claims/fouke-2025.yaml
+```
+
+```
+# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
+# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
+# from its Results, figure legends and STAR Methods. The version of record is not open access.
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
+# the extent of positions. No claim's analysis had been run. The author had also read the
+# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
+# which include per-stimulus median speeds and angular velocities and its statistics.
+#
+# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
+# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
+# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
+# use outside data and depend on that claim.
+#
+# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
+# trial is one stim_index; tracked frames only; positions smoothed with a Savitzky-Golay filter
+# (21 frames, order 2); trials rejected when the absolute cumulative heading change exceeds
+# 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or the mean speed exceeds
+# 100 mm/s; measures taken from 3 s to 35 s after the first frame (the 3 s stationary phase is
+[... 100 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1103-wndc-k654.txt",
+ "offset": 939,
+ "limit": 750
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+grep -n -i "github\|code avail\|zenodo\|bit.ly\|software" paper/10.1103-wndc-k654.txt; sed -n 120,400p claims/fouke-2025.yaml | grep -n "^[a-z]\|^  [a-z_]*:" | head; tail -40 claims/fouke-2025.yaml; sed -n 1,60p tools/claims_check.py
 ```
 
 Result: not kept, because it reads the paper's text.
 
 **Agent**
 
-I stopped without writing any claims, because the paper's full text isn't under `paper/`. `claims/paula-2026.yaml` was not created, and no quotes were checked.
+The paper links no analysis code; the only URL, a bit.ly link, points to supplementary figures. Now I'll read the claims schema.
 
-**Text read:** `paper/10.1103-wndc-k654.txt`. Its header says "version of record", source "find_reuse cache", stored 2026-11-10. The file is a scrape of the APS landing page for PRX Life 4, 023018, published 22 May 2026, with a correction to Eq. (9) on 22 July 2026. It holds only:
-- the title, author list and abstract;
-- the PhySH subject tags and the correction notice;
-- the 53 references;
-- the page outline (Introduction, Methods, Results, Discussion, Conclusions, Data Availability, Supplemental Material).
+**Agent calls Bash**
 
-None of those sections' text is in the file, and there is no PDF.
+```bash
+python -c "
+import json;s=json.load(open('schemas/claims.schema.json'));print(json.dumps(s,indent=1)[:6000])"; grep -l "000713" claims/*.yaml | head
+```
 
-**Missing, and needed before any claim can be written:**
-- The article body: Introduction, Methods, Results, Discussion and figure legends. This includes how statistical complexity and CV were computed and which statistical tests were used.
-- The Data Availability section and any link to the paper's code.
-- The Supplemental Material at http://link.aps.org/supplemental/10.1103/wndc-k654. The references say it holds "a detailed description of dynamical systems, parameter exploration", which the results likely depend on.
-- The PDF, which would also be needed to read the figures.
+```
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Claims proposed for one target (a dataset and one of its papers)",
+ "description": "Draft. To be revised after the pilot.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "paper",
+  "claims"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": 2
+  },
+  "dataset": {
+   "description": "Before the cutover to paper-first records, the dataset a per-dataset claims file was read for. A paper's own claims file (claims/<paper>.yaml) leaves it out.",
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+[... 182 more lines not kept]
+```
 
-The references do cite DANDI:000713 (Allen Institute, Visual Behavior Neuropixels, version 0.240702.1725), so the dataset is the right one for this paper. The protocol forbids writing claims from the abstract, so there are no claims, quotes, statistics or criteria, and no open details or readings to name.
+**Agent calls Bash**
 
-To rerun, put the open-access full text and the supplement under `paper/`. The PRX Life PDF or the HTML article text would do.
+```bash
+python -c "
+import json;s=json.load(open('schemas/claims.schema.json'));print(json.dumps(s['\$defs'],indent=1)); print(json.dumps(s['properties'].get('checks',{}),indent=1)[:1500])"
+```
+
+```
+{
+ "expected": {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+   "quantity",
+   "value"
+  ],
+  "properties": {
+   "quantity": {
+    "type": "string"
+   },
+   "value": {
+    "type": "number"
+   },
+   "tolerance": {
+    "type": "number",
+    "minimum": 0
+   },
+   "unit": {
+[... 123 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n -B2 -A8 -i "simulat\|model only\|no recordings" claims/*.yaml | grep -i "data:\|criterion" | head -10; python -c "import fitz" && echo ok
+```
+
+```
+Exit code 1
+claims/andrews-2024.yaml-174-  data: elsewhere
+claims/andrews-2024.yaml:177:  criterion: Run Simulation/simulation.py as published (NEST 3.4, NESTML, 1000 granule and 12
+claims/athalye-2023.yaml:1013:  criterion: Simulation as in Methods, Optimal feedback control model and simulation. Per session,
+claims/athalye-2023.yaml:1095:  criterion: On the simulations of fig6c and fig6d, commands discretized and tuples of 15 or more
+claims/athalye-2023.yaml-1142-  - fig6g-ofc-uses-distinct-patterns, added the Table S2 statistics for the decoder-null comparison's own No Dynamics Model against shuffle (Figure 6H, z = 0.611 and 0.449), and the criterion now requires that absence too and the per-session Mann-Whitney absences of the legends.
+claims/athalye-2023.yaml-1144-  - figs1d-command-subtrajectories-differ, the criterion now says why the Statistics Summary's "behavior-preserving shuffle" for Figures S1D and S1E is not used (that shuffle leaves commands unchanged); the Methods and the legend give subsampling of the matched pool.
+claims/brudner-2026.yaml-435-  data: with_inputs
+claims/brudner-2026.yaml-459-  criterion: Values read from the bar heights of Fig. 4E and 4F (no sentence states them), default
+claims/brudner-2026.yaml-657-  criterion: Agents as fig4ef-agent-success with P(left) the logistic of 2.65 times the smoothed
+claims/buccino-2020.yaml-195-  criterion: 'Sorters, agreement graph and k as in the opening comment. Two details are open. The recording:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import fitz
+ModuleNotFoundError: No module named 'fitz'
+```
+
+**Agent calls Bash**
+
+```bash
+which pdftoppm; mkdir -p $TMPDIR/pp && pdftoppm -r 90 -png -f 5 -l 5 paper/10.1103-wndc-k654.pdf $TMPDIR/pp/p && pdftoppm -r 90 -png -f 11 -l 11 paper/10.1103-wndc-k654.pdf $TMPDIR/pp/p; ls $TMPDIR/pp
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1103-wndc-k654.pdf",
+ "pages": "5"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+PDF pages can't be rendered here (no poppler), so I'll work from the text. Next I'll see how an earlier claims file marked a simulation-only claim.
+
+**Agent calls Bash**
+
+```bash
+sed -n 160,185p claims/andrews-2024.yaml; grep -n -B3 -A3 "white noise\|synthetic" claims/*.yaml | head -30
+```
+
+```
+Fig. 2
+  quote: HcKCR1 activation results in hyperpolarizing currents in human hippocampal neurons (
+    Extended Data Fig. 2 )
+  criterion: Reproduced when, in each patched cell, the holding current shifts outward
+    (hyperpolarizing) during each light pulse and returns after it. Needs the patch-clamp
+    recordings, which the paper does not say are deposited.
+- id: simulation-dampening
+  statement: In a network model of dentate granule and basket cells, closed-loop activation of a
+    kalium channel in less than 50% of granule cells dampens seizure-like events (10%, 25% and
+    50% expression shown).
+  source: Results, Computational modeling of glutamatergic neuron inhibition; Extended Data Fig.
+    3; Methods, Simulation Prototype
+  quote: In silico epileptiform activity could be dampened with optogenetic control of less than
+    50% of the granule cell population ( Extended data Fig. 3 )
+  data: elsewhere
+  where: GitHub braingeneers/AndrewsGengVoitiukEtAl_SourceCode at commit 6865bf68cc3c8ea36a9b4f853b9248288fa1e52b,
+    Simulation directory (model code, rerun)
+  criterion: Run Simulation/simulation.py as published (NEST 3.4, NESTML, 1000 granule and 12
+    basket cells, channel reversal -85 mV, 20 pS, decay 50 ms, first second discarded; Methods,
+    Simulation Prototype) with the opsin fraction 0, 0.10, 0.25 and 0.50. The measure of
+[... 36 more lines not kept]
+```
+
+**Agent**
+
+I have the full text with its Methods and supplement. The paper links no code, so every method detail comes from the text. I'm writing the claims file now.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "claims/paula-2026.yaml",
+ "content": "# Claims for de Paula, Jungmann, Fontenele, Aguiar, Carelli, Matias, Copelli & de Vasconcelos\n# (2026), \"Revealing Stimulus-Dependent Dynamics Through Statistical Complexity\", PRX Life 4,\n# 023018, doi:10.1103/wndc-k654, tested on DANDI:000713.\n#\n# Provenance: written by an agent (model \"claude-opus-5-5\", Claude Code, runner \"GitHub\n# Actions\"), 2026-11-27, protocol pilot-18 as stated in docs/protocol.md.\n#\n# Text read: the version of record (published 22 May 2026, corrected 22 July 2026, the\n# correction fixing Eq. 9), from paper/10.1103-wndc-k654.txt, which holds the main text\n# (Methods, Results, figure legends, Table I) and the Supplemental Material (Secs. I to III,\n# supplementary Figs. 1 to 6, dated April 28, 2026). The PDF pages could not be rendered in\n# this run, so no figure was read from its image; every value below is from the text and the\n# legends. The paper links no analysis code: its Data Availability statement cites only the\n# dataset, and the one URL of the supplement (https://bit.ly/4smMnMj) holds the figures of the\n# parameter sweep. No code was read.\n#\n# Data the paper used (Methods II.A, Results III.A, Table I, legends of Figs. 1 to 5). The\n# Allen Institute Visual Behavior Neuropixels dataset, cited as DANDI:000713 version\n# 0.240702.1725 (Ref. 22). Wild-type and transgenic mice, head fixed, recorded with six\n# Neuropixels 1.0 probes targeting visual cortex. 102 sessions. Measured variables used:\n# the spike times of sorted units, each unit's brain structure, and the stimulus timing.\n# Epochs: the first hour of the session is active behavior, a change detection task with water\n# reward, eight natural images per session shown as 250 ms flashes, each followed by a 500 ms\n# gray screen; after it, a 25 min interval without reward that includes about 5 min of gray\n# screen, the spontaneous activity epoch. 26 subregions in four major areas (Table I):\n# visual cortex VISal, VISam, VISl, VISp, VISpm, VISrl (53 985 neurons); thalamus LGd, LP, MGd,\n# MGm, MGv, PIL, POL, PoT, SGN (20 541); hippocampus CA1, CA3, DG, POST, ProS, SUB (42 396);\n# midbrain APN, NB, NOT, MRN, SCig (17 163). Populations (Fig. 3b) VIS 586, TH 313, HP 363,\n# MB 175. 100-s analysis windows (Figs. 2 and 4) natural images 11 321, active behavior\n# 51 704, blanks 11 321, spontaneous 2870, total 77 216.\n#\n# Methods shared by the claims, with their sources.\n# - Population: the units of one subregion in one session (Methods II.A, \"local population\";\n#   586 VIS populations over 6 areas and 102 sessions fits one per area and session). Kept\n#   when it has at least 30 neurons, and a subregion is kept when such populations occur in at\n#   least eight sessions (Methods II.A, \"at least 30 recorded neurons sampled across a minimum\n#   of eight recording sessions\").\n# - Condition series (Methods II.A). Active behavior, the first ~3600 s cut into\n#   nonoverlapping 100-s windows (up to 36). Natural images, for each of the eight images the\n#   spikes in its 250 ms presentations concatenated (about 140 s), and the central 100 s kept.\n#   Blanks, for each image the spikes in the 500 ms gray screens that follow its\n#   presentations concatenated (about 240 s), central 100 s kept. Spontaneous, two 100-s\n#   windows from the ~5 min gray-screen interval after the task.\n# - Population rate r(t), spike counts of all N units in 50 ms bins divided by N times 50 ms\n#   (Methods II.B, Eq. 1). The bins do not overlap: a 100-s window gives T = 2000 points\n#   (Methods II.C).\n# - CV, within each nonoverlapping 10-s window the standard deviation of r(t) over its mean;\n#   a 100-s window's CV is the mean of its ten values (Methods II.B, Eq. 2).\n# - Bandt and Pompe, D = 6, tau = 1, 720 patterns, ties ranked higher for the later element\n#   (Methods II.C). Normalized permutation entropy H (Eq. 6); MPR statistical complexity C =\n#   Q0 DJS[P, Pe] H with Q0 the constant that sets Q in [0, 1] (Eqs. 7 to 9, Refs. 28 and 29;\n#   the standard Q0 of Ref. 29 for N = D! states is the reading of \"normalization constant\").\n# - Surrogate, for each window each neuron's interspike intervals shuffled independently\n#   (Methods II.E).\n#\n# Details the paper leaves open, used by several claims (each claim says which it uses).\n# - Session selection: the paper names 102 sessions without saying how they were chosen.\n#   Readings (a) every session in which at least one population passes the thresholds; (b)\n#   the sessions that also have the spontaneous gray-screen epoch. The counts above (102\n#   sessions, 1437 populations, Table I neurons) are the check: the reading closer to them is\n#   adopted, both shown.\n# - Unit selection: no quality filter is stated. Readings (a) all units of the units table;\n#   (b) the Allen default filters for this dataset (ISI violations < 0.5, amplitude cutoff <\n#   0.1, presence ratio > 0.9). Table I neuron counts decide between them (claim\n#   table1-sample); both are run.\n# - Natural images and blanks: whether change flashes are included, and how the gray screens\n#   around omitted flashes are treated, is not stated. Readings (a) all flashes of the image,\n#   omitted flashes giving neither an image nor a blank interval; (b) as (a) but blank\n#   intervals only after flashes followed by another flash. Spike times are shifted so that\n#   the pieces abut. The \"central 100 s\" is the 100 s centred on the series midpoint.\n# - Spontaneous windows: which two 100-s windows of the ~5 min gray screen is not stated.\n#   Readings (a) the first two consecutive windows from its start; (b) two windows centred in\n#   the interval.\n# - Surrogate ISI shuffling: where the shuffled train starts is not stated; the first spike is\n#   kept in place and the shuffled intervals follow it (a standard choice; it cannot change\n#   the outcome). Random seed fixed, a standard choice.\n# - JS divergence between two distributions of window values (Figs. 2b, 4e to 4h): the\n#   histogram bins are not stated. Readings (a) 50 and (b) 100 equal bins over the range of\n#   the two pooled distributions. Log base 2, so that JS lies in [0, 1], as the color scale of\n#   Fig. 4 (\"1.0 ... maximally divergent distributions\") implies; natural log as a variant.\n# - Mann-Whitney tests: two-sided (a standard choice; the bound p < 0.001 is what is tested).\nschema_version: 2\npaper: doi:10.1103/wndc-k654\nclaims:\n- id: table1-sample\n  statement: The analysis rests on 102 sessions and 1437 local populations (VIS 586, TH 313, HP\n    363, MB 175), with 53 985 visual cortex, 20 541 thalamic, 42 396 hippocampal and 17 163\n    midbrain neurons, and 77 216 analysis windows (11 321 natural images, 51 704 active\n    behavior, 11 321 blanks, 2870 spontaneous).\n  source: Table I; Fig. 2 legend; Fig. 3 legend, panel (b)\n  inferred: Counts read from Table I and the legends of Figs. 2 and 3; no sentence states them\n    together. They check the selection of sessions, units and populations.\n  expected:\n  - quantity: sessions\n    value: 102\n    tolerance: 10.2\n  - quantity: VIS populations\n    value: 586\n    tolerance: 58.6\n  - quantity: TH populations\n    value: 313\n    tolerance: 31.3\n  - quantity: HP populations\n    value: 363\n    tolerance: 36.3\n  - quantity: MB populations\n    value: 175\n    tolerance: 17.5\n  - quantity: visual cortex neurons\n    value: 53985\n    tolerance: 5398.5\n  - quantity: thalamic neurons\n    value: 20541\n    tolerance: 2054.1\n  - quantity: hippocampal neurons\n    value: 42396\n    tolerance: 4239.6\n  - quantity: midbrain neurons\n    value: 17163\n    tolerance: 1716.3\n  - quantity: natural image windows\n    value: 11321\n    tolerance: 1132.1\n  - quantity: active behavior windows\n    value: 51704\n    tolerance: 5170.4\n  - quantity: blank windows\n    value: 11321\n    tolerance: 1132.1\n  - quantity: spontaneous windows\n    value: 2870\n    tolerance: 287\n  criterion: Populations, neurons and windows counted with the selection of the opening\n    comment, under each reading of session and unit selection. Table I counts neurons summed\n    over the populations kept in each subregion (the reading of \"Neurons analyzed\"); the\n    per-subregion counts of Table I are compared too and reported. Reproduced when one\n    reading puts all expected values within tolerance; that reading is then adopted by the\n    other claims, as the paper's own counts imply it. Partially reproduced when the session\n    and population counts match but not the neuron counts.\n\n- id: fig1c-cv-region-medians\n  statement: During active behavior visual cortex subregions have the highest population CV\n    (medians 0.40 to 0.59), thalamic subregions moderate (0.27 to 0.37), hippocampal subregions\n    high (0.25 to 0.49, dentate gyrus highest at 0.49) and midbrain the lowest (0.16 to 0.45).\n  source: Results III.A, paragraph 3 (Fig. 1c); Fig. 1c legend\n  quote: 'Visual cortex subregions exhibited the highest CV values [median range: 0.40–0.59,\n    interquartile range (IQR): 0.12–0.18] ... Thalamic regions showed moderate CV values (median\n    range: 0.27–0.37, IQR: 0.10–0.15) ... Hippocampal subregions displayed high CV values (median\n    range: 0.25–0.49, IQR: 0.08–0.13)'\n  expected:\n  - quantity: lowest VIS subregion median CV\n    value: 0.40\n    tolerance: 0.04\n  - quantity: highest VIS subregion median CV\n    value: 0.59\n    tolerance: 0.059\n  - quantity: lowest TH subregion median CV\n    value: 0.27\n    tolerance: 0.027\n  - quantity: highest TH subregion median CV\n    value: 0.37\n    tolerance: 0.037\n  - quantity: lowest HP subregion median CV\n    value: 0.25\n    tolerance: 0.025\n  - quantity: highest HP subregion median CV (DG)\n    value: 0.49\n    tolerance: 0.049\n  - quantity: lowest MB subregion median CV\n    value: 0.16\n    tolerance: 0.016\n  - quantity: highest MB subregion median CV\n    value: 0.45\n    tolerance: 0.045\n  criterion: Per subregion, the median and IQR of the CV of all active-behavior 100-s windows\n    pooled over its populations (Methods II.A and II.B; Fig. 1c). Reproduced when every\n    subregion median of each major area lies inside the reported range widened by 10% of each\n    bound, the extremes are within tolerance, and DG has the highest hippocampal median. The\n    IQRs (VIS 0.12 to 0.18, TH 0.10 to 0.15, HP 0.08 to 0.13, MB 0.05 to 0.23) are reported and\n    compared under the same range rule; a miss on IQR alone makes it partially reproduced.\n\n- id: fig1c-cv-above-surrogate\n  statement: Empirical CV exceeds that of ISI-shuffled surrogates in every brain region (VIS\n    2 to 3 times, surrogate medians 0.21 to 0.24; TH 1.3 to 1.6; HP 1.5 to 2.2; MB 1.3 to 1.9),\n    with Mann-Whitney p < 0.001 for all regions.\n  source: Results III.A, paragraph 3 and the paragraph after Table I (Fig. 1c); Fig. 1c legend\n  quote: approximately 2–3× higher than their shuffled surrogates (median range 0.21–0.24) ...\n    1.3–1.6× higher than surrogates ... 1.5–2.2× higher than surrogates ... 1.3–1.9× higher\n    than surrogates. Mann-Whitney tests confirmed significant differences between empirical and\n    surrogate distributions for all brain regions (p < 0.001)\n  statistics:\n  - test: Mann-Whitney\n    p: 0.001\n    p_relation: \"<\"\n    n: active behavior windows of each region and their surrogates, 102 sessions\n  expected:\n  - quantity: VIS ratio of empirical to surrogate median CV, low end\n    value: 2\n    tolerance: 0.2\n  - quantity: VIS ratio of empirical to surrogate median CV, high end\n    value: 3\n    tolerance: 0.3\n  - quantity: VIS surrogate median CV, low end\n    value: 0.21\n    tolerance: 0.021\n  - quantity: VIS surrogate median CV, high end\n    value: 0.24\n    tolerance: 0.024\n  - quantity: TH ratio, low end\n    value: 1.3\n    tolerance: 0.13\n  - quantity: TH ratio, high end\n    value: 1.6\n    tolerance: 0.16\n  - quantity: HP ratio, low end\n    value: 1.5\n    tolerance: 0.15\n  - quantity: HP ratio, high end\n    value: 2.2\n    tolerance: 0.22\n  - quantity: MB ratio, low end\n    value: 1.3\n    tolerance: 0.13\n  - quantity: MB ratio, high end\n    value: 1.9\n    tolerance: 0.19\n  criterion: Surrogates per Methods II.E, one per active-behavior window; CV as for the data.\n    Ratio is the subregion's empirical median CV over its surrogate median. \"For all brain\n    regions\" can be read (a) per subregion (26 tests) or (b) per major area (4 tests), both\n    run. Reproduced when every subregion ratio lies inside its area's range widened by 10% of\n    each bound and the Mann-Whitney test gives p < 0.001 with empirical higher in every\n    region under one reading. Partially reproduced when the tests hold but some ratios fall\n    outside.\n\n- id: fig1d-surrogate-abolishes-cv-correlations\n  statement: Inter-regional correlations of CV time series during active behavior are present\n    in the data and abolished in the ISI-shuffled surrogates.\n  source: Results III.A, paragraph 4; Fig. 1d legend\n  quote: For comparison, the upper triangle displays correlations computed from surrogate data,\n    demonstrating that shuffling spike times abolished inter-regional CV relationships\n  criterion: Per pair of subregions, the Pearson correlation of their CV time series in\n    nonoverlapping 10-s windows during active behavior (Results III.A, paragraph 4; Fig. 1d\n    legend), in sessions that record both. How sessions are combined is not stated. Readings\n    (a) the series of all shared sessions concatenated, one correlation; (b) one correlation\n    per session, averaged over sessions. Reproduced when, under each reading, the empirical\n    matrix holds correlations as large as the top 10% range of Fig. 1e (0.50 to 0.67, widened\n    by 10%) and the surrogate matrix has none above 0.2 in absolute value; the 0.2 bound is\n    not from the paper (it states only \"abolished\"), and the full surrogate distribution is\n    shown.\n\n- id: fig1e-positive-cv-modules\n  statement: The strongest 10% of positive CV correlations (0.50 to 0.67) link subregions\n    within functional modules (visual areas together, subicular regions together, thalamic\n    populations together), with connections between distinct systems largely absent.\n  source: Results III.A, paragraph 4; Fig. 1e legend, left\n  quote: The left panel highlights the 10% most positively correlated region pairs, revealing\n    preferential connections within functional modules ... Notably, connections between\n    functionally distinct brain systems were largely absent\n  depends_on:\n  - fig1d-surrogate-abolishes-cv-correlations\n  expected:\n  - quantity: lowest correlation in the top 10% positive\n    value: 0.50\n    tolerance: 0.05\n  - quantity: highest correlation\n    value: 0.67\n    tolerance: 0.067\n  criterion: On the empirical matrix of fig1d (both readings), the top 10% of region pairs by\n    correlation. Reproduced when their range matches and most of them (more than half, the\n    reading of \"preferential\" and \"largely absent\") join subregions of the same major area.\n\n- id: fig1e-dg-ca3-anticorrelation-hubs\n  statement: Among the 10% most anticorrelated region pairs (r from -0.27 to -0.002), DG and\n    CA3 are the hubs of negative CV relationships with other regions.\n  source: Results III.A, paragraph 4; Fig. 1e legend, middle\n  quote: The middle panel presents the 10% most anticorrelated pairs, emphasizing DG and CA3 as\n    a hub of negative CV relationships with other regions\n  depends_on:\n  - fig1d-surrogate-abolishes-cv-correlations\n  expected:\n  - quantity: most negative correlation\n    value: -0.27\n    tolerance: 0.027\n  criterion: On the empirical matrix of fig1d (both readings), the 10% of pairs with the most\n    negative correlations. Reproduced when DG and CA3 are the two subregions appearing in the\n    most of these pairs and the most negative value is within tolerance.\n\n- id: fig1e-midbrain-weakest-cv-correlations\n  statement: Midbrain areas have the weakest CV correlations with all other regions, near zero\n    (-0.04 to +0.03).\n  source: Results III.A, paragraph 4; Fig. 1e legend, right\n  quote: The right panel displays near-zero correlations, showing that midbrain areas exhibited\n    the weakest CV correlations across all studied regions\n  depends_on:\n  - fig1d-surrogate-abolishes-cv-correlations\n  criterion: On the empirical matrix of fig1d (both readings), the mean absolute correlation of\n    each subregion with all others. Reproduced when the midbrain subregions have the lowest\n    mean absolute correlations of the four major areas (their mean below that of VIS, TH and\n    HP), and most of their pairs lie near zero, in the legend's range -0.04 to +0.03 widened\n    by 10% of each bound.\n\n- id: fig2a-vis-cv-by-condition\n  statement: In visual cortex, median CV is higher in active behavior and blank screens (VISp\n    0.59 and 0.55, VISl 0.56 and 0.46, VISal 0.55 and 0.46) than in spontaneous activity (0.29,\n    0.30, 0.30), with natural images intermediate (0.39, 0.46, 0.48).\n  source: Results III.B, paragraph 2 (Fig. 2a); Fig. 2a legend\n  quote: 'with active behavior and blank screen conditions showing elevated median CV values\n    (VISp: 0.59 and 0.55; VISl: 0.56 and 0.46; VISal: 0.55 and 0.46) compared to spontaneous\n    activity (VISp: 0.29; VISl: 0.30; VISal: 0.30)'\n  expected:\n  - quantity: VISp median CV, active behavior\n    value: 0.59\n    tolerance: 0.059\n  - quantity: VISp median CV, blanks\n    value: 0.55\n    tolerance: 0.055\n  - quantity: VISp median CV, spontaneous\n    value: 0.29\n    tolerance: 0.029\n  - quantity: VISp median CV, natural images\n    value: 0.39\n    tolerance: 0.039\n  - quantity: VISl median CV, active behavior\n    value: 0.56\n    tolerance: 0.056\n  - quantity: VISl median CV, blanks\n    value: 0.46\n    tolerance: 0.046\n  - quantity: VISl median CV, spontaneous\n    value: 0.30\n    tolerance: 0.03\n  - quantity: VISl median CV, natural images\n    value: 0.46\n    tolerance: 0.046\n  - quantity: VISal median CV, active behavior\n    value: 0.55\n    tolerance: 0.055\n  - quantity: VISal median CV, blanks\n    value: 0.46\n    tolerance: 0.046\n  - quantity: VISal median CV, spontaneous\n    value: 0.30\n    tolerance: 0.03\n  - quantity: VISal median CV, natural images\n    value: 0.48\n    tolerance: 0.048\n  criterion: Per subregion and condition, the median CV of the condition's 100-s windows pooled\n    over populations (Methods II.A and II.B). The condition readings of the opening comment\n    (flash inclusion, spontaneous windows) are each run. Reproduced when, under one reading,\n    all twelve medians are within tolerance; partially reproduced when the order (active and\n    blank above natural images above spontaneous, per area) holds but some values miss.\n\n- id: fig2a-thalamus-cv-by-condition\n  statement: Thalamic populations show the same pattern with smaller effects, LP median CV 0.37\n    in active behavior against 0.28 in spontaneous activity, LGd 0.32 against 0.23.\n  source: Results III.B, paragraphs 2 and 3 (Fig. 2a); Fig. 2a legend\n  quote: 'Thalamic local neuronal populations showed qualitatively similar patterns but with\n    reduced effect sizes (LP: 0.37 in active behavior vs 0.28 in spontaneous activity; LGd: 0.32\n    vs 0.23)'\n  expected:\n  - quantity: LP median CV, active behavior\n    value: 0.37\n    tolerance: 0.037\n  - quantity: LP median CV, spontaneous\n    value: 0.28\n    tolerance: 0.028\n  - quantity: LGd median CV, active behavior\n    value: 0.32\n    tolerance: 0.032\n  - quantity: LGd median CV, spontaneous\n    value: 0.23\n    tolerance: 0.023\n  criterion: As fig2a-vis-cv-by-condition. Reproduced when the four medians are within\n    tolerance under one reading; \"reduced effect sizes\" is checked as the active minus\n    spontaneous difference in LP and LGd being smaller than in VISp, VISl and VISal.\n\n- id: fig2a-hippocampus-cv-stable\n  statement: DG and CA3 keep nearly constant median CV across the visually driven conditions\n    (DG 0.48 to 0.50, CA3 0.41 to 0.42; CA1 0.25), with modest increases in spontaneous activity\n    (DG 0.51, CA3 0.43).\n  source: Results III.B, paragraph 3 (Fig. 2a); Fig. 2a legend\n  quote: 'DG and CA3 maintained relatively stable median CV values across all visually driven\n    conditions (DG: 0.48–0.50; CA3: 0.41–0.42), with only modest increases during spontaneous\n    activity (DG: 0.51; CA3: 0.43)'\n  expected:\n  - quantity: DG median CV, lowest visually driven condition\n    value: 0.48\n    tolerance: 0.048\n  - quantity: DG median CV, highest visually driven condition\n    value: 0.50\n    tolerance: 0.05\n  - quantity: CA3 median CV, lowest visually driven condition\n    value: 0.41\n    tolerance: 0.041\n  - quantity: CA3 median CV, highest visually driven condition\n    value: 0.42\n    tolerance: 0.042\n  - quantity: CA1 median CV, visually driven conditions\n    value: 0.25\n    tolerance: 0.025\n  - quantity: DG median CV, spontaneous\n    value: 0.51\n    tolerance: 0.051\n  - quantity: CA3 median CV, spontaneous\n    value: 0.43\n    tolerance: 0.043\n  criterion: As fig2a-vis-cv-by-condition, the visually driven conditions being natural images,\n    active behavior and blanks. Reproduced when all values are within tolerance under one\n    reading and the spontaneous medians of DG and CA3 exceed their visually driven medians.\n\n- id: fig2a-midbrain-cv-invariant\n  statement: Midbrain populations have essentially constant CV across all conditions (APN\n    median 0.16 in every condition, MRN 0.20 to 0.21).\n  source: Results III.B, paragraph 3 (Fig. 2a); Fig. 2a legend\n  quote: 'Midbrain local neuronal populations exhibited the most invariant dynamics, with\n    essentially constant CV values across all experimental conditions (APN: 0.16; MRN:\n    0.20–0.21)'\n  expected:\n  - quantity: APN median CV, each condition\n    value: 0.16\n    tolerance: 0.016\n  - quantity: MRN median CV, lowest condition\n    value: 0.20\n    tolerance: 0.02\n  - quantity: MRN median CV, highest condition\n    value: 0.21\n    tolerance: 0.021\n  criterion: As fig2a-vis-cv-by-condition, over all four conditions. Reproduced when the APN\n    median of every condition and the MRN extremes are within tolerance under one reading.\n\n- id: fig2b-vis-summed-js-cv\n  statement: For CV, the summed within-area JS divergences of visual cortex are nearly equal\n    in active behavior and blank screens (about 1% apart) and differ by about 30% from those of\n    natural images and spontaneous activity.\n  source: Results III.B, paragraphs 5 and 6 (Fig. 2b)\n  quote: Visual cortex showed similar JS divergence values during active behavior and blank\n    screens (∼1% difference in summed divergences), while these conditions separated\n    substantially from image presentation and spontaneous activity by ∼30%\n  expected:\n  - quantity: percentage difference of summed VIS JS divergence, active behavior against blanks\n    value: 1\n    tolerance: 0.5\n    unit: percent\n  - quantity: percentage difference, active behavior or blanks against natural images or\n      spontaneous\n    value: 30\n    tolerance: 3\n    unit: percent\n  criterion: 'Per condition, the matrix of JS divergences between the CV distributions (100-s\n    windows) of every pair of subregions (Results III.B, paragraph 5), with the histogram\n    readings of the opening comment. The paper sums \"the JS divergence values along the main\n    diagonal of each submatrix\" (the block of one major area), but the main diagonal of a\n    region by region matrix is zero. Readings of the sum: (a) all within-area pairs (the\n    block above its diagonal); (b) the first off-diagonal of the block (adjacent subregions in\n    the order of Table I). Readings of the percentage difference between conditions A and B:\n    (i) |SA - SB| / SB with B the second named; (ii) |SA - SB| over their mean. The tolerance\n    of the 1% figure is 0.5 points, as \"∼1%\" is printed to one digit; the 30% figure takes\n    10%. Reproduced when, under one combination of readings, active against blanks is within\n    1 +/- 0.5% and each of the four pairs of active or blanks against natural images or\n    spontaneous is within 30 +/- 3%. Partially reproduced when active and blanks are the\n    closest pair of the six and the others differ by more than 15%. All combinations are\n    shown.'\n\n- id: fig2b-hp-mb-summed-js-cv\n  statement: For CV, the largest hippocampal percentage difference in summed JS divergence is\n    between active behavior and spontaneous activity (about 15%), and midbrain has the smallest\n    differences (at most 7%).\n  source: Results III.B, paragraph 6 (Fig. 2b)\n  quote: The highest percentage difference in hippocampus occurred between active behavior and\n    spontaneous activity (∼15%). Notably, midbrain areas displayed the smallest percentage\n    differences overall across most condition pairs (maximum 7%)\n  depends_on:\n  - fig2b-vis-summed-js-cv\n  expected:\n  - quantity: HP percentage difference, active behavior against spontaneous\n    value: 15\n    tolerance: 1.5\n    unit: percent\n  - quantity: MB largest percentage difference over condition pairs\n    value: 7\n    tolerance: 0.7\n    unit: percent\n  criterion: Sums and percentage differences under the readings of fig2b-vis-summed-js-cv.\n    Reproduced when, under one combination, the HP active against spontaneous difference is\n    within tolerance and the largest of the six HP pairs, the MB maximum is at most 7.7%, and\n    MB has the smallest difference of the four areas in most (at least four) of the six pairs.\n\n- id: fig2b-visually-driven-js-cv-low\n  statement: Among the three visually driven conditions, the CV-based JS divergences of\n    cortical regions differ little between conditions (typically less than 4%).\n  source: Results III.B, paragraph 6 (Fig. 2b)\n  quote: Among the three visually driven conditions (natural images, active behavior, blank\n    screens), JS divergences remained consistently low across cortical regions (typically <4%)\n  depends_on:\n  - fig2b-vis-summed-js-cv\n  criterion: Under the readings of fig2b-vis-summed-js-cv, the VIS percentage differences for\n    the three pairs among natural images, active behavior and blanks. Reproduced when most\n    (at least two of three) are at most 4.4% (4% widened by 10%). This statement conflicts\n    with the ~30% separation of natural images from active and blank in the same paragraph\n    (fig2b-vis-summed-js-cv); both are tested as written, and the conflict is noted.\n\n- id: fig2b-dg-ca3-high-js-cv\n  statement: DG and CA3 have high CV-based JS divergences in all four conditions, largest in\n    spontaneous activity (median 0.84 for both) and blank screens (median 0.63 for both).\n  source: Results III.B, paragraph 6 (Fig. 2b)\n  quote: 'Within hippocampal regions, DG and CA3 exhibited high JS divergences across all four\n    conditions, with the largest values occurring during spontaneous activity (median DG: 0.84;\n    CA3: 0.84) and blank screens (median DG: 0.63; CA3: 0.63)'\n  expected:\n  - quantity: DG median JS divergence, spontaneous\n    value: 0.84\n    tolerance: 0.084\n  - quantity: CA3 median JS divergence, spontaneous\n    value: 0.84\n    tolerance: 0.084\n  - quantity: DG median JS divergence, blanks\n    value: 0.63\n    tolerance: 0.063\n  - quantity: CA3 median JS divergence, blanks\n    value: 0.63\n    tolerance: 0.063\n  criterion: On the per-condition JS matrices of fig2b-vis-summed-js-cv (histogram readings of\n    the opening comment), the median of a region's divergences from the other 25 subregions\n    (the reading of \"median DG\"; a variant takes only the other hippocampal subregions).\n    Reproduced when, under one reading, the four medians are within tolerance and the\n    spontaneous medians of DG and CA3 are their largest over the four conditions. The Fig. 2b\n    legend gives DG and CA3 \"moderate divergences (0.15–0.35)\", which conflicts with these\n    values; claim fig2b-legend-js-cv tests the legend.\n\n- id: fig2b-legend-js-cv\n  statement: In the CV-based JS divergences, visual and thalamic regions diverge strongly\n    between spontaneous and visually driven states (above 0.40 for most visual areas, above\n    0.30 for thalamic regions), DG and CA3 moderately (0.15 to 0.35), and midbrain least (below\n    0.15 for most condition pairs).\n  source: Fig. 2b legend\n  quote: Visual cortex and thalamic regions showed large JS divergences between spontaneous\n    activity and visually driven states, with values exceeding 0.40 for most visual areas and\n    0.30 for thalamic regions. Hippocampal regions, particularly DG and CA3, exhibited moderate\n    divergences (0.15–0.35) across condition pairs\n  criterion: The legend compares conditions within a region (\"between spontaneous activity and\n    visually driven states\"), while the Results describe region-pair matrices within each\n    condition. Readings (a) per subregion, the JS divergence between its CV distribution in\n    spontaneous activity and in each visually driven condition; (b) the region-pair matrices\n    of fig2b-vis-summed-js-cv, comparing a region's row in spontaneous against the visually\n    driven conditions. Histogram readings as in the opening comment. Reproduced when, under\n    one reading, more than half of the visual subregions exceed 0.44 and more than half of the\n    thalamic subregions exceed 0.33 for spontaneous against visually driven, DG and CA3 lie\n    in 0.135 to 0.385 across condition pairs, and most midbrain values are below 0.165 (the\n    printed bounds widened by 10%).\n\n- id: fig3a-reference-systems\n  statement: In the C-H plane with D = 6, white noise lies at H near 1 and C near 0, a sine\n    near H 0 and C near 0.1, exponentially correlated Brownian motion at C 0.3 to 0.5 for H 0.3\n    to 0.6, and chaotic maps (logistic, tent, Ikeda) near maximum complexity, C 0.4 to 0.5 at H\n    0.5 to 0.8.\n  source: Results III.C, paragraph 2; Fig. 3a; Supplemental Material Sec. I\n  quote: white noise approaches maximum entropy (H ≈1) with minimal complexity (C ≈0), while\n    deterministic periodic signals (sine wave) exhibit minimum entropy (H ≈0) and low\n    complexity (C ≈0.1) ... exponentially correlated processes (colored noise) achieving\n    moderate complexity (C ≈0.3–0.5) at intermediate entropy values (H ≈0.3–0.6)\n  data: elsewhere\n  where: No deposit; synthetic series generated from the definitions in Supplemental Material\n    Sec. I (no recordings are used)\n  criterion: Series generated as in Supplemental Material Sec. I (correlated Gaussian noise\n    with K = floor(100 alpha) + 1 and exponential kernel, logistic map, Ikeda map with u = 0.9\n    and p in [5, 17], tent map, 1/f^k noise), H and C with D = 6, tau = 1. The parameter values\n    of Fig. 3a, the series lengths and the transients dropped are not given in the text (the\n    figure, which could not be read here, shows the parameters); the series length is 10^5\n    points with the first 10^3 dropped, a standard choice, and parameters span the ranges the\n    supplement names (logistic r in [3.5, 4], tent mu in (1, 2]). Reproduced when the\n    positions fall in the ranges quoted, widened by 10% of each bound.\n\n- id: fig3b-complexity-levels-by-region\n  statement: Across the hour of active recording, visual cortex and hippocampus keep the\n    highest statistical complexity (C about 0.13 to 0.15), thalamus is intermediate (about\n    0.11) and midbrain lowest (about 0.10), and these differences stay stable over time.\n  source: Results III.C, paragraph 3; Fig. 3b\n  quote: Visual cortex (VIS) and hippocampus (HP) maintained consistently high complexity\n    values (C ≈0.13–0.15) throughout the hour-long recording session (n=102 sessions) ...\n    Thalamus (TH) exhibited intermediate complexity (C ≈0.11), while midbrain (MB) showed the\n    lowest and most stable complexity values (C ≈0.10)\n  expected:\n  - quantity: VIS and HP mean C over time, low end\n    value: 0.13\n    tolerance: 0.013\n  - quantity: VIS and HP mean C over time, high end\n    value: 0.15\n    tolerance: 0.015\n  - quantity: TH mean C\n    value: 0.11\n    tolerance: 0.011\n  - quantity: MB mean C\n    value: 0.10\n    tolerance: 0.01\n  criterion: 'Per major area and 100-s window index, the mean C over populations, with its\n    standard error (Fig. 3b legend). Which windows form the time course is open: the section\n    is about natural image presentation, but a time course over \"the hour-long recording\n    session\" and the point counts of Figs. 3c to 3f (summing to 51 704, the active behavior\n    count) point to (a) the 36 active-behavior windows; (b) the eight natural-image windows\n    per population, in image order, is the other reading. Reproduced when, under one reading,\n    each area''s mean over windows is within tolerance and the order MB < TH < VIS and HP\n    holds at every window index; partially reproduced when the order holds at most indices.'\n\n- id: fig3c-vis-ch-plane\n  statement: Visual cortex windows span H 0.8 to 1.0 and C 0.1 to 0.4 in the C-H plane, and\n    differ from ISI-shuffled surrogates, which cluster at lower complexity (C 0.1 to 0.2),\n    Mann-Whitney p < 0.001.\n  source: Results III.C, paragraph 4; Fig. 3c\n  quote: Local neuronal population in the visual cortex occupied a broad region of the plane\n    spanning high entropy values (H ≈ 0.8–1.0) with complexity values ranging from C ≈0.1 to C\n    ≈0.4 ... the empirical distribution differed significantly from temporally shuffled\n    surrogate data (MannWhitney test, p < 0.001), with surrogate data clustering at lower\n    complexity values (C ≈0.1–0.2)\n  statistics:\n  - test: Mann-Whitney\n    p: 0.001\n    p_relation: \"<\"\n    n: 21 084 VIS windows and their surrogates\n  depends_on:\n  - fig3b-complexity-levels-by-region\n  criterion: Windows as the reading of fig3b adopted (the active-behavior windows, whose count\n    21 084 matches), with natural-image windows shown. Ranges read as the 2.5th to 97.5th\n    percentiles of H and C (a standard reading of a visual span, not given by the paper), with\n    the 0th to 100th as a variant. Reproduced when the spans lie within the quoted ranges\n    widened by 10% of each bound, the Mann-Whitney test on C gives p < 0.001 with empirical\n    above surrogate, and the surrogate median C lies in 0.09 to 0.22.\n\n- id: fig3d-th-ch-plane\n  statement: Thalamic windows occupy a narrower part of the C-H plane than visual cortex (H 0.75\n    to 0.95, C 0.05 to 0.25), and differ from surrogates (p < 0.001).\n  source: Results III.C, paragraph 5; Fig. 3d\n  quote: Thalamic local neuronal populations [Fig. 3(d)] displayed a similar but more compact\n    distribution, occupying a narrower range of the C-H plane with slightly lower entropy (H\n    ≈0.75–0.95) and complexity (C ≈0.05–0.25) compared to visual cortex ... empirical data\n    differed significantly from surrogates (p < 0.001)\n  statistics:\n  - test: Mann-Whitney\n    p: 0.001\n    p_relation: \"<\"\n    n: 11 265 TH windows and their surrogates\n  depends_on:\n  - fig3c-vis-ch-plane\n  criterion: As fig3c-vis-ch-plane, for thalamus (11 265 windows). The test is not named in\n    this paragraph; it is the Mann-Whitney test of the VIS paragraph and the Fig. 3 legend\n    asterisks. Reproduced when the spans match under the range rule, the C span is narrower\n    than that of VIS, and p < 0.001.\n\n- id: fig3e-hp-ch-plane\n  statement: Hippocampal windows have the broadest complexity distribution (C 0.05 to 0.4) at\n    high entropy (H 0.85 to 1.0), and differ from surrogates (p < 0.001).\n  source: Results III.C, paragraph 6; Fig. 3e\n  quote: Hippocampal populations [Fig. 3(e)] exhibited the broadest distribution, spanning an\n    extensive range of complexity (C ≈ 0.05–0.4) at high entropy (H ≈0.85–1.0)\n  statistics:\n  - test: Mann-Whitney\n    p: 0.001\n    p_relation: \"<\"\n    n: 13 059 HP windows and their surrogates\n  depends_on:\n  - fig3c-vis-ch-plane\n  criterion: As fig3c-vis-ch-plane, for hippocampus (13 059 windows). Reproduced when the spans\n    match under the range rule, the C span is the widest of the four areas, and p < 0.001.\n\n- id: fig3f-mb-ch-plane\n  statement: Midbrain windows occupy the most restricted part of the C-H plane, at high entropy\n    (H 0.9 to 1.0) and low complexity (C 0.05 to 0.2), yet differ from surrogates (p < 0.001).\n  source: Results III.C, paragraph 7; Fig. 3f\n  quote: Midbrain populations [Fig. 3(f)] occupied the most restricted region of the C-H plane,\n    clustering at high entropy (H ≈0.9–1.0) but consistently low complexity (C ≈ 0.05–0.2) ...\n    Nevertheless, empirical data remained significantly different from surrogates (p < 0.001)\n  statistics:\n  - test: Mann-Whitney\n    p: 0.001\n    p_relation: \"<\"\n    n: 6296 MB windows and their surrogates\n  depends_on:\n  - fig3c-vis-ch-plane\n  criterion: As fig3c-vis-ch-plane, for midbrain (6296 windows). Reproduced when the spans match\n    under the range rule, the C span is the narrowest of the four areas, and p < 0.001.\n\n- id: fig3-complexity-range-fractions\n  statement: The fractions of windows by complexity range are, for visual cortex, 0.8% in\n    [0.3, 0.4] and 4.9% in [0.0, 0.1]; thalamus 0.6% in [0.2, 0.3] and 24.6% in [0.0, 0.1];\n    hippocampus 2.7% in [0.3, 0.4] and 9.5% in [0.0, 0.1]; midbrain 45.4% in [0.1, 0.2] and\n    54.0% in [0.0, 0.1].\n  source: Results III.C, paragraph 4\n  quote: Among the visual area windows analyzed, 0.8% exhibit complexity values in the range\n    [0.3,0.4], compared to 4.9% in the range [0.0,0.1]. For thalamic regions, 0.6% of windows\n    fall in the range [0.2,0.3], compared to 24.6% in the range [0.0,0.1]\n  depends_on:\n  - fig3b-complexity-levels-by-region\n  expected:\n  - quantity: VIS windows with C in [0.3, 0.4]\n    value: 0.8\n    tolerance: 0.08\n    unit: percent\n  - quantity: VIS windows with C in [0.0, 0.1]\n    value: 4.9\n    tolerance: 0.49\n    unit: percent\n  - quantity: TH windows with C in [0.2, 0.3]\n    value: 0.6\n    tolerance: 0.06\n    unit: percent\n  - quantity: TH windows with C in [0.0, 0.1]\n    value: 24.6\n    tolerance: 2.46\n    unit: percent\n  - quantity: HP windows with C in [0.3, 0.4]\n    value: 2.7\n    tolerance: 0.27\n    unit: percent\n  - quantity: HP windows with C in [0.0, 0.1]\n    value: 9.5\n    tolerance: 0.95\n    unit: percent\n  - quantity: MB windows with C in [0.1, 0.2]\n    value: 45.4\n    tolerance: 4.54\n    unit: percent\n  - quantity: MB windows with C in [0.0, 0.1]\n    value: 54.0\n    tolerance: 5.4\n    unit: percent\n  criterion: Windows as the reading of fig3b adopted, with the other reading shown. The bins\n    are taken half open, [a, b), the last one closed (a standard choice; it can move a few\n    windows only). Reproduced when all eight fractions are within tolerance under one reading;\n    partially reproduced when at least six are.\n\n- id: fig4a-vis-complexity-by-condition\n  statement: All six visual areas have higher median complexity during natural image\n    presentation (0.16 to 0.26) than during spontaneous activity (0.1), with active behavior\n    and blank screens intermediate (0.1 to 0.19), all pairwise comparisons p < 0.001.\n  source: Results III.D, paragraph 2; Fig. 4a and its legend\n  quote: All six visual areas (VISl, VISal, VISp, VISam, VISrl, VISpm) showed elevated median\n    complexity during natural image presentation (0.16–0.26) compared to spontaneous activity\n    (0.1), with active behavior and blank screen conditions producing intermediate values\n    (0.1–0.19)\n  statistics:\n  - about: pairwise comparisons between conditions, each visual area\n    test: not named\n    p: 0.001\n    p_relation: \"<\"\n    n: natural images 11 321, active behavior 51 704, blanks 11 321, spontaneous 2870 windows\n      over all regions\n  expected:\n  - quantity: lowest VIS subregion median C, natural images\n    value: 0.16\n    tolerance: 0.016\n  - quantity: highest VIS subregion median C, natural images\n    value: 0.26\n    tolerance: 0.026\n  - quantity: VIS subregion median C, spontaneous\n    value: 0.1\n    tolerance: 0.01\n  - quantity: lowest VIS subregion median C, active behavior and blanks\n    value: 0.1\n    tolerance: 0.01\n  - quantity: highest VIS subregion median C, active behavior and blanks\n    value: 0.19\n    tolerance: 0.019\n  criterion: 'Per visual subregion and condition, the median C of the 100-s windows pooled over\n    populations, under the condition readings of the opening comment. The test of \"all\n    pairwise comparisons\" is not named; the paper uses Mann-Whitney elsewhere (Figs. 1c, 3),\n    so readings are (a) two-sided Mann-Whitney for each of the six condition pairs per area,\n    uncorrected; (b) the same with Bonferroni over the 36 tests. Reproduced when, under one\n    reading, every area has natural images > active and blanks > spontaneous in median, the\n    medians fall in the quoted ranges widened by 10% of each bound, and all pairwise tests\n    give p < 0.001. The legend gives narrower ranges (VISl 0.15–0.26; VISal 0.15–0.25; VISp\n    0.16–0.19; spontaneous 0.1 each) and the IQRs 0.08 to 0.12 in visually driven states;\n    these are reported and compared. Partially reproduced when the order holds but a value or\n    test misses.'\n\n- id: fig4b-thalamus-lgd-lp-modulated\n  statement: Of nine thalamic nuclei, only LGd and LP show significant modulation of\n    complexity across conditions (p < 0.001), higher during visually driven states (0.14 to\n    0.18) than spontaneous activity (0.11 to 0.12), with smaller effects than visual cortex.\n  source: Results III.D, paragraph 3; Fig. 4b legend\n  quote: Among nine examined regions, only the lateral geniculate dorsal (LGd) and lateral\n    posterior (LP) nuclei, both components of the visual thalamic pathway, showed significant\n    modulation across conditions (p < 0.001). LGd and LP exhibited elevated complexity during\n    visually driven states (0.14–0.18) compared to spontaneous activity (0.11–0.12)\n  statistics:\n  - test: not named\n    p: 0.001\n    p_relation: \"<\"\n    n: LGd and LP windows in the four conditions\n  depends_on:\n  - fig4a-vis-complexity-by-condition\n  expected:\n  - quantity: LGd and LP median C, visually driven states, low end\n    value: 0.14\n    tolerance: 0.014\n  - quantity: LGd and LP median C, visually driven states, high end\n    value: 0.18\n    tolerance: 0.018\n  - quantity: LGd and LP median C, spontaneous, low end\n    value: 0.11\n    tolerance: 0.011\n  - quantity: LGd and LP median C, spontaneous, high end\n    value: 0.12\n    tolerance: 0.012\n  criterion: 'Medians as fig4a. The test of \"modulation across conditions\" is not named.\n    Readings (a) a Kruskal-Wallis test across the four conditions; (b) the pairwise\n    Mann-Whitney tests of fig4a, every visually driven condition against spontaneous. The\n    legend gives other values (LP 0.12–0.14 against 0.11; LGd 0.12–0.15 against 0.1), a\n    conflict with the text; the expected values are the text''s, and the legend''s are a\n    second reading of the values. Reproduced when, under one test reading, LGd and LP give\n    p < 0.001 with visually driven medians above spontaneous, their medians match the text or\n    the legend values under the range rule, and their visually driven minus spontaneous\n    difference is smaller than that of every visual area.'\n\n- id: fig4b-other-thalamus-not-modulated\n  statement: The other seven thalamic nuclei (MGd, PoT, SGN, POL, MGm, MGv, PIL) keep uniformly\n    low complexity (0.10 to 0.13) with no significant stimulus dependence.\n  source: Results III.D, paragraph 3; Fig. 4b\n  quote: The remaining seven thalamic nuclei (MGd, PoT, SGN, POL, MGm, MGv, PIL) maintained\n    uniformly low complexity (0.10–0.13) with minimal variability across all conditions,\n    showing no significant stimulus-dependence\n  depends_on:\n  - fig4b-thalamus-lgd-lp-modulated\n  expected:\n  - quantity: median C of the seven nuclei, low end\n    value: 0.10\n    tolerance: 0.01\n  - quantity: median C of the seven nuclei, high end\n    value: 0.13\n    tolerance: 0.013\n  criterion: A claim of absence. The paper's test is the one of fig4b-thalamus-lgd-lp-modulated,\n    unnamed, at its only stated level p < 0.001; both test readings of that claim are run.\n    Reproduced when, for each of the seven nuclei, the test does not reach p < 0.001, and the\n    medians lie in 0.09 to 0.143; not reproduced when the test finds modulation in any of\n    them. The size of each nucleus' largest condition difference in median C is reported\n    either way.\n\n- id: fig4c-dg-ca3-complexity\n  statement: DG and CA3 show elevated complexity across most conditions (DG 0.19 to 0.27, CA3\n    0.15 to 0.21), peaking during spontaneous activity, opposite to visual cortex, while CA1,\n    POST, ProS and SUB stay lower and stable (0.11 to 0.15).\n  source: Results III.D, paragraph 4; Fig. 4c and its legend\n  quote: 'DG and CA3 showed elevated complexity across most conditions (DG: 0.19–0.27; CA3:\n    0.15–0.21) with modest conditiondependence ... Intriguingly, these regions exhibited peak\n    complexity during spontaneous activity, opposite to the pattern observed in visual cortex.\n    In contrast, CA1, POST, ProS, and SUB maintained more stable, lower complexity values\n    (0.11–0.15) across states'\n  expected:\n  - quantity: DG median C, low end\n    value: 0.19\n    tolerance: 0.019\n  - quantity: DG median C, high end\n    value: 0.27\n    tolerance: 0.027\n  - quantity: CA3 median C, low end\n    value: 0.15\n    tolerance: 0.015\n  - quantity: CA3 median C, high end\n    value: 0.21\n    tolerance: 0.021\n  - quantity: CA1, POST, ProS and SUB median C, low end\n    value: 0.11\n    tolerance: 0.011\n  - quantity: CA1, POST, ProS and SUB median C, high end\n    value: 0.15\n    tolerance: 0.015\n  criterion: 'Medians as fig4a, per hippocampal subregion and condition. The legend differs from\n    the text: it gives DG and CA3 low medians in natural images (DG 0.12; CA3 0.11; CA1 0.1)\n    and elevated in the other conditions (DG 0.19–0.26; CA3 0.13–0.18; CA1 0.12–0.17), POST,\n    ProS and SUB 0.1–0.13. Readings of the ranges (a) the text''s, over \"most conditions\"\n    (three of four); (b) the legend''s, natural images apart. Reproduced when, under one\n    reading, the DG and CA3 medians match under the range rule, their highest median is in\n    spontaneous activity, and CA1, POST, ProS and SUB match their range; partially\n    reproduced when the spontaneous peak holds but the values miss.'\n\n- id: fig4d-midbrain-complexity-invariant\n  statement: Most midbrain areas (NB, MRN, SCig, APN) keep uniformly low complexity (0.10 to\n    0.12) across conditions; only NOT shows modest stimulus dependence (0.13 to 0.15 in\n    visually driven states against 0.13 in spontaneous activity).\n  source: Results III.D, paragraph 5; Fig. 4d and its legend\n  quote: Most regions (NB, MRN, SCig, APN) showed uniformly low complexity (0.10–0.12) with\n    minimal variability across all behavioral states ... Only the nucleus of the optic tract\n    (NOT) displayed modest stimulus-dependence (0.13–0.15 during visually driven states versus\n    0.13 during spontaneous activity)\n  expected:\n  - quantity: NB, MRN, SCig and APN median C, low end\n    value: 0.10\n    tolerance: 0.01\n  - quantity: NB, MRN, SCig and APN median C, high end\n    value: 0.12\n    tolerance: 0.012\n  - quantity: NOT median C, visually driven, high end\n    value: 0.15\n    tolerance: 0.015\n  - quantity: NOT median C, spontaneous\n    value: 0.13\n    tolerance: 0.013\n  criterion: 'Medians as fig4a. No test is reported for these regions. The legend gives NOT\n    0.11–0.18, NB 0.11–0.12, MRN 0.10–0.11, SCig 0.1–0.11 and APN \"0.9\", read as 0.09 (C of\n    these data cannot reach 0.9 by Fig. 3f). Readings of the values (a) the text; (b) the\n    legend. Reproduced when, under one reading, the medians of NB, MRN, SCig and APN in every\n    condition lie in their range widened by 10% of each bound, and the NOT range of medians\n    across conditions is the largest of the five midbrain areas.'\n\n- id: fig4e-js-complexity-natural-images\n  statement: During natural image presentation the complexity distributions of visual areas\n    are similar to each other (JS below 0.2) but diverge from thalamus and midbrain (JS above\n    0.4), and DG and CA3 diverge moderately from other regions (JS 0.3 to 0.5).\n  source: Results III.D, paragraph 6; Fig. 4e legend\n  quote: During natural image presentation [Fig. 4(e)], visual cortex regions showed high\n    within-group similarity (JS divergence <0.2) but large divergences from other brain areas\n    (JS >0.4 for VIS-TH and VIS-MB comparisons)\n  depends_on:\n  - fig4a-vis-complexity-by-condition\n  criterion: Per condition, the matrix of JS divergences between the complexity distributions\n    (100-s windows) of every pair of subregions, with the histogram readings of the opening\n    comment. Reproduced when, under one reading, most (more than half) of the VIS-VIS pairs\n    are below 0.22, most VIS-TH and VIS-MB pairs above 0.36, and most pairs of DG or CA3 with\n    other subregions lie in 0.27 to 0.55 (bounds widened by 10%).\n\n- id: fig4fg-js-complexity-active-blanks\n  statement: During active behavior and blank screens visual cortex keeps complexity\n    distributions distinct from subcortical structures (JS above 0.4), with within-hippocampus\n    divergences of 0.2 to 0.4 during active behavior.\n  source: Results III.D, paragraph 6; Fig. 4f and 4g legends\n  quote: During active behavior [Fig. 4(f)] and blank screens [Fig. 4(g)], similar patterns\n    persisted, with visual cortex maintaining distinct complexity distributions from\n    subcortical structures\n  depends_on:\n  - fig4e-js-complexity-natural-images\n  criterion: Matrices as fig4e. Reproduced when, under one reading, in both conditions most\n    pairs of a VIS subregion with a TH, HP or MB subregion exceed 0.36 (the legend's 0.4,\n    widened by 10%), and in active behavior most HP-HP pairs lie in 0.18 to 0.44.\n\n- id: fig4h-js-complexity-spontaneous-converges\n  statement: In spontaneous activity the JS divergences between regions are lower overall, visual\n    cortex differing less from other regions (JS 0.2 to 0.4) than in visually driven states, and\n    midbrain divergences stay low in all conditions (below 0.2 within the midbrain group).\n  source: Results III.D, paragraph 6; Fig. 4h legend\n  quote: Critically, spontaneous activity [Fig. 4(h)] exhibited reduced overall divergences,\n    with visual cortex showing smaller differences from other regions (JS 0.2–0.4) compared to\n    visually driven states ... Midbrain areas showed consistently low divergence across all\n    conditions (JS <0.2 within MB group)\n  depends_on:\n  - fig4e-js-complexity-natural-images\n  criterion: Matrices as fig4e. Reproduced when, under one reading, the mean of all off-diagonal\n    divergences in spontaneous activity is below that of each visually driven condition, the\n    mean VIS against non-VIS divergence in spontaneous activity is below that of each visually\n    driven condition with most of those pairs in 0.18 to 0.44, and most MB-MB pairs are below\n    0.22 in every condition.\n\n- id: supp-robustness-parameters\n  statement: The hierarchical, stimulus-dependent pattern of complexity across regions holds\n    for other parameter choices (bin sizes 20 and 50 ms, D from 3 to 6, tau from 1 to 4).\n  source: Results III.D, paragraph 5; Supplemental Material Sec. II and supplementary Figs. 1\n    to 5\n  quote: These analyses were repeated for different parameter choices (D, τ and bin sizes)\n    yielding consistent hierarchical results\n  depends_on:\n  - fig4a-vis-complexity-by-condition\n  criterion: 'Recomputed for the five combinations the supplement shows (bin 20 ms with D 3 and\n    tau 4, D 5 and tau 1, D 6 and tau 1; bin 50 ms with D 4 and tau 2, D 5 and tau 3). The\n    20 ms window counts of the supplementary legends (11 321, 51 452, 11 265, 2856) are\n    compared. \"Consistent hierarchical results\" is read as the main pattern of Fig. 4: in\n    each visual area the natural image median of C exceeds the spontaneous one, and the\n    visually driven minus spontaneous difference is larger in visual cortex than in midbrain.\n    Reproduced when this holds for all five combinations; partially reproduced for three or\n    four.'\n\n- id: fig5-vis-complexity-cv-coupling\n  statement: In visual cortex complexity rises with CV during visually driven conditions\n    (natural images CV 0.1 to 0.9 and C 0.08 to 0.34; active behavior CV 0.2 to 1.6 and C 0.10\n    to 0.38; blanks CV 0.1 to 1.2 and C 0.10 to 0.39), while in spontaneous activity the\n    trajectory compresses, with C below about 0.15.\n  source: Results III.E, paragraphs 2 and 6; Fig. 5 legend\n  quote: 'During natural image presentation, visual cortex exhibited a monotonic increase in\n    complexity with increasing CV (spanning CV: 0.1–0.9, C: 0.08–0.34)'\n  expected:\n  - quantity: VIS natural images, highest trajectory C\n    value: 0.34\n    tolerance: 0.034\n  - quantity: VIS active behavior, highest CV\n    value: 1.6\n    tolerance: 0.16\n  - quantity: VIS active behavior, highest trajectory C\n    value: 0.38\n    tolerance: 0.038\n  - quantity: VIS blanks, highest CV\n    value: 1.2\n    tolerance: 0.12\n  - quantity: VIS blanks, highest trajectory C\n    value: 0.39\n    tolerance: 0.039\n  - quantity: VIS spontaneous, highest trajectory C\n    value: 0.15\n    tolerance: 0.015\n  criterion: 'Per major area and condition, the 100-s windows binned by CV, and the mean C with\n    its standard error in each bin (Fig. 5 legend, \"mean trajectories\"). The CV bin width and\n    any minimum count per bin are not stated. Readings (a) bins of 0.1 CV, (b) bins of 0.05\n    CV, each with no minimum and with a minimum of 10 windows. The CV span is the range of\n    occupied bins and the C span the range of bin means. \"Monotonic increase\" is read as each\n    bin mean not falling below the previous one by more than the sum of their standard\n    errors, with a positive Spearman correlation of C and CV over windows. Reproduced when,\n    under one reading, the VIS trajectory rises in natural images, active behavior and\n    blanks, its spans match the quoted values under the range rule, and its maximum in\n    spontaneous activity is below 0.165.'\n\n- id: fig5-th-weaker-coupling\n  statement: Thalamus shows a weaker but consistent positive complexity-CV relationship in the\n    visually driven conditions, with shallower slopes than visual cortex and a restricted range\n    (CV 0.2 to 0.8, C 0.10 to 0.20).\n  source: Results III.E, paragraph 3; Fig. 5\n  quote: 'Thalamic regions displayed weaker but consistent positive complexity-CV relationships\n    across visually driven conditions (Fig. 5). The slopes of these trajectories were\n    shallower than in visual cortex, and the explored regions of the C-CV plane were more\n    restricted (typical range: CV: 0.2–0.8, C: 0.10–0.20)'\n  depends_on:\n  - fig5-vis-complexity-cv-coupling\n  criterion: Trajectories as fig5-vis-complexity-cv-coupling. Slope read as the least-squares\n    slope of C on CV over windows. Reproduced when, under one reading, in each visually\n    driven condition the TH slope is positive and below the VIS slope, and the TH spans fall\n    in CV 0.18 to 0.88 and C 0.09 to 0.22.\n\n- id: fig5-hp-spontaneous-elevated\n  statement: Hippocampus shows modest complexity (C 0.12 to 0.19) in the visually driven\n    conditions but markedly elevated complexity during spontaneous activity (C 0.12 to 0.25) at\n    intermediate CV (0.4 to 0.7), comparable to visual cortex during image viewing.\n  source: Results III.E, paragraph 4; Fig. 5 legend; Discussion IV.B, paragraph 1\n  quote: However, during spontaneous activity, hippocampus exhibited markedly elevated\n    complexity (C 0.12–0.25) at intermediate CV values (0.4–0.7), reaching levels comparable to\n    those observed in visual cortex during active image viewing\n  depends_on:\n  - fig5-vis-complexity-cv-coupling\n  expected:\n  - quantity: HP spontaneous, highest trajectory C at CV 0.4 to 0.7\n    value: 0.25\n    tolerance: 0.025\n  - quantity: HP visually driven, highest trajectory C\n    value: 0.19\n    tolerance: 0.019\n  criterion: Trajectories as fig5-vis-complexity-cv-coupling. Reproduced when, under one\n    reading, the HP bin means at CV 0.4 to 0.7 in spontaneous activity reach 0.25 within\n    tolerance and exceed the HP maximum of every visually driven condition, whose maxima lie\n    within 0.19 +/- 0.019.\n\n- id: fig5-mb-flat\n  statement: Midbrain complexity stays low (C 0.10 to 0.13) across the full range of CV (0.1\n    to 0.9) in all conditions, giving nearly flat trajectories.\n  source: Results III.E, paragraph 5; Fig. 5 legend\n  quote: Complexity values remained consistently low (C 0.10–0.13) across the full range of\n    observed CV values (0.1–0.9) in all behavioral states, yielding nearly flat trajectories in\n    the C-CV plane\n  depends_on:\n  - fig5-vis-complexity-cv-coupling\n  criterion: Trajectories as fig5-vis-complexity-cv-coupling. Reproduced when, under one\n    reading, in all four conditions the MB bin means lie in 0.09 to 0.143 and the MB\n    least-squares slope of C on CV is the smallest in absolute value of the four areas.\n\n- id: supp-fig6-mean-correlation\n  statement: In visual cortex the mean pairwise spike count correlation is elevated during\n    active behavior and blank screens (median 0.08 to 0.13) and near zero during natural\n    images and spontaneous activity (0.00 to 0.01); midbrain values are low and invariant.\n  source: Supplemental Material Sec. III; supplementary Fig. 6 legend\n  quote: Visual cortex subregions exhibited elevated  ̄r during active behavior and blank screen\n    conditions (median  ̄r ≈0.08–0.13), while natural image presentation and spontaneous\n    activity yielded near-zero correlations ( ̄r ≈0.00–0.01)\n  expected:\n  - quantity: VIS subregion median mean correlation, active and blanks, low end\n    value: 0.08\n    tolerance: 0.008\n  - quantity: VIS subregion median mean correlation, active and blanks, high end\n    value: 0.13\n    tolerance: 0.013\n  - quantity: VIS subregion median mean correlation, natural images and spontaneous, high end\n    value: 0.01\n    tolerance: 0.001\n  criterion: 'Per 100-s window, the mean over all pairs of the population''s units of the\n    Pearson correlation of their spike counts; the median over windows per subregion and\n    condition. The count bin is not stated. Readings (a) 50 ms, the bin of all main analyses;\n    (b) 20 ms, the other bin the paper uses. Units without spikes in a window are left out\n    (their correlation is undefined; a standard choice). Reproduced when, under one reading,\n    the VIS medians fall in the two quoted ranges widened by 10% of each bound (the near-zero\n    range taken as below 0.011), and the midbrain medians differ across conditions by less\n    than 0.02 (the reading of \"low and largely invariant\"; the bound is not from the paper).'\n\n- id: complexity-separates-images-from-spontaneous\n  statement: Neither CV nor mean pairwise correlation separates natural image presentation from\n    spontaneous activity in visual cortex, while statistical complexity does.\n  source: Supplementary Fig. 6 legend; Results III.D, paragraph 2\n  quote: The convergence between  ̄r and CV confirms the robustness of the reported hierarchy,\n    while neither measure distinguishes natural image presentation from spontaneous activity in\n    visual cortex\n  depends_on:\n  - fig2a-vis-cv-by-condition\n  - fig4a-vis-complexity-by-condition\n  - supp-fig6-mean-correlation\n  criterion: 'The paper names no measure of \"distinguishes\". Its tool for comparing\n    distributions is the JS divergence (Results III.B), and its CV medians for natural images\n    and spontaneous activity (VISp 0.39 against 0.29) differ, so a difference of medians\n    cannot be the reading. Readings (a) per visual subregion, the JS divergence between the\n    natural-image and spontaneous distributions of each measure (histogram readings of the\n    opening comment); (b) the overlap of the interquartile ranges of the two distributions.\n    Reproduced when, under one reading, in most visual subregions complexity separates the\n    two conditions (larger JS, or IQRs that do not overlap) while CV and mean correlation do\n    not (smaller JS than complexity, or overlapping IQRs). The comparison is reported for\n    every subregion.'\n"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+python tools/claims_check.py claims/paula-2026.yaml paper/10.1103-wndc-k654.txt
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+Four quotes failed because I dropped the colons inside the paper's parentheses. I'll restore them as quoted YAML strings.
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+p='claims/paula-2026.yaml'
+s=open(p).read()
+reps=[
+("""  quote: approximately 2–3× higher than their shuffled surrogates (median range 0.21–0.24) ...""",
+ """  quote: 'approximately 2–3× higher than their shuffled surrogates (median range: 0.21–0.24) ..."""),
+("""    than surrogates. Mann-Whitney tests confirmed significant differences between empirical and
+    surrogate distributions for all brain regions (p < 0.001)
+""","""    than surrogates. Mann-Whitney tests confirmed significant differences between empirical and
+    surrogate distributions for all brain regions (p < 0.001)'
+"""),
+("""  quote: Critically, spontaneous activity [Fig. 4(h)] exhibited reduced overall divergences,
+    with visual cortex showing smaller differences from other regions (JS 0.2–0.4) compared to""",
+ """  quote: 'Critically, spontaneous activity [Fig. 4(h)] exhibited reduced overall divergences,
+    with visual cortex showing smaller differences from other regions (JS: 0.2–0.4) compared to"""),
+("""    conditions (JS <0.2 within MB group)
+  depends_on:""","""    conditions (JS <0.2 within MB group)'
+  depends_on:"""),
+("""  quote: However, during spontaneous activity, hippocampus exhibited markedly elevated
+    complexity (C 0.12–0.25) at intermediate CV values (0.4–0.7), reaching levels comparable to
+    those observed in visual cortex during active image viewing""",
+ """  quote: 'However, during spontaneous activity, hippocampus exhibited markedly elevated
+    complexity (C: 0.12–0.25) at intermediate CV values (0.4–0.7), reaching levels comparable to
+    those observed in visual cortex during active image viewing'"""),
+("""  quote: Complexity values remained consistently low (C 0.10–0.13) across the full range of
+    observed CV values (0.1–0.9) in all behavioral states, yielding nearly flat trajectories in
+    the C-CV plane""","""  quote: 'Complexity values remained consistently low (C: 0.10–0.13) across the full range of
+    observed CV values (0.1–0.9) in all behavioral states, yielding nearly flat trajectories in
+    the C-CV plane'"""),
+]
+for a,b in reps:
+    assert s.count(a)==1,a[:60]
+    s=s.replace(a,b)
+open(p,'w').write(s)
+EOF
+python tools/claims_check.py claims/paula-2026.yaml paper/10.1103-wndc-k654.txt; grep -n -i "rather\|—" claims/paula-2026.yaml
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+The checker passes, and the file has no em dashes and no "rather". One last check: that no plain (unquoted) scalar contains ": ".
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+import yaml
+p='claims/paula-2026.yaml'
+ev=yaml.compose(open(p).read())
+bad=[]
+def walk(n):
+    if isinstance(n,yaml.ScalarNode):
+        if n.style is None and ': ' in n.value: bad.append((n.start_mark.line+1,n.value[:60]))
+    elif isinstance(n,yaml.MappingNode):
+        for k,v in n.value: walk(k);walk(v)
+    elif isinstance(n,yaml.SequenceNode):
+        for v in n.value: walk(v)
+walk(ev); print(bad)
+d=yaml.safe_load(open(p))
+c=d['claims']; print(len(c), sum('quote' in x for x in c), sum('statistics' in x for x in c), sum('criterion' in x for x in c), sum('expected' in x for x in c))
+EOF
+```
+
+```
+[]
+38 37 7 38 22
+```
+
+**Agent**
+
+I've written `claims/paula-2026.yaml`. The quote checker reports no problems (38 claims, 37 quotes, 7 statistical values), and the file follows the style rules. Nothing is committed.
+
+**Text read:** the version of record (PRX Life 4, 023018; published 22 May 2026, corrected 22 July 2026, the correction being to Eq. 9). It includes the full Methods, Table I, the figure legends and the Supplemental Material (Secs. I to III, supplementary Figs. 1 to 6). The PDF pages could not be opened as images (no renderer here), so every value comes from the text and legends. The paper links no analysis code, so none was read; its only URL is a link to the parameter-sweep figures.
+
+**Counts:**
+- **Claims:** 38. All have a criterion and 22 have expected values.
+- **Quotes:** 37. The one without, `table1-sample`, is a count check marked `inferred` and built from Table I and the legend numbers.
+- **Statistics:** 7 claims carry them. These are the Mann-Whitney tests against surrogates (p < 0.001) for CV and for each area's complexity, plus two tests the paper does not name (Fig. 4a pairwise comparisons, Fig. 4b LGd/LP modulation).
+- **Data:** one claim, `fig3a-reference-systems`, uses no recordings and is marked `data: elsewhere` (synthetic series from the supplement's definitions). Every other claim uses the dataset.
+
+**Details the paper leaves open, with the readings named:**
+- **Session selection** (102 sessions, no rule given): (a) every session with a qualifying population, or (b) only sessions that also have the spontaneous epoch. The paper's own counts (sessions, 1437 populations, Table I neurons) pick between them.
+- **Unit quality filter:** (a) all units, or (b) the Allen default filters. Table I counts decide.
+- **Which flashes count:** whether change and omitted flashes are included, and which gray screens count as blanks; two readings.
+- **Spontaneous windows:** the first two consecutive 100-s windows, or two centred in the gray-screen interval.
+- **JS divergence histograms:** 50 or 100 bins. Log base 2 is used because the Fig. 4 colour scale tops out at 1.0; natural log is a variant.
+- **"Summed along the main diagonal of each submatrix":** the diagonal of a region-by-region matrix is zero, so I named two readings of the sum (all within-area pairs, or the first off-diagonal). I also named two readings of the percentage difference.
+- **Fig. 1d correlations across sessions:** one correlation over concatenated sessions, or one per session averaged.
+- **Fig. 3 windows:** the section is about natural images, but the point counts sum to 51 704, the active-behaviour total. The readings are active-behaviour windows (favoured) or natural-image windows. Spans are read as 2.5–97.5 percentiles, with full range as a variant.
+- **Unnamed tests:** for Fig. 4a, Mann-Whitney uncorrected or Bonferroni-corrected. For Fig. 4b modulation (and the absence claim for the other seven thalamic nuclei), Kruskal-Wallis or pairwise Mann-Whitney.
+- **Fig. 5 trajectories:** CV bin width (0.1 or 0.05), minimum count per bin, and what "monotonic" means.
+- **Supplementary Fig. 6 mean correlation:** count bin of 50 ms or 20 ms.
+- **What "distinguishes" means** (CV and correlation fail to separate images from spontaneous activity in visual cortex, complexity does): JS divergence between the two conditions, or overlap of their interquartile ranges.
+- **Fig. 3a synthetic systems:** parameter values and series lengths are only in the figure; standard choices are stated.
+
+**Places where the paper disagrees with itself (both versions recorded, so a claim matches under either):**
+- Fig. 4 text against legends: the thalamic LGd/LP values, the DG/CA3 ranges (the legend has natural images lowest), the NOT range, and APN printed as "0.9", read as 0.09.
+- Fig. 2b: the legend says DG/CA3 JS divergences are 0.15–0.35, while the text gives medians of 0.84 and 0.63.
+- Section III.B: "typically <4%" among visually driven conditions sits beside the ~30% separation of images from active behaviour and blanks.
+
+**Missing:** nothing that stops the claims being written. Two things are absent: analysis code, and figure-only details such as the Fig. 3a parameters. Several thresholds in the criteria (the 0.2 surrogate-correlation bound, the 0.02 midbrain invariance bound, the "most" and "more than half" counts) are not from the paper; each is flagged where it is used.
 
 ## End of run
 
-7 turns, 0 minutes, $0.29 at API prices, result: success.
+18 turns, 7 minutes, $1.95 at API prices, result: success.

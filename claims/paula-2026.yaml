@@ -1,0 +1,1104 @@
+# Claims for de Paula, Jungmann, Fontenele, Aguiar, Carelli, Matias, Copelli & de Vasconcelos
+# (2026), "Revealing Stimulus-Dependent Dynamics Through Statistical Complexity", PRX Life 4,
+# 023018, doi:10.1103/wndc-k654, tested on DANDI:000713.
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-27, protocol pilot-18 as stated in docs/protocol.md.
+#
+# Text read: the version of record (published 22 May 2026, corrected 22 July 2026, the
+# correction fixing Eq. 9), from paper/10.1103-wndc-k654.txt, which holds the main text
+# (Methods, Results, figure legends, Table I) and the Supplemental Material (Secs. I to III,
+# supplementary Figs. 1 to 6, dated April 28, 2026). The PDF pages could not be rendered in
+# this run, so no figure was read from its image; every value below is from the text and the
+# legends. The paper links no analysis code: its Data Availability statement cites only the
+# dataset, and the one URL of the supplement (https://bit.ly/4smMnMj) holds the figures of the
+# parameter sweep. No code was read.
+#
+# Data the paper used (Methods II.A, Results III.A, Table I, legends of Figs. 1 to 5). The
+# Allen Institute Visual Behavior Neuropixels dataset, cited as DANDI:000713 version
+# 0.240702.1725 (Ref. 22). Wild-type and transgenic mice, head fixed, recorded with six
+# Neuropixels 1.0 probes targeting visual cortex. 102 sessions. Measured variables used:
+# the spike times of sorted units, each unit's brain structure, and the stimulus timing.
+# Epochs: the first hour of the session is active behavior, a change detection task with water
+# reward, eight natural images per session shown as 250 ms flashes, each followed by a 500 ms
+# gray screen; after it, a 25 min interval without reward that includes about 5 min of gray
+# screen, the spontaneous activity epoch. 26 subregions in four major areas (Table I):
+# visual cortex VISal, VISam, VISl, VISp, VISpm, VISrl (53 985 neurons); thalamus LGd, LP, MGd,
+# MGm, MGv, PIL, POL, PoT, SGN (20 541); hippocampus CA1, CA3, DG, POST, ProS, SUB (42 396);
+# midbrain APN, NB, NOT, MRN, SCig (17 163). Populations (Fig. 3b) VIS 586, TH 313, HP 363,
+# MB 175. 100-s analysis windows (Figs. 2 and 4) natural images 11 321, active behavior
+# 51 704, blanks 11 321, spontaneous 2870, total 77 216.
+#
+# Methods shared by the claims, with their sources.
+# - Population: the units of one subregion in one session (Methods II.A, "local population";
+#   586 VIS populations over 6 areas and 102 sessions fits one per area and session). Kept
+#   when it has at least 30 neurons, and a subregion is kept when such populations occur in at
+#   least eight sessions (Methods II.A, "at least 30 recorded neurons sampled across a minimum
+#   of eight recording sessions").
+# - Condition series (Methods II.A). Active behavior, the first ~3600 s cut into
+#   nonoverlapping 100-s windows (up to 36). Natural images, for each of the eight images the
+#   spikes in its 250 ms presentations concatenated (about 140 s), and the central 100 s kept.
+#   Blanks, for each image the spikes in the 500 ms gray screens that follow its
+#   presentations concatenated (about 240 s), central 100 s kept. Spontaneous, two 100-s
+#   windows from the ~5 min gray-screen interval after the task.
+# - Population rate r(t), spike counts of all N units in 50 ms bins divided by N times 50 ms
+#   (Methods II.B, Eq. 1). The bins do not overlap: a 100-s window gives T = 2000 points
+#   (Methods II.C).
+# - CV, within each nonoverlapping 10-s window the standard deviation of r(t) over its mean;
+#   a 100-s window's CV is the mean of its ten values (Methods II.B, Eq. 2).
+# - Bandt and Pompe, D = 6, tau = 1, 720 patterns, ties ranked higher for the later element
+#   (Methods II.C). Normalized permutation entropy H (Eq. 6); MPR statistical complexity C =
+#   Q0 DJS[P, Pe] H with Q0 the constant that sets Q in [0, 1] (Eqs. 7 to 9, Refs. 28 and 29;
+#   the standard Q0 of Ref. 29 for N = D! states is the reading of "normalization constant").
+# - Surrogate, for each window each neuron's interspike intervals shuffled independently
+#   (Methods II.E).
+#
+# Details the paper leaves open, used by several claims (each claim says which it uses).
+# - Session selection: the paper names 102 sessions without saying how they were chosen.
+#   Readings (a) every session in which at least one population passes the thresholds; (b)
+#   the sessions that also have the spontaneous gray-screen epoch. The counts above (102
+#   sessions, 1437 populations, Table I neurons) are the check: the reading closer to them is
+#   adopted, both shown.
+# - Unit selection: no quality filter is stated. Readings (a) all units of the units table;
+#   (b) the Allen default filters for this dataset (ISI violations < 0.5, amplitude cutoff <
+#   0.1, presence ratio > 0.9). Table I neuron counts decide between them (claim
+#   table1-sample); both are run.
+# - Natural images and blanks: whether change flashes are included, and how the gray screens
+#   around omitted flashes are treated, is not stated. Readings (a) all flashes of the image,
+#   omitted flashes giving neither an image nor a blank interval; (b) as (a) but blank
+#   intervals only after flashes followed by another flash. Spike times are shifted so that
+#   the pieces abut. The "central 100 s" is the 100 s centred on the series midpoint.
+# - Spontaneous windows: which two 100-s windows of the ~5 min gray screen is not stated.
+#   Readings (a) the first two consecutive windows from its start; (b) two windows centred in
+#   the interval.
+# - Surrogate ISI shuffling: where the shuffled train starts is not stated; the first spike is
+#   kept in place and the shuffled intervals follow it (a standard choice; it cannot change
+#   the outcome). Random seed fixed, a standard choice.
+# - JS divergence between two distributions of window values (Figs. 2b, 4e to 4h): the
+#   histogram bins are not stated. Readings (a) 50 and (b) 100 equal bins over the range of
+#   the two pooled distributions. Log base 2, so that JS lies in [0, 1], as the color scale of
+#   Fig. 4 ("1.0 ... maximally divergent distributions") implies; natural log as a variant.
+# - Mann-Whitney tests: two-sided (a standard choice; the bound p < 0.001 is what is tested).
+schema_version: 2
+paper: doi:10.1103/wndc-k654
+claims:
+- id: table1-sample
+  statement: The analysis rests on 102 sessions and 1437 local populations (VIS 586, TH 313, HP
+    363, MB 175), with 53 985 visual cortex, 20 541 thalamic, 42 396 hippocampal and 17 163
+    midbrain neurons, and 77 216 analysis windows (11 321 natural images, 51 704 active
+    behavior, 11 321 blanks, 2870 spontaneous).
+  source: Table I; Fig. 2 legend; Fig. 3 legend, panel (b)
+  inferred: Counts read from Table I and the legends of Figs. 2 and 3; no sentence states them
+    together. They check the selection of sessions, units and populations.
+  expected:
+  - quantity: sessions
+    value: 102
+    tolerance: 10.2
+  - quantity: VIS populations
+    value: 586
+    tolerance: 58.6
+  - quantity: TH populations
+    value: 313
+    tolerance: 31.3
+  - quantity: HP populations
+    value: 363
+    tolerance: 36.3
+  - quantity: MB populations
+    value: 175
+    tolerance: 17.5
+  - quantity: visual cortex neurons
+    value: 53985
+    tolerance: 5398.5
+  - quantity: thalamic neurons
+    value: 20541
+    tolerance: 2054.1
+  - quantity: hippocampal neurons
+    value: 42396
+    tolerance: 4239.6
+  - quantity: midbrain neurons
+    value: 17163
+    tolerance: 1716.3
+  - quantity: natural image windows
+    value: 11321
+    tolerance: 1132.1
+  - quantity: active behavior windows
+    value: 51704
+    tolerance: 5170.4
+  - quantity: blank windows
+    value: 11321
+    tolerance: 1132.1
+  - quantity: spontaneous windows
+    value: 2870
+    tolerance: 287
+  criterion: Populations, neurons and windows counted with the selection of the opening
+    comment, under each reading of session and unit selection. Table I counts neurons summed
+    over the populations kept in each subregion (the reading of "Neurons analyzed"); the
+    per-subregion counts of Table I are compared too and reported. Reproduced when one
+    reading puts all expected values within tolerance; that reading is then adopted by the
+    other claims, as the paper's own counts imply it. Partially reproduced when the session
+    and population counts match but not the neuron counts.
+
+- id: fig1c-cv-region-medians
+  statement: During active behavior visual cortex subregions have the highest population CV
+    (medians 0.40 to 0.59), thalamic subregions moderate (0.27 to 0.37), hippocampal subregions
+    high (0.25 to 0.49, dentate gyrus highest at 0.49) and midbrain the lowest (0.16 to 0.45).
+  source: Results III.A, paragraph 3 (Fig. 1c); Fig. 1c legend
+  quote: 'Visual cortex subregions exhibited the highest CV values [median range: 0.40–0.59,
+    interquartile range (IQR): 0.12–0.18] ... Thalamic regions showed moderate CV values (median
+    range: 0.27–0.37, IQR: 0.10–0.15) ... Hippocampal subregions displayed high CV values (median
+    range: 0.25–0.49, IQR: 0.08–0.13)'
+  expected:
+  - quantity: lowest VIS subregion median CV
+    value: 0.40
+    tolerance: 0.04
+  - quantity: highest VIS subregion median CV
+    value: 0.59
+    tolerance: 0.059
+  - quantity: lowest TH subregion median CV
+    value: 0.27
+    tolerance: 0.027
+  - quantity: highest TH subregion median CV
+    value: 0.37
+    tolerance: 0.037
+  - quantity: lowest HP subregion median CV
+    value: 0.25
+    tolerance: 0.025
+  - quantity: highest HP subregion median CV (DG)
+    value: 0.49
+    tolerance: 0.049
+  - quantity: lowest MB subregion median CV
+    value: 0.16
+    tolerance: 0.016
+  - quantity: highest MB subregion median CV
+    value: 0.45
+    tolerance: 0.045
+  criterion: Per subregion, the median and IQR of the CV of all active-behavior 100-s windows
+    pooled over its populations (Methods II.A and II.B; Fig. 1c). Reproduced when every
+    subregion median of each major area lies inside the reported range widened by 10% of each
+    bound, the extremes are within tolerance, and DG has the highest hippocampal median. The
+    IQRs (VIS 0.12 to 0.18, TH 0.10 to 0.15, HP 0.08 to 0.13, MB 0.05 to 0.23) are reported and
+    compared under the same range rule; a miss on IQR alone makes it partially reproduced.
+
+- id: fig1c-cv-above-surrogate
+  statement: Empirical CV exceeds that of ISI-shuffled surrogates in every brain region (VIS
+    2 to 3 times, surrogate medians 0.21 to 0.24; TH 1.3 to 1.6; HP 1.5 to 2.2; MB 1.3 to 1.9),
+    with Mann-Whitney p < 0.001 for all regions.
+  source: Results III.A, paragraph 3 and the paragraph after Table I (Fig. 1c); Fig. 1c legend
+  quote: 'approximately 2–3× higher than their shuffled surrogates (median range: 0.21–0.24) ...
+    1.3–1.6× higher than surrogates ... 1.5–2.2× higher than surrogates ... 1.3–1.9× higher
+    than surrogates. Mann-Whitney tests confirmed significant differences between empirical and
+    surrogate distributions for all brain regions (p < 0.001)'
+  statistics:
+  - test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+    n: active behavior windows of each region and their surrogates, 102 sessions
+  expected:
+  - quantity: VIS ratio of empirical to surrogate median CV, low end
+    value: 2
+    tolerance: 0.2
+  - quantity: VIS ratio of empirical to surrogate median CV, high end
+    value: 3
+    tolerance: 0.3
+  - quantity: VIS surrogate median CV, low end
+    value: 0.21
+    tolerance: 0.021
+  - quantity: VIS surrogate median CV, high end
+    value: 0.24
+    tolerance: 0.024
+  - quantity: TH ratio, low end
+    value: 1.3
+    tolerance: 0.13
+  - quantity: TH ratio, high end
+    value: 1.6
+    tolerance: 0.16
+  - quantity: HP ratio, low end
+    value: 1.5
+    tolerance: 0.15
+  - quantity: HP ratio, high end
+    value: 2.2
+    tolerance: 0.22
+  - quantity: MB ratio, low end
+    value: 1.3
+    tolerance: 0.13
+  - quantity: MB ratio, high end
+    value: 1.9
+    tolerance: 0.19
+  criterion: Surrogates per Methods II.E, one per active-behavior window; CV as for the data.
+    Ratio is the subregion's empirical median CV over its surrogate median. "For all brain
+    regions" can be read (a) per subregion (26 tests) or (b) per major area (4 tests), both
+    run. Reproduced when every subregion ratio lies inside its area's range widened by 10% of
+    each bound and the Mann-Whitney test gives p < 0.001 with empirical higher in every
+    region under one reading. Partially reproduced when the tests hold but some ratios fall
+    outside.
+
+- id: fig1d-surrogate-abolishes-cv-correlations
+  statement: Inter-regional correlations of CV time series during active behavior are present
+    in the data and abolished in the ISI-shuffled surrogates.
+  source: Results III.A, paragraph 4; Fig. 1d legend
+  quote: For comparison, the upper triangle displays correlations computed from surrogate data,
+    demonstrating that shuffling spike times abolished inter-regional CV relationships
+  criterion: Per pair of subregions, the Pearson correlation of their CV time series in
+    nonoverlapping 10-s windows during active behavior (Results III.A, paragraph 4; Fig. 1d
+    legend), in sessions that record both. How sessions are combined is not stated. Readings
+    (a) the series of all shared sessions concatenated, one correlation; (b) one correlation
+    per session, averaged over sessions. Reproduced when, under each reading, the empirical
+    matrix holds correlations as large as the top 10% range of Fig. 1e (0.50 to 0.67, widened
+    by 10%) and the surrogate matrix has none above 0.2 in absolute value; the 0.2 bound is
+    not from the paper (it states only "abolished"), and the full surrogate distribution is
+    shown.
+
+- id: fig1e-positive-cv-modules
+  statement: The strongest 10% of positive CV correlations (0.50 to 0.67) link subregions
+    within functional modules (visual areas together, subicular regions together, thalamic
+    populations together), with connections between distinct systems largely absent.
+  source: Results III.A, paragraph 4; Fig. 1e legend, left
+  quote: The left panel highlights the 10% most positively correlated region pairs, revealing
+    preferential connections within functional modules ... Notably, connections between
+    functionally distinct brain systems were largely absent
+  depends_on:
+  - fig1d-surrogate-abolishes-cv-correlations
+  expected:
+  - quantity: lowest correlation in the top 10% positive
+    value: 0.50
+    tolerance: 0.05
+  - quantity: highest correlation
+    value: 0.67
+    tolerance: 0.067
+  criterion: On the empirical matrix of fig1d (both readings), the top 10% of region pairs by
+    correlation. Reproduced when their range matches and most of them (more than half, the
+    reading of "preferential" and "largely absent") join subregions of the same major area.
+
+- id: fig1e-dg-ca3-anticorrelation-hubs
+  statement: Among the 10% most anticorrelated region pairs (r from -0.27 to -0.002), DG and
+    CA3 are the hubs of negative CV relationships with other regions.
+  source: Results III.A, paragraph 4; Fig. 1e legend, middle
+  quote: The middle panel presents the 10% most anticorrelated pairs, emphasizing DG and CA3 as
+    a hub of negative CV relationships with other regions
+  depends_on:
+  - fig1d-surrogate-abolishes-cv-correlations
+  expected:
+  - quantity: most negative correlation
+    value: -0.27
+    tolerance: 0.027
+  criterion: On the empirical matrix of fig1d (both readings), the 10% of pairs with the most
+    negative correlations. Reproduced when DG and CA3 are the two subregions appearing in the
+    most of these pairs and the most negative value is within tolerance.
+
+- id: fig1e-midbrain-weakest-cv-correlations
+  statement: Midbrain areas have the weakest CV correlations with all other regions, near zero
+    (-0.04 to +0.03).
+  source: Results III.A, paragraph 4; Fig. 1e legend, right
+  quote: The right panel displays near-zero correlations, showing that midbrain areas exhibited
+    the weakest CV correlations across all studied regions
+  depends_on:
+  - fig1d-surrogate-abolishes-cv-correlations
+  criterion: On the empirical matrix of fig1d (both readings), the mean absolute correlation of
+    each subregion with all others. Reproduced when the midbrain subregions have the lowest
+    mean absolute correlations of the four major areas (their mean below that of VIS, TH and
+    HP), and most of their pairs lie near zero, in the legend's range -0.04 to +0.03 widened
+    by 10% of each bound.
+
+- id: fig2a-vis-cv-by-condition
+  statement: In visual cortex, median CV is higher in active behavior and blank screens (VISp
+    0.59 and 0.55, VISl 0.56 and 0.46, VISal 0.55 and 0.46) than in spontaneous activity (0.29,
+    0.30, 0.30), with natural images intermediate (0.39, 0.46, 0.48).
+  source: Results III.B, paragraph 2 (Fig. 2a); Fig. 2a legend
+  quote: 'with active behavior and blank screen conditions showing elevated median CV values
+    (VISp: 0.59 and 0.55; VISl: 0.56 and 0.46; VISal: 0.55 and 0.46) compared to spontaneous
+    activity (VISp: 0.29; VISl: 0.30; VISal: 0.30)'
+  expected:
+  - quantity: VISp median CV, active behavior
+    value: 0.59
+    tolerance: 0.059
+  - quantity: VISp median CV, blanks
+    value: 0.55
+    tolerance: 0.055
+  - quantity: VISp median CV, spontaneous
+    value: 0.29
+    tolerance: 0.029
+  - quantity: VISp median CV, natural images
+    value: 0.39
+    tolerance: 0.039
+  - quantity: VISl median CV, active behavior
+    value: 0.56
+    tolerance: 0.056
+  - quantity: VISl median CV, blanks
+    value: 0.46
+    tolerance: 0.046
+  - quantity: VISl median CV, spontaneous
+    value: 0.30
+    tolerance: 0.03
+  - quantity: VISl median CV, natural images
+    value: 0.46
+    tolerance: 0.046
+  - quantity: VISal median CV, active behavior
+    value: 0.55
+    tolerance: 0.055
+  - quantity: VISal median CV, blanks
+    value: 0.46
+    tolerance: 0.046
+  - quantity: VISal median CV, spontaneous
+    value: 0.30
+    tolerance: 0.03
+  - quantity: VISal median CV, natural images
+    value: 0.48
+    tolerance: 0.048
+  criterion: Per subregion and condition, the median CV of the condition's 100-s windows pooled
+    over populations (Methods II.A and II.B). The condition readings of the opening comment
+    (flash inclusion, spontaneous windows) are each run. Reproduced when, under one reading,
+    all twelve medians are within tolerance; partially reproduced when the order (active and
+    blank above natural images above spontaneous, per area) holds but some values miss.
+
+- id: fig2a-thalamus-cv-by-condition
+  statement: Thalamic populations show the same pattern with smaller effects, LP median CV 0.37
+    in active behavior against 0.28 in spontaneous activity, LGd 0.32 against 0.23.
+  source: Results III.B, paragraphs 2 and 3 (Fig. 2a); Fig. 2a legend
+  quote: 'Thalamic local neuronal populations showed qualitatively similar patterns but with
+    reduced effect sizes (LP: 0.37 in active behavior vs 0.28 in spontaneous activity; LGd: 0.32
+    vs 0.23)'
+  expected:
+  - quantity: LP median CV, active behavior
+    value: 0.37
+    tolerance: 0.037
+  - quantity: LP median CV, spontaneous
+    value: 0.28
+    tolerance: 0.028
+  - quantity: LGd median CV, active behavior
+    value: 0.32
+    tolerance: 0.032
+  - quantity: LGd median CV, spontaneous
+    value: 0.23
+    tolerance: 0.023
+  criterion: As fig2a-vis-cv-by-condition. Reproduced when the four medians are within
+    tolerance under one reading; "reduced effect sizes" is checked as the active minus
+    spontaneous difference in LP and LGd being smaller than in VISp, VISl and VISal.
+
+- id: fig2a-hippocampus-cv-stable
+  statement: DG and CA3 keep nearly constant median CV across the visually driven conditions
+    (DG 0.48 to 0.50, CA3 0.41 to 0.42; CA1 0.25), with modest increases in spontaneous activity
+    (DG 0.51, CA3 0.43).
+  source: Results III.B, paragraph 3 (Fig. 2a); Fig. 2a legend
+  quote: 'DG and CA3 maintained relatively stable median CV values across all visually driven
+    conditions (DG: 0.48–0.50; CA3: 0.41–0.42), with only modest increases during spontaneous
+    activity (DG: 0.51; CA3: 0.43)'
+  expected:
+  - quantity: DG median CV, lowest visually driven condition
+    value: 0.48
+    tolerance: 0.048
+  - quantity: DG median CV, highest visually driven condition
+    value: 0.50
+    tolerance: 0.05
+  - quantity: CA3 median CV, lowest visually driven condition
+    value: 0.41
+    tolerance: 0.041
+  - quantity: CA3 median CV, highest visually driven condition
+    value: 0.42
+    tolerance: 0.042
+  - quantity: CA1 median CV, visually driven conditions
+    value: 0.25
+    tolerance: 0.025
+  - quantity: DG median CV, spontaneous
+    value: 0.51
+    tolerance: 0.051
+  - quantity: CA3 median CV, spontaneous
+    value: 0.43
+    tolerance: 0.043
+  criterion: As fig2a-vis-cv-by-condition, the visually driven conditions being natural images,
+    active behavior and blanks. Reproduced when all values are within tolerance under one
+    reading and the spontaneous medians of DG and CA3 exceed their visually driven medians.
+
+- id: fig2a-midbrain-cv-invariant
+  statement: Midbrain populations have essentially constant CV across all conditions (APN
+    median 0.16 in every condition, MRN 0.20 to 0.21).
+  source: Results III.B, paragraph 3 (Fig. 2a); Fig. 2a legend
+  quote: 'Midbrain local neuronal populations exhibited the most invariant dynamics, with
+    essentially constant CV values across all experimental conditions (APN: 0.16; MRN:
+    0.20–0.21)'
+  expected:
+  - quantity: APN median CV, each condition
+    value: 0.16
+    tolerance: 0.016
+  - quantity: MRN median CV, lowest condition
+    value: 0.20
+    tolerance: 0.02
+  - quantity: MRN median CV, highest condition
+    value: 0.21
+    tolerance: 0.021
+  criterion: As fig2a-vis-cv-by-condition, over all four conditions. Reproduced when the APN
+    median of every condition and the MRN extremes are within tolerance under one reading.
+
+- id: fig2b-vis-summed-js-cv
+  statement: For CV, the summed within-area JS divergences of visual cortex are nearly equal
+    in active behavior and blank screens (about 1% apart) and differ by about 30% from those of
+    natural images and spontaneous activity.
+  source: Results III.B, paragraphs 5 and 6 (Fig. 2b)
+  quote: Visual cortex showed similar JS divergence values during active behavior and blank
+    screens (∼1% difference in summed divergences), while these conditions separated
+    substantially from image presentation and spontaneous activity by ∼30%
+  expected:
+  - quantity: percentage difference of summed VIS JS divergence, active behavior against blanks
+    value: 1
+    tolerance: 0.5
+    unit: percent
+  - quantity: percentage difference, active behavior or blanks against natural images or
+      spontaneous
+    value: 30
+    tolerance: 3
+    unit: percent
+  criterion: 'Per condition, the matrix of JS divergences between the CV distributions (100-s
+    windows) of every pair of subregions (Results III.B, paragraph 5), with the histogram
+    readings of the opening comment. The paper sums "the JS divergence values along the main
+    diagonal of each submatrix" (the block of one major area), but the main diagonal of a
+    region by region matrix is zero. Readings of the sum: (a) all within-area pairs (the
+    block above its diagonal); (b) the first off-diagonal of the block (adjacent subregions in
+    the order of Table I). Readings of the percentage difference between conditions A and B:
+    (i) |SA - SB| / SB with B the second named; (ii) |SA - SB| over their mean. The tolerance
+    of the 1% figure is 0.5 points, as "∼1%" is printed to one digit; the 30% figure takes
+    10%. Reproduced when, under one combination of readings, active against blanks is within
+    1 +/- 0.5% and each of the four pairs of active or blanks against natural images or
+    spontaneous is within 30 +/- 3%. Partially reproduced when active and blanks are the
+    closest pair of the six and the others differ by more than 15%. All combinations are
+    shown.'
+
+- id: fig2b-hp-mb-summed-js-cv
+  statement: For CV, the largest hippocampal percentage difference in summed JS divergence is
+    between active behavior and spontaneous activity (about 15%), and midbrain has the smallest
+    differences (at most 7%).
+  source: Results III.B, paragraph 6 (Fig. 2b)
+  quote: The highest percentage difference in hippocampus occurred between active behavior and
+    spontaneous activity (∼15%). Notably, midbrain areas displayed the smallest percentage
+    differences overall across most condition pairs (maximum 7%)
+  depends_on:
+  - fig2b-vis-summed-js-cv
+  expected:
+  - quantity: HP percentage difference, active behavior against spontaneous
+    value: 15
+    tolerance: 1.5
+    unit: percent
+  - quantity: MB largest percentage difference over condition pairs
+    value: 7
+    tolerance: 0.7
+    unit: percent
+  criterion: Sums and percentage differences under the readings of fig2b-vis-summed-js-cv.
+    Reproduced when, under one combination, the HP active against spontaneous difference is
+    within tolerance and the largest of the six HP pairs, the MB maximum is at most 7.7%, and
+    MB has the smallest difference of the four areas in most (at least four) of the six pairs.
+
+- id: fig2b-visually-driven-js-cv-low
+  statement: Among the three visually driven conditions, the CV-based JS divergences of
+    cortical regions differ little between conditions (typically less than 4%).
+  source: Results III.B, paragraph 6 (Fig. 2b)
+  quote: Among the three visually driven conditions (natural images, active behavior, blank
+    screens), JS divergences remained consistently low across cortical regions (typically <4%)
+  depends_on:
+  - fig2b-vis-summed-js-cv
+  criterion: Under the readings of fig2b-vis-summed-js-cv, the VIS percentage differences for
+    the three pairs among natural images, active behavior and blanks. Reproduced when most
+    (at least two of three) are at most 4.4% (4% widened by 10%). This statement conflicts
+    with the ~30% separation of natural images from active and blank in the same paragraph
+    (fig2b-vis-summed-js-cv); both are tested as written, and the conflict is noted.
+
+- id: fig2b-dg-ca3-high-js-cv
+  statement: DG and CA3 have high CV-based JS divergences in all four conditions, largest in
+    spontaneous activity (median 0.84 for both) and blank screens (median 0.63 for both).
+  source: Results III.B, paragraph 6 (Fig. 2b)
+  quote: 'Within hippocampal regions, DG and CA3 exhibited high JS divergences across all four
+    conditions, with the largest values occurring during spontaneous activity (median DG: 0.84;
+    CA3: 0.84) and blank screens (median DG: 0.63; CA3: 0.63)'
+  expected:
+  - quantity: DG median JS divergence, spontaneous
+    value: 0.84
+    tolerance: 0.084
+  - quantity: CA3 median JS divergence, spontaneous
+    value: 0.84
+    tolerance: 0.084
+  - quantity: DG median JS divergence, blanks
+    value: 0.63
+    tolerance: 0.063
+  - quantity: CA3 median JS divergence, blanks
+    value: 0.63
+    tolerance: 0.063
+  criterion: On the per-condition JS matrices of fig2b-vis-summed-js-cv (histogram readings of
+    the opening comment), the median of a region's divergences from the other 25 subregions
+    (the reading of "median DG"; a variant takes only the other hippocampal subregions).
+    Reproduced when, under one reading, the four medians are within tolerance and the
+    spontaneous medians of DG and CA3 are their largest over the four conditions. The Fig. 2b
+    legend gives DG and CA3 "moderate divergences (0.15–0.35)", which conflicts with these
+    values; claim fig2b-legend-js-cv tests the legend.
+
+- id: fig2b-legend-js-cv
+  statement: In the CV-based JS divergences, visual and thalamic regions diverge strongly
+    between spontaneous and visually driven states (above 0.40 for most visual areas, above
+    0.30 for thalamic regions), DG and CA3 moderately (0.15 to 0.35), and midbrain least (below
+    0.15 for most condition pairs).
+  source: Fig. 2b legend
+  quote: Visual cortex and thalamic regions showed large JS divergences between spontaneous
+    activity and visually driven states, with values exceeding 0.40 for most visual areas and
+    0.30 for thalamic regions. Hippocampal regions, particularly DG and CA3, exhibited moderate
+    divergences (0.15–0.35) across condition pairs
+  criterion: The legend compares conditions within a region ("between spontaneous activity and
+    visually driven states"), while the Results describe region-pair matrices within each
+    condition. Readings (a) per subregion, the JS divergence between its CV distribution in
+    spontaneous activity and in each visually driven condition; (b) the region-pair matrices
+    of fig2b-vis-summed-js-cv, comparing a region's row in spontaneous against the visually
+    driven conditions. Histogram readings as in the opening comment. Reproduced when, under
+    one reading, more than half of the visual subregions exceed 0.44 and more than half of the
+    thalamic subregions exceed 0.33 for spontaneous against visually driven, DG and CA3 lie
+    in 0.135 to 0.385 across condition pairs, and most midbrain values are below 0.165 (the
+    printed bounds widened by 10%).
+
+- id: fig3a-reference-systems
+  statement: In the C-H plane with D = 6, white noise lies at H near 1 and C near 0, a sine
+    near H 0 and C near 0.1, exponentially correlated Brownian motion at C 0.3 to 0.5 for H 0.3
+    to 0.6, and chaotic maps (logistic, tent, Ikeda) near maximum complexity, C 0.4 to 0.5 at H
+    0.5 to 0.8.
+  source: Results III.C, paragraph 2; Fig. 3a; Supplemental Material Sec. I
+  quote: white noise approaches maximum entropy (H ≈1) with minimal complexity (C ≈0), while
+    deterministic periodic signals (sine wave) exhibit minimum entropy (H ≈0) and low
+    complexity (C ≈0.1) ... exponentially correlated processes (colored noise) achieving
+    moderate complexity (C ≈0.3–0.5) at intermediate entropy values (H ≈0.3–0.6)
+  data: elsewhere
+  where: No deposit; synthetic series generated from the definitions in Supplemental Material
+    Sec. I (no recordings are used)
+  criterion: Series generated as in Supplemental Material Sec. I (correlated Gaussian noise
+    with K = floor(100 alpha) + 1 and exponential kernel, logistic map, Ikeda map with u = 0.9
+    and p in [5, 17], tent map, 1/f^k noise), H and C with D = 6, tau = 1. The parameter values
+    of Fig. 3a, the series lengths and the transients dropped are not given in the text (the
+    figure, which could not be read here, shows the parameters); the series length is 10^5
+    points with the first 10^3 dropped, a standard choice, and parameters span the ranges the
+    supplement names (logistic r in [3.5, 4], tent mu in (1, 2]). Reproduced when the
+    positions fall in the ranges quoted, widened by 10% of each bound.
+
+- id: fig3b-complexity-levels-by-region
+  statement: Across the hour of active recording, visual cortex and hippocampus keep the
+    highest statistical complexity (C about 0.13 to 0.15), thalamus is intermediate (about
+    0.11) and midbrain lowest (about 0.10), and these differences stay stable over time.
+  source: Results III.C, paragraph 3; Fig. 3b
+  quote: Visual cortex (VIS) and hippocampus (HP) maintained consistently high complexity
+    values (C ≈0.13–0.15) throughout the hour-long recording session (n=102 sessions) ...
+    Thalamus (TH) exhibited intermediate complexity (C ≈0.11), while midbrain (MB) showed the
+    lowest and most stable complexity values (C ≈0.10)
+  expected:
+  - quantity: VIS and HP mean C over time, low end
+    value: 0.13
+    tolerance: 0.013
+  - quantity: VIS and HP mean C over time, high end
+    value: 0.15
+    tolerance: 0.015
+  - quantity: TH mean C
+    value: 0.11
+    tolerance: 0.011
+  - quantity: MB mean C
+    value: 0.10
+    tolerance: 0.01
+  criterion: 'Per major area and 100-s window index, the mean C over populations, with its
+    standard error (Fig. 3b legend). Which windows form the time course is open: the section
+    is about natural image presentation, but a time course over "the hour-long recording
+    session" and the point counts of Figs. 3c to 3f (summing to 51 704, the active behavior
+    count) point to (a) the 36 active-behavior windows; (b) the eight natural-image windows
+    per population, in image order, is the other reading. Reproduced when, under one reading,
+    each area''s mean over windows is within tolerance and the order MB < TH < VIS and HP
+    holds at every window index; partially reproduced when the order holds at most indices.'
+
+- id: fig3c-vis-ch-plane
+  statement: Visual cortex windows span H 0.8 to 1.0 and C 0.1 to 0.4 in the C-H plane, and
+    differ from ISI-shuffled surrogates, which cluster at lower complexity (C 0.1 to 0.2),
+    Mann-Whitney p < 0.001.
+  source: Results III.C, paragraph 4; Fig. 3c
+  quote: Local neuronal population in the visual cortex occupied a broad region of the plane
+    spanning high entropy values (H ≈ 0.8–1.0) with complexity values ranging from C ≈0.1 to C
+    ≈0.4 ... the empirical distribution differed significantly from temporally shuffled
+    surrogate data (MannWhitney test, p < 0.001), with surrogate data clustering at lower
+    complexity values (C ≈0.1–0.2)
+  statistics:
+  - test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+    n: 21 084 VIS windows and their surrogates
+  depends_on:
+  - fig3b-complexity-levels-by-region
+  criterion: Windows as the reading of fig3b adopted (the active-behavior windows, whose count
+    21 084 matches), with natural-image windows shown. Ranges read as the 2.5th to 97.5th
+    percentiles of H and C (a standard reading of a visual span, not given by the paper), with
+    the 0th to 100th as a variant. Reproduced when the spans lie within the quoted ranges
+    widened by 10% of each bound, the Mann-Whitney test on C gives p < 0.001 with empirical
+    above surrogate, and the surrogate median C lies in 0.09 to 0.22.
+
+- id: fig3d-th-ch-plane
+  statement: Thalamic windows occupy a narrower part of the C-H plane than visual cortex (H 0.75
+    to 0.95, C 0.05 to 0.25), and differ from surrogates (p < 0.001).
+  source: Results III.C, paragraph 5; Fig. 3d
+  quote: Thalamic local neuronal populations [Fig. 3(d)] displayed a similar but more compact
+    distribution, occupying a narrower range of the C-H plane with slightly lower entropy (H
+    ≈0.75–0.95) and complexity (C ≈0.05–0.25) compared to visual cortex ... empirical data
+    differed significantly from surrogates (p < 0.001)
+  statistics:
+  - test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+    n: 11 265 TH windows and their surrogates
+  depends_on:
+  - fig3c-vis-ch-plane
+  criterion: As fig3c-vis-ch-plane, for thalamus (11 265 windows). The test is not named in
+    this paragraph; it is the Mann-Whitney test of the VIS paragraph and the Fig. 3 legend
+    asterisks. Reproduced when the spans match under the range rule, the C span is narrower
+    than that of VIS, and p < 0.001.
+
+- id: fig3e-hp-ch-plane
+  statement: Hippocampal windows have the broadest complexity distribution (C 0.05 to 0.4) at
+    high entropy (H 0.85 to 1.0), and differ from surrogates (p < 0.001).
+  source: Results III.C, paragraph 6; Fig. 3e
+  quote: Hippocampal populations [Fig. 3(e)] exhibited the broadest distribution, spanning an
+    extensive range of complexity (C ≈ 0.05–0.4) at high entropy (H ≈0.85–1.0)
+  statistics:
+  - test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+    n: 13 059 HP windows and their surrogates
+  depends_on:
+  - fig3c-vis-ch-plane
+  criterion: As fig3c-vis-ch-plane, for hippocampus (13 059 windows). Reproduced when the spans
+    match under the range rule, the C span is the widest of the four areas, and p < 0.001.
+
+- id: fig3f-mb-ch-plane
+  statement: Midbrain windows occupy the most restricted part of the C-H plane, at high entropy
+    (H 0.9 to 1.0) and low complexity (C 0.05 to 0.2), yet differ from surrogates (p < 0.001).
+  source: Results III.C, paragraph 7; Fig. 3f
+  quote: Midbrain populations [Fig. 3(f)] occupied the most restricted region of the C-H plane,
+    clustering at high entropy (H ≈0.9–1.0) but consistently low complexity (C ≈ 0.05–0.2) ...
+    Nevertheless, empirical data remained significantly different from surrogates (p < 0.001)
+  statistics:
+  - test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+    n: 6296 MB windows and their surrogates
+  depends_on:
+  - fig3c-vis-ch-plane
+  criterion: As fig3c-vis-ch-plane, for midbrain (6296 windows). Reproduced when the spans match
+    under the range rule, the C span is the narrowest of the four areas, and p < 0.001.
+
+- id: fig3-complexity-range-fractions
+  statement: The fractions of windows by complexity range are, for visual cortex, 0.8% in
+    [0.3, 0.4] and 4.9% in [0.0, 0.1]; thalamus 0.6% in [0.2, 0.3] and 24.6% in [0.0, 0.1];
+    hippocampus 2.7% in [0.3, 0.4] and 9.5% in [0.0, 0.1]; midbrain 45.4% in [0.1, 0.2] and
+    54.0% in [0.0, 0.1].
+  source: Results III.C, paragraph 4
+  quote: Among the visual area windows analyzed, 0.8% exhibit complexity values in the range
+    [0.3,0.4], compared to 4.9% in the range [0.0,0.1]. For thalamic regions, 0.6% of windows
+    fall in the range [0.2,0.3], compared to 24.6% in the range [0.0,0.1]
+  depends_on:
+  - fig3b-complexity-levels-by-region
+  expected:
+  - quantity: VIS windows with C in [0.3, 0.4]
+    value: 0.8
+    tolerance: 0.08
+    unit: percent
+  - quantity: VIS windows with C in [0.0, 0.1]
+    value: 4.9
+    tolerance: 0.49
+    unit: percent
+  - quantity: TH windows with C in [0.2, 0.3]
+    value: 0.6
+    tolerance: 0.06
+    unit: percent
+  - quantity: TH windows with C in [0.0, 0.1]
+    value: 24.6
+    tolerance: 2.46
+    unit: percent
+  - quantity: HP windows with C in [0.3, 0.4]
+    value: 2.7
+    tolerance: 0.27
+    unit: percent
+  - quantity: HP windows with C in [0.0, 0.1]
+    value: 9.5
+    tolerance: 0.95
+    unit: percent
+  - quantity: MB windows with C in [0.1, 0.2]
+    value: 45.4
+    tolerance: 4.54
+    unit: percent
+  - quantity: MB windows with C in [0.0, 0.1]
+    value: 54.0
+    tolerance: 5.4
+    unit: percent
+  criterion: Windows as the reading of fig3b adopted, with the other reading shown. The bins
+    are taken half open, [a, b), the last one closed (a standard choice; it can move a few
+    windows only). Reproduced when all eight fractions are within tolerance under one reading;
+    partially reproduced when at least six are.
+
+- id: fig4a-vis-complexity-by-condition
+  statement: All six visual areas have higher median complexity during natural image
+    presentation (0.16 to 0.26) than during spontaneous activity (0.1), with active behavior
+    and blank screens intermediate (0.1 to 0.19), all pairwise comparisons p < 0.001.
+  source: Results III.D, paragraph 2; Fig. 4a and its legend
+  quote: All six visual areas (VISl, VISal, VISp, VISam, VISrl, VISpm) showed elevated median
+    complexity during natural image presentation (0.16–0.26) compared to spontaneous activity
+    (0.1), with active behavior and blank screen conditions producing intermediate values
+    (0.1–0.19)
+  statistics:
+  - about: pairwise comparisons between conditions, each visual area
+    test: not named
+    p: 0.001
+    p_relation: "<"
+    n: natural images 11 321, active behavior 51 704, blanks 11 321, spontaneous 2870 windows
+      over all regions
+  expected:
+  - quantity: lowest VIS subregion median C, natural images
+    value: 0.16
+    tolerance: 0.016
+  - quantity: highest VIS subregion median C, natural images
+    value: 0.26
+    tolerance: 0.026
+  - quantity: VIS subregion median C, spontaneous
+    value: 0.1
+    tolerance: 0.01
+  - quantity: lowest VIS subregion median C, active behavior and blanks
+    value: 0.1
+    tolerance: 0.01
+  - quantity: highest VIS subregion median C, active behavior and blanks
+    value: 0.19
+    tolerance: 0.019
+  criterion: 'Per visual subregion and condition, the median C of the 100-s windows pooled over
+    populations, under the condition readings of the opening comment. The test of "all
+    pairwise comparisons" is not named; the paper uses Mann-Whitney elsewhere (Figs. 1c, 3),
+    so readings are (a) two-sided Mann-Whitney for each of the six condition pairs per area,
+    uncorrected; (b) the same with Bonferroni over the 36 tests. Reproduced when, under one
+    reading, every area has natural images > active and blanks > spontaneous in median, the
+    medians fall in the quoted ranges widened by 10% of each bound, and all pairwise tests
+    give p < 0.001. The legend gives narrower ranges (VISl 0.15–0.26; VISal 0.15–0.25; VISp
+    0.16–0.19; spontaneous 0.1 each) and the IQRs 0.08 to 0.12 in visually driven states;
+    these are reported and compared. Partially reproduced when the order holds but a value or
+    test misses.'
+
+- id: fig4b-thalamus-lgd-lp-modulated
+  statement: Of nine thalamic nuclei, only LGd and LP show significant modulation of
+    complexity across conditions (p < 0.001), higher during visually driven states (0.14 to
+    0.18) than spontaneous activity (0.11 to 0.12), with smaller effects than visual cortex.
+  source: Results III.D, paragraph 3; Fig. 4b legend
+  quote: Among nine examined regions, only the lateral geniculate dorsal (LGd) and lateral
+    posterior (LP) nuclei, both components of the visual thalamic pathway, showed significant
+    modulation across conditions (p < 0.001). LGd and LP exhibited elevated complexity during
+    visually driven states (0.14–0.18) compared to spontaneous activity (0.11–0.12)
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: LGd and LP windows in the four conditions
+  depends_on:
+  - fig4a-vis-complexity-by-condition
+  expected:
+  - quantity: LGd and LP median C, visually driven states, low end
+    value: 0.14
+    tolerance: 0.014
+  - quantity: LGd and LP median C, visually driven states, high end
+    value: 0.18
+    tolerance: 0.018
+  - quantity: LGd and LP median C, spontaneous, low end
+    value: 0.11
+    tolerance: 0.011
+  - quantity: LGd and LP median C, spontaneous, high end
+    value: 0.12
+    tolerance: 0.012
+  criterion: 'Medians as fig4a. The test of "modulation across conditions" is not named.
+    Readings (a) a Kruskal-Wallis test across the four conditions; (b) the pairwise
+    Mann-Whitney tests of fig4a, every visually driven condition against spontaneous. The
+    legend gives other values (LP 0.12–0.14 against 0.11; LGd 0.12–0.15 against 0.1), a
+    conflict with the text; the expected values are the text''s, and the legend''s are a
+    second reading of the values. Reproduced when, under one test reading, LGd and LP give
+    p < 0.001 with visually driven medians above spontaneous, their medians match the text or
+    the legend values under the range rule, and their visually driven minus spontaneous
+    difference is smaller than that of every visual area.'
+
+- id: fig4b-other-thalamus-not-modulated
+  statement: The other seven thalamic nuclei (MGd, PoT, SGN, POL, MGm, MGv, PIL) keep uniformly
+    low complexity (0.10 to 0.13) with no significant stimulus dependence.
+  source: Results III.D, paragraph 3; Fig. 4b
+  quote: The remaining seven thalamic nuclei (MGd, PoT, SGN, POL, MGm, MGv, PIL) maintained
+    uniformly low complexity (0.10–0.13) with minimal variability across all conditions,
+    showing no significant stimulus-dependence
+  depends_on:
+  - fig4b-thalamus-lgd-lp-modulated
+  expected:
+  - quantity: median C of the seven nuclei, low end
+    value: 0.10
+    tolerance: 0.01
+  - quantity: median C of the seven nuclei, high end
+    value: 0.13
+    tolerance: 0.013
+  criterion: A claim of absence. The paper's test is the one of fig4b-thalamus-lgd-lp-modulated,
+    unnamed, at its only stated level p < 0.001; both test readings of that claim are run.
+    Reproduced when, for each of the seven nuclei, the test does not reach p < 0.001, and the
+    medians lie in 0.09 to 0.143; not reproduced when the test finds modulation in any of
+    them. The size of each nucleus' largest condition difference in median C is reported
+    either way.
+
+- id: fig4c-dg-ca3-complexity
+  statement: DG and CA3 show elevated complexity across most conditions (DG 0.19 to 0.27, CA3
+    0.15 to 0.21), peaking during spontaneous activity, opposite to visual cortex, while CA1,
+    POST, ProS and SUB stay lower and stable (0.11 to 0.15).
+  source: Results III.D, paragraph 4; Fig. 4c and its legend
+  quote: 'DG and CA3 showed elevated complexity across most conditions (DG: 0.19–0.27; CA3:
+    0.15–0.21) with modest conditiondependence ... Intriguingly, these regions exhibited peak
+    complexity during spontaneous activity, opposite to the pattern observed in visual cortex.
+    In contrast, CA1, POST, ProS, and SUB maintained more stable, lower complexity values
+    (0.11–0.15) across states'
+  expected:
+  - quantity: DG median C, low end
+    value: 0.19
+    tolerance: 0.019
+  - quantity: DG median C, high end
+    value: 0.27
+    tolerance: 0.027
+  - quantity: CA3 median C, low end
+    value: 0.15
+    tolerance: 0.015
+  - quantity: CA3 median C, high end
+    value: 0.21
+    tolerance: 0.021
+  - quantity: CA1, POST, ProS and SUB median C, low end
+    value: 0.11
+    tolerance: 0.011
+  - quantity: CA1, POST, ProS and SUB median C, high end
+    value: 0.15
+    tolerance: 0.015
+  criterion: 'Medians as fig4a, per hippocampal subregion and condition. The legend differs from
+    the text: it gives DG and CA3 low medians in natural images (DG 0.12; CA3 0.11; CA1 0.1)
+    and elevated in the other conditions (DG 0.19–0.26; CA3 0.13–0.18; CA1 0.12–0.17), POST,
+    ProS and SUB 0.1–0.13. Readings of the ranges (a) the text''s, over "most conditions"
+    (three of four); (b) the legend''s, natural images apart. Reproduced when, under one
+    reading, the DG and CA3 medians match under the range rule, their highest median is in
+    spontaneous activity, and CA1, POST, ProS and SUB match their range; partially
+    reproduced when the spontaneous peak holds but the values miss.'
+
+- id: fig4d-midbrain-complexity-invariant
+  statement: Most midbrain areas (NB, MRN, SCig, APN) keep uniformly low complexity (0.10 to
+    0.12) across conditions; only NOT shows modest stimulus dependence (0.13 to 0.15 in
+    visually driven states against 0.13 in spontaneous activity).
+  source: Results III.D, paragraph 5; Fig. 4d and its legend
+  quote: Most regions (NB, MRN, SCig, APN) showed uniformly low complexity (0.10–0.12) with
+    minimal variability across all behavioral states ... Only the nucleus of the optic tract
+    (NOT) displayed modest stimulus-dependence (0.13–0.15 during visually driven states versus
+    0.13 during spontaneous activity)
+  expected:
+  - quantity: NB, MRN, SCig and APN median C, low end
+    value: 0.10
+    tolerance: 0.01
+  - quantity: NB, MRN, SCig and APN median C, high end
+    value: 0.12
+    tolerance: 0.012
+  - quantity: NOT median C, visually driven, high end
+    value: 0.15
+    tolerance: 0.015
+  - quantity: NOT median C, spontaneous
+    value: 0.13
+    tolerance: 0.013
+  criterion: 'Medians as fig4a. No test is reported for these regions. The legend gives NOT
+    0.11–0.18, NB 0.11–0.12, MRN 0.10–0.11, SCig 0.1–0.11 and APN "0.9", read as 0.09 (C of
+    these data cannot reach 0.9 by Fig. 3f). Readings of the values (a) the text; (b) the
+    legend. Reproduced when, under one reading, the medians of NB, MRN, SCig and APN in every
+    condition lie in their range widened by 10% of each bound, and the NOT range of medians
+    across conditions is the largest of the five midbrain areas.'
+
+- id: fig4e-js-complexity-natural-images
+  statement: During natural image presentation the complexity distributions of visual areas
+    are similar to each other (JS below 0.2) but diverge from thalamus and midbrain (JS above
+    0.4), and DG and CA3 diverge moderately from other regions (JS 0.3 to 0.5).
+  source: Results III.D, paragraph 6; Fig. 4e legend
+  quote: During natural image presentation [Fig. 4(e)], visual cortex regions showed high
+    within-group similarity (JS divergence <0.2) but large divergences from other brain areas
+    (JS >0.4 for VIS-TH and VIS-MB comparisons)
+  depends_on:
+  - fig4a-vis-complexity-by-condition
+  criterion: Per condition, the matrix of JS divergences between the complexity distributions
+    (100-s windows) of every pair of subregions, with the histogram readings of the opening
+    comment. Reproduced when, under one reading, most (more than half) of the VIS-VIS pairs
+    are below 0.22, most VIS-TH and VIS-MB pairs above 0.36, and most pairs of DG or CA3 with
+    other subregions lie in 0.27 to 0.55 (bounds widened by 10%).
+
+- id: fig4fg-js-complexity-active-blanks
+  statement: During active behavior and blank screens visual cortex keeps complexity
+    distributions distinct from subcortical structures (JS above 0.4), with within-hippocampus
+    divergences of 0.2 to 0.4 during active behavior.
+  source: Results III.D, paragraph 6; Fig. 4f and 4g legends
+  quote: During active behavior [Fig. 4(f)] and blank screens [Fig. 4(g)], similar patterns
+    persisted, with visual cortex maintaining distinct complexity distributions from
+    subcortical structures
+  depends_on:
+  - fig4e-js-complexity-natural-images
+  criterion: Matrices as fig4e. Reproduced when, under one reading, in both conditions most
+    pairs of a VIS subregion with a TH, HP or MB subregion exceed 0.36 (the legend's 0.4,
+    widened by 10%), and in active behavior most HP-HP pairs lie in 0.18 to 0.44.
+
+- id: fig4h-js-complexity-spontaneous-converges
+  statement: In spontaneous activity the JS divergences between regions are lower overall, visual
+    cortex differing less from other regions (JS 0.2 to 0.4) than in visually driven states, and
+    midbrain divergences stay low in all conditions (below 0.2 within the midbrain group).
+  source: Results III.D, paragraph 6; Fig. 4h legend
+  quote: 'Critically, spontaneous activity [Fig. 4(h)] exhibited reduced overall divergences,
+    with visual cortex showing smaller differences from other regions (JS: 0.2–0.4) compared to
+    visually driven states ... Midbrain areas showed consistently low divergence across all
+    conditions (JS <0.2 within MB group)'
+  depends_on:
+  - fig4e-js-complexity-natural-images
+  criterion: Matrices as fig4e. Reproduced when, under one reading, the mean of all off-diagonal
+    divergences in spontaneous activity is below that of each visually driven condition, the
+    mean VIS against non-VIS divergence in spontaneous activity is below that of each visually
+    driven condition with most of those pairs in 0.18 to 0.44, and most MB-MB pairs are below
+    0.22 in every condition.
+
+- id: supp-robustness-parameters
+  statement: The hierarchical, stimulus-dependent pattern of complexity across regions holds
+    for other parameter choices (bin sizes 20 and 50 ms, D from 3 to 6, tau from 1 to 4).
+  source: Results III.D, paragraph 5; Supplemental Material Sec. II and supplementary Figs. 1
+    to 5
+  quote: These analyses were repeated for different parameter choices (D, τ and bin sizes)
+    yielding consistent hierarchical results
+  depends_on:
+  - fig4a-vis-complexity-by-condition
+  criterion: 'Recomputed for the five combinations the supplement shows (bin 20 ms with D 3 and
+    tau 4, D 5 and tau 1, D 6 and tau 1; bin 50 ms with D 4 and tau 2, D 5 and tau 3). The
+    20 ms window counts of the supplementary legends (11 321, 51 452, 11 265, 2856) are
+    compared. "Consistent hierarchical results" is read as the main pattern of Fig. 4: in
+    each visual area the natural image median of C exceeds the spontaneous one, and the
+    visually driven minus spontaneous difference is larger in visual cortex than in midbrain.
+    Reproduced when this holds for all five combinations; partially reproduced for three or
+    four.'
+
+- id: fig5-vis-complexity-cv-coupling
+  statement: In visual cortex complexity rises with CV during visually driven conditions
+    (natural images CV 0.1 to 0.9 and C 0.08 to 0.34; active behavior CV 0.2 to 1.6 and C 0.10
+    to 0.38; blanks CV 0.1 to 1.2 and C 0.10 to 0.39), while in spontaneous activity the
+    trajectory compresses, with C below about 0.15.
+  source: Results III.E, paragraphs 2 and 6; Fig. 5 legend
+  quote: 'During natural image presentation, visual cortex exhibited a monotonic increase in
+    complexity with increasing CV (spanning CV: 0.1–0.9, C: 0.08–0.34)'
+  expected:
+  - quantity: VIS natural images, highest trajectory C
+    value: 0.34
+    tolerance: 0.034
+  - quantity: VIS active behavior, highest CV
+    value: 1.6
+    tolerance: 0.16
+  - quantity: VIS active behavior, highest trajectory C
+    value: 0.38
+    tolerance: 0.038
+  - quantity: VIS blanks, highest CV
+    value: 1.2
+    tolerance: 0.12
+  - quantity: VIS blanks, highest trajectory C
+    value: 0.39
+    tolerance: 0.039
+  - quantity: VIS spontaneous, highest trajectory C
+    value: 0.15
+    tolerance: 0.015
+  criterion: 'Per major area and condition, the 100-s windows binned by CV, and the mean C with
+    its standard error in each bin (Fig. 5 legend, "mean trajectories"). The CV bin width and
+    any minimum count per bin are not stated. Readings (a) bins of 0.1 CV, (b) bins of 0.05
+    CV, each with no minimum and with a minimum of 10 windows. The CV span is the range of
+    occupied bins and the C span the range of bin means. "Monotonic increase" is read as each
+    bin mean not falling below the previous one by more than the sum of their standard
+    errors, with a positive Spearman correlation of C and CV over windows. Reproduced when,
+    under one reading, the VIS trajectory rises in natural images, active behavior and
+    blanks, its spans match the quoted values under the range rule, and its maximum in
+    spontaneous activity is below 0.165.'
+
+- id: fig5-th-weaker-coupling
+  statement: Thalamus shows a weaker but consistent positive complexity-CV relationship in the
+    visually driven conditions, with shallower slopes than visual cortex and a restricted range
+    (CV 0.2 to 0.8, C 0.10 to 0.20).
+  source: Results III.E, paragraph 3; Fig. 5
+  quote: 'Thalamic regions displayed weaker but consistent positive complexity-CV relationships
+    across visually driven conditions (Fig. 5). The slopes of these trajectories were
+    shallower than in visual cortex, and the explored regions of the C-CV plane were more
+    restricted (typical range: CV: 0.2–0.8, C: 0.10–0.20)'
+  depends_on:
+  - fig5-vis-complexity-cv-coupling
+  criterion: Trajectories as fig5-vis-complexity-cv-coupling. Slope read as the least-squares
+    slope of C on CV over windows. Reproduced when, under one reading, in each visually
+    driven condition the TH slope is positive and below the VIS slope, and the TH spans fall
+    in CV 0.18 to 0.88 and C 0.09 to 0.22.
+
+- id: fig5-hp-spontaneous-elevated
+  statement: Hippocampus shows modest complexity (C 0.12 to 0.19) in the visually driven
+    conditions but markedly elevated complexity during spontaneous activity (C 0.12 to 0.25) at
+    intermediate CV (0.4 to 0.7), comparable to visual cortex during image viewing.
+  source: Results III.E, paragraph 4; Fig. 5 legend; Discussion IV.B, paragraph 1
+  quote: 'However, during spontaneous activity, hippocampus exhibited markedly elevated
+    complexity (C: 0.12–0.25) at intermediate CV values (0.4–0.7), reaching levels comparable to
+    those observed in visual cortex during active image viewing'
+  depends_on:
+  - fig5-vis-complexity-cv-coupling
+  expected:
+  - quantity: HP spontaneous, highest trajectory C at CV 0.4 to 0.7
+    value: 0.25
+    tolerance: 0.025
+  - quantity: HP visually driven, highest trajectory C
+    value: 0.19
+    tolerance: 0.019
+  criterion: Trajectories as fig5-vis-complexity-cv-coupling. Reproduced when, under one
+    reading, the HP bin means at CV 0.4 to 0.7 in spontaneous activity reach 0.25 within
+    tolerance and exceed the HP maximum of every visually driven condition, whose maxima lie
+    within 0.19 +/- 0.019.
+
+- id: fig5-mb-flat
+  statement: Midbrain complexity stays low (C 0.10 to 0.13) across the full range of CV (0.1
+    to 0.9) in all conditions, giving nearly flat trajectories.
+  source: Results III.E, paragraph 5; Fig. 5 legend
+  quote: 'Complexity values remained consistently low (C: 0.10–0.13) across the full range of
+    observed CV values (0.1–0.9) in all behavioral states, yielding nearly flat trajectories in
+    the C-CV plane'
+  depends_on:
+  - fig5-vis-complexity-cv-coupling
+  criterion: Trajectories as fig5-vis-complexity-cv-coupling. Reproduced when, under one
+    reading, in all four conditions the MB bin means lie in 0.09 to 0.143 and the MB
+    least-squares slope of C on CV is the smallest in absolute value of the four areas.
+
+- id: supp-fig6-mean-correlation
+  statement: In visual cortex the mean pairwise spike count correlation is elevated during
+    active behavior and blank screens (median 0.08 to 0.13) and near zero during natural
+    images and spontaneous activity (0.00 to 0.01); midbrain values are low and invariant.
+  source: Supplemental Material Sec. III; supplementary Fig. 6 legend
+  quote: Visual cortex subregions exhibited elevated  ̄r during active behavior and blank screen
+    conditions (median  ̄r ≈0.08–0.13), while natural image presentation and spontaneous
+    activity yielded near-zero correlations ( ̄r ≈0.00–0.01)
+  expected:
+  - quantity: VIS subregion median mean correlation, active and blanks, low end
+    value: 0.08
+    tolerance: 0.008
+  - quantity: VIS subregion median mean correlation, active and blanks, high end
+    value: 0.13
+    tolerance: 0.013
+  - quantity: VIS subregion median mean correlation, natural images and spontaneous, high end
+    value: 0.01
+    tolerance: 0.001
+  criterion: 'Per 100-s window, the mean over all pairs of the population''s units of the
+    Pearson correlation of their spike counts; the median over windows per subregion and
+    condition. The count bin is not stated. Readings (a) 50 ms, the bin of all main analyses;
+    (b) 20 ms, the other bin the paper uses. Units without spikes in a window are left out
+    (their correlation is undefined; a standard choice). Reproduced when, under one reading,
+    the VIS medians fall in the two quoted ranges widened by 10% of each bound (the near-zero
+    range taken as below 0.011), and the midbrain medians differ across conditions by less
+    than 0.02 (the reading of "low and largely invariant"; the bound is not from the paper).'
+
+- id: complexity-separates-images-from-spontaneous
+  statement: Neither CV nor mean pairwise correlation separates natural image presentation from
+    spontaneous activity in visual cortex, while statistical complexity does.
+  source: Supplementary Fig. 6 legend; Results III.D, paragraph 2
+  quote: The convergence between  ̄r and CV confirms the robustness of the reported hierarchy,
+    while neither measure distinguishes natural image presentation from spontaneous activity in
+    visual cortex
+  depends_on:
+  - fig2a-vis-cv-by-condition
+  - fig4a-vis-complexity-by-condition
+  - supp-fig6-mean-correlation
+  criterion: 'The paper names no measure of "distinguishes". Its tool for comparing
+    distributions is the JS divergence (Results III.B), and its CV medians for natural images
+    and spontaneous activity (VISp 0.39 against 0.29) differ, so a difference of medians
+    cannot be the reading. Readings (a) per visual subregion, the JS divergence between the
+    natural-image and spontaneous distributions of each measure (histogram readings of the
+    opening comment); (b) the overlap of the interquartile ranges of the two distributions.
+    Reproduced when, under one reading, in most visual subregions complexity separates the
+    two conditions (larger JS, or IQRs that do not overlap) while CV and mean correlation do
+    not (smaller JS than complexity, or overlapping IQRs). The comparison is reported for
+    every subregion.'
