@@ -19,8 +19,8 @@ both are found from the LFP here, and every result that uses them rests on that 
 | Same site as target shortens more, DG, CA3, ANT | Not reproduced |
 | PSD ratio after target stimulation, alpha and theta or beta up, gamma down | Not reproduced |
 | Other bands unchanged | Not reproduced |
-| Fewer IIS 15-45 s after seizures with target stimulation | Reproduced |
-| Ictal ripples do not differ | Reproduced |
+| Fewer IIS 15-45 s after seizures with target stimulation | Reproduced (time-bin test) |
+| Ictal ripples do not differ | Reproduced (weak: 5 of 12 readings differ) |
 | Target stimulation reduces ictal fast ripples | Not reproduced |
 | Seizure frequency, seizure duration proportion, interictal IIS and HFO (five claims) | Blocked: data missing |
 

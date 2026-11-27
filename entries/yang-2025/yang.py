@@ -11,8 +11,10 @@ Where each parameter comes from:
 
 - Sampling rate 1 kHz, channel order DG, CA1, CA3, ANT: the files (and Methods A).
 - Stimulation: 130 Hz biphasic pulses in 5 s trains with 5 s pauses (Methods C). The trains are
-  found from the comb of the pulse frequency and its aliases; this is a method of this attempt
-  (the files have no stimulation times), checked in the notebook against the 5 s train length.
+  found from the comb of the pulse frequency and its aliases, at the pulse rate (120 to 145 Hz,
+  not 125 Hz = fs / 8) that gives the most train time in the epoch; this is a method of this
+  attempt (the files have no stimulation times), checked in the notebook against the 5 s train
+  length and with example spectrograms.
 - Seizure onset and end: the paper gives no rule (claims file, opening comment, reading (b)).
   Assumption: line length in 1 s windows with 0.5 s steps on each channel, scaled by the channel's
   median over the 600 s; the seizure is the run in which the largest scaled line length of the
@@ -29,8 +31,17 @@ Where each parameter comes from:
 - IIS: Methods F rules (200 ms minimum interval keeping the larger peak, width at most 100 ms,
   |height| above mean + 5 SD of a baseline stretch); width at half prominence is a standard
   choice (claims file).
-- HFO: short line length detector (Methods E, refs 50 and 51); parameters are listed with
-  `hfo_rate` and are the HFO App's defaults as far as the paper allows (claims file).
+- HFO: short line length detector of the HFO App (Methods E, ref. 50), as implemented in its
+  source, github.com/zelanolab/hfoapp at commit 1ccff19 (`Functions/HFOAutoDetectorSLL.m`), with
+  the defaults its detector dialog sets (`GUIs/ConfigAutoDetector.mlapp`): FIR band-pass
+  (fieldtrip `ft_preproc_bandpassfilter`, order 3 * fix(fs / low edge), Hamming-windowed `fir1`,
+  two-pass), line length as the 5 ms moving mean of |diff| times 10, a 1% Gaussian edge taper,
+  threshold the 97.5th percentile of that line length over the epoch (default the whole loaded
+  series), events longer than 12 ms. See `sll_energy` and `hfo_counts`. The epoch loaded in the
+  app (here the 600 s file epoch) and the manual review of candidates are not stated in the paper;
+  the review cannot be repeated.
+- Windows of the PSD and HFO claims: Methods D; the post window is cut where the next train
+  starts (an assumption; the paper's 5 s window is a variant), see `psd_windows`.
 """
 
 import hashlib
@@ -111,31 +122,62 @@ def _alias(f):
     return FS - f if f > FS / 2 else f
 
 
-def stim_score(x, win=0.5, step=0.25, f0_grid=np.arange(120.0, 145.01, 0.25)):
+# pulse rates searched; 125 Hz = fs / 8 is left out, as its harmonics fold onto only four lines
+# (125, 250, 375, 500 Hz), which any 8-sample periodic artifact fills: with it in the grid, 4 to
+# 4.75 s "trains" at exactly 125 Hz were found in 7 baseline epochs and no stimulation train was
+# lost without it (checked in preparing this entry, and the notebook prints the trains found)
+F0_GRID = np.array([f for f in np.arange(120.0, 145.01, 0.25) if f != 125.0])
+
+
+def stim_score(x, win=0.5, step=0.25, f0_grid=F0_GRID, thresh=1.0, min_len=4.0):
     """Comb score per window: mean log power at the aliased harmonics (1 to 11) of the pulse
-    rate minus the median log power of 60-490 Hz, on each channel; the best pulse rate is chosen
-    over the epoch, and the score is the largest over channels. Returns window centres (s), the
-    score, the pulse rate, and the score per channel (channels x windows)."""
+    rate minus the median log power of 60-490 Hz, on each channel; the score is the largest over
+    channels. The pulse rate is chosen over the epoch as the one whose score gives the most train
+    time (runs above `thresh` of at least `min_len` s, as `find_trains`), and, when no rate gives
+    a train, the one with the highest 99th percentile of the score. (Choosing by the 99th
+    percentile alone let short bursts at 125 Hz, fs / 8, win over 5 s trains at the rat's pulse
+    rate.) Returns window centres (s), the score, the pulse rate, and the score per channel
+    (channels x windows)."""
     n = int(win * FS)
     f, t, S = signal.spectrogram(x.T, fs=FS, nperseg=n, noverlap=n - int(step * FS),
                                  detrend="constant")
     L = np.log10(S + 1e-12)  # (channel, freq, time)
     band = (f >= 60) & (f <= 490)
     med = np.median(L[:, band], 1)
-    best, best_f0, best_v = None, None, -np.inf
+    best, best_f0, best_key = None, None, (-np.inf, -np.inf)
     for f0 in f0_grid:
         idx = sorted({int(np.argmin(np.abs(f - _alias(k * f0)))) for k in range(1, 12)})
         sc = L[:, idx].mean(1) - med
-        v = np.percentile(sc.max(0), 99)
-        if v > best_v:
-            best, best_f0, best_v = sc, f0, v
+        m = sc.max(0)
+        tot = sum(L_ for L_ in ((b - a + 1) * step for a, b in _runs(m > thresh)) if L_ >= min_len)
+        key = (tot, np.percentile(m, 99))
+        if key > best_key:
+            best, best_f0, best_key = sc, f0, key
     return t, best.max(0), best_f0, best
 
 
-def find_trains(x, thresh=1.0, min_len=4.0):
+def comb_by_rate(x, f0_grid=F0_GRID, thresh=1.0, win=0.5, step=0.25):
+    """Diagnostics of the train detector at every pulse rate of the grid: the longest run (s) of
+    comb score above `thresh`. Returns (f0_grid, longest run per rate)."""
+    n = int(win * FS)
+    f, t, S = signal.spectrogram(x.T, fs=FS, nperseg=n, noverlap=n - int(step * FS),
+                                 detrend="constant")
+    L = np.log10(S + 1e-12)
+    band = (f >= 60) & (f <= 490)
+    med = np.median(L[:, band], 1)
+    longest = []
+    for f0 in f0_grid:
+        idx = sorted({int(np.argmin(np.abs(f - _alias(k * f0)))) for k in range(1, 12)})
+        sc = (L[:, idx].mean(1) - med).max(0)
+        r = _runs(sc > thresh)
+        longest.append(max([(b - a) * step for a, b in r], default=0.0))
+    return f0_grid, np.array(longest)
+
+
+def find_trains(x, thresh=1.0, min_len=4.0, score=None):
     """Stimulation trains as (start, end) in s: runs of comb score above `thresh` lasting at least
-    `min_len` s (trains are 5 s, Methods C)."""
-    t, sc, f0, _ = stim_score(x)
+    `min_len` s (trains are 5 s, Methods C). `score` is the output of `stim_score`, if computed."""
+    t, sc, f0, _ = stim_score(x, thresh=thresh, min_len=min_len) if score is None else score
     on = sc > thresh
     runs = _runs(on)
     step = t[1] - t[0]
@@ -273,7 +315,33 @@ def cond_gc(x, p):
     return F
 
 
-def cfw_onset(x, onset, order=None, win=1.0, step=0.5, dur=5.0, ds=GC_DOWNSAMPLE):
+def var_checks(x, p, lags=20):
+    """Checks of a VAR(p) fit by OLS: the largest modulus of the companion matrix's eigenvalues
+    (below 1 for a stable model), and per channel the Ljung-Box p-value of the residuals at `lags`
+    lags (chi-squared with `lags` degrees of freedom, a standard approximation). Returns
+    (max modulus, array of 4 p-values)."""
+    from scipy import stats as _st
+    x = x - x.mean(0)
+    T, n = x.shape
+    Y = x[p:]
+    L = _lagmat(x, p)
+    B, *_ = np.linalg.lstsq(L, Y, rcond=None)
+    E = Y - L @ B
+    A = np.zeros((n * p, n * p))
+    A[:n] = B.T
+    A[n:, :-n] = np.eye(n * (p - 1))
+    maxmod = float(np.abs(np.linalg.eigvals(A)).max())
+    m = len(E)
+    pv = []
+    for c in range(n):
+        e = E[:, c] - E[:, c].mean()
+        r = np.array([np.sum(e[k:] * e[:-k]) for k in range(1, lags + 1)]) / np.sum(e * e)
+        Q = m * (m + 2) * np.sum(r ** 2 / (m - np.arange(1, lags + 1)))
+        pv.append(_st.chi2.sf(Q, lags))
+    return maxmod, np.array(pv)
+
+
+def cfw_onset(x, onset, order=None, win=1.0, step=0.5, dur=5.0, ds=GC_DOWNSAMPLE, checks=False):
     """cf_w per node over the first `dur` s after onset (9 windows of 1 s, 0.5 s step, Methods B).
     Returns (out-strength minus in-strength averaged over windows, mean GC matrix, order).
     Reading (b) of the claims file (in minus out) is the negative of the first value."""
@@ -289,6 +357,9 @@ def cfw_onset(x, onset, order=None, win=1.0, step=0.5, dur=5.0, ds=GC_DOWNSAMPLE
     Fs = np.array([cond_gc(w, order) for w in wins])
     G = Fs.mean(0)
     cf = np.array([F.sum(0) - F.sum(1) for F in Fs]).mean(0)  # out (column sums) - in (row sums)
+    if checks:
+        ch = [var_checks(w, order) for w in wins]
+        return cf, G, order, (max(c[0] for c in ch), np.mean([np.mean(c[1] < 0.05) for c in ch]))
     return cf, G, order
 
 
@@ -328,29 +399,7 @@ def detect_iis(x, mu, sd, k=5.0, min_dist=0.2, max_width=0.1):
     return np.array([i for i, _ in kept]) / FS
 
 
-# ---------------------------------------------------------------- HFO (short line length)
-def hfo_events(x, band, win=0.005, thresh_sd=3.0, min_dur=0.006, merge=0.01):
-    """HFO candidates on one channel by the short line length detector (Methods E, refs 50, 51;
-    Gardner et al. 2007): band-pass `band`, line length in `win` s windows sliding by one sample,
-    events where it exceeds mean + `thresh_sd` SD of the segment for at least `min_dur` s, events
-    closer than `merge` s merged. Returns event start times (s). Parameters are a choice (the paper
-    gives none); the notebook shows other thresholds."""
-    hi = min(band[1], 0.49 * FS)
-    sos = signal.butter(4, [band[0], hi], btype="band", fs=FS, output="sos")
-    y = signal.sosfiltfilt(sos, x)
-    n = max(2, int(win * FS))
-    dl = np.abs(np.diff(y))
-    ll = np.convolve(dl, np.ones(n), mode="same")
-    thr = ll.mean() + thresh_sd * ll.std()
-    runs = _runs(ll > thr)
-    ev = []
-    for a, b in runs:
-        if (b - a) / FS >= min_dur:
-            if ev and (a / FS - ev[-1][1]) < merge:
-                ev[-1] = (ev[-1][0], b / FS)
-            else:
-                ev.append((a / FS, b / FS))
-    return np.array([e[0] for e in ev])
+# ---------------------------------------------------------------- HFO (short line length): see sll_energy
 
 
 # ---------------------------------------------------------------- one pass over an epoch
@@ -360,17 +409,41 @@ RIPPLE = (80.0, 250.0)
 FAST_RIPPLE = (250.0, 500.0)  # filtered to just below the 500 Hz Nyquist limit (claims file)
 
 
-def psd_windows(kind, onset, trains):
-    """Pre and post windows of Methods D. Stimulation groups: pre from onset to the start of the
-    first train, post the 5 s after the first train. Baseline groups: pre 0 to 5 s after onset,
-    post 10 to 15 s after onset. Returns ((a, b), (c, d)) in s, or None."""
+WINDOW_VARIANTS = ("main", "paper", "pre5")
+
+
+def psd_windows(kind, onset, trains, variant="main"):
+    """Pre and post windows of Methods D: "For the stimulation group, the pre-stimulation period
+    was from seizure onset to stimulation start, while the post-stimulation period was 5s after
+    the first stimulation train. For the baseline group, the pre-stimulation period was 5s after
+    seizure onset, and the post-stimulation period was 10s to 15s after seizure onset."
+
+    Stimulation groups, `variant`:
+    - "paper": pre from onset to the start of the first train, post the 5 s after it, as worded.
+    - "main": as "paper", but the post window ends where the next train starts, when that is
+      within the 5 s (pauses are 5 s, Methods C, and detected trains are padded by 0.25 s on each
+      side, so the next train's artifact would otherwise enter the window); an assumption.
+    - "pre5": as "main", with the pre window the last 5 s (at most) before the first train, from
+      onset at the earliest, so that pre windows have similar lengths.
+    Baseline groups: pre 0 to 5 s after onset, post 10 to 15 s after onset, in every variant.
+    Returns ((a, b), (c, d)) in s, or None."""
     if kind == "baseline":
         return (onset, onset + 5.0), (onset + 10.0, onset + 15.0)
     later = [tr for tr in trains if tr[0] >= onset - 1.0]
     if not later:
         return None
     s, e = later[0]
-    return (onset, s), (e, e + 5.0)
+    post_end = e + 5.0
+    if variant != "paper" and len(later) > 1:
+        post_end = min(post_end, later[1][0])
+    pre_start = onset if variant != "pre5" else max(onset, s - 5.0)
+    return (pre_start, s), (e, post_end)
+
+
+def next_train_in_post(onset, trains):
+    """True when the next train starts within the 5 s after the first train after onset."""
+    later = [tr for tr in trains if tr[0] >= onset - 1.0]
+    return len(later) > 1 and later[1][0] < later[0][1] + 5.0
 
 
 def epoch_features(d, kind, gc=True):
@@ -379,11 +452,16 @@ def epoch_features(d, kind, gc=True):
     out = {"md5": md5(d), "md5_ch": [md5(d[:, c]) for c in range(4)],
            "n_at_extreme": int(np.sum(np.abs(d) >= np.abs(d).max() - 1e-9)),
            "std": d.std(0), "min": d.min(0), "max": d.max(0)}
-    trains, f0 = find_trains(d)
+    score = stim_score(d)
+    t, sc, _, per = score
+    trains, f0 = find_trains(d, score=score)
     out["trains"] = trains
     out["pulse_rate"] = f0
+    # diagnostics of the train detector: comb score quantiles, trains at a lower threshold
+    out["comb_p99"] = float(np.percentile(sc, 99))
+    out["comb_max"] = float(sc.max())
+    out["comb_longest_by_rate"] = comb_by_rate(d)[1]
     if trains:
-        t, _, _, per = stim_score(d)
         k = np.zeros(len(t), bool)
         for s, e in trains:
             k |= (t >= s) & (t <= e)
@@ -393,6 +471,8 @@ def epoch_features(d, kind, gc=True):
     for th in SZ_THRESH_VARIANTS:
         out[f"sz_{th}"] = detect_seizure(d, trains, thresh=th)
     out["sz_notrainend"] = detect_seizure(d, trains, last_train=False)
+    # seizure found from the LFP alone, without the trains (for the clock check)
+    out["sz_notrains"] = detect_seizure(d, ())
     onset, end = out[f"sz_{SZ_THRESH}"]
     out["onset"], out["end"] = onset, end
     if not np.isfinite(onset):
@@ -401,21 +481,30 @@ def epoch_features(d, kind, gc=True):
     out["trains_in_seizure"] = [bool(s < end + 1 and e > onset - 1) for s, e in trains]
     # GC at onset
     if gc and onset * FS + 5000 <= len(d):
-        out["cfw"], out["gc"], out["gc_order"] = cfw_onset(d, onset)
+        out["cfw"], out["gc"], out["gc_order"], (out["var_maxmod"], out["var_lb_frac"]) = \
+            cfw_onset(d, onset, checks=True)
         out["cfw_ds4"], _, out["gc_order_ds4"] = cfw_onset(d, onset, ds=4)
         for th in SZ_THRESH_VARIANTS:
             o2 = out[f"sz_{th}"][0]
             if th != SZ_THRESH and np.isfinite(o2) and o2 * FS + 5000 <= len(d):
                 out[f"cfw_{th}"] = cfw_onset(d, o2)[0]
-    # PSD ratio pre and post
-    w = psd_windows(kind, onset, trains)
-    out["psd_windows"] = w
-    if w is not None and w[0][1] - w[0][0] >= 0.5 and w[1][1] * FS <= len(d):
+    # PSD ratio pre and post, for each window variant
+    out["psd_windows"] = psd_windows(kind, onset, trains)
+    out["next_train_in_post"] = kind != "baseline" and next_train_in_post(onset, trains)
+    for wv in WINDOW_VARIANTS:
+        w = psd_windows(kind, onset, trains, wv)
+        sfx = "" if wv == "main" else f"_{wv}"
+        out[f"psd_windows{sfx}"] = w
+        if w is None or w[0][1] - w[0][0] < 0.5 or w[1][1] - w[1][0] < 0.5 or w[1][1] * FS > len(d):
+            continue
         for lab, (a, b) in zip(("pre", "post"), w):
             seg = d[int(a * FS):int(b * FS)]
-            for nps in (1000, 500):
-                out[f"psd_{lab}_{nps}"] = psd_ratio(seg, nperseg=nps)
-            out[f"psd_{lab}_{1000}_total500"] = psd_ratio(seg, total=(0.0, 500.0))
+            if wv == "main":
+                for nps in (1000, 500):
+                    out[f"psd_{lab}_{nps}"] = psd_ratio(seg, nperseg=nps)
+                out[f"psd_{lab}_{1000}_total500"] = psd_ratio(seg, total=(0.0, 500.0))
+            else:
+                out[f"psd_{lab}_1000{sfx}"] = psd_ratio(seg, nperseg=1000)
     # IIS 180 s before onset and after end, 1 s bins, per channel
     pre_a = max(0.0, onset - IIS_SPAN)
     ref = d[int(pre_a * FS):int(onset * FS)]
@@ -441,53 +530,77 @@ def epoch_features(d, kind, gc=True):
                 arr[c] = h
         out["iis_pre"], out["iis_post"] = pre_counts, post_counts  # pre: bin 0 is just before onset
         out["iis_thr"] = [ref[:, c].std() * 5 for c in range(4)]
-    # ictal HFO in the PSD windows, threshold from the 180 s before onset
-    if w is not None and len(ref) > 10 * FS and w[1][1] * FS <= len(d):
+    # ictal HFO in the PSD windows (main and as worded), HFO App short line length detector
+    if np.isfinite(onset) and len(ref) > 10 * FS:
+        tmask = np.zeros(len(d), bool)
+        for s, e in trains:
+            tmask[int(s * FS):int(e * FS)] = True
+        refs = {"epoch": np.ones(len(d), bool), "epoch_notrains": ~tmask,
+                "preseizure": np.zeros(len(d), bool)}
+        refs["preseizure"][int(pre_a * FS):int(onset * FS)] = True
+        wins = {wv: psd_windows(kind, onset, trains, wv) for wv in ("main", "paper")}
+        wins = {k: v for k, v in wins.items() if v is not None and v[1][1] * FS <= len(d)
+                and v[1][1] - v[1][0] >= 0.5}
         for nm, band in (("ripple", RIPPLE), ("fr", FAST_RIPPLE)):
-            for th in (3.0, 5.0):
-                rates = {}
-                for lab, (a, b) in zip(("pre", "post"), w):
-                    r = []
-                    for c in range(4):
-                        r.append(hfo_rate(d[:, c], band, (a, b), (pre_a, onset), th))
-                    rates[lab] = np.array(r)
-                out[f"hfo_{nm}_{th}"] = rates
-                # threshold from the seizure's own two windows pooled (a variant)
-                rates = {}
-                for lab, (a, b) in zip(("pre", "post"), w):
-                    rates[lab] = np.array([hfo_rate(d[:, c], band, (a, b), w, th) for c in range(4)])
-                out[f"hfo_{nm}_{th}_self"] = rates
+            res = {f"{wv}_{rk}": {"pre": np.zeros(4), "post": np.zeros(4)}
+                   for wv in wins for rk in refs}
+            for c in range(4):
+                en = sll_energy(d[:, c], band)
+                for rk, rm in refs.items():
+                    starts = hfo_starts(en, np.percentile(en[rm], HFO_PERCENT))
+                    for wv, w in wins.items():
+                        for lab, (a, b) in zip(("pre", "post"), w):
+                            n = np.sum((starts >= a * FS) & (starts < b * FS))
+                            res[f"{wv}_{rk}"][lab][c] = n / (b - a)
+            for k, v in res.items():
+                out[f"hfo_{nm}_{k}"] = v
     return out
 
 
-def hfo_rate(x, band, window, ref_window, thresh_sd, win=0.005, min_dur=0.006, merge=0.01):
-    """Rate (events/s) of short line length HFO detections inside `window` (s), the threshold
-    being mean + `thresh_sd` SD of the short line length over `ref_window` (s), or over the union
-    of the windows in `ref_window` when it is a pair of windows. Filtering is done on the stretch
-    from the start of the reference to its end, padded by 1 s."""
-    refs = list(ref_window) if isinstance(ref_window[0], (tuple, list)) else [ref_window]
-    a0 = int(max(0, min([r[0] for r in refs] + [window[0]]) - 1) * FS)
-    b0 = int(min(len(x) / FS, max([r[1] for r in refs] + [window[1]]) + 1) * FS)
+HFO_WIN = 0.005      # HFO App dialog default, 5 ms
+HFO_PERCENT = 97.5   # HFO App dialog default threshold percentile
+HFO_MINDUR = 0.012   # HFO App dialog default, 12 ms
+
+
+def fir_bandpass(x, band):
+    """Two-pass FIR band-pass as fieldtrip's `ft_preproc_bandpassfilter(..., 'fir')`, the HFO App
+    default: order N = 3 * fix(fs / low edge), `fir1(N, band / nyquist)` (Hamming window)."""
+    N = 3 * int(FS // band[0])
     hi = min(band[1], 0.49 * FS)
-    sos = signal.butter(4, [band[0], hi], btype="band", fs=FS, output="sos")
-    y = signal.sosfiltfilt(sos, x[a0:b0])
-    n = max(2, int(win * FS))
-    ll = np.convolve(np.abs(np.diff(y, prepend=y[0])), np.ones(n), mode="same")
-    tt = (np.arange(len(y)) + a0) / FS
-    r = np.zeros(len(tt), bool)
-    for ra, rb in refs:
-        r |= (tt >= ra) & (tt < rb)
-    thr = ll[r].mean() + thresh_sd * ll[r].std()
-    k = (tt >= window[0]) & (tt < window[1])
-    runs = _runs(ll[k] > thr)
-    ev = []
-    for a, b in runs:
-        if (b - a) / FS >= min_dur:
-            if ev and (a - ev[-1][1]) / FS < merge:
-                ev[-1] = (ev[-1][0], b)
-            else:
-                ev.append((a, b))
-    return len(ev) / (window[1] - window[0])
+    b = signal.firwin(N + 1, [band[0], hi], pass_zero=False, fs=FS, window="hamming")
+    return signal.filtfilt(b, [1.0], x)
+
+
+def sll_energy(x, band, win=HFO_WIN):
+    """Short line length of `HFOAutoDetectorSLL.m`: 10 x the moving mean of |diff| over `win`,
+    centred, times the 1% Gaussian edge window (gausswin, alpha 5.25)."""
+    y = fir_bandpass(x, band)
+    y = np.concatenate([[y[0]], y])
+    n = int(round(win * FS))
+    tmp = signal.lfilter(np.ones(n), 1, np.abs(np.diff(y))) / n
+    en = np.zeros(len(tmp))
+    h = int(np.ceil(n / 2))
+    en[:len(tmp) - h + 1] = 10 * tmp[h - 1:]
+    m = int(round(len(en) * 0.01))
+    k = np.arange(m) - (m - 1) / 2
+    g = np.exp(-0.5 * (5.25 * k / ((m - 1) / 2)) ** 2)
+    c = int(np.argmax(g))
+    edge = np.concatenate([g[:c + 1], np.ones(len(en) - m), g[c + 1:]])
+    return en * edge
+
+
+def hfo_starts(en, thr, min_dur=HFO_MINDUR):
+    """Start samples of runs of `en` >= `thr` longer than `min_dur` (as `HFOAutoDetectorSLL.m`,
+    which keeps runs of more than round(min_dur * fs) samples)."""
+    runs = _runs(en >= thr)
+    k = int(round(min_dur * FS))
+    return np.array([a for a, b in runs if b - a > k], dtype=float)
+
+
+def read_epoch(asset_id, name):
+    """One epoch (samples x 4) of an asset, streamed."""
+    with open_asset(asset_id) as f:
+        return f["acquisition"][name]["data"][:]
 
 
 def process_asset(asset):
