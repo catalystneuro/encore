@@ -159,11 +159,12 @@ claims:
     Driver-defined groups were not randomly distributed within this
     continuum.
   criterion: The paper reports no test for either part. Continuity is judged as the paper does,
-    by inspecting the PC1 to PC2 scatter coloured by line (Figure 2B). For the bias, the only
-    test of driver-line structure the paper uses is the driver-label shuffle (Methods 6);
-    applied here, the mean pairwise centroid distance among the 9 lines (Methods 5) is compared
-    with its distribution over label permutations of the same cells, and the bias holds when
-    fewer than 5% of permutations reach it. The number of PCs in the centroid space is open;
+    by inspecting the PC1 to PC2 scatter coloured by line (Figure 2B). For the bias the paper
+    gives no test, so the check here is a choice of this file and not the paper's method. It
+    borrows the driver-label shuffle of Methods 6. The mean pairwise centroid distance among the
+    9 lines (Methods 5) is compared with its distribution over label permutations of the same
+    cells, and the bias holds when fewer than 5% of permutations reach it (the 5% level is also
+    this file's choice). The number of PCs in the centroid space is open;
     readings all PCs, the first five, and PC1 and PC2.
   depends_on:
   - fig2a-longpulse-low-dimensional
@@ -284,7 +285,8 @@ claims:
     driver-defined groups positioned between these extremes.
   criterion: The per-cell value is the median recruitment current over the cell's ramp sweeps
     (Supplementary Table 1; Figure 3E axis "Ramp median recruitment current (pA)"); recruitment
-    current is the command current at the first spike. Spike detection is open (readings as in
+    current is read as the command current at the first spike, the plain sense of the term,
+    which the Methods do not define (open). Spike detection is open (readings as in
     fig3d-ramp-loadings). The per-line summary is the median of cells, as the box plots of
     Figure 3E show. Reproduced when Pvalb has the highest line median and Vip and Sncg the two
     lowest of the 9 lines. For scale only, Figure 3E shows a Pvalb median near 270 pA and Vip and
@@ -315,9 +317,13 @@ claims:
     Figure 4C shows 10 amplitude features, but the set is not listed (open). Readings. (a) The
     peak, mean and fast voltage-response features of Supplementary Table 1 (median and maximum
     peak response amplitude, median mean response amplitude, median and maximum fast-response
-    peak, median fast-response mean), with or without the two gain features. (b) Those plus the
-    peak-response quantiles Figure 4C shows (lower-quartile peak response), which Supplementary
-    Table 1 does not list. The fast-response window is not given (open). Reproduced when the
+    peak, median fast-response mean), with or without the two gain features. (b) The 10
+    features Figure 4C names (median fast-response mean, mean response amplitude, median
+    response amplitude, maximum fast-response mean, maximum response amplitude, median peak
+    response, median fast peak response, lower-quartile peak response, mean peak response,
+    maximum peak response), with or without the two gain features; several of these (maximum
+    fast-response mean, lower-quartile peak response, mean peak response) are not in
+    Supplementary Table 1. The fast-response window is not given (open). Reproduced when the
     three values are within tolerance under a reading.
 - id: fig4b-brief-continuous-biased
   statement: In the brief-pulse response embedding cells occupy a continuous space with biased
@@ -524,3 +530,29 @@ claims:
     zero (Figures 5D to 5F show null modes near 0).
   depends_on:
   - fig5c-balanced-correlations-positive
+checks:
+- date: 2026-11-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4a-brief-response-variance, reading (b) said Figure 4C adds only the lower-quartile peak
+    response to Supplementary Table 1; Figure 4C names 10 features, of which maximum
+    fast-response mean, lower-quartile peak response and mean peak response are not in the
+    table. Reading (b) now lists the 10 features of Figure 4C.
+  - fig2b-longpulse-continuous-biased (and so fig3b and fig4b), the label-shuffle test of bias
+    and its 5% level are not a method the paper applies to this finding (Methods 6 uses the
+    shuffle only for cross-protocol alignment); the criterion now says the test is this file's
+    choice.
+  - fig3e-ramp-recruitment-current-order, recruitment current as the command at the first spike
+    was stated as fact; the Methods do not define it, so it is now marked as a reading.
+  - Confirmed by reading the PDF the values the checker could not find in the text, which are
+    printed inside figures (Figure 5A p = 0.002, r = 0.883, n = 9; Figure 5B r = 0.707, p <
+    0.001, 36 pairs; Figure 4E r values and n = 2154), and checked the figure-read values of
+    Figures 1C, 2A, 3A, 4A, 4F and 5C against the plots. No change.
+  - Open, not settled by the paper. Figure 1D prints 7 lines shared by all three geometries and
+    labels a circle "Short pulse" where the ramp geometry is meant; the lines named in Figures 2
+    to 4 give 8 shared. Figure 4B's legend lists 9 lines while Figures 4D and 4F show 11.
+  - Open, not settled by the paper. Feature-set membership, QC thresholds, spike detection,
+    response windows, number of PCs in the centroid space and all balanced-resampling settings
+    are not given and no code is public; the claims carry these as readings.
