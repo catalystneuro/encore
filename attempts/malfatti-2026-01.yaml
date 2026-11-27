@@ -1,0 +1,395 @@
+schema_version: 3
+id: malfatti-2026-01
+datasets:
+- archive: dandi
+  id: "002056"
+  version: 0.261113.1541
+  doi: 10.48324/dandi.002056/0.261113.1541
+  relation: primary
+paper: doi:10.7554/elife.109286
+date: 2026-11-27
+entry: malfatti-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45942040229
+inputs:
+- what: The prehension detection and classification (MS_PRT_Reaches.py, BehavOnly.py,
+    LFP_PRT_Reaches.py, Core.ReachClassify), the order of the DeepLabCut network's body parts
+    (config.yaml of Mice-Fingers_Forepaws_Nose_Pellet-PRT-Front), the counts per 10 min and the
+    sessions tested by BehavOnly.py, from the paper's code. No data.
+  source: https://gitlab.com/malfatti/M1MartinottiOnMovement at commit 86efdf15cefd15a7c0ba0b07665a39d99ae440e9
+- what: The functions the paper's code calls for prehension detection and classification
+    (Analysis.QuantifyTTLs, EucDist, PolygonArea, RMS, FilterSignal) and the logic of its
+    statistics (Stats.Full with 'auto', IsNormal, nparLD), at the last commit before the paper's
+    code commit. No data.
+  source: https://gitlab.com/malfatti/SciScripts at commit ef25f53659e2b6feba8007877ce284ae70ba267a
+outcomes:
+- claim: pc-selection-counts
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces of the miniscope recordings. The NWB files hold only DeepLabCut
+    tracking and a OnePhotonSeries with empty data that points to 342 raw AVI files (89.4 GB); no
+    ROI, fluorescence or trace data are in any file. Streaming the videos alone takes about 27 min
+    at the measured 56 MB/s, before decoding, motion correction, 3x downsampling, CNMF-E of 28
+    recordings of about 12000 frames and registration of cells across sessions, which would take
+    hours on the runner's 4 CPUs, over the notebook limit of 60 min and the time of the run. The
+    extraction was not run. A dandiset holding the extracted traces would make the claim testable.
+- claim: supfig1-cfos-validation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The c-Fos and mCherry histology is not in the dandiset (no image or histology files among
+    its 566 assets), and the paper names no other archive for it.
+- claim: fig1fh-no-genotype-effect-learning
+  outcome: reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:fig1fh-no-genotype-effect-learning
+  notes: 13 mice (6 Cre+, 7 WT), as the paper. Over all sessions the mixed ANOVA (Shapiro's test
+    did not reject normality) gives genotype F(1,11) = 0.043, p = 0.84 for total prehensions per
+    10 min, 0.041, p = 0.84 for successful prehensions and 0.327, p = 0.58 for the success ratio
+    (paper 0.83, 0.856 and 0.574). Cre+ minus control means are 4.9 and 1.5 prehensions per 10 min
+    and -0.024 in success ratio. Under every reading of the criterion (all sessions or sessions 1,
+    2 and 6, raw counts or counts per 10 min) the genotype p is above 0.05; the smallest is 0.145
+    (success ratio, sessions 1, 2 and 6). The variants (the duplicated session counted, the
+    Methods' four body parts) give p of 0.141 and above. No random draws are used.
+  deviations:
+  - The deposited session 5 holds both the spoon and the plate halves, as the Methods say ("After
+    five minutes in the fifth session, the pellet was instead placed on a fixed position on the
+    plate"); it is split at 300 s into sessions 5 and 6, as BehavOnly.py does from a per-mouse
+    table that is not in the repository. The pellet's tracked position moves at 300 s in all 13
+    mice (median 112 px).
+  - The deposited session 6 is the same recording as session 5 in every mouse and is dropped, so
+    10 sessions are tested where the paper's degrees of freedom (F(10,110)) imply 11. Counting
+    the copy as a session gives the paper's degrees of freedom and the same outcome.
+  - Prehensions and accuracy are taken from the deposited DeepLabCut tracking with the paper's
+    code; the paper's own per-prehension classes are not public, so they cannot be compared.
+  - The ANOVA-type statistic is a Python implementation of the formulas of nparLD (Brunner,
+    Domhof and Langer), with infinite denominator degrees of freedom as nparLD's ANOVA.test
+    reports; R was not available.
+- claim: fig1fh-session-effect
+  outcome: reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:fig1fh-session-effect
+  notes: Over all 10 distinct sessions the session effect is F(9,99) = 9.57, p = 2.2e-10 for total
+    prehensions per 10 min, 7.86, p = 1.1e-08 for successful prehensions and 6.30, p = 5.3e-07 for
+    the success ratio (paper F(10,110) = 9.525, 7.571 and 5.536). Means over mice of total
+    prehensions are 47.4 in session 1, 88.7 in session 2, 60.8 in session 5 and 44.3 in session 6,
+    and of successful prehensions 16.5, 24.0, 15.0 and 11.0, so both rise from session 1 to 2 and
+    fall below session 2 in sessions 5 and 6, raw and per 10 min, and under both variants. With
+    the copy counted as a session F(10,110) = 8.94, 6.86 and 6.06. Sessions 7 to 10 average 141.5,
+    175.5, 136.4 and 177.6 total prehensions (reported, not judged).
+  deviations:
+  - As for fig1fh-no-genotype-effect-learning, session 5 split at 300 s and the duplicated
+    session 6 dropped, so 10 sessions where the paper has 11.
+- claim: supfig2i-baseline-lower
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig1j-session-effect-controls
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig1j-session2-success-lower
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig1j-genotype-session6
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: prehension-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:prehension-overlap
+  measured:
+  - 13.89
+  - 47.62
+  - 15.48
+  - 42.55
+  - 10.65
+  - 48.42
+  - 29.69
+  - 43.97
+  - 15.58
+  - 45.9
+  notes: The miniscope group's 7 mice, 841 prehensions in sessions 1, 2, 5 and 6. Under reading (a)
+    (the next prehension within 2 s), successful and failed prehensions overlap in 13.89 and 47.62%
+    in session 1, 15.48 and 42.55% in session 2, 10.65 and 48.42% in session 5, 29.69 and 43.97%
+    in session 6, and 15.58 and 45.90% over all (given as measured; paper 3.17 and 36.07, 6.08 and
+    28.26, 1.79 and 28.12, 4.76 and 29.71, 4.0 and 29.91). Reading (b) gives 22.2 to 35.9% and
+    35.8 to 42.9%, reading (c) 30.6 to 59.4% and 61.7 to 76.2%. Failed exceeds successful in every
+    session under all three readings and all variants (24 of 24); no reading has more than one of
+    the ten values within tolerance. Prehensions are few in some mice (none in 67111 sessions 1 and
+    2, two or fewer in 67113 and 67314), and leaving out 67113, 67314 or both changes the values by
+    less than 1 point.
+  deviations:
+  - The paper does not say which 6 of the 7 miniscope mice in the dandiset it analysed; all 7 are
+    used, with 67113 and 67314 left out as variants.
+  - The second session 2 file of 67111 holds the same behaviour video as the first and is not
+    counted.
+- claim: trial-adjacency
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts. The prehension part of the selection
+    (pairs within 2 s) can be run, and prehension-overlap does.
+- claim: supfig3-baseline-epochs
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: supfig2j-phase-amplitudes
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: supfig2j-control-training-decrease
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: supfig2j-creplus-naive-failed
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: supfig4-ratio-interaction
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: supfig4-ratio-reconfiguration
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig2d-latency-accuracy
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig2d-control-temporal-separation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig2d-genotype-latency
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig2i-peak-width
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: supfig6-width-training
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: assemblies-counts
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces and their cell matching across sessions; see pc-selection-counts.
+- claim: fig3g-salience
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig3k-assembly-area
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces and the cells' spatial footprints; see pc-selection-counts.
+- claim: fig3l-resilience
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the CNMF-E traces; see pc-selection-counts.
+- claim: fig4b-clz-improves-success
+  outcome: reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:fig4b-clz-improves-success
+  notes: 11 mice (5 Cre+, 6 WT), sessions 8 to 13. In Cre+ mice the mean success ratio is 0.075
+    under saline and 0.135 under CLZ, higher in 5 of 5 mice; treatment within mouse F(1,4) =
+    19.66, p = 0.011, and one-way over mouse-session values F(1,28) = 8.01, p = 0.0085. In controls
+    0.128 and 0.135, F(1,5) = 0.28, p = 0.62, and F(1,34) = 0.24, p = 0.63 (paper F(1,15) = 10.974,
+    p = 0.01, and F(1,19) = 0.878, p = 0.361). Session effect in Cre+ F(5,20) = 7.40, p = 0.00045,
+    in controls F(5,25) = 0.31, p = 0.90; genotype by session F(5,45) = 2.60, p = 0.038 (paper
+    F(6,54) = 2.203, p = 0.057). With the Methods' four body parts the outcome is the same (Cre+ p
+    = 0.0012 and 0.0069, controls p = 0.63 and 0.52).
+  deviations:
+  - Session 7, which the criterion includes, is not in the dandiset; sessions 8 to 13 are used,
+    so the session terms have 5 degrees of freedom where the paper's have 6.
+- claim: fig4d-theta-genotype
+  outcome: not_reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:fig4d-theta-genotype
+  notes: 10 mice (4 Cre+, 6 WT) have prehensions of both accuracies in sessions 11 to 13, as the
+    paper's F(1,8) implies; 66127 has no successful prehension in session 11. Under the reading
+    adopted (four offset mice realigned, 1 s windows, per-bin normalisation) the mixed ANOVA gives
+    a theta genotype effect F(1,8) = 1.99, p = 0.20, and low theta F(1,8) = 2.44, p = 0.16 (paper
+    6.783, p = 0.031, and 6.489, p = 0.034); theta accuracy p = 0.26. Over all 12 readings the theta
+    genotype p is 0.17 to 0.48 and low theta 0.14 to 0.45, with Cre+ mean power above control in
+    all 12. The ANOVA-type statistic alone, with infinite denominator degrees of freedom, gives a
+    theta genotype p below 0.05 in 7 readings, but Shapiro's test selects the mixed ANOVA in them.
+    The outcome is the same under every reading.
+  deviations:
+  - The dandiset holds one LFP channel per mouse ("All accepted MOp5 channels"), so the channel
+    reading of the criterion has one answer.
+  - The LFP is decimated from 30 kHz to 1 kHz before filtering, a standard choice that cannot
+    change power below 100 Hz; the band-pass is a second-order Butterworth applied forward and
+    backward, as sciscripts FilterSignal does.
+  - The Methods' "cumulative mean" is read three ways, all run (per-bin mean over the recording,
+    mean over all bins, and the running mean of each bin); the spectrogram window is 1 s or 0.5 s
+    (Hann, 50% overlap). The outcome does not depend on them.
+  - The LFP of four control mice (69107, 69109, 69110, 69204) is about 8 s off the tracking
+    (clock check). The reading adopted moves their prehension onsets by the offset found (-7.96
+    to -8.68 s), and the files as deposited are run as well.
+- claim: fig4e-high-theta-accuracy
+  outcome: not_reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:fig4e-high-theta-accuracy
+  notes: Under the reading adopted the high theta accuracy effect is F(1,8) = 2.17, p = 0.18 (paper
+    8.724, p = 0.018). Successful prehensions have higher mean power than failed ones in all 12
+    readings, and the accuracy p is 0.12 to 0.74; none is below 0.05. The outcome is the same
+    under every reading.
+  deviations:
+  - Band power and readings as in fig4d-theta-genotype.
+- claim: fig4fh-gamma-session13
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:fig4fh-gamma-session13
+  notes: Session 13 alone, 10 mice. Under the reading adopted (four offset mice realigned, 1 s
+    windows, per-bin normalisation) the ANOVA-type statistic (Shapiro's test rejects normality)
+    gives a low gamma genotype effect F(1,inf) = 6.26, p = 0.012, Cre+ higher (1.19 against 0.79),
+    and a high gamma genotype effect F = 2.64, p = 0.10; the genotype part holds for one band. No
+    reading gives an accuracy effect in a gamma band in session 13 (p 0.14 to 0.99). With the files
+    as deposited, neither genotype part holds in any of the six readings (low gamma p 0.17 to 0.40,
+    high gamma 0.14 to 0.19), which would make the claim not reproduced. With the four mice
+    realigned one genotype part holds in four of six readings (low gamma in three, high gamma in
+    one, the 1 s running-mean reading, p = 0.027), always under the ANOVA-type statistic. The
+    mixed ANOVA, which Shapiro's test does not select there, gives p of 0.12 to 0.44 for both
+    bands. The question of the spectrogram window and the normalisation is asked of the paper's
+    authors (findings).
+  deviations:
+  - Band power and readings as in fig4d-theta-genotype.
+  - Assumed that the four mice whose LFP shows no locked potential at the deposited alignment are
+    analysed with their onsets moved by the offset at which the potential appears (about -8 s),
+    since the Methods synchronised the streams by the LED and the deposited timing of these mice
+    is inconsistent with a prehension-locked potential that the other seven mice show at lag 0.
+    The outcome rests on this choice; as deposited it is not reproduced.
+- claim: supfig7-lfp-nonprehension
+  outcome: not_reproduced
+  notebook: reproduce_malfatti_2026.ipynb
+  output: claim:supfig7-lfp-nonprehension
+  notes: 11 mice, sessions 11 to 13, power outside every -1 to 1 s prehension window. The genotype
+    by session interaction has p < 0.05 in at most two of the seven plotted bands under any
+    reading and in none as deposited; in the four realigned readings with per-bin or all-bin
+    normalisation it holds for gamma (p 0.012 to 0.031) and for full or theta (p 0.029 to 0.050).
+    Under the reading adopted it holds in two bands (full p = 0.032, gamma p = 0.031; theta 0.063,
+    beta 0.072, low theta 0.116, low gamma 0.090, high gamma 0.072). Cre+ power in session 13 is
+    below sessions 11 and 12 for full, theta and beta in 8 of 12 readings (not with the running
+    mean), for example 0.894 against 1.002 and 0.988 (full, per-bin, 1 s). High theta has no
+    effect at p < 0.05 except in two realigned readings (smallest p 0.049). The outcome is the same
+    under every reading.
+  deviations:
+  - Band power and readings as in fig4d-theta-genotype; beta 13-30 Hz, as the criterion's
+    standard choice.
+- claim: fig5b-ablation-efficiency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The tdTomato cell counts of the caspase group are not in the dandiset, and the paper names
+    no other archive for them.
+- claim: fig5d-pasta-drops
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The caspase ablation group (pasta handling videos or scores) is not in the dandiset; its
+    31 subjects are the behaviour-only, miniscope and LFP groups.
+- claim: fig5gh-hanging-wire
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The hanging wire test of the caspase group is not in the dandiset.
+- claim: fig5i-ablation-prehension
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The prehension sessions 7 to 12 of the caspase group are not in the dandiset; no subject
+    has a session 7 to 12 series with a caspase label.
+findings:
+- kind: data_missing
+  severity: major
+  statement: The miniscope recordings are deposited only as raw videos (342 AVI files, 89.4 GB),
+    referenced from OnePhotonSeries objects with empty data. No cell footprints, fluorescence or
+    detrended traces, and no cell matching across sessions, are in any file, so none of the 21
+    calcium imaging findings can be tested without rerunning the whole extraction.
+- kind: data_missing
+  severity: major
+  statement: The histology (c-Fos and mCherry counts, tdTomato counts after ablation) and the
+    caspase ablation group (prehension sessions 7 to 12, pasta handling, hanging wire) are not in
+    the dandiset. Five findings cannot be tested.
+- kind: metadata_error
+  severity: critical
+  statement: In all 13 mice of the behaviour-only group the files labelled session 6 hold the same
+    DeepLabCut tracking as session 5, one recording deposited twice. The Methods put the spoon and
+    plate halves of the fifth session in one 10 min recording, so the paper's session 6 is the
+    second half of the deposited session 5, and one of the 11 sessions the paper analyses
+    (F(10,110)) is missing from the dandiset. An analysis of the files as labelled counts session
+    5 twice.
+- kind: metadata_error
+  severity: critical
+  statement: The two session 2 recordings of miniscope mouse 67111 (Trial1 and Trial2) hold the same
+    behaviour video, tracked twice (same frame count, pellet positions r = 0.98 and a median 0.97 px
+    apart), each deposited with a different imaging recording. At most one of the two imaging
+    recordings has its own behaviour.
+- kind: metadata_error
+  severity: critical
+  statement: In the four LFP mice dated December 2021 (69107, 69109, 69110, 69204, all controls) the
+    LFP shows no potential locked to the DeepLabCut prehension onsets at the deposited alignment
+    in any of 24 sessions, while in 16 of them a locked potential appears 6.9 to 9.0 s before the
+    onsets (pooled -8.0 to -8.7 s). The other seven mice show it at lag 0. The LFP and the
+    tracking of these four mice appear to be on clocks about 8 s apart, and nothing in the files
+    says so. Two further sessions (66128 session 11, 66546 session 12) show no locked potential at
+    any lag.
+- kind: metadata_error
+  severity: major
+  statement: The LFP is stated in volts, but its values have standard deviations of 72 to 1057 and
+    reach plus or minus 6389.6, so they are microvolts or amplifier units. Mouse 67584 has a
+    standard deviation of 4011 to 4397 in every session, 4 to 60 times the other mice, so the scale
+    differs between files.
+- kind: metadata_error
+  severity: major
+  statement: Every file gives the mouse's sex as female. The Methods state that the miniscope mice
+    were male (and the LFP mice female); the files do not settle which is right.
+- kind: metadata_error
+  severity: minor
+  statement: The file of mouse 66415 session 6 gives the genotype as unknown, where the mouse's
+    other nine files give ChRNA2-Cre.
+- kind: selection_undocumented
+  about: data
+  severity: minor
+  statement: The miniscope group holds 7 mice (4 WT, 3 Cre+), one of them (67113) with sessions 1 and
+    2 only, where the paper analysed 6 (3 and 3) of 8 implanted, and 4 for the assembly analysis.
+    Neither the dandiset nor the paper says which mice were analysed.
+- kind: other
+  about: data
+  severity: minor
+  statement: Miniscope mouse 67314 has 20 s of DeepLabCut tracking in session 1 against 602 s of
+    imaging, and 455 s of imaging in session 2; mouse 67109 has 296 s of imaging in session 6.
+    Six of the 28 miniscope files have no prehension detected.
+- kind: data_missing
+  severity: minor
+  statement: The LFP group's session 7, the last training session before injection, is not in the
+    dandiset; the paper's statistics of the success ratio use sessions 7 to 13.
+- kind: other
+  about: data
+  severity: none
+  statement: The counts of the behaviour-only group (13 mice, 6 Cre+ and 7 control) and the LFP
+    group (11 mice, 5 Cre+ and 6 control) match the paper; the tracking is at the Methods' 50
+    frames/s and inside a 1920 x 1080 frame; the prehension detector of the paper's code, applied
+    to the tracking, gives learning curves whose session F values are close to the paper's.
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods do not give the spectrogram window, overlap or
+    the exact normalisation ("dividing each power value by the cumulative mean"), and the code at
+    commit 86efdf1 has no spectrogram. This attempt ran 1 s and 0.5 s Hann windows with 50% overlap,
+    and three normalisations (each frequency bin by its mean over the recording, by the mean over
+    all bins, and by its running mean). Which were used? The LFP outcomes do not change with them,
+    except in combination with the alignment for fig4fh-gamma-session13.
+- kind: methods_unavailable
+  statement: Question for the authors. The LED synchronisation of the LFP group (Methods, "LFP
+    electrophysiology analysis") is not deposited. For four control mice the deposited LFP appears
+    about 8 s off the tracking. Was the alignment of these mice in the paper's analysis the one in
+    the files? The outcome of fig4fh-gamma-session13 rests on assuming it was not.
