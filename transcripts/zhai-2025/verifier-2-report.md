@@ -1,50 +1,53 @@
-**Round 2 verification: Zhai et al. 2025 (doi:10.1126/sciadv.adv8224) on DANDI:001538 draft**
+**Verifier report, round 2: Zhai et al. 2025 on DANDI:001538 (0.261124.1858)**
 
-The claims file has 45 claims. The attempt record has 45 outcomes, one per claim: 34 reproduced, 2 partially reproduced, 2 not reproduced and 7 blocked (the 6 spine claims and fig8bc). So 38 claims are tested. My round-1 count of "39 tested, 6 blocked" was wrong; fig8bc was blocked then too.
+**1. Outcomes**
 
-**1. Outcomes and assumptions**
+The claims file has 45 claims: 5 links and 40 findings. The attempt record has 45 outcomes: 6 blocked, 3 not reproduced, 2 partially reproduced and 34 reproduced.
 
-I agree with all 45 stated outcomes.
+- **I agree with all 45 outcomes.** That includes fig4h-ispn-sr-frequency-unchanged as reproduced, where I disagreed in round 1.
+  - The claims file gives no criterion for fig4h beyond the paper's test, under which this claim of absence holds when P ≥ 0.05.
+  - The new runs of 10 sweeps give P = 0.064 with the last 10 and with the "nearest run" (cell 77). The every-sweep result is also 0.064, the smoothed-noise variant 0.118 and the paper's own table 0.23.
+  - Only the first 10 sweeps give 0.049. So the outcome stands, but it is fragile.
+- **The `assumed: true` flags are stated** (link-sr-cells, fig2h, fig2i, fig4g, fig4h).
+  - The stand-in detector is a reasonable assumption for the amplitude claims. They hold under both noise variants and on the paper's table (cells 68 and 74).
+  - The fig4h "nearest run" assumption is stated but weakly supported. For 2023-04-06 cell 1 the two possible runs give 93 and 89 events against the paper's 73 (cell 66). Both are about 22 to 27% too high, so the choice rests on a 4-event difference from a stand-in detector. It only matters against the first-10 reading.
+- **Blocked claims.** I accept `not_runnable` for the five 2PLSM spine claims and for fig4k, for the reason the record gives. In round 1 I had said other and data_missing.
+- **Claims-file readings to report:**
+  - link-grab-rois treats the mouse as the unit, but the paper's unit is the region. This is still open.
+  - link-dendritic-cells defines the Figure 6D letter as the cell's place in the day. Cell 42 shows the letter is the file's cell number: 16 of 16 identifiers match that way, against 14 of 16 by place.
+  - link-dendritic-cells also says the row-order assumption is "checked by the somatic link, where rows follow that order". The somatic link uses best matches, not row order, and 9 paper rows are reused (cell 11). Cell 42 also shows two off-state iSPNs that look swapped. So that premise is not established.
+  - link-sr-cells names `lid.detect_events`, which is not this attempt's helper.
 
-Six outcomes carry `assumed: true`, and each assumption is stated in the record's deviations:
+**2. Sentences the outputs do not support**
 
-- **link-sr-cells, fig2h, fig2i, fig4g, fig4h (the event detector).** Stated and reasonable. The paper gives no TaroTools settings. Each outcome now also holds on the paper's own per-cell values, run next to the detector results (cells 81, 84, 87, 90: P = 0.0003, 0.130, 0.0003, 0.23).
-- **fig1i-dspn-dendritic-sch-lower (2019-04-11 cell 1 left out; changed from not_reproduced to reproduced).** Stated and reasonable.
-  - The dandiset description says the first site pair of this cell is not deposited.
-  - The left-out paper value (0.228) is the lowest in the SCH group, so it is the value that most supports the claim. Removing it works against reproduction.
-  - The paper's own table without that row gives U = 65, P = 0.027, the same as the dandiset without the cell (cell 64).
-  - The outcome now rests on 8 SCH cells where the paper used 9. With the cell, P = 0.066. Both facts are stated.
-
-**2. Sentences the printed numbers do not support**
-
-- **Cell 65, the attempt record's notes and its round-1 response for fig1i-dspn-dendritic-sch-lower:** "the other eight SCH cells are within 10% of the paper's rows."
-  - Cell 20 gives 0.778 within 10% for the SCH group, which is 7 of 9.
-  - Cell 64 shows 2019-05-03 cell 3 at 0.289 against the paper's 0.261, a difference of 10.7%.
-  - The correct statement is 7 of the other 8. This does not change the outcome.
-- **Entry README:** "It takes about eight minutes." Cell 138 prints a total run time of 13.1 min. Loading alone takes about 11 min in cell 3 (306 + 43 + 135 + 193 s).
-- **Attempt record, fig2h deviation:** "The reading the paper best supports is adopted: 5 SD … and the per-cell median." The notes and cell 82 lead with the per-cell mean (P = 0.0031) and give the median second (P = 0.0044). Both are below 0.05, so the outcome stands, but the adopted reading and the headline number disagree.
-- **Cell 27:** it lists the missing background images as a possible cause of the gaps, then says in the same parenthesis that "they cancel in the normalised area". If they cancel, they cannot explain the gaps. The sentence is self-contradictory but does not affect the outcome.
-
-All other "**Result:**" cells, the Summary, the README rows and the record's notes agree with the printed outputs. The README's group counts (3, 5, 5, 8 and 6 claims) add up to 45.
-
-The record's verification block gives my round-1 reasons faithfully, paraphrased closely from my report. One thing is carried over from me: the fig4k reason repeats my round-1 count of "17 Adora2Cre M#### files". Cell 14 counts 16 confocal Z-stacks plus 1 overview, so my figure was off by one. Round-1 problem 7 (how the Sr2+ files were picked) is in no reason, as it belonged to no single claim. It is resolved.
+- **Summary, cell 134:** "Seven claims rest on the paper's own tables." The claims file has 8 claims with `data: elsewhere`, and the README and cell 107 list 8.
+- **Attempt record, finding 6 (GRAB):** "seven regions have an acetylcholine trial that ends before 4 s". Cell 82 shows 6. The seventh row listed, 2024-05-24 Slice1Roi1, is there only because it has no tetrodotoxin trial; its acetylcholine trials last 4.6 and 5.2 s.
+- **link-somatic-cells notes:** "18 cells differ by more than 3 spikes, most of them on-state dSPNs … and sulpiride iSPNs". Cell 11 shows 9 of the 18 (6 on-state dSPNs and 3 sulpiride iSPNs), which is half, not most.
+- **fig4h notes and cell 78:** the nearest-run reading is "the one the paper's own per-cell counts support". Cell 66 does not show this, for the reason given in section 1.
+- **Somatic deviation, repeated in many outcomes:** "so every somatic result is the same under it". The last-sweep variant is only re-run for the rheobase tests of fig1f and fig3d (cells 15 and 24). The changed cell, 2020-02-17 cell 1 (170 to 171 spikes), belongs to the fig6c summed-spikes variant in cell 33, which is not re-run. A change of 1 spike is very unlikely to change anything, but it is not shown.
+- **README:** the row "Sr2+-oEPSC … (four claims) | Reproduced, resting on a stand-in event detector" leaves out that fig4h also depends on which sweeps are used. The Summary (cell 134) does state this.
+- **Checked and supported:** every other "**Result:" sentence and the rest of the README and attempt-record notes match the printed outputs. This includes the paper-quoted P values (0.0115, 0.0029, 0.0545, 0.012, 0.395, 0.910, 0.5566, 29.30, 0.6340/0.4657, "four mice"), which I checked against `paper/`.
+- **My round-1 reasons** are stated faithfully in the record's `verifications`, in my own terms. For fig4h it records `agrees: false` with my reason.
 
 **3. Round-1 points**
 
-All nine are resolved:
+- **Resolved:**
+  - 1: the red background is now 55 (`zhai.py:193`, 248–249).
+  - 2: `keep="last"` now works (`zhai.py:171-176`). Cell 11 shows one cell's total changes, so the variant is no longer a no-op.
+  - 4: the wording of the fig1i exclusion variant (cells 49 and 50).
+  - 5: reused rows, ties and the agreement between the rheobase and F-I sheet rows (115 of 124) are now reported in cell 11.
+  - 6: the one-to-one (15 of 34) and per-mouse (1 of 11) counts are in cell 80.
+  - 7: the frame interval is now checked (cell 82). The 2024-04-02 Slice1Roi2 discrepancy is recorded as a finding.
+  - 8: cell 102. 9: cell 122. 10: cell 42. 13: cell 9.
+  - 11: the stand-in detector is now stated as an assumption.
+- **Still bearing on a conclusion:**
+  - Point 3: fig4h is reproduced, but sits at the threshold (0.049 against 0.064) depending on one sweep of one cell. The justification for the reading it uses is overstated.
+  - Point 12 and the link-dendritic premise above: the claims-file readings. Neither changes an outcome as computed.
+  - fig1i-dspn-dendritic-sch-lower is not reproduced because the 2019-04-11 pair is missing from the data (P = 0.066 with the cell, 0.027 without it). That is correctly attributed to the data.
 
-1. **Confocal images:** cell 14 counts 16 Z-stacks naming Figure 4, J and K, and the Figure 4I overview. The blocked reason is corrected.
-2. **Spine blocks:** they now use the reason methods_underspecified, the 76 two-photon files are counted, and a finding asks the authors about the manual correction.
-3. **SCH dendritic data gap:** cell 64 adds the per-cell comparison and the tests with and without the cell. The outcome is changed with a stated assumption, as discussed above.
-4. **Frequency claims and the detector:** the tests on the paper's own frequencies are added, and both absences hold on them.
-5. **Mean against median amplitude:** handled. Cell 24 shows the result under both readings, and a question asks a reader whether the criterion should compare the median. The claims file's misreading is reported, not corrected.
-6. **GRAB matching:** the TTX-only and quinpirole Fmin rules are added, each matched many-to-one and one-to-one. The Methods' rule matches best, and the outcome is not reproduced under every reading.
-7. **Sr2+ file selection:** cell 3 now picks the files by session description, and cell 13 prints the check.
-8. **Last-sweep variant:** run for every somatic claim, with the same outcomes.
-9. **AIM merge:** sessions are now merged on figure, mouse and session, and no mouse number repeats across the two figures.
+**4. Critical findings**
 
-My round-1 "could not check" items are also settled:
-- The condition column agrees with the session names and subject folders (cell 13).
-- The lab's own total column gives F = 29.30, equal to the paper's (cell 110).
-
-**What remains that bears on a conclusion:** only the fig1i-dspn-dendritic-sch-lower outcome. It is reproduced only if 2019-04-11 cell 1 is left out; with that cell, P = 0.066. I find the assumption reasonable. Its supporting sentence needs correcting from "the other eight cells within 10%" to 7 of 8. The other items in section 2 are wording fixes.
+No finding in the attempt record is rated `critical`. Of the 8 findings, 3 are major, 3 minor, and the 2 `methods_unavailable` findings carry no severity. I would rate none of them critical:
+- Each data problem is stated in the dandiset description or is visible from the values: the missing groups, the Figure 8 preprint sheets, the missing 2019-04-11 pair, and the extra Sr2+ sweeps.
+- None amounts to duplicated or mislabelled recordings or a clock problem. Cell 7 shows no duplicated somatic cells, dendritic pairs, Sr2+ cells, GRAB regions or AIM mice, and cell 6 passes all the clock checks.
+- Finding 6 is correctly rated minor, but its count of short acetylcholine trials should be 6, not 7 (cell 82).
