@@ -41,12 +41,12 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/clark-2026-01.yaml`](../../attempts/clark-2026-01.yaml).
 
 - `tuning_curves.ipynb`: the files, the tuning curves and their statistics, and the generative
-  process (about 15 minutes, most of it the generative fit).
-- `network.ipynb`: the data-derived network, its weights, dynamics and spectrum (about 22 minutes).
-- `network_grid.ipynb`: the lambda and c grid (about 8 minutes).
-- `theory.ipynb`: the mean-field theory and the large-N spectra (about 2 minutes).
+  process (about 19 minutes, most of it the generative fit).
+- `network.ipynb`: the data-derived network, its weights, dynamics and spectrum (about 38 minutes).
+- `network_grid.ipynb`: the lambda and c grid (about 10 minutes).
+- `theory.ipynb`: the mean-field theory and the large-N spectra (about 3 minutes).
 - `model_sims.ipynb`: the simulations of the generative-process and rank-four networks (about
-  31 minutes).
+  51 minutes).
 - `hdring.py`: streaming the files, the paper's tuning-curve procedure, the statistics, the
   generative process and the network, in numpy, each function naming the function of the paper's
   code it repeats. Other notebooks on this dandiset can import it.

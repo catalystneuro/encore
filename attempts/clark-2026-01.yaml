@@ -139,7 +139,8 @@ outcomes:
     is the minimum (0.00890) and the chosen point second (0.00900), 1.1% apart. The error surface has
     two near-equal minima along a ridge in b and beta, and which wins depends on the draws and the arithmetic;
     the claims file's tolerance does not cover the second one. The fig5 claims are tested at both parameter
-    sets and give the same outcomes.
+    sets and give the same outcomes. The criterion has no rule for a partial result; partially_reproduced
+    is the protocol's reading of a result that holds in part (two of the three parameters).
   deviations:
   - The criterion asks for 500,000 samples at each of the 18,000 grid points, about 3 hours on this runner.
     The whole grid was evaluated with 25,000 samples (the same draws at every point, float32), and the
@@ -267,8 +268,9 @@ outcomes:
     is not exact. The evidence is weaker than the count: pairs 2 and 4 are complex conjugates, equal in
     real part by construction, so only pairs 1 and 3 are doublets of distinct real eigenvalues; eigenvectors
     5 to 7 tie in their overlap with the uniform vector (0.041 each), and setting aside the sixth or the
-    seventh also passes 4 of 4 pairs (2 and 1 of them not conjugates). Without setting one aside, two
-    of the four pairs pass. The criterion as written is met.'
+    seventh also passes 4 of 4 pairs (2 and 1 of them not conjugates). Without setting one aside, three
+    of the four pairs pass (within 0.027, 0.000, 0.000 and 0.036 against next 0.139, 0.183, 0.0002 and
+    0.000; the fourth fails). The criterion as written is met.'
   deviations:
   - The unpaired eigenvalue is identified as the one whose eigenvector overlaps most with the uniform
     vector (the constant mode, as the criterion says), a standard choice; eigenvectors 5 to 7 tie, and
@@ -278,11 +280,12 @@ outcomes:
   notebook: network.ipynb
   output: claim:figs11b-data-network-global-stability
   notes: From every initial spread (standard deviation 1 to 1,000, median starting distance 1.6 to 700)
-    all 34 final states lie within 0.0016 of the manifold, with none elsewhere, and at standard deviation
+    all 34 final states lie within 0.0016 of the manifold (largest 0.00154), with none elsewhere, and at standard deviation
     1 all 34 end in one state (1.69 to 1.70 rad), under all five seeds. The threshold the criterion names,
     the distance reached at 20 s in fig2ef, is taken from the fig2ef protocol (its seed and its 100 noisy
     starts) run with the 5-ms step of these runs (largest distance at 20 s 0.00141); against it 97% to
-    100% of final states are within at every standard deviation under all five seeds. Against the 1-ms
+    100% of final states are within at every standard deviation under all five seeds, so not every final
+    state is within it (the largest, 0.00147, 0.00153 and 0.00154, are just above). Against the 1-ms
     fig2ef run (largest 0.00132), the reading of round 1, 91% to 100% are within, below 95% at standard
     deviations 10, 50 and 1,000 under the claim's seed (0.94, 0.91, 0.94); against its median (0.00068)
     29% to 65%. The final distances sit at the network's resolution, about 1e-3, where the step of the
@@ -298,22 +301,28 @@ outcomes:
   outcome: partially_reproduced
   notebook: network_grid.ipynb
   output: claim:figs8-s9-lambda-and-c
-  notes: At c 0 some runs diverge at every lambda up to 1e-4 (1 to 4 of 100) and, reading collapse in
-    the plane of the top two principal components (ii), 96 to 100 of 100 fall to the homogeneous state
-    (radius 0.65 to 0.80 against the manifold's 39.0) at every lambda; read as the firing-rate norm (i)
+  notes: At c 0 some runs diverge at every lambda up to 1e-4 (4, 3 and 1 of 100 at lambda 1e-12, 1e-8
+    and 1e-4; 4 and 3 of 20 at 1e-10 and 1e-6) and, reading collapse in the plane of the top two principal
+    components (ii), every other run falls to the homogeneous state at every lambda (96, 97, 99 and 100
+    of 100 at 1e-12, 1e-8, 1e-4 and 1e-2; 16 and 17 of 20 at 1e-10 and 1e-6; radius 0.65 to 0.80 against
+    the manifold's 39.0); read as the firing-rate norm (i)
     none collapses, as the homogeneous state keeps a norm of 17.3 to 17.7 against 72.5. No c above 0 diverges
     up to lambda 1e-4, and c 0.25 leaves the collapse (8 to 20 of 20 across lambda under ii, 12 at 1e-8).
     At lambda 1e-2 all runs with c up to 0.75 collapse (ii), but at c 1 the states keep a radius of 4.6,
     just above the threshold of 3.9, so the criterion's test at c 1 fails under both readings. The flow
-    error is 3.6e-9, 1.3e-10, 1.7e-8, 4.6e-6, 4.9e-4 and 2.1e-2 from lambda 1e-12 to 1e-2; it rises at
+    error is 2.6e-9, 1.3e-10, 1.7e-8, 4.6e-6, 4.9e-4 and 2.1e-2 from lambda 1e-12 to 1e-2; it rises at
     both ends with its minimum at 1e-10, just below 1e-8 as the supplement says, but 1e-8 is not below
-    1e-12, so that part of the criterion fails. Two of the criterion's four parts hold. Under four more
+    1e-12, so that part of the criterion fails. The solve at 1e-12 is ill-conditioned and its flow error
+    is not repeated exactly between runs (2.6e-9 in the two runs of the round-2 revision, 3.6e-9 in the
+    run of round 1); the values at the other lambda are the same to three digits, and the part fails in
+    every run. Two of the criterion's four parts hold. Under four more
     seeds (20 initial conditions) the points the criterion reads give the same pattern (lambda 1e-8 and
     c 0, 0 to 3 diverge and 17 to 20 collapse under ii; lambda 1e-2 and c 1, none collapses). The paper's
     cached flow errors (err_grid of pc_convergence_grid.npz) agree to three digits from 1e-10 to 1e-2
     and give 3.8e-9 at 1e-12, so the same part fails on the paper's numbers; the supplement says only
     that 1e-8 sits just above the minimum, which holds, and whether the criterion misreads it is asked
-    of a reader (questions/clark-2026.yaml).
+    of a reader (questions/clark-2026.yaml). The criterion has no rule for a partial result; partially_reproduced
+    is the protocol's reading of a result that holds in part.
   deviations:
   - 20 initial conditions at most grid points (every 500th target angle) and 100 at lambda 1e-12, 1e-8,
     1e-4 and 1e-2 with c 0 and 1; the paper runs 100 everywhere.
@@ -329,21 +338,27 @@ outcomes:
     -1.5 to -6.0). On the 40 by 20 grid the bump's second eigenvalue is negative everywhere (largest -4.7e-8,
     effectively zero at some points) and the uniform state's leading eigenvalue is real (|Im| below 1e-16)
     and positive everywhere (smallest 4.7e-5). With Q fixed, the bump at sigma 1.4211 and beta 2.7659
-    has eigenvalue 0.446. At 293 of 800 grid points, mostly small beta and large sigma, no zero eigenvalue
-    is found at the bump (the leading one is below -1e-6, down to -0.22); the bump there is not flat (amplitude,
-    max - min of m, median 0.95, below 1e-3 at 6 of the 293), so the missing zero mode is not explained
-    by a vanishing bump. The criterion tests only the second eigenvalue.
+    has eigenvalue 0.446. At 293 of 800 grid points no zero eigenvalue is found at the bump (the leading
+    one is below -1e-6, down to -0.22). Most are at beta of 1 and above (249 of 293) and sigma of 10 and
+    above (128 at sigma 10 to 50, 98 at 50 and above); beta below 0.1 or sigma of 50 and above holds only
+    99, and 67 are at sigma below 10 with beta of 1 and above. At sigma 1.4211 and beta 2.7659 the zero
+    is present. The bump at those points is not flat (amplitude, max - min of m, median 0.95, below 1e-3
+    at 6 of the 293), so the missing zero mode is not explained by a vanishing bump. The criterion tests
+    only the second eigenvalue; the statement's "except the symmetry-induced zero" does not hold at those
+    293 points, and whether the criterion should test it is asked of a reader (questions/clark-2026.yaml).
 - claim: fig7de-dmft-timescales
   outcome: not_reproduced
   notebook: theory.ipynb
   output: claim:fig7de-dmft-timescales
   notes: Convergence time (bump) falls with beta at every sigma and varies across sigma by at most 2.55
-    times (reading b holds), but reaches 20.5 tau at beta 1.1 and sigma 100, outside 0.5 to 10 tau. Divergence
-    time (uniform) runs from 0.15 to 3.83 tau for beta 1 to 10, rises with beta at small sigma (up to
-    11 increases) and varies by up to 24 times across sigma. The first two parts do not hold for both
-    timescales, so neither the full nor the partial rule is met. Over sigma 1 to 10 the timescales stay
-    within a few tau; the failures come from the grid's large sigma, which the claims file's thresholds
-    include.
+    times (reading b holds), but over beta 1 to 10 runs from 2.87 to 20.5 tau, the largest at beta 1.1
+    and sigma 37.9 (19.5 at sigma 100); it stays within 0.5 to 10 tau only at sigma 1 and exceeds 10 tau
+    at beta 1.1 for every sigma from 1.27 up. Divergence time (uniform) runs from 0.15 to 3.83 tau for
+    beta 1 to 10, falls below 0.5 tau at every sigma from 6.95 up, rises with beta at the five smallest
+    sigma (11, 10, 8, 6 and 3 increases, sigma 1 to 2.64) and varies by up to 24 times across sigma (6.1
+    within sigma 1 to 10). The first two parts do not hold for both timescales, so neither the full nor
+    the partial rule is met. No sigma meets all three parts for both timescales, and restricting the grid
+    to sigma 1 to 10 gives the same outcome.
 - claim: fig7c-dmft-integrates-behavior
   outcome: reproduced
   notebook: theory.ipynb
@@ -381,8 +396,10 @@ outcomes:
   blocked_by: too_large
   notes: Not started. The network of 25,000 neurons needs a 25,000 by 25,000 weight matrix (5 GB in float64)
     fitted by regression and simulated, and the grid-score sweep 1,000 maps for each eta; with the five
-    notebooks of this entry taking 77 minutes per run, it did not fit in the five hours of the revision
-    run either.
+    notebooks of this entry taking 97 to 120 minutes per run (1,147, 2,256, 613, 157 and 3,044 s in the
+    run before the round-2 revision, model_sims.ipynb alone 51 of the 60 minutes a notebook may take;
+    1,114, 1,709, 473, 150 and 2,356 s in the run of the round-2 revision), it did not fit in the five
+    hours of a revision run.
 - claim: figs10-robustness-comparable
   outcome: reproduced
   notes: Without weight noise both networks keep all 34 states under every merging reading (median drift
@@ -390,8 +407,14 @@ outcomes:
     ends in 8 states and the circulant in 9 (4 to 8 and 9 to 12 over five seeds), so neither keeps a continuum.
     Final states for each noise level 0, 0.2, 0.4, 0.6, 0.8 and 1.0 (bins), disordered 34, 15, 8, 8, 6,
     4 and circulant 34, 11, 9, 12, 9, 8, with median drifts of 0.29 to 0.47 rad and 0.16 to 0.30 rad from
-    noise 0.2 on; the two fragment alike, and both already at 0.2, which the criterion does not test.
-    Measured gives the states at noise 0 (disordered, circulant) and at 0.4.
+    noise 0.2 on. Both already fragment at 0.2, which the criterion does not test. They do not fragment
+    alike in detail. At noise 0.4 the disordered network ends in fewer states than the circulant under
+    every seed (8, 7, 4, 8 and 5 against 9, 12, 11, 12 and 9) with a larger median drift (0.23 to 0.48
+    rad against 0.15 to 0.22); under the claim's seed it keeps fewer states at every level from 0.4 on
+    and more at 0.2 (15 against 11), and its median drift is larger at every level but 0.8. The criterion
+    is met; the statement's "comparably robust" holds in that both lose the continuum at the same levels,
+    with the disordered network fragmenting somewhat further. Measured gives the states at noise 0 (disordered,
+    circulant) and at 0.4.
   notebook: model_sims.ipynb
   output: claim:figs10-robustness-comparable
   assumed: true
@@ -434,6 +457,11 @@ outcomes:
     For N 1,000 and the smaller networks the same fixed normalized threshold is used, since each N''s
     own reference run is nearly the protocol it would judge; the own thresholds are shown as a variant
     (all 34 within at N 1,000). This is assumed.'
+  - The criterion's "every final state lies on the target manifold" and "all perturbed initial conditions
+    converge" are read as at least 95% of final states within the threshold, the rule of figs11b-data-network-global-stability,
+    which the criterion names as the way to judge. This is part of the assumption. Read strictly, the claim's
+    seed fails at standard deviation 10 (0.97 within, one state at 0.01146 against the threshold 0.01121);
+    the notebook prints the strict reading for each seed.
   - Draws from the claim's seed (the paper's numpy seed 42); the distance to the manifold is that of the
     firing rates to the nearest of the 500 target points, over sqrt(N), as figs11b.
 - claim: figs1-s2-spectrum-does-not-fix-symmetry
@@ -448,7 +476,10 @@ outcomes:
     2.4% to 5.2% over the five seeds (within 5% under two). The two ensembles share their second moments
     (population eigenvalues 100, 100, 25, 25) and each finite matrix deviates from them by sampling; the
     paper's own seed-42 matrices agree within 3.3%. The dynamics part holds and the eigenvalue part fails
-    narrowly.
+    narrowly. The 5% test on two finite matrices measures their sampling spread more than a difference
+    between the ensembles, whose large-N spectra are the same by construction; whether the criterion should
+    test the large-N spectrum is asked of a reader (questions/clark-2026.yaml). The criterion has no rule
+    for a partial result; partially_reproduced is the protocol's reading of a result that holds in part.
   notebook: model_sims.ipynb
   output: claim:figs1-s2-spectrum-does-not-fix-symmetry
   seed_sensitive: true
@@ -483,16 +514,19 @@ findings:
 - kind: other
   about: paper
   statement: The generative fit of Fig. 4 has two near-equal minima on the paper's grid, (sigma, b, beta)
-    = (1.4211, 1.7307, 2.7659) and (1.4737, 1.2145, 3.1103), whose errors differ by less than the sampling
-    noise of 500,000 samples (0.0085 to 0.0101 depending on the draws and on float32 or float64 arithmetic).
-    In the paper's own cached error grid on Zenodo they are 1.1% apart (0.00890 and 0.00900). The reported
-    b of 1.73 is one of two choices the fitting procedure can return.
+    = (1.4211, 1.7307, 2.7659) and (1.4737, 1.2145, 3.1103). With 500,000 samples in float64 the second
+    has the lower error under all five seeds, and the ranges do not overlap (0.00853 to 0.00894 against
+    0.00907 to 0.01006 for the paper's point); the ranking flips only in float32 under one seed (0.00902
+    against 0.00920) and in the paper's own cached error grid on Zenodo, where the two are 1.1% apart (0.00890
+    and 0.00900). The reported b of 1.73 is one of two choices the fitting procedure can return, depending
+    on the draws and the arithmetic.
 - kind: other
   about: paper
   statement: In the mean-field stability grid of Fig. 7d,e (dmft.ipynb, run_analysis), at 293 of the 800
-    grid points, mostly beta below 0.1 or sigma near 100, the bump Jacobian has no zero eigenvalue (its
-    leading eigenvalue is below -1e-6, down to -0.22), although the bump there is not flat (amplitude
-    median 0.95). So at those points the analytic bump the code linearizes about does not show the symmetry-induced
+    grid points, most of them at beta of 1 and above (249) and sigma of 10 and above (226), the bump Jacobian
+    has no zero eigenvalue (its leading eigenvalue is below -1e-6, down to -0.22), although the bump there
+    is not flat (amplitude median 0.95). At the paper's parameters (sigma 1.4211, beta 2.7659) the zero
+    is present. So at those points the analytic bump the code linearizes about does not show the symmetry-induced
     zero mode the Results describe.
 verifications:
 - date: '2026-11-26'
@@ -766,3 +800,269 @@ verifications:
       as described under all five seeds, but the eigenvalues of the two matrices differ by 5.18% under
       the claim''s seed, just outside the 5% asked (2.4% to 5.2% over five seeds; the paper''s seed-42
       matrices 3.3%).'
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the round-1 revision (tuning_curves, network, network_grid,
+    theory and the new model_sims), the helper modules, the claims file and the attempt record, with the paper.
+    The verifier agreed with all 30 outcomes, and found that the record states its round-1 reasons faithfully. It
+    listed statements the printed outputs do not support (its section 2); each is corrected, and where a statement
+    needed an output that was missing (the location of the 293 grid points of fig7, the timescales by sigma of fig7de,
+    the strict reading of figs11-s12, the count of the figs14 variant), the output is added. Two of its points are
+    added to questions/clark-2026.yaml (figs1-s2 and fig7). No outcome changes and none is proposed. No finding
+    is rated critical, so none was reviewed; it found findings 1 and 2 (severity none) supported by tuning_curves
+    cells 3, 6, 8 and 10 and none right for them. Report in transcripts/clark-2026/verifier-2-report.md.
+  results:
+  - claim: hd-cell-selection
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report. Separately,
+      tuning_curves cell 0 says later files have sizes of about 24 GB, where cell 3 prints 12.7 to 30.2 GB.
+    response: Outcome kept. The header of tuning_curves.ipynb now gives the sizes as printed, 12.7 to 30.2 GB (finding
+      2 already did).
+  - claim: tuning-curves-match-cache
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report. Round-1
+      point 2 (widths compared with ==) is resolved.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig1e-heterogeneous-peaks
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5d-peak-numbers
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig1fg-mean-and-fluctuation-profiles
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig3ab-centers-of-mass-uniform
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig3c-correlation-approaches-circulant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig4-generative-fit
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; checked against the claims file again, the outcome follows from the printed values. The criterion
+      contains no partially rule and, read strictly, gives not_reproduced; it accepts partially_reproduced as the
+      fair description, but that comes from the protocol''s general reading, not from the criterion. Round-1 point
+      1 is resolved: all the outputs it asked for are printed, plus the paper''s cached grid, and partial stands
+      on the tolerance. Finding 3 says the two minima''s errors differ by less than the sampling noise of 500,000
+      samples; in float64 the ranges do not overlap (0.00853 to 0.00894 for the chosen point against 0.00907 to
+      0.01006 for the paper''s, tuning_curves cell 33), and the ranking flips only with float32 under one seed and
+      in the paper''s cached grid.'
+    response: Outcome kept. Finding 3 now says that in float64 the chosen point has the lower error under all five
+      seeds with no overlap, and that the ranking flips only in float32 under one seed and in the paper's cached
+      grid. The notes now say that the criterion has no partial rule and that partially_reproduced is the protocol's
+      reading of a result that holds in part; the conclusion cell says the same.
+  - claim: fig5ab-profiles-match
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5c-peak-counts-match
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5d-peak-heights-match
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5e-flip-symmetry-match
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5f-information-match
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2l-recorded-bump-tracks-hd
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2b-sorted-weights-mexican-hat
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2ef-data-network-quasicontinuous
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2gi-circulant-noise-collapses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report. Round-1
+      point 3 is resolved as far as the attempt can go: seeds, the angle-shift test and the wrap-mode variant are
+      all added. It remains, and bears on the outcome, that the criterion''s 50 states cannot be reached; this is
+      a claims-file defect, now sent to a reader.'
+    response: Outcome kept, as tested on the claims file; the question is in questions/clark-2026.yaml from round
+      1.
+  - claim: fig2jk-velocity-integration
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: figs8-s9-lambda-and-c
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed values. The criterion contains no partially rule; it accepts
+      partially_reproduced from the protocol''s general reading. Round-1 point 4: the paper''s err_grid has been
+      added and agrees; the grid still uses 20 initial conditions at most points (the 8 points the criterion reads
+      use 100). It remains, and bears on the outcome, that the claims file reads err(1e-8) < err(1e-12) more strictly
+      than the supplement, and that lambda 1e-2 at c 1 does not collapse (radius 4.6 against 3.9). Network_grid
+      cell 5 and the notes say 1 to 4 of 100 diverge and 96 to 100 of 100 collapse at every lambda; at lambda 1e-10
+      and 1e-6 n is 20 (4 and 16, 3 and 17; cell 4).'
+    response: 'Outcome kept, as tested on the claims file (the question on the flow error is in questions/clark-2026.yaml).
+      The conclusion and the notes now give the counts per lambda with their n (4, 3 and 1 of 100 diverge at 1e-12,
+      1e-8 and 1e-4, 4 and 3 of 20 at 1e-10 and 1e-6; the others collapse under reading ii), and say that the criterion
+      has no partial rule. The 100 initial conditions at every grid point were not run: the entry already takes
+      about two hours per run. In the run of this revision the flow error at lambda 1e-12 came out at 2.6e-9, against 3.6e-9 in the run the verifier
+      read; the solve there is ill-conditioned and not repeated exactly, so the conclusion now says so and gives
+      no fixed value, and the part fails in every run.'
+  - claim: figs11b-data-network-global-stability
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The assumption is stated: the threshold comes from the fig2ef protocol run with the same 5-ms
+      step. It is reasonable, and it is the reference on the same footing asked for in round 1. Any threshold here
+      sits at the noise floor; the real evidence is that final distances are about 1e-3 against median starting
+      distances of 1.6 to 700 (cell 22). Network cell 23 says every final state is on the manifold at the resolution
+      of the reference (largest final distance 0.0015); final maxima reach 0.00153 and 0.00154, above the 5-ms reference
+      of 0.00141 (cell 22), and only 97 to 100% are within it.'
+    response: Outcome kept. The conclusion now says that every final state ends within 0.0016 of the manifold, that
+      97% to 100% are within the 5-ms reference, and that the largest final distances (0.00147, 0.00153 and 0.00154)
+      are just above it; the notes say the same.
+  - claim: figs14-data-spectrum-doublets
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report. Round-1
+      point 6 is resolved (documented). The notes say that without setting one aside two of the four pairs pass;
+      the variant in network cell 19 prints within [0.027 0 0 0.0359] against next [0.1389 0.183 0.0002 0], which
+      gives 3 of 4.
+    response: Outcome kept. The notes now say three of the four pairs pass without setting one aside, and cell 19
+      prints the comparison and the count for that variant.
+  - claim: fig6cd-eigenvalues-real-degenerate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig6fg-disordered-eigenvectors
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig7-dmft-mexican-hat-and-stability
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report. Round-1
+      point 7 is resolved: the bump amplitude is printed. It remains that the criterion tests only eigenvalue 2;
+      the output contradicts the statement''s "except the symmetry-induced zero" at 293 of 800 points, where the
+      bump is not flat (median amplitude 0.95), a gap in the claims file that bears on how much the reproduced covers.
+      Theory cell 6, the fig7 notes and finding 4 say these points are mostly at small beta and large sigma (finding
+      4, mostly beta below 0.1 or sigma near 100); cell 5 lists only 8 of the 293 points.'
+    response: 'Outcome kept, as the criterion is met. Cell 5 now prints the 293 points by beta band and sigma band,
+      and the statement was wrong: 249 of them are at beta of 1 and above and 226 at sigma of 10 and above, and
+      beta below 0.1 or sigma of 50 and above holds only 99. The conclusion, the notes and finding 4 now say so,
+      and that the zero is present at the paper''s parameters. The notes say that the statement''s zero-mode part
+      does not hold at those points, and whether the criterion should test it is added to questions/clark-2026.yaml.'
+  - claim: fig7de-dmft-timescales
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows from the printed values. Theory cell 9 and the notes say the convergence
+      time reaches 20.5 tau at beta 1.1 and sigma 100; cell 8 prints 19.513 at sigma 100, and the maximum of 20.521
+      is at some other sigma. The notes also say the failures come from the grid's large sigma and that over sigma
+      1 to 10 the timescales stay within a few tau; the divergence time's decreasing test fails at small sigma (11
+      and 10 increases), and only sigma 1 and 100 are printed.
+    response: Outcome kept. Cell 8 now prints where the extremes are and, for each sigma, the range over beta 1
+      to 10, whether it is within a few tau and the number of increases, and the criterion over sigma 1 to 10 alone.
+      The maximum, 20.5 tau, is at sigma 37.9; the convergence time exceeds 10 tau at every sigma from 1.27 up,
+      the divergence time falls below 0.5 tau from sigma 6.95 up and rises with beta at sigma 1 to 2.64, and over
+      sigma 1 to 10 alone the outcome is the same. The conclusion and the notes now say this; the unsupported sentences
+      are removed.
+  - claim: fig7c-dmft-integrates-behavior
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with its round-1 outcome, unchanged since round 1; every Result sentence, Summary section, README
+      row and note it checked matches the printed values, other than those listed in section 2 of the report.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig8-grid-scores-and-torus
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (too_large). The fig8 notes say the five notebooks take 77 minutes per run, and
+      the README gives per-notebook times of 15, 22, 8, 2 and 31 minutes; the printed totals are 1139, 2254, 611,
+      154 and 3042 s, which make 7,200 s (120 min).
+    response: Outcome kept. The notes, model_sims.ipynb's fig8 section, the README and entry.yaml now give
+      the run times as printed (1,147, 2,256, 613, 157 and 3,044 s, about 120 minutes, in the run the verifier
+      read; 1,114, 1,709, 473, 150 and 2,356 s, about 97 minutes, in the run of this revision). The README
+      and entry.yaml keep the longer of the two.
+  - claim: figs10-robustness-comparable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The continuum rule (at least 31 of 34 states) is stated and reasonable; it does not decide the
+      outcome, as both networks keep 34 states at noise 0, against 8 and 9 at 0.4 (cell 11). Model_sims cell 12
+      and the notes say the two fragment alike over the whole range; at noise 0.4 the disordered network ends in
+      fewer states under every seed (4 to 8 against 9 to 12), and under the claim seed it has fewer states at every
+      level from 0.4 on and about twice the median drift (cell 11). The criterion is met, but alike overstates it.
+    response: 'Outcome kept, as the criterion is met. The conclusion and the notes no longer say alike: they give
+      the state counts and median drifts that show the disordered network fragmenting further (fewer states at 0.4
+      under every seed, larger drift at every level but 0.8 under the claim''s seed), and say that the statement''s
+      comparably robust holds only in that both lose the continuum at the same levels.'
+  - claim: figs11-s12-global-stability-model
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The threshold assumption (the network''s own fig2ef-protocol run) is stated and reasonable.
+      Part of the assumption is stated only in notebook cell 6, not in the record''s deviations: it reads the criterion''s
+      every final state and all converge as at least 95%, as in figs11b. Under a strict every, the claim seed fails
+      at standard deviation 10: 0.97 within, with one state at 0.01146 against 0.01121 (cell 7).'
+    response: Outcome kept (assumed, seed sensitive). A deviation now states that every and all are read as at least
+      95%, the rule of figs11b that the criterion names, as part of the assumption, and that the strict reading
+      fails at standard deviation 10 under the claim's seed. Cells 7 and 8 now print the strict reading for each
+      seed, and the conclusion says so.
+  - claim: figs1-s2-spectrum-does-not-fix-symmetry
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees, with two reservations. The criterion has no partial rule. The criterion''s 5% test on two finite
+      matrices measures sampling noise: the population eigenvalues are identical by construction (100, 100, 25,
+      25; cell 4); this is a weakness in the claims file''s chosen threshold.'
+    response: Outcome kept, as tested on the claims file. Whether the eigenvalue part should test the large-N spectrum,
+      which Supplementary Note 1 says depends only on the second-order statistics, is added to questions/clark-2026.yaml.
+      The notes and the conclusion now say that the 5% test measures the sampling spread and that the criterion
+      has no partial rule.

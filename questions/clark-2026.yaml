@@ -26,7 +26,33 @@ questions:
     The value lambda = 10^-8 used in the paper sits just above the minimum, beyond the ill-conditioned
     regime but with the flow error still negligible."
   why: Here the flow error is lowest at lambda 1e-10 and rises on both sides, and the error at 1e-8 (1.7e-8)
-    is above that at 1e-12 (3.6e-9). The paper's own cached errors (err_grid of pc_convergence_grid.npz
+    is above that at 1e-12 (2.6e-9 to 3.6e-9 over the runs of this attempt, as the solve there is ill-conditioned). The paper's own cached errors (err_grid of pc_convergence_grid.npz
     on Zenodo) are the same, 1.7e-8 at 1e-8 and 3.8e-9 at 1e-12, so the part fails on the paper's numbers
     as well. Under the supplement's wording this part would hold, and the claim would then turn on the
     test of collapse at lambda 1e-2 and c 1 alone.
+- claim: figs1-s2-spectrum-does-not-fix-symmetry
+  question: The criterion asks the eigenvalues of the two finite weight matrices (one draw of each ensemble,
+    N 10,000) to agree within 5%. The paper says the two ensembles share their second-order statistics
+    and hence the spectrum of J at large N, which is a statement about the population eigenvalues, not
+    about one finite draw of each. Should this part test the large-N (population) spectrum, or use a tolerance
+    set by the sampling spread of a finite draw?
+  passage: Supplementary Note 1, after Eq. 37, "Note that the spectrum of J at large N therefore depends
+    only on second-order statistics of the loadings"; and before Example 1, "a modification of our model
+    that preserves the second-order statistics, and therefore the spectrum, while changing the dynamics".
+    Discussion, "we can construct ensembles that match our model's second-order statistics and hence its
+    spectrum".
+  why: The two ensembles have the same population eigenvalues (100, 100, 25 and 25) by construction. The
+    finite matrices differ from them by sampling, and by up to 5.18% from each other under the claim's
+    seed (2.4% to 5.2% over five seeds, 3.3% for the paper's seed-42 matrices), so the 5% test passes
+    or fails with the draw. Under a population reading this part holds, and with the dynamics part, which
+    holds under all five seeds, the claim would be reproduced.
+- claim: fig7-dmft-mexican-hat-and-stability
+  question: The statement says that at a bump state all Jacobian eigenvalues have negative real parts except
+    the symmetry-induced zero, but the criterion tests only that the second eigenvalue is negative. Should
+    the criterion also test that the leading eigenvalue is zero (the symmetry-induced mode) at every grid
+    point?
+  passage: Results, Dynamical mean-field theory, "At a bump state, all eigenvalues of M(theta, theta') have
+    negative real parts except the symmetry-induced zero (Fig. 7f, teal curve)".
+  why: On the 40 by 20 grid of dmft.ipynb the second eigenvalue is negative at all 800 points, so the criterion
+    is met, but at 293 points the leading eigenvalue is below -1e-6 (down to -0.22), with a bump that is
+    not flat (median amplitude 0.95). With a test of the zero mode the claim would be partially reproduced.
