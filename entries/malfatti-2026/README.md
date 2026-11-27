@@ -14,17 +14,18 @@ of the LFP group.
 | CLZ raises the success ratio of trained Cre+ mice (Figure 4B) | Reproduced |
 | Higher theta and low theta power in Cre+ mice (Figure 4D) | Not reproduced |
 | Higher high theta power on successful prehensions (Figure 4E) | Not reproduced |
-| Gamma effects in session 13 (Figure 4F-H) | Partially reproduced, resting on an assumption |
+| Gamma effects in session 13 (Figure 4F-H) | Not reproduced |
 | Genotype by session interaction outside prehensions (Supplemental Figure 7) | Not reproduced |
-| Calcium imaging findings (Figures 1J, 2, 3, Supplemental Figures 2 to 6; 21 claims) | Blocked: too large |
+| Calcium imaging findings (Figures 1J, 2, 3, Supplemental Figures 2 to 6; 21 claims) | Blocked: data missing |
 | Histology and caspase ablation (Supplemental Figure 1, Figure 5; 5 claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The miniscope data are raw video only, with no extracted cells or traces, so the imaging findings
-would need the whole CNMF-E extraction. In the behaviour-only group the files of session 6 are
-copies of session 5. The LFP of four control mice appears about 8 s off the tracking. The attempt
+The miniscope data are raw video only, with no extracted cells or traces, and the paper does not
+give the CNMF-E parameters to extract them again. In the behaviour-only group the files of session 6 are
+copies of session 5. The LFP of four control mice shows no prehension-locked potential at the deposited alignment and
+one about 8 s earlier, which the files cannot confirm as a clock offset. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/malfatti-2026-01.yaml`](../../attempts/malfatti-2026-01.yaml).
 

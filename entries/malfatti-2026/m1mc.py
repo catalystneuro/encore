@@ -32,7 +32,9 @@ Where the parameters come from:
 - Session 5 of the behaviour-only group is split at 300 s into session 5 (spoon) and session 6
   (plate), and later sessions are renumbered +1 (Methods, "Pellet prehension task": "After five
   minutes in the fifth session, the pellet was instead placed on a fixed position on the plate";
-  BehavOnly.py does the split from a per-mouse table, Session5Split.dict, not in the repository).
+  BehavOnly.py does the split from a per-mouse table, Session5Split.dict, not in the repository,
+  and renumbers the sessions after 5 by +1, line 330). The per-mouse split times are not public;
+  300 s is the Methods' "five minutes".
 - Counts per session normalised to 10 min of session time, as BehavOnly.py does (the halves of
   session 5 keep the full session's time there, and here).
 - LFP: decimated from 30 kHz to 1 kHz before filtering (a standard choice that cannot change
@@ -145,6 +147,7 @@ def load_dlc(asset, lfp=False):
                 L[i] = b[f"{bp}Likelihood/data"][:]
         d = dict(X=np.array(X).T, Y=np.array(Y).T, Lh=np.array(L).T,
                  rate=float(lh["starting_time"].attrs["rate"]), t0=float(lh["starting_time"][()]),
+                 start_time=_s(h, "session_start_time"),
                  subject=_s(h, "general/subject/subject_id"), genotype=_s(h, "general/subject/genotype"),
                  sex=_s(h, "general/subject/sex"), session_id=_s(h, "general/session_id"),
                  units_xy=b["Position/LPawPosition/data"].attrs["unit"],
@@ -513,10 +516,12 @@ def learning_table(files, datas, parts=LEFT_CODE, keep_copy=False):
     """Per mouse and session counts of the behaviour-only group.
 
     The deposited session 5 holds the spoon (first 300 s) and plate halves (Methods); they become
-    sessions 5 and 6. The deposited session 6 is the same recording as session 5 (identical traces,
-    shown in the data check) and is dropped, unless keep_copy, which counts it as a further session
-    (the reading that gives the paper's eleven sessions). Deposited sessions 7 to 10 keep their
-    numbers. Genotype is taken per subject from its files that state one."""
+    sessions 5 and 6. Deposited sessions after 5 are renumbered +1, as BehavOnly.py (line 330)
+    does, so deposited sessions 7 to 10 are sessions 8 to 11. The deposited session 6 (session 7
+    after renumbering) is the same recording as session 5 (identical traces, shown in the data
+    check) and is dropped, unless keep_copy, which counts it as session 7. That variant has no
+    meaning of its own: it only gives the paper's eleven sessions and degrees of freedom. Genotype
+    is taken per subject from its files that state one."""
     gen = {}
     for d in datas:
         if d["genotype"] != "unknown":
@@ -528,8 +533,8 @@ def learning_table(files, datas, parts=LEFT_CODE, keep_copy=False):
             continue
         if r.session == 5:
             parts_ = [(5, p[p.t < SESSION5_SPLIT_S]), (6, p[p.t >= SESSION5_SPLIT_S])]
-        elif r.session == 6:
-            parts_ = [(6.5, p)]
+        elif r.session > 5:
+            parts_ = [(r.session + 1, p)]
         else:
             parts_ = [(r.session, p)]
         for s, q in parts_:
