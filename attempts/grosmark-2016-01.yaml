@@ -266,6 +266,10 @@ outcomes:
   - Variant decodes use 50 column-cycle shuffles per event in place of 200.
 findings:
 - kind: metadata_error
+  versions:
+  - 0.210812.1516
+  - 0.250624.0426
+  fixed_in: 0.261005.2101
   statement: In versions 0.210812.1516 and 0.250624.0426 every position series stores its sampling
     period (0.0256 s) as its rate, so the positions span about 880 to 2360 hours in place of the
     MAZE epoch. Version 0.261005.2101 stores 39.06 Hz, which matches the epoch lengths.
@@ -622,3 +626,21 @@ verifications:
     reason: Agree under the pooled test (cell 77).
     response: No change. The README's run time, which the verifier found too low (about 14 minutes
       in the timed steps alone), now says about sixteen minutes, from this run's 935 s.
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: critical
+  - finding: 2
+    severity: minor
+  - finding: 3
+    severity: major
+  - finding: 4
+    severity: major
+  - finding: 6
+    severity: minor
+  - finding: 7
+    severity: minor

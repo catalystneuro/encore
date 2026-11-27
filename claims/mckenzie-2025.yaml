@@ -1,0 +1,563 @@
+# Claims for McKenzie, Sommer, Donaldson, Pimentel, Kakani, Choi, Newman & English (2025), eLife
+# 14:RP105183, "Event boundaries drive norepinephrine release and distinctive neural
+# representations of space in the rodent hippocampus", tested on DANDI:000552.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-26,
+# protocol pilot-19 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. paper/10.7554-elife.105183.txt, the eLife page of Reviewed Preprint version 1
+# (January 31, 2025, marked "Not revised"; the file header calls it the version of record).
+# It holds the Abstract, Introduction, Results with the legends of Figures 1 to 8, Discussion,
+# Methods, and the legends of Supplemental Figures S1 to S7. There is no separate supplement
+# beyond those figures, and no PDF was supplied; no figure was opened.
+#
+# Code read. None. The paper links no analysis code and has no code or data availability
+# statement. The photometry models were fit in MATLAB R2021b with fmincon (Methods).
+#
+# Data the paper used, as it reports them.
+# Fiber photometry (Figures 1 to 6, S1 to S5). C57BL/6J mice (N = 8, 3 female), GRAB-NE
+# (AAV9-hSyn-NE2h) in left dorsal CA1 with a fiber over it; 465 nm and 405 nm excitation,
+# sampled at 1017.3 Hz; SignalNE in baseline standard deviations, smoothed with a 1 s Gaussian.
+# Paradigms: novel arenas over 10 days (HC-A-HC, with B and C on days 1 and 10), five novel
+# objects for 5 min each (6 mice in the tests), a water-rewarded 1.2 m linear track (110
+# sessions), the track with a novel object (5 or 6 mice), desipramine and yohimbine injections.
+# Behavior from DeepLabCut ear positions. These recordings are not in DANDI:000552 and the paper
+# deposits them nowhere. Their claims are kept; they cannot be tested on this dandiset.
+# Electrophysiology (Figures 7, 8, S6, S7). Reanalysis of the Huszar et al. (2022) data,
+# DANDI:000552 version 0.230630.2304 (Methods, Electrophysiology subjects), which the archive
+# titles "Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of
+# neurogenesis". Three mice (e13_26m1, e15_13f1, e16_3m2), silicon probes in right dorsal CA1,
+# 30 kHz. Each analyzed session (N = 8) is about 120 min home cage, running on the familiar
+# figure-eight maze, about 60 min home cage, running in a novel environment, about 120 min home
+# cage; one novel transition per session. Novel environments are listed as 3 linear tracks, 3
+# figure-eight mazes and 1 arena, which sums to 7, not 8 (see E1). Variables used: pyramidal unit
+# spike times, LED head position, broadband LFP for ripples, and the epoch times of the home cage
+# and maze periods.
+#
+# Method for the claims on DANDI:000552, from the Methods (Spiking analysis, ACG slope analysis,
+# Reset analysis, Place field detection, Ripple detection, Reactivation analysis) and the figure
+# legends. Cited in the criteria as E1 to E10.
+# E1 Sessions. The 8 sessions of the three mice named above with a familiar figure-eight run
+#    followed by a novel environment (Methods, Behavioral testing). The listed environment types
+#    sum to 7; the df of 7 in every test implies 8 sessions. Open: the author takes the sessions
+#    of those mice that fit the description, reports how many there are and of which type, and
+#    runs the tests on all of them. Where a session has two novel environments, which one was
+#    chosen is open: (a) the first, (b) the second; both are run.
+# E2 Transition. The time the mouse is placed in the maze, read as the start of the maze epoch.
+#    Transfer and settling are measured from it.
+# E3 Units. Pyramidal cells only, separated "based on waveform shape and bursting statistics"
+#    (Methods, Spiking analysis), as in Huszar et al. (2022). No thresholds are given. The
+#    dataset's own putative cell type labels are used; if it has none, the separation is open
+#    and is recorded as a deviation.
+# E4 Population vectors. Spike counts of each unit in 100 ms bins, each unit z-scored over the
+#    first 1000 s after transfer (Methods, ACG slope analysis). The similarity matrix is the
+#    Pearson correlation of every pair of vectors in the maze epoch.
+# E5 Nearest neighbors. For each 100 ms bin, the 3 most correlated vectors among bins recorded in
+#    the same location (minimum occupancy 1 s), averaged, then smoothed with a 1 s Gaussian
+#    kernel (Methods, Reset analysis). Location bins are 1 x 1 cm, the only bin size the Methods
+#    give (Place field detection), read as applying here. The Methods compare each moment with
+#    "any other moment", so only the bin itself is excluded; a variant that also excludes the
+#    contiguous run of bins in the same location is shown, not judged. Whether a speed filter
+#    applies is open: (a) all bins, (b) only bins above 5 cm/s, the threshold of Place field
+#    detection; both are run.
+# E6 Windows. "First minute" is 0 to 60 s after transfer. "10 minutes into the session" is read
+#    as 600 to 660 s, as Figure 8B states ("10-11 minutes"); Figure S6 says "Minute 10", which
+#    can also be read as 540 to 600 s, run as a second reading for Figure S6 and Figure 7E, 7F
+#    and S7G, S7H.
+# E7 Statistics. Each test reports t(7) over 8 sessions; with one value per session and
+#    condition this is a paired (one-sample on differences) Student t-test, two-sided, p < 0.05.
+#    The paper does not name sidedness; two-sided is a standard choice.
+# E8 Speed and acceleration. The Methods give the Kalman filter only for the photometry mice;
+#    for the electrophysiology they do not say. Readings: (a) a second-order Kalman filter on
+#    the LED position, as in the photometry Methods; (b) finite differences of position
+#    smoothed with a 1 s Gaussian.
+# E9 Ripples. Broadband LFP bandpassed at 130 to 200 Hz (fourth-order Chebyshev), normalized
+#    squared signal, peaks above 5 SD, edges at 2 SD, duration 20 to 200 ms (Methods, Ripple
+#    detection). The channel is not named; a channel in the CA1 pyramidal layer is used. If the
+#    dataset holds the ripple events of Huszar et al. (2022), they are used as a variant.
+# E10 Reactivation. For each ripple, each unit's spike count over the ripple divided by its
+#    duration; Pearson correlation with each 100 ms track vector; null by moving each unit's
+#    value on a ripple to a random other ripple, 1000 times; a ripple reactivates a moment when
+#    its R exceeds 99.9% of shuffles (Methods, Reactivation analysis). Pre and post windows are
+#    open: the Methods say ripples "within 30 minutes of the beginning of the session and within
+#    30 minutes after the session". Readings: (a) the 30 min of home cage before the novel run
+#    and the 30 min after it; (b) the first 30 min of the recording day and the 30 min after the
+#    novel run. Whether the track vectors are z-scored (E4) or raw counts is open; both are run.
+#    The shuffle moves activity to "a random other ripple observed during the session"; whether
+#    the pool is (a) the pre or the post set the ripple belongs to, or (b) the pre and post sets
+#    together, is open; both are run.
+#
+# Tolerances. 10% of the reported value, or a reported range widened by 10% of each bound.
+schema_version: 2
+paper: doi:10.7554/elife.105183
+claims:
+- id: figs1a-desipramine
+  statement: The NE reuptake inhibitor desipramine increases SignalNE relative to vehicle injections.
+  source: Results, opening paragraph (before the first subsection); Figure S1A
+  quote: the noradrenergic reuptake inhibitor desipramine caused a significant increase in SignalNE relative
+    to vehicle injections (Figure S1A)
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited. The paper reports
+    no test statistic for this comparison.
+- id: figs1b-yohimbine
+  statement: The alpha2 receptor antagonist yohimbine disrupts the normal increase in SignalNE after context
+    transition.
+  source: Results, opening paragraph; Figure S1B
+  quote: noradrenergic α2 receptor antagonism with yohimbine (from which GRABNE was derived) disrupted normally
+    strong SignalNE (Figure S1B)
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: fig1d-arena-decay
+  statement: Averaged over all exposures, SignalNE increases immediately on entry to a novel arena and decays
+    exponentially to a steady state over minutes.
+  source: Results, SignalNE exponentially decays after transfer to a novel arena, paragraph 1; Figure 1D
+  quote: Averaging across all exposures, SignalNE increased immediately upon entry to the testing arena and
+    exponentially decayed to a steady state over minutes (Figure 1D)
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: figs1e-univariate-covariates
+  statement: In univariate analyses SignalNE is positively co-modulated with acceleration, modestly with velocity,
+    and negatively with distance to the edge of the arena.
+  source: Results, SignalNE exponentially decays after transfer to a novel arena, paragraph 1; Figure S1E
+  quote: Univariate analysis revealed strong, positive co-modulation of SignalNE with acceleration (t(7) =
+    4.54, p = 0.002) and modest positive correlation with velocity (t(7) = 2.32, p = 0.05)(Figure S1E). SignalNE
+    also correlated with distance to the edge of the environment (t(7) = -2.37, p = 0.05)
+  statistics:
+  - about: acceleration
+    test: t-test
+    statistic: t(7) = 4.54
+    p: 0.002
+    n: 8 mice
+  - about: velocity
+    test: t-test
+    statistic: t(7) = 2.32
+    p: 0.05
+    n: 8 mice
+  - about: distance to edge
+    test: t-test
+    statistic: t(7) = -2.37
+    p: 0.05
+    n: 8 mice
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: fig1e-arena-time-from-transition
+  statement: In a backward stepwise regression of SignalNE in novel arenas, only removing the terms for time
+    from context transition significantly worsens cross-validated model performance; acceleration, velocity,
+    distance from edge and time from rearing do not.
+  source: Results, SignalNE exponentially decays after transfer to a novel arena, paragraph 2; Figure 1E
+  quote: Significant decreases in model fit were only observed after dropping the time from context entry
+    independent variable (Figure 1E)
+  statistics:
+  - test: Student t-test on percent change in CVMSE against 0
+    statistic: t(7) = 3.30
+    p: 0.01
+    n: 8 mice
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: fig2c-track-time-from-transition
+  statement: On a familiar linear track with water reward, SignalNE rises on entry and decays to a steady
+    state, and only removing time from track entry significantly worsens the model; reward and movement terms
+    do not.
+  source: Results, SignalNE exponentially decays after transfer to a familiar linear track, paragraph 2;
+    Figure 2B and 2C
+  quote: The stepwise regression analysis showed that removing time from entry, but no other term, significantly
+    decreased our ability to predict fluctuations in SignalNE (Figure 2C)
+  statistics:
+  - test: Student t-test on percent change in CVMSE against 0
+    statistic: t(7) = 7.20
+    p: 0.0008
+    n: 8 mice
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: figs2-no-reward-modulation
+  statement: Hippocampal SignalNE on the linear track is not modulated around reward delivery or movement.
+  source: Results, SignalNE exponentially decays after transfer to a familiar linear track, paragraph 2;
+    Figure S2
+  quote: Hippocampal NE was not modulated around reward delivery (signaled with an audible solenoid click)
+    nor movement (Figure S2)
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited. The paper reports
+    no test for this absence.
+- id: fig3d-object-introduction
+  statement: Each of five novel objects induces phasic NE release on introduction, and only removing time
+    from object introduction significantly worsens the model; object sampling, movement and distance from
+    edge do not.
+  source: Results, SignalNE exponentially decays after introduction of a novel object, paragraph 3; Figure
+    3C and 3D (legend labels both C)
+  quote: Backward stepwise regression analysis revealed that the time from object introduction was the only
+    term whose absence significantly decreased CVMSE (Figure 3D)
+  statistics:
+  - test: Student t-test on percent change in CVMSE against 0
+    statistic: t(5) = 3.54
+    p: 0.017
+    n: 6 mice
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: figs3-object-order-and-sampling
+  statement: NE release after object introduction is not systematically related to the object's ordinal
+    position, nor coordinated with individual object samples.
+  source: Results, SignalNE exponentially decays after introduction of a novel object, paragraph 3; Figure
+    S3A to S3D
+  quote: NE release dynamics were not systemically related to the ordinal position of the object in the
+    sequence (Figure S3 A-C). NE release was also not coordinated with individual object samples (Figure
+    S3D)
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited. The paper reports
+    no test for either absence.
+- id: fig4b-novel-object-on-track
+  statement: A novel object placed on the familiar linear track does not change SignalNE dynamics after transfer
+    to the track; the decay constant is unchanged, and time from transfer remains the only significant model
+    term.
+  source: Results, Novel objects do not affect SignalNE around spatial context transitions, paragraph 1;
+    Figure 4B and 4C
+  quote: Though mice reliably stopped to inspect the novel object, no difference in SignalNE was observed
+    between the novel object and control conditions (Figure 4)
+  statistics:
+  - about: decay constant, novel object against control
+    test: t-test
+    statistic: t(4) = 1.47
+    p: 0.22
+  - about: removal of time from track transfer
+    test: Student t-test on percent change in CVMSE against 0
+    statistic: t(5) = 3.22
+    p: 0.03
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: fig5d-decay-hastens-with-days
+  statement: Over 10 days of exposure to an arena, the decay of SignalNE after transfer (tau) hastens systematically
+    with days of experience while its amplitude (beta) does not change, and decay after transfer to the home
+    cage is faster than after any arena day.
+  source: Results, Experience accelerates the decay of SignalNE after spatial context transitions, paragraph
+    2; Figure 5C and 5D
+  quote: The rate of SignalNE decay (τ; mixed-effects linear model, t(73) = 2.31, p = 0.02), and not amplitude
+    (β; mixed-effects linear model, t(73) = 1.16, p = 0.25), systematically changed as a function of the number
+    of days of experience
+  statistics:
+  - about: tau against days
+    test: mixed-effects linear model, days fixed, subject random slopes and intercepts
+    statistic: t(73) = 2.31
+    p: 0.02
+  - about: beta against days
+    test: mixed-effects linear model, days fixed, subject random slopes and intercepts
+    statistic: t(73) = 1.16
+    p: 0.25
+  - about: each arena day against home cage transfer (printed as p ≤0.01)
+    p: 0.01
+    p_relation: <
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: figs4-behavior-day1-day2
+  statement: On the first day in the arena, compared with the second, mice tend to accelerate more, rear more
+    often and stay closer to the perimeter.
+  source: Results, Experience accelerates the decay of SignalNE after spatial context transitions, paragraph
+    1; Figure S4
+  quote: Comparing the first and second days of testing, mice tended to display higher levels of acceleration,
+    rear more often, and spend more time close to the perimeter during first-time arena exposure (Figure S4)
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: fig6-recent-history
+  statement: After the linear track, SignalNE in the home cage rises like after the arena but then decays
+    faster and falls further below baseline; the decay constant after transfer to the track is comparable to
+    that of arena days 3 to 4, and time from home cage entry is the only significant model term after either.
+  source: Results, Familiarity is not the sole determinant of the decay of SignalNE after spatial context
+    transitions, paragraph 1; Figure 6A to 6C; Figure S5
+  quote: The rate of SignalNE decay was faster (Figure 6B) and the NE decrease was larger (Figure 6C) after
+    linear track exposure as compared to experience in the arena
+  statistics:
+  - about: NE decrease after track against after arena
+    test: t-test
+    statistic: t(5) = 3.74
+    p: 0.005
+  - about: removal of time from home cage entry, after arena
+    test: Student t-test on percent change in CVMSE against 0
+    statistic: t(7) = 2.62
+    p: 0.03
+  - about: removal of time from home cage entry, after track
+    test: Student t-test on percent change in CVMSE against 0
+    statistic: t(5) = 4.44
+    p: 0.007
+  criterion: Not testable on DANDI:000552; the photometry recordings are not deposited.
+- id: ephys-ensemble-size
+  statement: The analyzed CA1 ensembles contain on average 253.8 neurons per session, ranging from 191 to 363.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2
+  quote: mean ensemble = 253.8 neurons, range = 191-363 neurons, bin size = 100-ms
+  expected:
+  - quantity: mean number of neurons per session
+    value: 253.8
+    tolerance: 25.4
+    unit: neurons
+  - quantity: smallest ensemble
+    value: 191
+    tolerance: 19.1
+    unit: neurons
+  - quantity: largest ensemble
+    value: 363
+    tolerance: 36.3
+    unit: neurons
+  criterion: Over the sessions of E1. Which units are counted is open between (a) the pyramidal units of
+    E3, as the Methods analyze only those, and (b) all units of the session. Reproduced when, under one reading,
+    the mean is within tolerance and every session lies within 191 to 363 widened by 10% of each bound (172
+    to 399).
+- id: figs6b-decorrelation-novel
+  statement: In a novel environment, CA1 population vectors decorrelate faster with lag in the first minute
+    after transfer than at minute 10.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 1; Figure
+    S6A and S6B
+  quote: in novel environments, the rate of decorrelation was indeed faster in the first minute after transfer
+    as compared to later in the session (Figure S6 A,B)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 3.07
+    p: 0.018
+    n: 8 sessions
+  criterion: 'Methods, ACG slope analysis, with E1 to E4, E6, E7. For each session and window (minute 1, minute
+    10), the mean Pearson R between population vectors as a function of lag from 0.1 to 10 s, fit with an
+    exponential with three free parameters, R(lag) = beta exp(-lag/tau) + c; the decay rate is 1/tau. The
+    Methods'' "100-s moving average" is open: (a) the curve is computed over the bins of each 60 s window
+    as Figure S6A labels them (Minute 1, Minute 10); (b) the curve is computed over a 100 s window starting
+    at the window''s start. Both are run, with both readings of minute 10 (E6). Reproduced when the decay
+    rate is higher in minute 1 than minute 10 by the paired t-test over sessions at p < 0.05.'
+  depends_on:
+  - ephys-ensemble-size
+- id: figs6d-decorrelation-familiar
+  statement: In the familiar environment the decorrelation rate does not differ between the first minute
+    and minute 10 after transfer.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 1; Figure
+    S6C and S6D
+  quote: Such a relationship was not observed in a familiar space (Figure S6 C,D)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 0.50
+    p: 0.63
+    n: 8 sessions
+  criterion: A claim of absence, judged on the paper's test, a t-test over 8 sessions (E7) at p < 0.05, on
+    the decay rates of figs6b-decorrelation-novel computed for the familiar figure-eight run. Reproduced
+    when the minute 1 against minute 10 difference is not significant; not reproduced when it is. The effect
+    size is reported either way. The open readings of figs6b-decorrelation-novel apply; absence is judged
+    under the reading (a) with minute 10 as 600 to 660 s, the others shown.
+  depends_on:
+  - figs6b-decorrelation-novel
+- id: fig7ab-umap-embedding
+  statement: A 2D UMAP embedding of 100 ms population vectors maps the spatial layout of the environment,
+    and moments just after transition lie at the periphery of the representational space.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2; Figure
+    7A and 7B
+  quote: Color coding by position shows that the CA1 representational space maps the spatial layout of the
+    environment (Figure 7A). Color coding by time shows that moments immediately following the transition
+    are associated with unusual representations, which can be seen at the periphery of the representational
+    state space (Figure 7B)
+  criterion: The paper shows one example session, on a linear track (Figure 7A legend), and gives no UMAP
+    parameters or measure. UMAP is run with
+    the umap-learn defaults on the population vectors of E4 (a standard choice). The paper fixes no measure,
+    so these are named as assumptions; position mapping is judged by a nearest-neighbor regression of position
+    from the 2D embedding (5-fold, contiguous blocks) explaining more variance than with position shuffled
+    in blocks, and periphery by a larger mean distance from the embedding's median of first-minute bins than
+    of later bins. Reproduced when both hold in most sessions.
+- id: fig7e-novel-settling
+  statement: In a novel environment, population vectors in the first minute after transfer correlate less
+    with their nearest neighbors at the same location than those 10 minutes into the session; representations
+    settle into a steady state over several minutes.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2; Figure
+    7C and 7E
+  quote: This nearest-neighbor search revealed that early moments were associated with neural activity that
+    poorly correlated with activity recorded in the same location later in the session (Figure 7 C,D)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 8.05
+    p: 0.00009
+    n: 8 sessions
+  criterion: 'Methods, Reset analysis, with E1 to E7. Per session, the mean of the smoothed nearest-neighbor
+    correlation over the bins of minute 1 and of minute 10. Reproduced when minute 1 is lower by the paired
+    t-test over sessions at p < 0.05, under one combination of the readings of E1, E5 and E6; all combinations
+    are shown. "Several minutes" is not measured by the paper; the per-minute session mean is shown and that
+    part is not judged.'
+  depends_on:
+  - ephys-ensemble-size
+- id: fig7f-familiar-settling
+  statement: In the familiar environment, too, population vectors in the first minute correlate less with
+    their same-location nearest neighbors than those 10 minutes in.
+  source: Figure 7D and 7F
+  quote: Same as Panel E recorded in a familiar environment (t(7) = 8.20, p = 0.00008)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 8.20
+    p: 0.00008
+    n: 8 sessions
+  criterion: As fig7e-novel-settling, on the familiar figure-eight run of each session.
+  depends_on:
+  - fig7e-novel-settling
+- id: fig7g-familiar-more-similar-early
+  statement: Initial representations are more correlated with their nearest neighbors in the familiar environment
+    than in the novel one, and they settle more rapidly in the familiar environment.
+  source: Figure 7G legend; Results, CA1 spatial code takes minutes to settle after context transition, paragraph
+    2
+  quote: Initial representations were more correlated to their nearest neighbors in a familiar environment
+    as compared to those recorded in a novel environment (t(7) = 7.58, p = 0.0001)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 7.58
+    p: 0.0001
+    n: 8 sessions
+  criterion: Per session, the first-minute mean nearest-neighbor correlation (fig7e-novel-settling) in the
+    familiar run against the novel run. Reproduced when familiar is higher by the paired t-test over sessions
+    at p < 0.05, under one combination of the readings of E1 and E5. The faster settling in the familiar
+    environment (Results, "more rapidly in a familiar environment") has no test or measure in the paper; the
+    per-minute session means of both environments are shown and that part is not judged.
+  depends_on:
+  - fig7e-novel-settling
+  - fig7f-familiar-settling
+- id: figs7ab-in-field-out-field
+  statement: Settling involves an increase over time of firing within each neuron's place field and a decrease
+    of out-of-field firing, in novel and familiar environments.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2; Figure
+    S7A and S7B
+  quote: Settling involved both an increase of activity within a neuron's place field and a decrease in out-of-field
+    firing (Figure S7 A,B)
+  criterion: 'Methods, Place field detection: 1 x 1 cm bins, bins above 5 cm/s, occupancy over 1 s; field
+    bounds where the unnormalized rate exceeds 5 Hz; the deviation of each 100 ms z-scored rate from the
+    neuron''s mean map value at that location (Figure S7A legend). Whether the 100 ms deviations are taken
+    over (a) all bins or (b) only bins above 5 cm/s, as for the map, is open; both are run. The paper reports
+    no test. As a standard
+    choice, per session the in-field and out-of-field deviations averaged over neurons in each minute, and
+    the slope of a linear fit over the first 10 minutes. Reproduced when, in each environment, the mean slope
+    is positive in field and negative out of field, each by a one-sample t-test over sessions at p < 0.05
+    (an assumption, as the paper gives no test).'
+  depends_on:
+  - ephys-ensemble-size
+- id: figs7cd-movement-not-time-locked
+  statement: For the most similar pairs of moments, the absolute differences in velocity and acceleration
+    show no systematic relationship with time after transfer.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2; Figure
+    S7C and S7D
+  quote: When comparing pairs of moments with the highest representational similarity, there was no systematic
+    relationship between time after transfer and |Δvel|NN or |Δacc|NN (Figure S7 C-F)
+  criterion: 'Methods, Reset analysis, with E5 and E8. Whether |dvel|NN and |dacc|NN are taken over (a) the
+    3 nearest neighbors, as the Methods say ("the time bins with the highest ... correlations"), or (b) the
+    single nearest one, as the Figure S7C legend says ("another 100-ms time bin"), is open; both are run.
+    The paper reports no test for this absence. As a standard choice, per session the Spearman correlation
+    of each measure with time after transfer over the first 10 minutes; reproduced when its mean over sessions
+    does not differ from 0 by a t-test at p < 0.05, in novel and familiar runs. The values are reported either
+    way. The paper gives no window for this; the first 1000 s after transfer (the z-scoring window of the
+    ACG slope analysis) is shown as a variant, not judged.'
+  depends_on:
+  - fig7e-novel-settling
+- id: figs7ef-time-explains-similarity
+  statement: Modeling nearest-neighbor similarity as a function of time from transfer, |dvel|NN and |dacc|NN,
+    only removing time from transition significantly decreases cross-validated prediction, in novel and familiar
+    environments.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2; Figure
+    S7E and S7F
+  quote: Only removing time from transition significantly decreased ability to predict nearest neighbor correlations
+    (Figure S7 E,F)
+  statistics:
+  - about: novel environment
+    test: t-test on change in CVMSE
+    statistic: t(7) = 3.52
+    p: 0.01
+    n: 8 sessions
+  - about: familiar environment
+    test: t-test on change in CVMSE
+    statistic: t(7) = 3.12
+    p: 0.017
+    n: 8 sessions
+  criterion: 'Methods, Reset analysis: cross-validation withholds each session and reports its CVMSE; the
+    change is the percent change in CVMSE on dropping each variable, tested against 0 by a Student t-test
+    over sessions (Methods, Statistical modeling of SignalNE), p < 0.05. The model''s form is not given for
+    the electrophysiology. Readings: (a) the photometry model''s form, time from transition as a fast positive
+    and a slow negative exponential, |dvel|NN and |dacc|NN as linear terms, and an intercept, fit by bounded
+    least squares; (b) a linear model on the three variables. The readings of figs7cd-movement-not-time-locked
+    and E8 apply. Reproduced when, under one reading, dropping time is significant and dropping either movement
+    term is not, in both environments.'
+  depends_on:
+  - figs7cd-movement-not-time-locked
+- id: figs7gh-unconditioned-similarity
+  statement: When representational similarity is not conditioned on location, first-minute patterns are still
+    less correlated with the rest of the session than those 10 minutes in, in novel and familiar environments.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2; Figure
+    S7G and S7H
+  quote: Similar results were found when representational similarity was not conditioned on the mouse's location
+    (Figure S7 G,H)
+  statistics:
+  - about: novel environment
+    test: t-test
+    statistic: t(7) = 5.23
+    p: 0.001
+    n: 8 sessions
+  - about: familiar environment
+    test: t-test
+    statistic: t(7) = 5.60
+    p: 0.0008
+    n: 8 sessions
+  criterion: As fig7e-novel-settling, without conditioning on location. The measure is open between (a) the
+    3 most similar vectors taken from all bins of the run regardless of location, as the Results describe
+    the same search "not conditioned on the mouse's location", and (b) the mean correlation with all other
+    vectors of the run, as the Figure S7G legend reads ("less correlated to others captured in the same recording
+    session"); both are run. Reproduced when, under one reading, minute 1 is lower than minute 10 by the paired
+    t-test at p < 0.05 in both environments.
+  depends_on:
+  - fig7e-novel-settling
+- id: fig8b-late-moments-reactivated
+  statement: Moments 10 to 11 minutes after a novel context transition are more likely to be reactivated in
+    post-experience ripples than moments 0 to 1 minutes after it.
+  source: Results, No preferential reactivation of moments following transition, paragraph 1; Figure 8A and
+    8B
+  quote: Contrary to expectations, the pattern of activity observed towards the end of the session was more
+    likely to be reactivated in the ripples that followed the experience (Figure 8 A,B)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 2.46
+    p: 0.04
+    n: 8 sessions
+  criterion: 'Methods, Ripple detection and Reactivation analysis, with E1 to E4, E7, E9 and E10. Per session,
+    for each 100 ms moment the percentage of post ripples that reactivate it; the mean over moments in 600
+    to 660 s and in 0 to 60 s after transfer. Reproduced when the late value is higher by the paired t-test
+    over sessions at p < 0.05, under one combination of the readings of E1 and E10.'
+  depends_on:
+  - ephys-ensemble-size
+- id: fig8d-familiar-no-difference
+  statement: In the familiar environment, early and late moments do not differ in reactivation rate.
+  source: Results, No preferential reactivation of moments following transition, paragraph 1; Figure 8C and
+    8D
+  quote: There is no difference in reactivation rate for early vs late moment in a familiar environment (t(7)
+    = 0.40, p = 0.70)
+  statistics:
+  - test: t-test
+    statistic: t(7) = 0.40
+    p: 0.7
+    n: 8 sessions
+  criterion: A claim of absence, judged on the paper's t-test over 8 sessions (E7) at p < 0.05, as fig8b-late-moments-reactivated
+    on the familiar figure-eight run, with pre and post ripples taken around that run (E10 applied to it).
+    Reproduced when the early against late difference is not significant; not reproduced when it is. Effect
+    size reported either way; absence is judged under readings E10 (a) with z-scored track vectors, the others
+    shown.
+  depends_on:
+  - fig8b-late-moments-reactivated
+- id: fig8-no-pre-reactivation
+  statement: Track activity patterns show no evidence of being present in ripples recorded before the experience.
+  source: Results, No preferential reactivation of moments following transition, paragraph 1; Figure 8A
+  quote: nor any evidence that the pattern of activity observed on the track was present in ripples recorded
+    prior to the experience
+  criterion: The paper gives no test; Figure 8A compares the pre-ripple percentages with the false positive
+    rate of 0.1% (Methods, Reactivation analysis). As a standard choice, per session the mean over moments
+    of the percentage of pre ripples that reactivate each moment; reproduced when its mean over sessions is
+    not above 0.1% by a one-sided one-sample t-test at p < 0.05, in novel and familiar runs. Values reported
+    either way.
+  depends_on:
+  - fig8b-late-moments-reactivated
+- id: ne-and-settling-time-course
+  statement: The time course of hippocampal representational stabilization qualitatively matches that of
+    NE decay, in novel and familiar environments.
+  source: Results, CA1 spatial code takes minutes to settle after context transition, paragraph 2 (last
+    sentence); Discussion, The LC contribution to long-term changes in neural coding
+  quote: The time course of representational stabilization qualitatively matched that of NE decay in both
+    novel and familiar environments suggesting a potential link between NE release and atypical spiking behavior
+  criterion: Not testable on DANDI:000552 alone, as the NE half is in the undeposited photometry recordings,
+    and the paper compares the two only by eye. The settling half is tested by fig7e-novel-settling, fig7f-familiar-settling
+    and fig7g-familiar-more-similar-early.
+  depends_on:
+  - fig7g-familiar-more-similar-early
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs1a-desipramine. The source named the subsection "SignalNE exponentially decays after transfer to a novel arena"; the sentence is in the opening paragraph of the Results, before the first subsection heading. Corrected.
+  - fig5d-decay-hastens-with-days. The statement said the decay "changes systematically"; the Figure 5D legend says it "hastens over days of exposure" and the Discussion that familiarity "accelerated the rate". The direction is now in the statement. The printed "p ≤0.01" is kept as p_relation "<", the closest value the schema allows, with the printed form under about.
+  - fig6-recent-history. The statement called the decay constant comparable to arena days 3 to 4 "the track's"; in Results (Familiarity is not the sole determinant, paragraph 1) this is the decay after transfer to the track, not after the return to the home cage. Reworded.
+  - fig7g-familiar-more-similar-early. The quote is from the Figure 7G legend, not Results paragraph 2; the source now names the legend first. The statement's faster settling in the familiar environment has no test or measure in the paper; the criterion now says it is shown and not judged.
+  - fig7ab-umap-embedding. Added that the paper's example session is on a linear track (Figure 7A legend). The position and periphery measures remain the file's own assumptions, as the paper gives none.
+  - figs7ab-in-field-out-field. Whether the 100 ms deviations are restricted to bins above 5 cm/s (the Place field detection filter, given for the map) is not fixed by the Methods or the Figure S7A legend; named both readings.
+  - figs7cd-movement-not-time-locked. The 10 minute window of the criterion's correlation is not from the paper; said so and added the 1000 s z-scoring window as a variant.
+  - figs7gh-unconditioned-similarity. The criterion fixed the unconditioned measure as the 3 nearest neighbors over all bins. The Figure S7G legend ("less correlated to others captured in the same recording session") also allows the mean correlation with all other vectors; named both readings.
+  - Header E10. The pool for the ripple shuffle was fixed within the pre or post set as a standard choice; it can change which ripples count as significant, and the Methods say only "a random other ripple observed during the session". Named both readings (within set, pre and post pooled).
+  - Open. Two printed p-values do not follow from their t values under a two-sided test (fig2c-track-time-from-transition, t(7) = 7.20 gives 0.0002, printed 0.0008; fig6-recent-history, t(5) = 3.74 gives 0.013, printed 0.005). Both are recorded as printed; neither claim is testable on DANDI:000552. All electrophysiology p-values match two-sided paired t-tests over 8 sessions, consistent with E7.
+  - Open. The paper lists 7 novel environments (3 linear tracks, 3 figure-eight mazes, 1 arena) for 8 sessions; which sessions were used is left to the author under E1.
+  - Open. The paper links no analysis code, so the method choices named as readings in E4 to E10 and in the criteria cannot be settled from code.

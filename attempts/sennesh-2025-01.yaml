@@ -1,0 +1,1347 @@
+schema_version: 3
+id: sennesh-2025-01
+datasets:
+- archive: dandi
+  id: '000253'
+  version: 0.240923.1441
+  doi: 10.48324/dandi.000253/0.240923.1441
+  relation: reuses
+paper: doi:10.1101/2025.07.31.667946
+date: 2026-11-20
+entry: sennesh-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44839964552
+outcomes:
+- claim: trial-counts
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:trial-counts
+  measured:
+  - 538
+  - 700
+  - 2046
+  - 1351
+  - 8465
+  - 1351
+  notes: Counted from the stimulus tables of the 14 mice, as the claims file defines the conditions. The
+    habituation count matches (700); the others differ by -3 (XXXY), +5 (xxxX), -4 (xxxx), +3 (xxxY) and
+    -1 (yyyy) trials, at most 0.6%, inside the criterion's 5% bound for a partial result. The paper's
+    code reads its conditions from passiveglo_task_data.mat, which is not in the dandiset, so the selection
+    cannot be matched trial by trial. The 0 to 2 main-block sequences per mouse that match neither the
+    habituated pattern nor its global oddball, which are left out here, can affect only the main-block
+    counts (xxxX, xxxY); the differences in XXXY (random block), xxxx and yyyy come from the other blocks,
+    and their cause is not known.
+    Sub-621890 has a different schedule (807 main-block and 100 sequence-control sequences) and is counted
+    as it is. The table's first block holds 25 pure 'xxxy' sequences, so the 50 lonaive trials are those
+    25 and the first 25 of the main block; no other interval table holds a habituation block, and invalid_times
+    holds one empty row (0 to 0 s) per session.
+  deviations:
+  - Conditions rebuilt from the grating orientations and blocks of init_grating_presentations; the dandiset
+    has no condition labels and the paper's condition file is not public.
+- claim: three-contrasts-gamma-increase
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:three-contrasts-gamma-increase
+  notes: Masked points with a positive contrast between 30 and 60 Hz in V1, DD 2277, GO 1554 and SSA 2060
+    under S3 reading (a); 1832, 460 and 1748 under reading (b). Largest values 5.59, 1.37 and 2.82 dB
+    (reading a). The same under all five seeds.
+  deviations:
+  - LFP at 1250 Hz (the files' rate), so the 200 ms Hann window is 250 samples padded to 256.
+  - Each trial is de-meaned before the spectrogram, assumed to follow Syncopy's default (polyremoval 0);
+    the paper and the claims file do not say.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2ab-dd-condition-spectra
+  outcome: partially_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2ab-dd-condition-spectra
+  measured: 6.27
+  notes: 'Under the code''s S6 reading the shapes hold: the XXXY 40-55 Hz maximum lasts past 250 ms (6.27
+    dB under S3 reading a, 5.41 dB under b, the same after 250 ms); xxxy alpha/beta rises from -2.54 dB
+    at -10 ms to 2.36 dB at 80 ms and falls back below 1 dB (-1.36 dB after 150 ms); XXXY alpha/beta rises
+    3.98 dB from its -10 ms level to a peak at 250 ms and falls 2.76 dB. Values out of range: the xxxy
+    alpha/beta maximum (2.36 and 2.12 dB against at least 4.5) and, under reading a, the XXXY gamma maximum
+    (6.27 above 5.5). Under the trial mean of per-trial dB values the printed values are 3.2 to 4.8 dB
+    lower: the XXXY gamma maximum (1.58 and 0.72 dB) is reached after 250 ms, so the gamma lasts, but it
+    is below 2.25 dB, and the xxxy alpha/beta maximum stays below 0 dB; the shapes hold and the values do
+    not, partially reproduced under that reading too.
+    measured is S3 reading a.'
+  deviations:
+  - S6 condition panels as the code draws them (epych cee2e6f, notebooks/passiveglo/oscillatory_eyeballs.ipynb,
+    cell 12, oscillatory() then erp() then decibels()), that is dB of the trial-mean power over the aperiodic
+    fit, averaged over channels; the trial mean of per-trial dB is shown as a second reading.
+  - The shape tests (lasting past 250 ms as the maximum after 250 ms reaching 2.25 dB; a rise and a fall
+    as changes of more than 1 dB from the -10 ms level to the peak and after it) are readings made here
+    of the criterion's words.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2c-dd-v1-contrast
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2c-dd-v1-contrast
+  measured:
+  - 2.46
+  - -1.57
+  notes: Under both readings the DD contrast has a significant positive gamma cluster and a negative alpha/beta
+    cluster after onset. Largest gamma value 2.66 dB (reading a) and 2.46 dB (reading b), above the 0.9
+    to 2.2 dB range; largest alpha/beta decrease -1.48 and -1.57 dB, in range. The largest gamma value
+    is at 45 Hz both early and late, so the descent from 40-65 to 35-55 Hz is not seen. Identical under
+    the five seeds. measured gives reading (b).
+  deviations:
+  - The cluster test is a fast implementation of MNE's spatio_temporal_cluster_test with the claims file's
+    settings; the notebook checks it against MNE on synthetic data (identical F maps and clusters).
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2d-dd-gamma-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2d-dd-gamma-laminar
+  measured: 3.03
+  notes: Under all four readings (two S3 ranges, two gamma bands) the largest gamma increase is in an
+    L2/3 channel, the mean positive gamma over L1 to L4 exceeds that over L5/6 (0.54 to 1.38 against 0.06
+    to 0.23 dB) and L5/6 has a significant loss after 100 ms of at most 0.31 to 0.96 dB. The largest increase
+    is 3.02 to 3.94 dB, above 1.8 to 2.2 dB (measured is S3 reading b with 30-90 Hz).
+  deviations:
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2e-dd-alphabeta-laminar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2e-dd-alphabeta-laminar
+  measured:
+  - -2.04
+  - 0.74
+  notes: 'The desynchronization is in range (-2.04 dB under S3 reading a, -2.12 dB under b) and starts
+    in L2/3 at 20 ms, with L4 (20 ms) and before L5/6 (30 ms). The kept L1 row has a significant alpha/beta
+    increase and no decrease: 0.74 dB under reading a, below 0.9 to 1.65 dB, and 1.07 dB under reading
+    b, in range. By reading, partially reproduced under a and reproduced under b (printed); reading
+    a, the code''s range, is adopted. The value rests on one kept L1
+    row: with the start moved up by 3 rows (the other L1 row) the increase is 2.30 and 2.44 dB; with the
+    start moved up by 1 row no L1 row is kept. In the round-1 analysis (top row kept) L1 had no increase.'
+  deviations:
+  - S3 fitting range of the spectrograms adopted from the code (5-150 Hz, reading a). The Methods' sentence
+    'Power spectra were parameterized across the frequency range 2 to 90 Hz with a frequency resolution
+    of 2 Hz' fits the per-mouse spectra (2 Hz grid), not the spectrograms (5 Hz grid), so the Methods
+    leave the spectrogram range open and the code settles it (protocol, reader step 2). The round-1 analysis
+    had adopted reading (b).
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2f-dd-theta
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2f-dd-theta
+  measured: 2.56
+  notes: By S5's rule the 2-10 Hz band holds only the 5 Hz bin (4.9 Hz). Its significant values lie in
+    L2/3, L4 and L5/6, none in the kept L1 row, have both signs (102 positive and 168 negative points
+    in reading a), start at -10 ms, and reach 2.27 dB (reading a) and 2.56 dB (reading b), above 1.1 dB,
+    which the criterion names as not reproduced. The other L1 row (start moved up by 3 rows) has a late
+    increase (1.55 and 1.84 dB from 140 to 160 ms). The -10 ms bin's window reaches 90 ms after onset.
+  deviations:
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2g-dd-gamma-csd-feedforward
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2g-dd-gamma-csd-feedforward
+  measured: 120
+  notes: S7's first-sink times tie at the first lag in both readings, as every layer group holds a displayed
+    sink there (the display threshold passes 89% of points in reading a). With the tie-break (sustained,
+    displayed sink onset) the L4 sink starts before the L2/3 and L5/6 sinks under both bands (L4 -8.0,
+    L2/3 -3.2, L5/6 1.6 ms in reading a; -12.0, -4.0 and 4.8 ms in reading b), and also at 1/16 and 1/4
+    of a cycle and with single-sample onsets. 120 windows (reading a, within 10%) and 110 (reading b)
+    against 125.
+  deviations: &id001
+  - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
+  - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
+    at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
+  - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
+    Elephant.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig2h-dd-alphabeta-csd-feedback
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2h-dd-alphabeta-csd-feedback
+  measured: 138
+  notes: With the tie-break, the Methods' band (10-30 Hz, reading a) has no L1 sink onset in the window,
+    and the L5/6 sink (-14.4 ms) starts before L4 (12.0 ms) and L2/3 (19.2 ms); the code's band (12-24
+    Hz, reading b) gives L1 first (-31.2 ms against L2/3 -13.6 ms, no L4 onset). The readings disagree;
+    the Methods' band is adopted (protocol, reader step 2). The split is the same at 1/16 and 1/4 of a
+    cycle and with single-sample onsets. S7's own rule fails in both (tied in a; in b the first L1 sink, -31.2 ms, is after L2/3,
+    -41.6 ms). 138 and 148 windows against 189.
+  deviations:
+  - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
+  - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
+    at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
+  - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
+    Elephant.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+  - Adopted the Methods' band where the two band readings disagree.
+- claim: fig2i-dd-theta-csd-mixed
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2i-dd-theta-csd-mixed
+  measured: 163
+  notes: With the tie-break, in reading a L2/3 and L4 are sinks from the window start (-124.8 ms), L5/6
+    starts at 65.6 ms and L1 and L6 have no onset; in reading b L4 is a sink from the window start, L5/6
+    and L6 start at 57.6 and 73.6 ms, and L1 and L2/3 have no onset. No L1, L5/6 or L6 sink comes before
+    L4 in either reading, also at 1/16 and 1/4 of a cycle and with single-sample onsets. S7's own rule
+    also fails in both readings. 163 and 117 windows against 77.
+  deviations: *id001
+- claim: dd-aperiodic-no-difference
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:dd-aperiodic-no-difference
+  notes: Per mouse, area and condition, one FOOOF fit to the trial- and row-mean spectrum; Welch permutation
+    tests of offset and exponent, XXXY against xxxy. None of the 24 tests (6 areas, 2 parameters, the
+    text's and the code's windows and ranges) has p < 0.05; the smallest p over the five seeds is 0.53.
+    Differences of means are at most 0.074 in offset and 0.058 in exponent. 14 mice per area, 13 in LM
+    and 11 in AL.
+  deviations:
+  - Areas are read at their kept rows only (every fourth aligned channel, from the deepest as in the code),
+    without the median filter, to fit the time limit; the per-mouse spectra average over those rows. v1_laminar.ipynb
+    repeats the V1 tests with and without the filter (Figure 5 V1 values move by at most 0.09 dB).
+  - LM has 13 mice and AL 11, as the probe labels allow (see findings).
+- claim: suppfig1-aperiodic-no-difference-all
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig1-aperiodic-no-difference-all
+  notes: None of the 72 tests (3 contrasts, 6 areas, 2 parameters, 2 readings) has p < 0.05. The legend's
+    2-SEM bands of the aperiodic curves overlap at every frequency from 2 to 90 Hz in all 18 comparisons.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: dd-gamma-peak-frequency-v1
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:dd-gamma-peak-frequency-v1
+  measured:
+  - 37.57
+  - 33.71
+  notes: Mean gamma peak 37.57 Hz (99% interval 34.92 to 40.23) for XXXY and 33.71 Hz (31.37 to 36.06)
+    for xxxy, both within tolerance; permutation Welch test p = 0.018 (0.012 to 0.026 over the five seeds).
+    Both readings give the same per-mouse peaks. The areas notebook, on the kept rows only, gives 37.57
+    and 33.57 Hz (window a) and p = 0.012.
+  deviations:
+  - Per-mouse spectra are the Hann-tapered FFT of each trial's segment zero-padded to a 2 Hz grid, a standard
+    choice for the code's 500 ms mtmfft at 2 Hz steps.
+- claim: dd-gamma-peak-frequency-lm
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:dd-gamma-peak-frequency-lm
+  measured:
+  - 34.0
+  - 40.46
+  notes: In LM (13 mice) the gamma peak is 34.00 Hz for xxxy and 40.46 Hz for XXXY (reading a), both within
+    10%, with p = 0.004 (0.002 to 0.006 over the five seeds); reading (b) gives 34.15 and 40.62 Hz, p
+    = 0.004.
+  deviations:
+  - As for dd-aperiodic-no-difference (kept rows only; 13 mice in LM).
+- claim: dd-gamma-power-and-peak-only-v1-lm
+  outcome: reproduced
+  seed_sensitive: true
+  notebook: areas.ipynb
+  output: claim:dd-gamma-power-and-peak-only-v1-lm
+  notes: Under power reading (a) (any 30-90 Hz bin with the oddball higher) and the text's window, V1
+    passes both tests at 0.05 (power p = 0.002, peak p = 0.010, 0.010 to 0.024 over the five seeds) and
+    LM both at 0.01 (power p = 0.008, peak p = 0.002). Over the five seeds the LM power p runs from 0.006
+    to 0.012, so under some seeds LM fails at 0.01. No other area passes both at 0.05 (peak p 0.12 or
+    more, or the oddball peak not higher). Under the code's window or power reading (b) LM fails at 0.01
+    (any-bin p 0.022 to 0.032; maximum p 0.11 to 0.18). The any-bin power test is uncorrected and passes
+    at 0.05 in all six areas under the text's window (0.002 to 0.014), so the area specificity rests on
+    the peak-frequency test.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: ssa-gamma-peak-frequency-lower
+  outcome: partially_reproduced
+  notebook: areas.ipynb
+  output: claim:ssa-gamma-peak-frequency-lower
+  measured:
+  - 36.77
+  - 42.15
+  - 37.14
+  - 42.43
+  - 36.18
+  - 43.27
+  - 38.14
+  - 44.71
+  notes: The xxxY peak is lower than the yyyy peak in LM, RL, AL and AM under both readings, with the
+    means within tolerance (reading a values given as measured). At the stated levels the test passes
+    in LM only under reading (a) (p = 0.018) and in LM and AM under reading (b) (p = 0.006 and 0.042);
+    RL (p = 0.044 and 0.108, needing 0.01) and AL (p = 0.074 and 0.080) do not. V1 (36.1 against 39.4
+    Hz, p = 0.14) and PM (p = 0.50) are not significant. One or two of four areas is a partial result
+    under the criterion. Over the five seeds AM under reading (b) ranges 0.042 to 0.056, which does not
+    change the outcome.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: suppfig2-alphabeta-peaks
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig2-alphabeta-peaks
+  notes: At most 5 of the 13 named cases differ by more than twice the larger SEM in the stated direction
+    (at the peak frequency, either window; 1 and 2 with the per-mouse maximum). The DD control is higher
+    in V1 (-1.04 dB), LM (-1.66) and AL (-1.40), and PM (-0.46) under the text's window, not in RL or
+    AM; no GO case passes (differences -0.21 to 0.02 dB); SSA passes in AL (1.03 dB) and, in the code's
+    window, LM (0.79 dB). The pooled-SEM variant gives 4 and 5.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: suppfig2-gamma-height-differences
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig2-gamma-height-differences
+  notes: Under either window at the peak frequency 10 of the 11 named cases differ by more than twice
+    the larger SEM (DD 1.20 to 3.03 dB, SSA 1.01 to 2.04 dB; SSA in RL, 0.87 against 0.88 dB, does not);
+    with the pooled SEM 10 and 8; the per-mouse maximum gives 6 and 4.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: go-theta-peaks
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:go-theta-peaks
+  measured: 6
+  notes: The V1 oscillatory spectrum averaged over mice has a local maximum above 0 dB at 6 Hz for xxxX
+    (3.56 dB) and xxxx (3.27 dB) under reading (a), and at 6 Hz for both under reading (b). FOOOF finds
+    a peak between 4.5 and 9.9 Hz in 19 of 28 mouse and condition spectra.
+- claim: fig3ab-go-condition-spectra
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3ab-go-condition-spectra
+  measured:
+  - 2.86
+  - 2.77
+  notes: Under the code's S6 reading the xxxX alpha/beta maximum in the first 150 ms is in range (2.86
+    dB under S3 reading a, 2.51 under b) and falls below 1 dB before 250 ms, but the xxxx maximum (2.77
+    and 2.52 dB) is below 3.6 dB and xxxx alpha/beta does not stay above 1 dB through 200 ms (minimum
+    -0.97 and -1.22 dB from 50 to 200 ms), so the time courses do not hold. The 40-55 Hz power over 150-500
+    ms is higher for xxxX (2.07 against 1.62 dB, reading a; 1.02 against 0.91, reading b). Under the trial
+    mean of per-trial dB values every alpha/beta maximum is below 0 dB. Not reproduced under both S6 readings.
+  deviations:
+  - S6 condition panels as the code draws them (epych cee2e6f, notebooks/passiveglo/oscillatory_eyeballs.ipynb,
+    cell 12, oscillatory() then erp() then decibels()), that is dB of the trial-mean power over the aperiodic
+    fit, averaged over channels; the trial mean of per-trial dB is shown as a second reading.
+  - The 50 to 200 ms span for 'through 200 ms' and the 1 dB level are readings of the criterion.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig3c-go-v1-contrast
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3c-go-v1-contrast
+  notes: Under both readings the masked GO contrast has positive 55-90 Hz values in the first 150 ms (93
+    and 92 points, largest 1.05 and 0.45 dB), positive 40-55 Hz values after 300 ms (largest 0.58 and
+    0.25 dB), positive theta from -10 ms (largest 0.36 and 0.72 dB) and negative alpha/beta values (down
+    to -0.19 and -0.20 dB). Identical under the five seeds.
+  deviations:
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig3d-go-gamma-laminar
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3d-go-gamma-laminar
+  measured: 0.63
+  notes: Under S3 reading (a), the code's fitting range, with the Methods' 30-90 Hz band, L2/3, L4 and
+    L5/6 have significant positive gamma in the first 100 ms (50, 30 and 89 points), the largest value
+    in the last 100 ms is 0.634 dB (in 0.54 to 0.66) and L1 has a decrease (down to -0.51 dB). With the
+    30-50 Hz band the late value is 0.94 dB (partial); under reading (b) L5/6 has no early increase and
+    the late value is 0.74 dB (30-90 Hz) and 1.22 dB (30-50 Hz). By reading (printed), reproduced only
+    under S3 (a) with 30-90 Hz, partially reproduced under S3 (a) with 30-50 Hz, and not reproduced under
+    S3 (b) with either band, where L5/6 has no onset increase (0 points); the outcome rests on the code''s
+    fitting range taken with the Methods'' band. The onset values (0.57 to 0.75 dB) are above the paper''s
+    0.2 to 0.4 dB, which the criterion does not test. The other L1 row (start moved up by 3 rows) also
+    has a decrease (down to -1.00 dB).
+  deviations:
+  - S3 fitting range of the spectrograms adopted from the code (5-150 Hz, reading a). The Methods' sentence
+    'Power spectra were parameterized across the frequency range 2 to 90 Hz with a frequency resolution
+    of 2 Hz' fits the per-mouse spectra (2 Hz grid), not the spectrograms (5 Hz grid), so the Methods
+    leave the spectrogram range open and the code settles it (protocol, reader step 2). The round-1 analysis
+    had adopted reading (b).
+  - The Methods' 30-90 Hz gamma band is adopted where the two band readings disagree.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig3e-go-alphabeta-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3e-go-alphabeta-laminar
+  notes: L1 has a significant alpha/beta decrease under both readings (down to -0.81 and -1.00 dB) and
+    L5/6 the largest increase (1.25 and 1.22 dB), but the first positive bin is in L2/3 (0 and -10 ms)
+    before L5/6 (20 and 30 ms). One of the two parts holds under both readings. The bins are 10 ms apart,
+    finer than the 200 ms window resolves.
+  deviations:
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig3f-go-theta-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3f-go-theta-laminar
+  measured: 1.32
+  notes: Theta increases with no significant decrease; the first positive bin is in L5/6 at -10 ms (alone
+    under reading a; with L2/3 and L4 under reading b), the largest value is 1.32 dB (reading a) and 1.44
+    dB (reading b), in range, but the increase never reaches the kept L1 row, nor the other L1 row (start
+    moved up by 3 rows). The -10 ms bin's window reaches 90 ms after onset.
+  deviations:
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig3g-go-gamma-csd-feedforward
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3g-go-gamma-csd-feedforward
+  measured: 471
+  notes: With the tie-break, the L4 sink starts before the L2/3 and L5/6 sinks under both bands (L4 -8.0,
+    L2/3 -2.4, L5/6 4.0 ms in reading a; -12.0, -3.2 and 6.4 ms in reading b), also at 1/16 and 1/4 of
+    a cycle. S7's own rule ties in reading
+    a and in reading b puts the first L4 sink (-13.6 ms) after the others, which sit at the window start.
+    471 and 476 windows against 496.
+  deviations: *id001
+- claim: fig3h-go-alphabeta-csd-feedback
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3h-go-alphabeta-csd-feedback
+  measured: 279
+  notes: Changed from reproduced after verification round 3 agreed with the change proposed after round
+    2. The earlier single-sample tie-break put the L1 sink onset first under the Methods' band (reading
+    a; -32.0 ms, before L2/3 -31.2 and L4 -25.6 ms). That onset is one sample and is not displayed. With the sustained tie-break the
+    only lasting, displayed L1 sink in reading a begins at 28.0 ms, after L4 (a sink from the window
+    start, -37.6 ms) and L2/3 (-28.8 ms); in reading b L1 (-12.0 ms) also follows L2/3 (-20.0 ms) and L4
+    (-27.2 ms). The rule fails at 1/16 of a cycle in both readings and holds at 1/4 only in reading b.
+    S7's own rule fails in both readings. 279 and 275 windows against 300.
+  deviations:
+  - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
+  - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
+    at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
+  - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
+    Elephant.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+  - Adopted the Methods' band where the two band readings disagree.
+- claim: fig3i-go-theta-csd
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3i-go-theta-csd
+  measured: 685
+  notes: Changed from reproduced after verification round 3 agreed with the change proposed after round
+    2. The earlier single-sample tie-break gave L4 at -120.8 ms and L2/3 following at -84.0 ms in
+    reading a; those onsets came from brief sign flips. With
+    the sustained tie-break, under the Methods' band (reading a) L2/3 and L4 are both sinks from the window
+    start (-124.8 ms), so the L2/3 sink does not follow; under the code's band (reading b) L4 is a sink
+    from the window start and L2/3 starts at -58.4 ms, so the rule holds there. The Methods' band is adopted.
+    At 1/16 of a cycle reading a holds too, at 1/4 it fails. S7's own rule fails in both readings. 685
+    and 575 windows against 335. The outcome depends on the minimum duration of the tie-break, which was
+    set for all CSD claims together.
+  deviations:
+  - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
+  - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
+    at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
+  - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
+    Elephant.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+  - Adopted the Methods' band where the two band readings disagree.
+- claim: fig4ab-ssa-condition-spectra
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig4ab-ssa-condition-spectra
+  measured:
+  - 5.29
+  - 2.38
+  notes: Under the code's S6 reading the xxxY 40-55 Hz maximum (5.29 dB under S3 reading a, 4.53 under
+    b) and the yyyy alpha/beta maximum (2.38 and 2.21 dB) are in range, and the yyyy 40-55 Hz maximum
+    after 150 ms is below the xxxY one (2.92 and 2.34 dB), but above 2.2 dB, and the xxxY alpha/beta maximum
+    in the first 150 ms (1.21 and 1.02 dB) is below 2.25 dB. The ordering (yyyy below xxxY) holds with
+    values out of range. The trial mean of per-trial dB values also gives the ordering with every value
+    out of range (xxxY gamma 0.33 dB).
+  deviations:
+  - S6 condition panels as the code draws them (epych cee2e6f, notebooks/passiveglo/oscillatory_eyeballs.ipynb,
+    cell 12, oscillatory() then erp() then decibels()), that is dB of the trial-mean power over the aperiodic
+    fit, averaged over channels; the trial mean of per-trial dB is shown as a second reading.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig4c-ssa-v1-contrast
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig4c-ssa-v1-contrast
+  measured:
+  - -1.99
+  - 1.91
+  notes: Significant decreases in the first 150 ms span theta, alpha/beta and gamma bins, followed by
+    significant gamma increases after 150 ms. Largest decrease -1.99 dB (reading a) and -1.98 dB (reading
+    b), largest late increase 1.91 and 1.75 dB; outside the Results' ranges (0.45 to 1.65 and 0.9 to 1.65
+    dB) and inside the legend's 1-2 dB (0.9 to 2.2 dB), which the criterion names as its second reading.
+    Identical under the five seeds.
+  deviations:
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig4def-ssa-laminar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4def-ssa-laminar
+  notes: 'Under S3 reading (a) with the 30-90 Hz gamma band, alpha/beta and theta hold (an early loss
+    in every layer group; later increases first in L5/6 at 160 ms, before L4 at 170 and 180 ms and L2/3
+    at 190 and 180 ms), but in gamma the later increase starts in L5/6 and L2/3 together (200 ms): two
+    of three bands, partial. With the code''s 30-50 Hz band all three hold (reproduced). Under reading
+    (b) only gamma holds (alpha/beta and theta have L4 tied with L5/6 at 160 ms). By reading (printed),
+    partially reproduced in three of the four and reproduced under S3 (a) with 30-50 Hz.'
+  deviations:
+  - S3 fitting range of the spectrograms adopted from the code (5-150 Hz, reading a). The Methods' sentence
+    'Power spectra were parameterized across the frequency range 2 to 90 Hz with a frequency resolution
+    of 2 Hz' fits the per-mouse spectra (2 Hz grid), not the spectrograms (5 Hz grid), so the Methods
+    leave the spectrogram range open and the code settles it (protocol, reader step 2). The round-1 analysis
+    had adopted reading (b).
+  - The Methods' 30-90 Hz gamma band is adopted where the two band readings disagree.
+  - 'Kept rows taken from the paper''s code (epych cee2e6f, statistics/alignment.py ChannelAlignment and
+    signal.py downsample): channels ordered from the tip up, the L4 centre at round(median) of the L4
+    positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
+    every fourth row from the deepest. The round-1 analysis started at the top row.'
+- claim: fig4g-ssa-gamma-csd-feedforward
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4g-ssa-gamma-csd-feedforward
+  measured: 1868
+  notes: With the tie-break, L4 starts first under both bands (-9.6 and -12.8 ms) and the L2/3 (-4.0 and
+    -4.8 ms) and L6 (6.4 and 7.2 ms) sinks follow. The rule holds at 1/16 of a cycle and with single-sample
+    onsets, and fails at 1/4 of a cycle in both readings. 1868 and 1943 windows against 1910.
+  deviations: *id001
+- claim: fig4h-ssa-alphabeta-csd
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4h-ssa-alphabeta-csd
+  measured: 303
+  notes: With the tie-break, under the Methods' band (reading a) the L4 sink (-21.6 ms) starts before
+    the L5/6 (-12.0 ms) and L1 (16.0 ms) sinks; under the code's band (reading b) the L1 sink (-34.4 ms)
+    starts before L4 (25.6 ms), so the rule holds there. The Methods' band is adopted. The split is the
+    same at 1/16 of a cycle; at 1/4 both readings fail. With single-sample onsets both fail (reading a,
+    L4 -36.0 against L1 -32.8 and L5/6 -28.8 ms; reading b, L4 -40.8 against L1 -40.0 and L5/6 -36.0
+    ms). In reading a L1 and L5/6 are sinks at the first lag while L4 is a source, so a reading by eye
+    could differ. S7's own rule fails in both readings. 303 and 272 windows
+    against 319. In the round-1 analysis (top row kept) the rule held with margins under 2 ms.
+  deviations: *id001
+- claim: fig4i-ssa-theta-csd
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4i-ssa-theta-csd
+  measured: 2481
+  notes: With the tie-break, neither band has an L1 or L6 sink onset in the window; L4 (reading a) and
+    L5 (both readings) are sinks from the window start. The rule also fails at 1/16 and 1/4 of a cycle
+    and with single-sample onsets. 2481 and 2054 windows against 1266.
+  deviations: *id001
+- claim: fig5-l23-gamma-by-area
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:fig5-l23-gamma-by-area
+  notes: Over the eight combinations of readings (S3 range, gamma band, time average) at most 3 of the
+    13 values are within tolerance (S3 a, 30-50 Hz, whole window) and at most 13 of 13 signs match (S3
+    b, 30-50 Hz, 2 in tolerance); under 30-90 Hz the whole-window values are 0 of 13. With 30-90 Hz and
+    S3 (a), the whole-window DD values are 0.745 (V1), 0.299 (LM), 0.464 (RL) and 0.433 dB (AL) against
+    1.5, 1.1, 1.3 and 0.3. Of the five cases the paper calls not significant, at most 2 have no masked
+    L2/3 gamma point; DD-AM (156 points), GO-AL (4) and GO-AM (2) have some, and DD-PM has 143 under one
+    of the five seeds. In V1 the filtered analysis (v1_laminar.ipynb) gives 0.797 against 0.745 dB for
+    DD (S3 a, 30-90 Hz), and its unfiltered variant gives the areas notebook's V1 values, with one
+    significant GO point fewer (1307 against 1308).
+  deviations:
+  - Areas are read at their kept rows only (every fourth aligned channel, from the deepest as in the code),
+    without the median filter, to fit the time limit; the per-mouse spectra average over those rows. v1_laminar.ipynb
+    repeats the V1 tests with and without the filter (Figure 5 V1 values move by at most 0.09 dB).
+  - The four extra seeds were run for S3 reading (a) only, to fit the time limit.
+- claim: fig5-hierarchy-restriction
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:fig5-hierarchy-restriction
+  notes: Under reading (a) the areas with masked L2/3 gamma are V1, LM, RL, AL and AM for DD (AM extra),
+    V1, RL, AL and AM for GO (LM missing, AL and AM extra) and all six for SSA, four set differences where
+    one is allowed; reading (b) gives four or five. The GO value in RL is negative (-0.167 dB, 30-90 Hz,
+    reading a).
+  deviations:
+  - As for fig5-l23-gamma-by-area.
+- claim: suppfig3-fastsweep-aperiodic
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig3-fastsweep-aperiodic
+  notes: With rows as samples (the code's reading), 6 of the 7 starred cases pass at their level with
+    the 5-150 Hz fit and 4 with the 5-90 Hz fit, but 3 and 5 of the 11 unstarred cases also pass at 0.05,
+    more than the 2 the criterion allows. With per-mouse spectra (the legend's reading) none of the 7
+    passes. The criterion's partial clause (3 or 4 starred cases) is read with the same bound on unstarred
+    cases, so the 5-90 Hz fit (4 starred, 5 unstarred) is not taken as partial; the criterion has no clause
+    for 5 or more starred cases with more than 2 unstarred.
+  deviations:
+  - The FOOOF range for the 0-150 ms spectra is not given; both S3 ranges (5 to 150 and 5 to 90 Hz) were
+    run.
+  - Areas are read at their kept rows only (every fourth aligned channel, from the deepest as in the code),
+    without the median filter, to fit the time limit; the per-mouse spectra average over those rows. v1_laminar.ipynb
+    repeats the V1 tests with and without the filter (Figure 5 V1 values move by at most 0.09 dB).
+- claim: suppfig4-pupil-dd-no-difference
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:suppfig4-pupil-dd-no-difference
+  notes: 'In the 9 mice with eye tracking (343 XXXY and 450 xxxy trials, 3 dropped), the cluster test
+    over P4 finds significant differences in z-scored pupil area (smallest cluster p 0.001 to 0.002 over
+    the five seeds, pooled z-scoring; 0.001 per mouse). The pupil is larger in XXXY (mean z 0.129 against
+    -0.098; largest mean difference 0.33 z). The 2-SEM bands overlap at 6 of 30 time points. The eye clock
+    is consistent with the stimulus table: eye timestamps cover each session (from 1.3 to 2.1 s to past
+    the last P4), and in all 9 mice the pupil averaged over main-block sequences varies more than at random
+    times (SD 0.031 to 0.094 z against a 95th percentile of 0.018 to 0.038 z). Time in session is confounded
+    with condition: against the last 50 main-block xxxy, just before the random block, XXXY has the smaller
+    pupil (mean z -0.104 against 0.086, cluster p 0.005). Five sessions have no eye tracking.'
+  deviations:
+  - Pupil area from pupil_tracking with likely_blink samples removed and linear interpolation onto 30
+    points over P4, a standard choice; the paper gives no pupil method.
+inputs: []
+findings:
+- kind: format_error
+  about: data
+  severity: major
+  statement: In version 0.240503.0152, the version the paper cites, the LFP timestamps of every probe
+    file of 7 of the 14 mice (sub-642507, sub-645322, sub-645324, sub-645495, sub-647836, sub-649323,
+    sub-649324) run 0, 24, 48, ... with no relation to seconds, so their LFP cannot be put on the clock
+    of the stimulus tables. Version 0.240923.1441 replaced these 42 files with timestamps in seconds.
+  versions:
+  - 0.240503.0152
+  fixed_in: 0.240923.1441
+- kind: other
+  about: data
+  severity: critical
+  statement: In version 0.240503.0152 the LFP of sub-645495 is nearly identical to that of sub-645322
+    (correlation 0.999 to 1.0 on all six probes) and the LFP of sub-645324 nearly identical to that of
+    sub-647836 (0.9985 to 1.0), while their stimulus tables differ; one recording of each pair is deposited
+    under the wrong subject. In version 0.240923.1441 no two probe files of different mice correlate above
+    0.85 on the same sample.
+  versions:
+  - 0.240503.0152
+  fixed_in: 0.240923.1441
+- kind: data_missing
+  about: data
+  severity: major
+  statement: In version 0.240503.0152 the probe files of sub-649323 hold 86 to 88 LFP channels, one in
+    four, where the other mice hold 255 to 384; version 0.240923.1441 holds 344 to 353.
+  versions:
+  - 0.240503.0152
+  fixed_in: 0.240923.1441
+- kind: metadata_insufficient
+  severity: major
+  statement: The stimulus table init_grating_presentations has no block, sequence or condition labels;
+    the habituation, main, random and sequence-control blocks and the conditions the paper analyses can
+    be told only from the grating orientations. The paper's code reads them from a file (passiveglo_task_data.mat)
+    that is not in the dandiset. Rebuilt from the orientations, the counts differ from the paper's by
+    1 to 5 trials in 5 of 6 conditions.
+- kind: metadata_error
+  severity: minor
+  statement: The LFP is stored at 1250 Hz, where the paper's Methods state an LFP band at 2.5 kHz.
+- kind: metadata_error
+  severity: major
+  statement: The electrode area labels leave three mice without a probe labelled AL (sub-621890 and sub-632485
+    have two probes labelled LM, sub-637908 two labelled RL), and probe 3 of sub-632487 has no visual-cortex
+    label, so LM has 13 mice and AL 11, where the paper says each mouse had a probe in each of the six
+    areas.
+- kind: other
+  about: data
+  severity: minor
+  statement: The habituation cohorts are 8 mice ("bbba") and 6 ("aaab"), where the paper describes two
+    cohorts of 7; one mouse (sub-647836) is 88 days old, below the paper's 95 to 128 days; the dandiset
+    has 4 male and 10 female mice. Five sessions have no eye tracking.
+- kind: other
+  about: data
+  severity: none
+  statement: In version 0.240923.1441 every LFP file has a linear clock in seconds (residuals below 1e-8
+    s) and, in every session, the evoked V1 difference between the two P4 orientations of the main block
+    grows only after P4 onset, so the LFP and the stimulus table share a clock as far as this contrast
+    shows.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors. The FOOOF fitting range for the spectrogram correction
+    is not stated: the Methods give 2 to 90 Hz with a 2 Hz resolution, which fits the per-mouse spectra,
+    and the code fits the whole 5-150 Hz spectrogram grid. Three V1 laminar claims (fig2e, fig3d, fig4def)
+    change outcome between the two. Which range was used for the figures? This attempt adopted the code''s
+    range.'
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The CSD laminar patterns are judged by eye; the claims
+    file's rule (order of the first displayed sinks) ties at the window start because the display threshold
+    (2 SD over the number of windows) passes about 90% of points. How were the onsets read, and with which
+    band-pass filter (Syncopy firws order) and bands (the Methods' 2-10, 10-30 and 30-90 Hz or the code's
+    4-8, 12-24 and 30-50 Hz)? This attempt used each group's mean sink onset, counted for a displayed
+    sink lasting at least 1/8 of a cycle, and adopted the Methods' bands; fig2h, fig3i and fig4h change
+    outcome with the bands.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Supplementary Figure 4 names no test for the pupil comparison
+    and the code at cee2e6f has none. Which test, window and z-scoring were used? The cluster test of
+    the claims file finds a difference.
+- kind: code_mismatch
+  statement: The gamma band of the laminar panels and Figure 5 is 30-90 Hz in the text and 30-50 Hz in
+    the code's BANDS; the Figure 5 values are closer to the paper's under 30-50 Hz (at most 3 of 13 within
+    tolerance, against at most 2 under 30-90 Hz).
+- kind: other
+  about: data
+  severity: minor
+  statement: The stimulus table's first block holds 25 'xxxy' sequences, where the paper describes 50
+    habituation trials; the code's 50 lonaive trials (the first 50 'xxxy') therefore include the first
+    25 of the main block. No other interval table holds a habituation block.
+- kind: other
+  about: data
+  severity: none
+  statement: The eye-tracking timestamps cover each of the 9 sessions that have eye tracking, and the
+    pupil averaged over the main-block sequences varies more than at random times in all 9, so the eye
+    clock is consistent with the stimulus table as far as this check shows. The last timestamp of each
+    eye tracking series is missing (NaN).
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebooks v1_laminar.ipynb and areas.ipynb with the conclusion cells
+    and the summaries removed, the helper module glo.py and the claims file, with the paper''s full text.
+    The verifier checked the archive''s asset list through the DANDI API and ran glo.spectrogram and glo.fooof_aperiodic
+    on synthetic 1/f noise. Report: transcripts/sennesh-2025/verifier-1-report.md.'
+  results:
+  - claim: trial-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: v1 cell 22 gives 538, 700, 2046, 1351, 8465 and 1351 against 541, 700, 2041, 1355, 8462 and
+      1352. Only lonaive matches exactly; the other five differ by under 1%, which is the partial rule.
+    response: 'No change of outcome. Printed the interval tables of a session file and invalid_times of
+      every session (problem 7): no other table holds a habituation block; the first block holds the 25
+      habituation sequences.'
+  - claim: three-contrasts-gamma-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: DD, GO and SSA each have significant positive masked points at 30-60 Hz under both
+      S3 readings and all 5 seeds.'
+    response: 'No change of outcome; numbers re-run with the code''s kept rows (2277, 1554, 2060 points
+      under reading a). Problem 6: the FFT bins'' own frequencies (4.9 to 151.4 Hz, 4.88 Hz apart) are
+      printed in the notebook and stated in the helper; the labels are kept, as the claims'' ranges are
+      written in them.'
+  - claim: fig2ab-dd-condition-spectra
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 27: XXXY 40-55 Hz max is 1.54 / 0.64 dB, xxxy alpha/beta max is -0.96 / -1.19 dB, and
+      the XXXY rise test fails. Every condition panel is negative, and that comes from the method (problem
+      1).'
+    response: Changed to partially reproduced, resting on an assumption. The paper's code draws the condition
+      panels as dB of the trial-mean power over the aperiodic fit (oscillatory_eyeballs, cell 12), the
+      reading the verifier asked for; under it the shapes hold and the xxxy alpha/beta value (2.36 dB)
+      is out of range. The per-trial dB average is kept as a second reading. The rise test now compares
+      the peak with the -10 ms level and has no 'peak above 0 dB' requirement.
+  - claim: fig2c-dd-v1-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 29: both clusters are significant. alpha/beta min is -1.34 / -1.58 dB, inside the range;
+      gamma max is 2.69 / 2.43 dB, above 2.2. The gamma peak stays at 45 Hz early and late, so there is
+      no descent.'
+    response: No change of outcome; re-run with the code's kept rows (gamma 2.66 / 2.46 dB, alpha/beta
+      -1.48 / -1.57 dB).
+  - claim: fig2d-dd-gamma-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 32: the max is in L2/3 and superficial > deep, with a weak L5/6 loss after 100 ms. The
+      max is 3.3-4.4 dB, outside 1.8-2.2, in every reading.'
+    response: No change of outcome; re-run with the code's kept rows (3.02 to 3.94 dB).
+  - claim: fig2e-dd-alphabeta-laminar
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 35: the desynchronization (-2.05 / -2.16 dB, L2/3 first, tied with L4) holds. L1 has
+      no positive alpha/beta (inc_L1 = 0), so the L1 sign fails. L1 is a single kept row (problem 4).'
+    response: Kept partially reproduced, now resting on an assumption. Following problem 4, the kept rows
+      are taken from the paper's code (every fourth row from the deepest, the topmost common row cropped),
+      which keeps a different L1 row; it has a significant increase of 0.74 dB (S3 reading a) and 1.07
+      dB (reading b). The other L1 row gives 2.30 / 2.44 dB. The L1 sign holds and the value is out of
+      range under the adopted reading a.
+  - claim: fig2f-dd-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 37: theta is significant only in L2/3, L4 and L5/6, never L1. The max is 2.36 / 3.0
+      dB (>1.1) and starts at -10 ms.'
+    response: No change of outcome; re-run (2.27 / 2.56 dB). The edge-of-window caveat (problem 5) is
+      stated in the notebook.
+  - claim: fig2g-dd-gamma-csd-feedforward
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 41: S7''s rule fails in both readings because all first sinks tie at the window start
+      (problem 2). Windows: 117 (within 10% of 125) and 108.'
+    response: Kept reproduced, resting on an assumption. The protocol (reader, step 3) says a criterion
+      unable to decide because of a tie is broken as the paper's methods imply; the paper reads where
+      sinks begin by eye, and the tie-break takes each group's mean sink onset. The notebook now states
+      it as an assumption, shows S7's rule beside it, and prints the sign of each group's mean CSD at
+      every lag.
+  - claim: fig2h-dd-alphabeta-csd-feedback
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 43: S7''s rule fails (reading a tied; reading b has L1 later). Windows 144 / 153 against
+      189.'
+    response: No change of outcome.
+  - claim: fig2i-dd-theta-csd-mixed
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 45: S7''s rule fails in both readings. Windows 163 / 114 against 77.'
+    response: No change of outcome.
+  - claim: dd-aperiodic-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'areas cell 12: 0 of 24 tests have p < 0.05 (smallest p 0.62).'
+    response: No change of outcome.
+  - claim: suppfig1-aperiodic-no-difference-all
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 14: 0 of 72 tests have p < 0.05, and the 2-SEM variant separates nothing.'
+    response: No change of outcome.
+  - claim: dd-gamma-peak-frequency-v1
+    agrees: true
+    outcome: reproduced
+    reason: 'v1 cell 48: 37.6 Hz against 33.7 Hz, both inside tolerance. p is 0.012-0.026 over 5 seeds.'
+    response: 'No change of outcome. Problem 11: the per-mouse spectra use one Hann taper over the claim''s
+      600 ms or 540 ms windows (the criterion''s readings a and b) on a 2 Hz grid; not changed.'
+  - claim: dd-gamma-peak-frequency-lm
+    agrees: true
+    outcome: reproduced
+    reason: 'areas cell 17: LM 40.5 against 34.5 Hz, p = 0.004 (0.002-0.006); reading b p <= 0.008. Means
+      are within 10%.'
+    response: No change of outcome.
+  - claim: dd-gamma-power-and-peak-only-v1-lm
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19, power reading (a), window a: V1 passes both tests at 0.05 and LM at 0.01 on all
+      seeds; no other area passes the peak test (p >= 0.12).'
+    response: 'No change of outcome, now marked sensitive to the seed: with the code''s kept rows the
+      LM power p runs from 0.006 to 0.012 over the five seeds. Problem 10 is stated in the notes: the
+      any-bin power test passes in all six areas, so the specificity rests on the peak test.'
+  - claim: ssa-gamma-peak-frequency-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 21: all four named areas are lower with means in tolerance. Only 1 of 4 (window a) or
+      2 of 4 (window b) pass at their stated level (RL p 0.024-0.044 against 0.01; AL p >= 0.07).'
+    response: No change of outcome.
+  - claim: suppfig2-alphabeta-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 24: at most 5 of 13 cases hold; the partial rule needs 7. Every GO case fails.'
+    response: No change of outcome.
+  - claim: suppfig2-gamma-height-differences
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: 11 of 11 hold (window a, at-peak reading); 10 hold with window b.'
+    response: No change of outcome; with the code's kept rows 10 of 11 hold under either window.
+  - claim: go-theta-peaks
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 50: both conditions have a local maximum above 0 dB at 6 Hz in both readings.'
+    response: No change of outcome.
+  - claim: fig3ab-go-condition-spectra
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 52: all values are out of range and xxxx never stays above 1 dB, so the time-course
+      part fails. Problem 1 applies.'
+    response: No change of outcome. Under the code's S6 reading the xxxX value comes into range, but xxxx
+      alpha/beta still does not stay above 1 dB through 200 ms.
+  - claim: fig3c-go-v1-contrast
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 54: fast high gamma, sustained 40-55 Hz, theta positive from -10 ms, and an alpha/beta
+      decrease, under both readings.'
+    response: No change of outcome.
+  - claim: fig3d-go-gamma-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 56: onset in all three layers and the L1 decrease hold. The late value is in range only
+      for S3a with 30-90 Hz (0.654 against a bound of 0.66).'
+    response: 'Changed to reproduced, resting on an assumption. The S3 fitting range is now taken from
+      the code (reading a): the Methods'' ''2 to 90 Hz with a frequency resolution of 2 Hz'' describes
+      the per-mouse spectra, not the 5 Hz spectrogram grid. Under reading a with 30-90 Hz all parts hold
+      (late value 0.634 dB with the code''s kept rows).'
+  - claim: fig3e-go-alphabeta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 58: L1 negative in both readings. L5/6-first holds under S3a only, and only as -10 ms
+      against 0 ms at the first time bin; under S3b, L2/3 comes first.'
+    response: No change of outcome. With the code's kept rows L2/3 comes first under both readings, so
+      the outcome no longer rests on an assumption.
+  - claim: fig3f-go-theta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 60: the max (1.15 / 1.30 dB) is in range and L5/6 is first (tied with L4). theta never
+      reaches L1.'
+    response: No change of outcome; neither L1 row has a theta increase.
+  - claim: fig3g-go-gamma-csd-feedforward
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 62: S7''s rule fails (tie in reading b; in reading a, L4 is 2.4 ms later). Windows 461
+      / 472, within 10%.'
+    response: Kept reproduced, resting on an assumption, for the reason given under fig2g; the tie-break
+      holds under both bands.
+  - claim: fig3h-go-alphabeta-csd-feedback
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 64: S7''s rule fails, and the author''s onset rule also fails. Windows within 10%.'
+    response: Changed to reproduced, resting on an assumption, as the re-run with the code's kept rows
+      gives L1 first under the Methods' band by one sample (0.8 ms) and not under the code's band; the
+      Methods' band is adopted as for the other CSD claims.
+  - claim: fig3i-go-theta-csd
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 66: ties at -124.8 ms. Windows 655 / 580 against 335.'
+    response: Kept reproduced, resting on an assumption (tie-break as under fig2g); with the code's kept
+      rows it holds under the Methods' band only.
+  - claim: fig4ab-ssa-condition-spectra
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 68: the ordering holds (yyyy gamma < 2.2 dB and below xxxY); every value is out of range
+      (problem 1).'
+    response: No change of outcome. Under the code's S6 reading two of the values come into range and
+      the yyyy gamma (2.92 dB) is above 2.2 dB but below xxxY.
+  - claim: fig4c-ssa-v1-contrast
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 70: the broad early decrease (-1.98 dB) and late gamma (1.92 / 1.74 dB) are in the legend''s
+      0.9-2.2 range, which the criterion allows as its second reading.'
+    response: No change of outcome.
+  - claim: fig4def-ssa-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 72: gamma holds in all readings and alpha/beta only under S3a. theta fails because L1
+      has no early loss.'
+    response: 'No change of outcome, now resting on an assumption: with the code''s kept rows the readings
+      give two bands (S3 a, 30-90 Hz, adopted), three (S3 a, 30-50 Hz) or one (S3 b).'
+  - claim: fig4g-ssa-gamma-csd-feedforward
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 74: S7''s rule fails (ties). Windows 1883 / 1936, within 10%.'
+    response: Kept reproduced, resting on an assumption (tie-break as under fig2g).
+  - claim: fig4h-ssa-alphabeta-csd
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 76: L1 is later than L4, and L5/6 ties with L4.'
+    response: 'Changed to not reproduced: with the code''s kept rows the L4 sink onset comes first under
+      both bands.'
+  - claim: fig4i-ssa-theta-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 78: S7''s rule and the onset rule both fail. Windows 2476 / 2048 against 1266.'
+    response: No change of outcome.
+  - claim: fig5-l23-gamma-by-area
+    agrees: true
+    outcome: not_reproduced
+    reason: 'areas cell 29: at most 4 of 13 values are in tolerance and at most 3 of 5 ''none'' cases
+      are empty.'
+    response: 'No change of outcome. Problem 3: v1_laminar.ipynb now repeats the V1 tests without the
+      median filter under the areas notebook''s seed; the unfiltered values match the areas notebook and
+      the filtered ones differ by at most 0.09 dB.'
+  - claim: fig5-hierarchy-restriction
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 31: the area sets differ by 3-4; DD includes AM (and PM under S3b), GO includes AL or
+      AM. GO-RL is negative.'
+    response: No change of outcome.
+  - claim: suppfig3-fastsweep-aperiodic
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 33: the per-mouse reading passes 0 of 7 starred cases. The rows reading passes 5 of
+      7 starred but 4-6 of 11 unstarred, against at most 2. The criterion has no rule for that mix (problem
+      9).'
+    response: No change of outcome. The notes state how the partial clause is read (with the same bound
+      on unstarred cases).
+  - claim: suppfig4-pupil-dd-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'v1 cell 80: clusters with p <= 0.002 under both z-scorings and all seeds (9 mice, 343 against
+      450 trials).'
+    response: 'No change of outcome. Problem 8: added the eye clock against the stimulus table, a stimulus-locked
+      pupil response against random times (above it in all 9 mice), and a time-in-session variant (against
+      the last 50 main-block xxxy the sign of the difference reverses), reported in the notes.'
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebooks v1_laminar.ipynb and areas.ipynb with their conclusions and
+    summaries, the helper module glo.py, the claims file, the README and this attempt record, with the paper''s
+    full text. Report: transcripts/sennesh-2025/verifier-2-report.md.'
+  results:
+  - claim: trial-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 34 of the 37 outcomes. On the note: "A likely cause is the handling of the 0 to 2
+      main-block sequences per mouse..." Those sequences can only affect the main-block counts (xxxX, xxxY).
+      The differences in XXXY (random block, -3), xxxx (-4) and yyyy (-1) come from other blocks (v1 cells
+      5 and 25).'
+    response: No change of outcome. The note now says the left-out main-block sequences can affect only the
+      xxxX and xxxY counts, and that the cause of the other differences is not known.
+  - claim: three-contrasts-gamma-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2ab-dd-condition-spectra
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The code''s condition-panel reading (dB of the trial-mean power) is stated and settled from the
+      code, and the per-trial dB reading is shown beside it. On the note "...and the gamma does not last past
+      250 ms": under the per-trial dB reading, the largest gamma value after 250 ms equals the overall maximum
+      (1.58 / 0.72 dB, cell 32). The gamma does last; what fails is the 2.25 dB level.'
+    response: No change of outcome. The record's note and the notebook's Result cell now say the gamma lasts
+      under the per-trial dB reading and is below 2.25 dB, which gives partially reproduced under that reading
+      too.
+  - claim: fig2c-dd-v1-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2d-dd-gamma-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2e-dd-alphabeta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: The code's 5-150 Hz fitting range (S3 reading a) is the conservative choice here; reading b would
+      give reproduced. The L1 value changes with which L1 row is kept (0.74 against 2.30 dB), and the record
+      says so.
+    response: No change of outcome. The notebook now prints the outcome under each S3 reading (partially reproduced
+      under a, reproduced under b), and the notes say so.
+  - claim: fig2f-dd-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2g-dd-gamma-csd-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig2h-dd-alphabeta-csd-feedback
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig2i-dd-theta-csd-mixed
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: dd-aperiodic-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig1-aperiodic-no-difference-all
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: dd-gamma-peak-frequency-v1
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: dd-gamma-peak-frequency-lm
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: dd-gamma-power-and-peak-only-v1-lm
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: ssa-gamma-peak-frequency-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig2-alphabeta-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig2-gamma-height-differences
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: go-theta-peaks
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3ab-go-condition-spectra
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3c-go-v1-contrast
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3d-go-gamma-laminar
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'The adopted combination takes the code''s fitting range together with the Methods'' 30-90 Hz band,
+      and it is the only one of the four readings that reproduces (cell 73): the 30-50 Hz band gives partial
+      (late value 0.94 dB); under the 5-90 Hz fitting range (S3 reading b), with either band, L5/6 has no onset
+      increase (0 points), so not reproduced. The stated reason for preferring the code''s range is arguable:
+      the Methods sentence "2 to 90 Hz" sits in the paragraph about removing the aperiodic component from spectrograms
+      (paper line 174). The onset values (0.57-0.75 dB) are also above the paper''s 0.2-0.4 dB; the criterion
+      does not test them. The record should give the outcomes by reading and not rest on one adopted reading.'
+    response: 'Kept reproduced, resting on the assumption, and the disagreement recorded. The notebook now
+      prints the outcome under each of the four readings (reproduced, partially reproduced, not reproduced,
+      not reproduced), and the Result cell and notes give them, with the onset values. The S3 range is applied
+      the same way in fig2e, fig3d and fig4def: it lowers fig2e and lifts fig3d. The range stays adopted from
+      the code, as the Methods'' 2 Hz resolution does not fit the 5 Hz spectrogram grid; the question to the
+      paper''s authors (findings) asks which range was used.'
+  - claim: fig3e-go-alphabeta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3f-go-theta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3g-go-gamma-csd-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig3h-go-alphabeta-csd-feedback
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 85, reading a: the L1 "sink onset" at -32.0 ms is one sample, and that sample is not displayed
+      (the shown row has no x there). L1''s displayed sinks begin at +28.0 ms, after L2/3 and L4. Under reading
+      b, L1 is not first either, and S7''s rule fails in both readings. The CSD tie-break has no minimum duration
+      or display requirement; I would require a sustained, displayed sink before counting an onset.'
+    response: Outcome kept as recorded, as round 2 allows no change; a change to not reproduced is proposed.
+      The tie-break now counts only a displayed sink lasting at least 1/8 of a band-centre cycle, with 1/16
+      and 1/4 shown; under it the L1 sink comes after L2/3 and L4 in both readings.
+  - claim: fig3i-go-theta-csd
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 88, reading a: L2/3 and L4 are both sinks from the first lag (-124.8 ms) through most of
+      the window. The -120.8 against -84.0 ms ordering comes from brief sign flips, so a by-eye reading gives
+      a tie, which is what S7''s own rule gives. Reading b fails, and there are 685 and 575 windows against
+      335.'
+    response: Outcome kept as recorded, as round 2 allows no change; a change to not reproduced is proposed.
+      With the sustained tie-break, L2/3 and L4 are both sinks from the window start under the Methods' band,
+      so the rule fails there; under the code's band it now holds (L2/3 from -58.4 ms), and the Methods' band
+      stays adopted.
+  - claim: fig4ab-ssa-condition-spectra
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig4c-ssa-v1-contrast
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig4def-ssa-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partial under three of the four readings.
+    response: No change of outcome. The notebook now prints the outcome under each of the four readings.
+  - claim: fig4g-ssa-gamma-csd-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. With the sustained tie-break the rule holds at 1/8 and 1/16 of a cycle
+      and fails at 1/4 in both readings, as the notes say.
+  - claim: fig4h-ssa-alphabeta-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'This follows from the tie-break, but it is fragile. In reading a, L1 and L5/6 are already sinks
+      at the first lag while L4 is a source (v1 cell 103), so a by-eye reading could give the opposite result.
+      The S7 rule fails in both readings. On v1 cell 104, "the margins are under 1 ms in reading b": only the
+      L1 margin is (0.8 ms); L5/6 trails L4 by 4.8 ms.'
+    response: No change of outcome. With the sustained tie-break reading a fails (L4 -21.6 ms before L5/6 -12.0
+      and L1 16.0 ms) and reading b holds (L1 -34.4 before L4 25.6 ms); the Methods' band stays adopted. The
+      Result cell and notes say a by-eye reading could differ, and the margin sentence is corrected.
+  - claim: fig4i-ssa-theta-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig5-l23-gamma-by-area
+    agrees: true
+    outcome: not_reproduced
+    reason: 'On areas cell 37 and the record''s fig5 note, "its unfiltered variant reproduces the areas notebook''s
+      V1 values": the values match, but the GO point count differs by one (1307 against 1308, v1 cell 23 against
+      areas cell 36). This is trivial. Round-1 point 3: the V1 values move by at most 0.09 dB without the median
+      filter, and the masks share 70-88% of their points.'
+    response: No change of outcome. The note and areas cell 37 now give the one-point difference.
+  - claim: fig5-hierarchy-restriction
+    agrees: true
+    outcome: not_reproduced
+    reason: The fig5-hierarchy outcome holds even if the small counts (GO-AL 4 points, GO-AM 2) flip.
+    response: No change of outcome.
+  - claim: suppfig3-fastsweep-aperiodic
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig4-pupil-dd-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: A check of the eye clock and a time-in-session variant were added, and the sign of the difference
+      reverses. The clock check shows a stimulus-locked response; it does not show a zero offset.
+    response: No change of outcome. The finding says the eye clock is consistent with the stimulus table as
+      far as this check shows; it does not claim a zero offset.
+  findings:
+  - finding: 1
+    agrees: false
+    severity: major
+    reason: v1 cell 11 shows it for the V1 files of the 7 mice, and that 42 files of those 7 mice differ between
+      the versions. The timestamps of the other probe files ("every probe file") are not printed. I would rate
+      it major, not critical. The defect is plain from the values (a 24 s step at 1250 Hz, end times near 2.4e8),
+      and it blocks the analysis for half the mice.
+    response: Severity changed to major. v1 cell 11 now prints the first two and last timestamps of all 42
+      probe files of the 7 mice in the cited version; all 42 run 0, 24, ...
+  - finding: 2
+    agrees: true
+    reason: v1 cell 11 shows r = 0.999-1.0 and 0.9985-1.0 on all six probes. Cell 10 shows that no two sessions
+      share a stimulus sequence, and that in the pinned version the largest correlation between different mice
+      is 0.844. Critical is right. One recording is deposited under two subjects, nothing in the files shows
+      it, and an analysis that takes the files as given would count it twice against the wrong stimulus tables.
+    response: No change.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3: only the two changes of outcome proposed after round 2 (fig3h-go-alphabeta-csd-feedback
+    and fig3i-go-theta-csd) and the analysis behind them in the re-executed v1_laminar.ipynb, with the claims
+    file and the paper. The verifier agreed with both. Report: transcripts/sennesh-2025/verifier-3-report.md.'
+  results:
+  - claim: fig3h-go-alphabeta-csd-feedback
+    agrees: true
+    outcome: not_reproduced
+    reason: 'v1 cell 85 (rule in cell 49). In reading a (the Methods'' band), L1''s mean CSD has one sink sample
+      near -32 ms, and no row shows a displayed sink there. L1''s first lasting, displayed sink starts at +28.0
+      ms. L4 is a sink from the window start (-37.6 ms) and L2/3 from -28.8 ms, so L1 is clearly not first.
+      In reading b, L1 (-12.0 ms) comes after L2/3 (-20.0 ms) and L4 (-27.2 ms). At the window start L1, L4
+      and L5/6 are all sinks, so L1 does not come first by eye either. The rule fails at 1/8 and 1/16 of a
+      cycle in both readings. S7''s own rule fails in both readings. The criterion needs the L1 sink before
+      the L2/3 and L4 sinks, and neither reading meets it. The numbers match the printed sign and display
+      strings. Window counts are 279 and 275 against 300, which is within 10%.'
+    response: Outcome changed to not reproduced and the proposal removed. The notebook's result, the notes,
+      the Summary and the README now give not reproduced.
+  - claim: fig3i-go-theta-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'v1 cell 88. In reading a (the Methods'' band), L2/3 and L4 are sinks across nearly the whole window.
+      L2/3''s only source gap is shorter than the 27-sample minimum, so both onsets are at the window start
+      (-124.8 ms). The two tie, and the criterion''s "L2/3 sink comes after it" fails. This matches what you
+      see by eye and what S7''s own rule gives. Reading b gives L4 at -124.8 and L2/3 at -58.4 ms, so the rule
+      holds there. Note that L2/3 is also a sink for about 35 ms at the window start in reading b, so even
+      this pass rests on the onset definition ignoring a sink that is already present when the window starts.
+      Taking the Methods'' band where the readings split is the same choice the record makes for fig2h (cell
+      55) and fig4h (cell 104), both graded not reproduced. Window counts are 685 and 575 against 335, about
+      double; the criterion reports this but does not require it. On the minimum duration: at 1/16 of a cycle
+      reading a holds, at 1/8 (adopted) and 1/4 it fails; the outcome is accepted because the 1/8 value was
+      set for all CSD claims together, and both S7''s own rule and a reading by eye give a tie in reading a.'
+    response: Outcome changed to not reproduced and the proposal removed. The notes, the notebook's result,
+      the Summary and the README now give not reproduced, and the notes say that the outcome depends on the
+      minimum duration, which was set for all CSD claims together.

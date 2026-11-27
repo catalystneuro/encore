@@ -1,68 +1,75 @@
-## Round-2 verification report: Zaki et al. 2024 on DANDI:000718 (0.260825.1902)
+**Verifier report, round 2: Zaki et al. (2024) on DANDI:000718 v0.261122.2159**
 
-These counts come from the claims file and the attempt record. There are 26 claims. The record gives 3 reproduced (source-data-link, ed9b, offline-skew), 2 not reproduced (burst-locomotion-pause, fig5c-wake), and 21 blocked. Of the blocked claims, 1 is methods_underspecified (offline-bursts) and 20 are data_missing. I saved the paper text to `paper/zaki2024.txt` (from Europe PMC, PMC11666460) and read it from there. I did not re-run the notebook.
+The claims file holds 26 claims, and the attempt record gives 26 outcomes: 6 tested and 20 blocked (data_missing).
 
-### 1. Do I agree with the stated outcomes?
+### 1. Outcomes and assumptions
 
-- **source-data-link, reproduced:** agree. Cell 20 shows 4 of 4 values within tolerance under both readings.
-- **ed9b-aversive-freezing-high-vs-low, reproduced:** agree. It compares one mouse per group (cell 24).
-- **offline-bursts-above-shuffle, blocked (methods_underspecified):** agree. This is the second option I offered in round 1. The positive control in cell 29 shows that the criterion's test cannot detect coordinated firing.
-- **offline-skew-above-shuffle, reproduced:** agree. True skew is above the shuffle maximum in 3 of 3 recordings (cell 32), and the control in cell 29 detects coordination. The wording on the paper's range is wrong; see section 2.
-- **burst-locomotion-pause, not reproduced:** agree. All p ≥ 0.39 (cell 35). This is weak evidence, as the record says.
-- **fig5c-wake-overlap-neutral-coburst, not reproduced:** agree, with one caveat. Strictly by the criterion as written, the outcome would be partially reproduced: under the "wake alone" reading, OxN is 32.0% against OxA 28.0% (cell 39). The record states this departure openly as a deviation, and the case for it holds:
-  - The Methods' scoring has only sleep and wake (EMG Gaussian mixture, then theta/delta). Applied to this mouse, it puts 94.1% of quiet-wake frames and all 87 bursts in wake (cells 17 and 39).
-  - The paper itself says these bursts occur "during brief periods of quiet wake", which counts quiet wake as part of its wake.
-  - One weakness remains: the EMG measure (log RMS) was chosen after the data were seen. Without the log, the mixture puts every epoch in one state.
-- **The 20 data_missing claims:** agree with all of them.
-  - I need to correct my round-1 grouping. Fig. 1d–g is the calcium-imaging experiment: the legend says "Calcium imaging was performed during all sessions", and Fig. 2a calls it "the same experiment as in Fig. 1d".
-  - So fig1ef and fig1g belong to the one-hour imaging cohort, not the behaviour-only experiments. The record's own notes for those two claims say this correctly.
+| Claim | Record | Agree? | Assumption |
+|---|---|---|---|
+| source-data-link | reproduced | Yes. Both readings give 4 of 4 within tolerance (cell 19). | none |
+| ed9b-aversive-freezing-high-vs-low | reproduced | Yes. 64.09 vs 8.82, 10 of 10 bins, U = 100, p = 1.83e-04 (cell 22). | none |
+| offline-bursts-above-shuffle | reproduced, `assumed: true` | Yes, as the criterion gives it (cell 25). | Stated clearly (deviation 2, cell 28). It is not a well-supported reading: the record itself says (b) is "not the better-supported one" and is passed by drift-only cells (cell 27). The outcome follows from the criterion, but on a reading that cannot really fail. |
+| offline-skew-above-shuffle | reproduced | Yes. True skew is above all surrogates, and every seed's 95th percentile is far below it (cell 30). | none |
+| burst-locomotion-pause | not_reproduced | Yes. 0 of 3 recordings under both readings (cell 33). This holds at the lag of peak correlation and at every shift from −8 to +8 s (cell 34). | The shared clock is stated, and it is now tested by the shifts. |
+| fig5c-wake-overlap-neutral-coburst | partially_reproduced | Yes, as the criterion permits (cell 37). | **Not marked `assumed`**, although the outcome rests on wake reading (b) alone. The record itself calls (b) the worse match to the paper. Under (a), OxN < OxA (25.9 vs 35.3; 8.2 vs 17.6). It should carry `assumed: true`, as the burst claim does. |
+| fig5c-sleep-no-coburst-difference | blocked | Yes. Only wake and quiet wake are present (cells 3, 8). | — |
+| fig5c-low-shock-wake-no-difference | blocked | Yes. Ca_EEG3-4's files hold the ophys and sleep modules only, and the only cell_registration module is in the Week file (cell 8). | — |
+| ed9c-eeg-cohort-linking | blocked | Yes. The descriptive values are printed (cell 40). | — |
+| ed9-ed10-sleep-unchanged | blocked | Yes. The one-mouse description is in cell 41. | Log RMS as the EMG feature is stated as an assumption, and it is reasonable. |
+| The other 16 claims | blocked | Yes. The archive holds 2 subjects (cell 3). | — |
 
-### 2. Sentences the printed outputs do not support
+### 2. Statements the printed numbers do not support
 
-- **Cell 33 (skew conclusion):** "The values lie in the range of the paper's own Extended Data Figure 3o source data (true 1.76 to 3.65, shuffled 0.47 to 1.91)".
-  - The true skews are 1.34, 1.65 and 1.72, all below 1.76.
-  - The surrogate means are 0.37, 0.40 and 0.60, so two of three are below 0.47. ED3o compares the mean of the shuffled skews, so the means are the right comparison.
-- **Attempt record, offline-skew notes:** "The surrogate values are in the range of the paper's own chance level (shuffled skew 0.47 to 1.91 …), so here the procedures agree." This is the same error. It also contradicts my round-1 reason as the record quotes it ("Skew is lower than the paper's chance-level data in both arms").
-- **Cell 41 and the fig5c notes:** "co-participation here (26 to 36%) is not on the scale of the paper's values for this mouse (10.37% OxN and 8.39% OxA in wake)". That holds only for the inclusive reading. The exclusive reading gives 8.05% and 17.24% (cell 39), which is on the paper's scale. The underlying point stands, since z-scoring is done within one recording, but the comparison as written is selective.
-- **README table, cell 0 and the Summary table (cell 42):** "Behaviour-only experiments … five claims" and "One-hour offline and single-experience experiments … nine claims". These should be three and eleven. The total of 20 is right.
-- **Cell 10 (minor):** "about 190 px for random pairs". The printed medians are 196, 185 and 169 px.
-- **Cell 18 (wording):** "This is consistent with the data, not shown, as the paper does not name its EMG feature." The sentence is unclear. It should say the mapping is supported by the data but rests on a measure chosen here.
-- **Not checkable from the outputs:**
-  - The "RLI9" and "RLI5" mouse names in the ed3 and ed4f notes.
-  - "the lab did not use it for analysis (conversion notes)" in the locomotion notes.
+- **Cell 35, with the same sentence in the record's burst-locomotion notes:** "Under neither reading is movement in the second before a burst lower than 3 to 5 s before it in any recording." The medians *are* lower before the burst in two recordings: 0.0303 vs 0.0356 for Ca_EEG2-1, and 0.0761 vs 0.0917 (0.0847 vs 0.1002 under onset) for Ca_EEG3-4 Day2 (cell 33). What the data support is "not significantly lower".
+- **Cell 44, Summary:** "no pre-burst slowing in 0 of 3 recordings" is a double negative that says the opposite of the result. It should read "pre-burst slowing in 0 of 3".
+- **Cell 45:** "Ensemble sizes … agree with the paper's source data." No comparison of ensemble sizes with the source data is printed. Cell 7 only prints the sizes (97/80/166/282).
+- **Cell 28:** "above every surrogate in all three recordings … under the second generator's seed and the four others." Maxima and fractions are printed only for seed+1 (cell 25). For the other four seeds only 95th percentiles are printed. The statement is very likely true but not shown. Cell 31 says the same of the skew claim ("above every one … under all five seeds"), where again only the seed+0 maxima are printed (cell 30).
+- **Cell 35 and the record's notes:** "Around random times movement in the later window is lower in Ca_EEG2-1 (p < 0.001), as movement declines over the recording."
+  - The first generator gives p = 0.000 (cell 33), but the second gives 0.003 (cell 34), which is not below 0.001.
+  - "Movement declines over the recording" is not printed anywhere.
+- **Record, ed9-ed10 notes, and cell 42:** "awake 67% (after neutral) and 49% (after aversive) … against 93% at the same clock time the day before." The 93% reference is printed only for the post-neutral window (cell 41). There is no same-clock-time reference for the post-aversive window.
+- **README:** "It takes about six minutes." Cell 44 prints a run time of 3.7 min.
 
-  The notebook prints neither of these.
+Everything else in the Result cells, the Summary, the README and the record's notes matches the printed outputs. I checked in particular:
+- the bursts under (a) and (b), and all five seed sets for each;
+- the synthetic check (5.90 vs 2.60 under (b), mean 8.55 under (a), and the independent-cell values);
+- the skew values;
+- the shift table;
+- the 1 s baseline variant;
+- the fig5c tables and the source-data values 10.37 / 8.39;
+- the 64 of 68 quiet-wake epochs scored as wake;
+- the clock and dropout figures (−3780 to −2560 s, 113 s, 47 and 17 min);
+- the sleep features.
 
-Every other number in the "Result:" conclusions, the Summary, the README and the record notes matches the printed outputs. I checked:
-- source-data-link and ed9b values, the within-5% and within-1% statements, and the 55.27-point difference.
-- The burst values at z = 2 and 2.5, the merged and fixed-threshold variants, and the synthetic controls.
-- The locomotion p-values, the 0.30 to 0.60 share of bursts, the post-burst values, decoding r of 0.06 to 0.24, Spearman r of 0.07 to 0.32, and the wake to quiet-wake ratio of 4 to 15.
-- The fig5c values at thresholds 1.5, 2 and 2.5, the outside-burst ≤1.02%, and the ensemble-participation p of 0.041 to 0.0003.
-- The epoch table, the 113 s gap and the 1800 s spacing.
+The paper does say "during brief periods of quiet wake" (Results).
 
-Statements I checked against the paper: 6 s epochs with an EMG Gaussian mixture, telemetry at 100 Hz, "locomotion" as the name of the telemetry channel, and Extended Data Fig. 10c's roughly 30 min awake after encoding. All match.
+**Round-1 reasons:** the record's `reason` fields state my round-1 reasons faithfully, close to my own wording. The finding numbering in `reviewed` is correct: the webcam-description finding is 9.
 
-**My round-1 reasons in the record:** they are stated faithfully in my own words for every claim. Recording offline-bursts as "agrees: false, not_reproduced" matches what I wrote. The skew reason is quoted correctly, but the author's notes then contradict it, as described above.
+### 3. Round-1 points
 
-### 3. Status of my round-1 points
+**Resolved:**
+- B3, clock sensitivity: the shifts in cell 34 leave the result negative.
+- B4, unequal windows: the 1 s baseline variant is in cell 34.
+- B6 and B7: recorded as deviations.
+- B9: now findings 4, 6 and 9.
+- C1 to C3: cell 8 prints the ActivitySignal description, the processing modules and the quiet-wake definition.
+- C4: done in cell 34.
+- The descriptive tests for ed9c and ed9-ed10: cells 40 and 41.
+- B5: recorded as deviations (the criterion's choice).
 
-| Point | Status |
-|---|---|
-| 1. Burst shuffle | Resolved. Blocked, with a positive and negative control in the notebook (cell 29). |
-| 2. fig5c, which reading of wake | Resolved, with the deviation recorded. The open part is the EMG measure chosen after seeing the data. |
-| 3. fig5c, z-scoring within one recording | Acknowledged as a deviation. It cannot be fixed from the archive. The scale comparison is selective (section 2). |
-| 4. ActivitySignal | Mostly resolved. The description, distribution, correlation with EMG and the wake to quiet-wake contrast are now printed. The wake/quiet-wake labels come from the same sensor, so that contrast partly checks the signal against itself, and nothing shows it resolves a sub-second pause. The outcome does not change. |
-| 5. Calibration of the locomotion test | Resolved by disclosure (cell 37). |
-| 6. Session order and clock | Resolved. The full 27-row epoch table is printed and the 1800 s spacing is shown (cells 5 and 6). |
-| 7. Telemetry at 500 Hz against 100 Hz | Resolved (cell 4 and the findings). |
-| 8. Pseudo-replicated freezing bins | Resolved by disclosure (cell 25). |
-| 9. Sleep state of outside-burst windows | Resolved. Every frame in a window must now be in the state (cell 40). |
+**Acknowledged but still bearing on a conclusion:**
+- **B1:** offline-bursts-above-shuffle is reproduced only under reading (b). The record now documents, with its own synthetic check, that this reading is passed by co-variation alone, and has put the question to a reader. Under reading (a), the one that tests burst structure, the result is not reproduced. This remains a claims-file issue.
+- **B2:** fig5c-wake rests on wake reading (b). The files define quiet wake as a waking state, and the Methods' scoring puts it in wake (cell 16), so reading (a) is the better match, and under it OxN < OxA. This is put to a reader, but the outcome is not marked `assumed` (see 1).
 
-**What remains that bears on a conclusion:**
+**Not resolvable from my materials:** C5, the amendment record `questions/zaki-2024.yaml`, which I do not have.
 
-- **Skew:** the claim that the procedures agree with the paper's chance level should be removed from cell 33 and the record. The outcome stays reproduced.
-- **fig5c:**
-  - The outcome rests on a departure from the criterion as written and on an EMG measure chosen after the data were seen.
-  - The scale comparison should cite both readings.
-  - The evidence is one 10 min recording of one mouse, with p = 0.13 in the opposite direction.
-- **Claim grouping:** fig1ef and fig1g should move to the one-hour imaging cohort group in the README, cell 0 and the Summary.
+### 4. Critical findings
+
+No finding in the attempt record is rated `critical`.
+
+One rating I would change: finding 1 (rated `major`). It says the behaviour sessions of Ca_EEG2-1 are timestamped about 1 h later than the offline recordings and telemetry, and cell 15 shows this:
+- the EEG match at +0.002 s with a difference of 0 V;
+- telemetry dropouts that each fit their session if it started 1 h before its timestamp;
+- OfflineDay2Session1 starting 2817 s before FC.
+
+This is the "signals on different clocks" case of the definition. The files do not say which clock is right. Only a dropout analysis shows that the offset is about 1 h, and an analysis that takes the timestamps as given would misorder the first two post-FC offline recordings and misplace the post-encoding windows. I would rate it **critical**. The record's case for `major` is that the epochs table visibly contradicts the protocol, but that contradiction shows something is wrong, not what, and it does not undo the wrong result.

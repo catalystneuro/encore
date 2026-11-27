@@ -1,25 +1,30 @@
-No outcome changed, and I'm not proposing any changes. The verifier agreed with all 33 outcomes in round 2, and the new outputs back them. The entry was re-run with `python tools/entry.py all entries/mah-2023`: it passed in 24.0 min, and `check` reports 0 errors.
+No outcome changed, as round 2 requires. The verifier agreed with all 33 outcomes, so they stay at 24 reproduced, 7 partially reproduced and 2 not reproduced, with none proposed for change.
 
-**Outputs added (two new notebook cells)**
-- **fig3i:** the report said nothing backed the claim that the direction holds for "any small positive alpha_0". A new cell runs the Equation 10 model without noise for every rat at alpha_0 = 0.01, 0.05, 0.1042, 0.2, 0.4 and 0.8. At every value the model is higher after offers below 20 uL, by +0.077 to +1.076 z on average. That holds in 273 of 291 rats at 0.01 and in 290 or 291 at the others. The deviation now cites these numbers.
-- **fig5c:** the report asked how often trials after a violation repeat the previous offer.
-  - Within a session and block they always do: the share is 1.000 in all 16 rats, against 0.195 to 0.226 after other trials. So the confound argument holds within sessions.
-  - The only trials that don't repeat are each session's first trial, whose "previous trial" is the last trial of the session before.
-  - Dropping post-violation trials removes only those: 455 of the 18,075 trials in the 20 uL test, all slow to initiate (mean z +2.920 against −0.057 for the rest). That is why dropping them moves p from 0.0676 to 0.611.
-  - The 20 uL population test fails either way, so the outcome stands.
+**One thing to know first: the last full run did not pass cleanly.** `python tools/entry.py all entries/mah-2023` passed the checks (0 errors), but the behaviour notebook failed when Zenodo returned "504 Gateway Time-out". The models and starts notebooks passed. It was already past 11:38 by then, so I re-executed only the behaviour notebook, with the same environment and command that `entry.py` uses. That run passed. All three executed copies now match the entry, but `executed/mah-2023/` has no `.clean-run.json` stamp and `result.json` still records the failure. The workflow may need to run the entry again. In the previous full run, every notebook passed and the outputs were identical.
 
-**Text corrected**
-- **fig5c:** the Result cell and notes now say the count of 14 significant rats is weak support. Five of them are in the opposite direction, and three have differences near 0 (E008, S042, M044).
-- **fig3l:** added the verifier's caveat. The paper's N = 116 cannot come from a refit with 128 rats at the lambda bounds, so the failure may be the refit's. The 40/60 split, which has no ties, also fails.
-- **Timings (fig3j, suppfig8, fig3f, fig3l):** the record, the blocked-claims cell and the Summary now give this run's numbers beside the verifier's. That is about 3.3 h on one core here and about 5.5 h on the verifier's machine; both are beyond the 1 h limit. The timings depend on the machine: this run was 24.0 min, the verifier's 45.3 min.
-- **Earlier estimate:** the record now says it was 138 h in my earlier run and 162 h in the verifier's round-1 run.
-- **Loading time:** cell 2 and the README now say 6 to 14 minutes.
-- **fig2f:** the text now says the code reading has the opposite sign to the legend's r.
-- **entry.yaml:** `runtime_minutes` is now 45.
-- **Record:** round 2 is added under `verifications`, with the verifier's reasons and my responses for all 33 claims.
+**Changes the new numbers forced:**
+- **suppfig8:** `seed_sensitive: true` is set again. This runner gives the first run's numbers: the claim's seed still gives p = 0.163, but seed +3000 gives BIC/AIC p = 0.0305. The 2-start fits differ slightly between machines, and the notes give both runs.
+- **fig3l:** the one-start lambda fits also differ by machine. Wait time C at mixed to low is now p = 0.337 and initiation C is p = 0.047. The outcome stays not reproduced, and the notes give both runs.
+- **fig3j and fig3f:** the notes now use this run's numbers.
 
-**Not done**
-- I did not enlarge the fig3i noise-only control beyond 20 replicates. The verifier says it cannot reverse the outcome.
-- The verifier reported no new misreading of the claims file, so nothing was added to `questions/mah-2023.yaml`.
-- After the final run I reworded two markdown cells (the loading and timing wording) so they no longer depend on one run's numbers. No code changed, so the executed copy differs from the committed notebook only in those two cells.
-- Some untracked dotfiles and folders I didn't create (`.bashrc`, `.vscode`, `scripts` and others) are in the working tree. I left them alone.
+**What I added or corrected, point by point:**
+- **Fit starts (problem 4):** a new notebook, `starts_mah_2023.ipynb`, refits the models from 6 starts, the most that fits the time limits.
+  - suppfig8 at seed +3000 gives BIC/AIC p = 0.0507, so it stays near the threshold.
+  - fig3f's 6-start results are unchanged, so its failure does not come from too few starts.
+- **Zenodo coverage (fig4a):** I worked out where the 1,731 unmatched sessions come from.
+  - 1,718 of them belong to 49 rats and are dated after the deposit's last session for that rat. For 42 of those rats that last session falls on 21 to 23 November 2022. The other 13 are sessions with a NaN in the initiation times used to match them.
+  - The 22 rats with fewer deposit sessions are all among the 49.
+  - Part (2) of fig4a still fails without these rats.
+  - Finding 1 and the summaries are corrected, and a new finding at the end reports the deposit's coverage.
+- **fig2k, fig2l, fig5c:** the wording is now "only with the post-violation trials". The text says the data cannot tell whether rats use the repeated offer or react to the offer of the trial they violated.
+- **fig3l:** the shuffle fits are now counted at both bounds of C. None is at either bound.
+- **Finding 3:** the direction of the threshold difference is now printed. It is lower in all 291 rats, by a median of 5.19 s.
+- **Finding 2:** it no longer says initiation times depend on the offer only in flagged sessions, and it gives S050's slopes.
+- **fig3i:** the verifier's point about a size floor for the overshoot is now a question for a reader in `questions/mah-2023.yaml`. The claim itself is unchanged.
+- **Round 2 record:** written under `verifications`, with all 33 results and an empty `findings` list, since no finding is rated critical.
+
+**Not done:**
+- The paper's 100 fit starts were not run, because that is far beyond the time limit.
+- The supplementary PDFs could not be read here because no PDF tools are installed. The fig3i question cites the Results passage instead.
+
+I did not commit anything.

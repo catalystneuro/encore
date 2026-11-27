@@ -1,0 +1,1113 @@
+schema_version: 3
+id: haley-2018-01
+datasets:
+- archive: osf
+  id: r7aes
+  version: '2019-01-08T14:49:50'
+  doi: 10.17605/osf.io/r7aes
+  relation: primary
+paper: doi:10.7554/elife.41877
+date: '2026-11-26'
+entry: haley-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45733226000
+inputs:
+- what: The lists of experiments and units the paper analyses (pHCumulative.m, pHCumulativePTX.m), the bin, window,
+    discard and burst parameters, the waveform analysis and its starting parameters, and the statistics (statistics.R).
+    Method details only; no data.
+  source: https://github.com/jesshaley/haley_hampton_marder_2018 at commit 83f5904
+outcomes:
+- claim: fig2a-stg1-traces
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig2a-stg1-traces
+  notes: 897_037 is rhythmic over the whole of every step from 7.2 to 6.1 and 8.3 to 10.4, both recoveries, and
+    also 5.5 (reading a), with PD bursting and lvn firing between the PD bursts in every cycle; the same under gap
+    factors 2 and 5, 1 or 4 lvn spikes per cycle and PD bursting alone. At 10.4 PD spikes per burst are 12.43 against
+    13.10 at the control before base, and the PD slow-wave amplitude (VM1_2, last minute) 17.65 against 18.03 mV.
+    Both decreases are small. The reading cannot tell normal from weak triphasic. The lvn condition hardly separates
+    the readings, as it changes the STG fraction rhythmic against PD bursting alone only at 5.5 in 877_121 (by 0.19)
+    and 887_049 (by 0.04), so "triphasic" rests mainly on PD bursting.
+  deviations:
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - The waveform parameters are the code's starting values (maxBurstFreq 2 and 10 Hz, minSpikeHeight 10 and 3 mV;
+    intracellularAnalysis.m), which the authors adjusted by hand; assumed.
+  assumed: true
+- claim: fig2bcd-stg1-measures
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig2bcd-stg1-measures
+  notes: In 897_037 frequency at 5.5 is 0.118 Hz above its control and at 10.4 0.266 Hz below (Spearman rho with
+    pH -0.80 in acid, -1.00 in base). PD spikes per burst at 5.5 are 5.40 below control, and the duty cycle at 10.4
+    is 0.048 below control (rho -0.94). Both readings hold, and the frequency and spike parts hold in the code's
+    window.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig3a-stg-variability-examples
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The criterion needs STG states 1 and 2 apart at 10.4, and states 2 to 4 at 5.5. The manual annotation
+    is not in the dataset (no xlsx or annotation file in the project), and the states read from the pdn and lvn
+    cannot separate state 1 from state 2, as LP and PY are not told apart. The parts that can be read are shown:
+    besides 897_037, 887_005, 887_097, 887_105 and 887_145 are rhythmic for most of 6.1 to 9.8 and not at 5.5. 887_005
+    has no 10.4 file, so its fraction 0 there is the zero-fill of a missing step; the other three have fraction 1.0
+    at 10.4, with frequency 0.14 to 0.29 Hz below control. The two
+    examples are not named in the paper or the code.'
+- claim: fig3c-stg-rhythmic-fraction
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig3c-stg-rhythmic-fraction
+  measured: 13
+  notes: Both ANOVAs on the fraction rhythmic are significant (acid F(4,48) = 15.30, p = 3.9e-08; base F(5,60) =
+    2.88, p = 0.021). At 5.5 the fraction is 0.375 against 1.0 (corrected p = 9.0e-04). At 10.4 it is 0.771, not
+    significant (p = 0.31; 0.22 to 0.61 across gap factors, lvn spike counts, PD bursting alone and missing steps
+    left out). The criterion needs both t-tests and has no partial condition, and the expected 15 preparations are
+    13 here (tolerance 0).
+  deviations:
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  assumed: true
+- claim: stg-state-transitions
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Counting transitions among the four STG states over whole recordings needs the manual annotation, which
+    is not in the dataset; the proxy has two states.
+- claim: fig3d-stg-frequency
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig3d-stg-frequency
+  notes: Base ANOVA p = 4.4e-04, and frequency at 10.4 is lower (-0.407 Hz, corrected p = 0.047). At 9.3 the drop
+    is not significant (-0.206 Hz, p = 0.65). The acid ANOVA is significant (F(4,48) = 13.70, p = 1.6e-07), driven
+    by 5.5 (-0.837 Hz, p = 0.0011), so the claim of absence fails. In the code's window the acid ANOVA gives p =
+    0.061, as the paper reports, but no base t-test is significant (p 0.26 to 1). With missing steps left out, acid
+    p = 2.0e-07 and 10.4 p = 0.092. The criterion has no partial condition. Whether it reads relatively invariant
+    in acid as the paper meant is asked of a reader (questions/haley-2018.yaml).
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig3e-stg-spikes-per-burst
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig3e-stg-spikes-per-burst
+  notes: Acid ANOVA F(4,48) = 26.09, p = 1.6e-11; base F(5,60) = 9.51, p = 1.0e-06 (13 preparations). PD spikes
+    per burst at 5.5 are 2.24 against 9.43 (corrected p = 3.2e-05). The same holds with missing steps left out and
+    in the code's window.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig3f-stg-duty-cycle
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig3f-stg-duty-cycle
+  notes: Both ANOVAs are significant (acid p = 2.3e-09, base p = 3.6e-10). The duty cycle at 6.1 is 0.023 below
+    control, not above (corrected p = 0.93). In the code's window it is 0.041 above control at 6.1, not significant
+    (p = 0.090). The criterion has no partial condition.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig3s2-stg-control-variability
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig3s2-stg-control-variability
+  notes: Reading (b) holds. Kruskal-Wallis of the 48 control bins on preparation gives H = 606, 545 and 491 for
+    frequency, spikes per burst and duty cycle (13 preparations; p below double precision). Reading (a) holds for
+    spikes per burst only, as the preparation means span 0.48, 0.75 and 0.37 of the pooled range. Whether reading
+    (b) tests the claim is asked of a reader (questions/haley-2018.yaml).
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - The criterion's readings (a) and (b) give different results; the claim holds under (b), as the criterion allows.
+  assumed: true
+- claim: fig4a-ptx-example
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig4a-ptx-example
+  notes: '903_052 meets every part. Its PD slow-wave amplitude at 6.7 is 0.41 of control, and at 5.5 PD is silent
+    and depolarized by 16.4 mV. At 10.4 it fires 1.0 spikes per slow wave, and LP fires tonically at all six steps
+    from 6.7 to 10.4 and is silent at 5.5. All 9 PTX preparations have a silent, depolarized PD at 5.5. The other
+    parts hold in 2 to 7 of the 9. The PD label of 903_052 holds: in 7 of its 9 files with PD spikes, 0.61 to 1.0
+    of them are followed by a pdn spike 34 to 38 ms later, against 0.015 to 0.037 by chance; LP spikes are followed
+    at about chance (0.02 to 0.07). The outcome rests on this one preparation. Its bath electrode responds less than
+    the others (-37.6 mV per pH unit against -45.2 to -46.7 in the other eight, linear with r = -0.999), so its 10.4
+    and 5.5 files read as pH 9.75 and 5.87 on the common slope; the labels follow the rank of the signal within each
+    complete run, and the data cannot exclude that these two solutions were off. In the 6.7 file, which the slow-wave
+    part uses, PD spikes match the pdn at 0.02 against 0.011 by chance, so PD identity is not confirmed there; it
+    rests on the electrode staying in the same cell, as the 7.2 file (0.61) and the last recovery (0.21 against 0.008)
+    indicate.'
+  deviations:
+  - The PTX folders have no README; the pH of each file is taken from its recorded bath pH (crabph.assign_ptx_conditions),
+    and a preparation missing a step is left out of that protocol's tests (8 complete of 9); assumed.
+  - The waveform parameters are the code's starting values (maxBurstFreq 2 and 10 Hz, minSpikeHeight 10 and 3 mV;
+    intracellularAnalysis.m), which the authors adjusted by hand; assumed.
+  - One spike per PD burst is read as a ratio of PD spikes to slow-wave peaks above 0 and at most 1.5; LP firing
+    without slow-wave bursts as an interspike-interval coefficient of variation below 1. These readings of the words
+    are this attempt's; assumed.
+  - The PD label check of the PTX files takes the modal lag (up to 60 ms) from intracellular PD spikes to pdn spikes
+    and counts the spikes followed within 2 ms of it (crabph.pdn_check), as the PD axons reach the pdn after a conduction
+    delay; a standard choice.
+  assumed: true
+- claim: fig4bc-membrane-potential
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig4bc-membrane-potential
+  notes: 'PD acid ANOVA F(4,28) = 31.00, p = 6.4e-10; LP base F(5,35) = 41.70, p = 8.9e-14 (8 complete preparations).
+    PD is depolarized at 5.5 (+19.0 mV, corrected p = 7.9e-07) and 6.1 (+11.6 mV, p = 0.016). LP is hyperpolarized
+    at 8.8 (-2.2 mV, p = 0.020), 9.3 (-9.5 mV), 9.8 (-12.1 mV) and 10.4 (-12.6 mV, p = 2.0e-04). The parts claimed
+    relatively constant are not significant (LP acid ANOVA p = 0.65, PD base ANOVA p = 0.13). The code''s slow-wave-trough
+    measure gives the same outcome. The LP 8.8 test depends on 903_056, whose 8.8 file lasts 2.3 min, so its last
+    minute is early in the step: without it LP 8.8 is -2.1 mV with corrected p = 0.056 (five of six t-tests, partial).
+    The file is the step''s only one, and the code takes the last minute of each file, so it is kept.'
+  deviations:
+  - The PTX folders have no README; the pH of each file is taken from its recorded bath pH (crabph.assign_ptx_conditions),
+    and a preparation missing a step is left out of that protocol's tests (8 complete of 9); assumed.
+  - The waveform parameters are the code's starting values (maxBurstFreq 2 and 10 Hz, minSpikeHeight 10 and 3 mV;
+    intracellularAnalysis.m), which the authors adjusted by hand; assumed.
+  - Minimum membrane potential is the minimum of the unfiltered Vm between successive slow-wave peaks (Methods,
+    paragraph 5); the code's slow-wave troughs are a variant.
+  assumed: true
+- claim: fig4de-spike-amplitude
+  outcome: partially_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig4de-spike-amplitude
+  notes: The acid ANOVAs are significant for PD (p = 1.5e-06) and LP (p = 0.0015). The PD base ANOVA is not significant
+    (p = 0.26), as claimed. Amplitude at 5.5 is lower for PD (corrected p = 7.8e-04) and LP (p = 0.0044). The LP
+    base ANOVA is not significant (p = 0.095), and LP at 6.1 (-3.4 mV) is not significant (p = 0.11). This matches
+    the criterion's partial condition.
+  deviations:
+  - The PTX folders have no README; the pH of each file is taken from its recorded bath pH (crabph.assign_ptx_conditions),
+    and a preparation missing a step is left out of that protocol's tests (8 complete of 9); assumed.
+  - The waveform parameters are the code's starting values (maxBurstFreq 2 and 10 Hz, minSpikeHeight 10 and 3 mV;
+    intracellularAnalysis.m), which the authors adjusted by hand; assumed.
+  assumed: true
+- claim: fig4fg-ptx-frequency
+  outcome: partially_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig4fg-ptx-frequency
+  notes: All four ANOVAs are significant (PD acid p = 7.0e-08, PD base 0.0016, LP acid 7.3e-09, LP base 7.3e-10).
+    Six of the seven named t-tests hold, including PD at 5.5 (-1.26 Hz, p = 0.0034). LP at 8.3 is higher than control
+    (+2.2 Hz, p = 0.098). The code's peak-to-peak PD frequency gives the same counts.
+  deviations:
+  - The PTX folders have no README; the pH of each file is taken from its recorded bath pH (crabph.assign_ptx_conditions),
+    and a preparation missing a step is left out of that protocol's tests (8 complete of 9); assumed.
+  - The waveform parameters are the code's starting values (maxBurstFreq 2 and 10 Hz, minSpikeHeight 10 and 3 mV;
+    intracellularAnalysis.m), which the authors adjusted by hand; assumed.
+  - PD burst frequency from slow-wave trough-to-trough intervals (Methods, paragraph 5); the code's peak-to-peak
+    (analyzeWaveform.m) is a variant.
+  assumed: true
+- claim: gastric-like-rhythm-counts
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The paper identified gastric-like rhythms by eye and coded them as 8.x in its manual STG annotation (pHCumulative.m),
+    which is not in the dataset. The criterion's fallback, rhythmic LG bursting alternating with DG bursting, has
+    no period, burst or alternation thresholds in the paper or its code. The files name nerves (lgn, dgn), not units,
+    so any detector would rest on thresholds of this attempt alone. The question is for the paper's authors (finding
+    11). The README electrode lists (printed in the notebook) show an lgn and a dgn in 8 of the 15 STG experiments
+    and an ion in 4, so in the others LG would have to be sorted from the lvn, which it shares with PD, LP and PY.
+- claim: gastric-conditions-co-occur
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Depends on gastric-like-rhythm-counts, which is blocked.
+- claim: fig5-gastric-recovery-example
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The example is not named. The criterion needs LG, GM, DG and MCN1 bursts identified on the lgn, dgn and
+    ion, which the paper did by eye with no criterion, as for gastric-like-rhythm-counts. Four experiments record
+    lgn, dgn and ion (887_097, 887_105, 887_137, 897_005).
+- claim: fig6-cg1-measures
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig6-cg1-measures
+  notes: In 877_149 CG2L the cardiac frequency is lower at 5.5 than control (-0.044 Hz) and higher at 10.4 (+0.040
+    Hz), the duty cycle is lower at 5.5 (-0.133), and the unit is rhythmic by the proxy over every step. LC spikes
+    per burst fall in acid (-6.05 at 5.5; rho +0.80 with pH), and the duty cycle in base does not fall (+0.018 at
+    10.4; rho +0.20). Both parts fail under both readings, the 0.3 s burst rule and the code's window. The criterion
+    has no partial condition. The LC isolation check shows 15 to 25 spikes per burst in this unit and counted spikes
+    3.1 times the acid control height already at the control before base, and 3.1 and 3.4 times at 5.5 and 10.4,
+    so its isolation is in doubt and this outcome is weak evidence.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  assumed: true
+- claim: fig6a-cg2-less-rhythmic
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig6a-cg2-less-rhythmic
+  notes: 'Of 8 other acid-first CG units, 887_093 CG2L meets the criterion under gap factors 2, 3 and 5. Its fraction
+    is 0.38 at 5.5 and 0 at 9.8 and 10.4 against 1.0 at control, at least 0.63 at every step from 6.1 to 9.3, and
+    1.0 in the final recovery. The example is not named, so it cannot be said that this is the paper''s CG #2.'
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  assumed: true
+- claim: fig7b-cg-rhythmic-fraction
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig7b-cg-rhythmic-fraction
+  notes: The base ANOVA is significant (p = 9.9e-10), and the fraction is lower at 9.3, 9.8 and 10.4 (0.55, 0.40,
+    0.33 against 0.99; corrected p 0.012 to 5.9e-04). The acid ANOVA is not (p = 0.058), so neither the full nor
+    the partial condition is met and [RM] runs no acid t-tests; 5.5 (0.82) is not significant (p = 0.25). With gap
+    factor 2 the acid ANOVA gives p = 0.023 and three of four t-tests hold (5.5 p = 0.12), which would be partial;
+    with factor 5 the acid ANOVA gives p = 0.29. Without the four units of doubtful isolation, both ANOVAs are significant
+    (acid p = 0.045, base p = 1.3e-11) and so are 9.8 and 10.4 (p = 0.0018, 4.9e-05), while 5.5 (p = 0.50) and 9.3
+    (p = 0.052) are not, which would be partial. Without three more units whose isolation is doubtful at one step
+    (887_127 CG1L at 10.4, 897_041 CG1L at the control before base, 887_005 CG2L at 5.5; 7 units left), the acid
+    ANOVA gives p = 0.15, as in the main reading. The outcome is fragile.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  assumed: true
+- claim: cg-state-transitions
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Counting transitions among CG states 1 to 3 needs the manual annotation, which is not in the dataset. The
+    proxy follows the LC only and cannot tell SC-only bursting (state 2) from silence (state 3).
+- claim: fig7c-cg-frequency
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig7c-cg-frequency
+  notes: The LC frequency at 10.4 is 0.092 Hz below control, not significant (corrected p = 0.84). The base ANOVA
+    gives p = 0.056 and the acid ANOVA p = 0.037. No variant makes 10.4 significant (p 0.18 to 1). Frequency at
+    5.5 is 0.059 Hz below the acid control. Without the four units of doubtful isolation (877_149 CG1L and CG2L,
+    887_149 CG2L, 897_041 CG3L), the base ANOVA gives p = 2.9e-09 and 10.4 is significantly slower (-0.171 Hz, corrected
+    p = 8.7e-04), so this outcome depends on those units. Without three more (7 units), 10.4 is again significant
+    (-0.189 Hz, p = 9.4e-04).
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig7d-cg-spikes-per-burst
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig7d-cg-spikes-per-burst
+  notes: The base ANOVA is significant (p = 3.7e-05), and spikes per burst fall at 10.4 (-2.84, corrected p = 9.2e-04).
+    The acid ANOVA is not (p = 0.54), and the increases at 5.5 (+1.27) and 6.1 (+0.61) and the fall at 9.8 (p =
+    0.26) are not significant. Under every variant the acid ANOVA fails (p 0.13 to 0.54), and one or two of the
+    four t-tests hold. [RM] runs no acid t-tests after the non-significant acid ANOVA. Without the four units of
+    doubtful isolation the acid ANOVA gives p = 0.20. Without three more (7 units), both ANOVAs are significant (acid
+    p = 0.020, base p = 1.1e-06) and so are the falls at 9.8 and 10.4 (p = 0.022, 0.019), while the rises at 5.5
+    (+1.65, p = 0.29) and 6.1 (+1.20, p = 0.37) are not, which would be partial. The outcome depends on the LC isolation.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig7e-cg-duty-cycle
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig7e-cg-duty-cycle
+  notes: Base ANOVA p = 4.8e-05, acid ANOVA p = 0.52 (14 units). Every variant gives the same outcome (base p 5.0e-04
+    to 0.0091; acid p 0.13 to 0.52). The acid effects are at most 0.014 in duty cycle. Without the four units of
+    doubtful isolation (base p = 1.7e-06, acid 0.33) or three more (base 7.8e-05, acid 0.50) the outcome is the same.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  - The window is the last 8 min of each file (Methods, Data acquisition and analysis, paragraph 2); the code's
+    window (480 s from the first burst, pHCumulative.m) is shown as a variant.
+  assumed: true
+- claim: fig7s2-cg-control-variability
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig7s2-cg-control-variability
+  notes: Reading (b) holds, with Kruskal-Wallis H = 625, 516 and 468 for frequency, spikes per burst and duty cycle
+    (14 units; p below double precision). Under reading (a) the preparation means span 0.39, 0.79 and 0.62 of the
+    pooled range, so (a) fails for frequency. Whether reading (b) tests the claim is asked of a reader (questions/haley-2018.yaml).
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  assumed: true
+- claim: fig8a-ganglion-difference
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig8a-ganglion-difference
+  notes: With sum-to-zero contrasts all six ANOVA effects are significant under both univariate and multivariate
+    tests (pH p = 2.0e-10 acid and 2.8e-12 base, ganglion 0.027 and 0.015, interaction 2.7e-04 and 0.0040). With
+    treatment contrasts the acid pH effect is not (p = 0.15). The STG is less rhythmic than the CG at 5.5 (0.37
+    against 0.82, corrected p = 0.029). It is more rhythmic at 9.3 (0.85 against 0.55) and 9.8 (0.77 against 0.40),
+    not significantly (p = 0.36, 0.21). Both the full and the partial condition need all three t-tests. With gap
+    factor 2, 9.8 is significant (p = 0.023) and 5.5 is not (p = 0.070); with factor 5, 5.5 holds and 9.3 and 9.8
+    do not. With missing steps left out, the ganglion effects (p = 0.11, 0.12) and 5.5 (p = 0.12) are not significant.
+    The ANOVA part also depends on the gap factor (sum contrasts), as the acid ganglion effect gives p = 0.14 at factor
+    2 and the base ganglion effect p = 0.061 at factor 5. Without the four CG units of doubtful isolation, 5.5 (p
+    = 0.053), 9.3 (0.54) and 9.8 (0.064) fail; without three more, 5.5 holds (p = 0.013) and 9.3 and 9.8 fail (0.47,
+    0.25). Every variant fails the three t-tests. Whether the criterion should count all ANOVA effects with some t-tests failing as partial is asked of a reader
+    (questions/haley-2018.yaml).
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  - 'A missing pH step counts as 0, as the paper''s code gives it: extracellularAnalysis.m gives a condition marked
+    NaN no Spike2 events (includeSpike2 = []), pHCumulative.m sets a bin with no event to 0 (if isempty(include)
+    ... = 0), and a state of NaN counts towards no state, so the fraction rhythmic is 0 (thisPrep = sum(thisState)/window).
+    Leaving it out is shown as a variant.'
+  assumed: true
+- claim: fig8b-individual-preparations
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig8b-individual-preparations
+  measured:
+  - 8
+  - 5
+  - 2
+  notes: STG ceased firing at 5.5 in 6 of 11 preparations with a 5.5 file under readings (a) and (b), and 4 under
+    (c) (also with PD bursting alone). Counting the 2 without a 5.5 file as silent, as the code would, gives 8 of
+    13 against 14 of 15 (tolerance 1.4). 887_141 and 897_037 are rhythmic throughout 5.5 (fraction 1.0) and 877_141
+    for most of it (0.954). CG units reduced at
+    5.5 are 5 of 14 under both readings (expected 6, tolerance 0.6; 3 under gap factor 5). CG units fully rhythmic
+    everywhere are 2 under both readings (expected 3, tolerance 0.3); gap factor 5 gives 3 under (a). With missing
+    steps left out, 5 CG units are reduced at 5.5 and 2 (a) or 4 (b) are normal in every condition they have. All
+    preparations are fully rhythmic at control. The CG counts were not recomputed without the units of doubtful isolation,
+    as counts from fewer units cannot be set against the expected counts of 15.
+  deviations:
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  - Reading (a) of ceased firing, state 4 at the end of the step, is taken as no PD spikes in the last 10 s of the
+    5.5 file.
+  assumed: true
+- claim: fig8b-cross-predictive
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:fig8b-cross-predictive
+  notes: Reading (a) fails in both ganglia. Of the 4 STG preparations reduced at 10.4, 877_121 keeps a fraction
+    of 0.40 at 5.5 (0.59 with PD bursting alone). In the CG, 1 of 5 units reduced at 5.5 is not reduced at 10.4. The Fisher tests give p = 1.0
+    in both ganglia. Reading (a) fails in both ganglia with missing steps left out and with PD bursting alone too.
+  deviations:
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  assumed: true
+- claim: baseline-frequency-correlations
+  outcome: not_reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:baseline-frequency-correlations
+  notes: LC frequency at control correlates with LC frequency at 5.5 (Pearson r = 0.73, p = 0.0033, 14 units) and
+    not at 10.4 (r = -0.16, p = 0.66), as claimed. The PD correlations are not strong under any reading. Extracellular
+    PD gives r = 0.40 at 5.5 (p = 0.22, 11) and r = 0.48 at 10.4 (p = 0.12, 12). PTX PD gives r = -0.81 at 5.5 and
+    0.34 at 10.4.
+  deviations:
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - A preparation missing the step is left out of that correlation.
+  assumed: true
+- claim: robust-6-1-to-8-8
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:robust-6-1-to-8-8
+  notes: No corrected t-test from 6.1 to 8.8 shows a significant decrease in either ganglion (smallest corrected
+    p STG 0.53, CG 0.68), under gap factors 2, 3 and 5, 1 or 4 lvn spikes per cycle and PD bursting alone. The mean
+    fractions there are 0.86 to 1.0 (STG) and 0.91 to 1.0 (CG). The CG acid ANOVA is not significant (p = 0.058),
+    so [RM] would run no acid t-tests there.
+  deviations:
+  - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
+    They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
+    with onsets at most 3 control periods apart, runs under 10 s merged (Methods paragraph 3); for the STG each
+    PD cycle must also hold at least 2 lvn spikes between the PD bursts (LP and PY firing, which states 1 and 2
+    require), so state 3 is not counted. LP and PY are not told apart, nor states 1 and 2. Gap factors 2 and 5,
+    1 and 4 lvn spikes, and PD bursting alone are shown; assumed.'
+  - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
+    assumed.
+  - CG bursts use a 1.0 s maximum interspike interval and one spike (crabph.BURST_RULES), as the LC fires one or
+    two spikes about 0.5 s apart per Small Cell burst in several units and the paper's CG state 1 counts one LC
+    spike per SC burst (Results, cardiac rhythm, paragraph 3); the code's starting values (0.3 s, two spikes) are
+    shown as a variant; assumed.
+  - 13 STG preparations of 15 (877_127 is not in the project; 877_101 has no pdn).
+  - 14 CG units of 15 (887_017 is not in the project); units of one ganglion are counted as preparations, as the
+    paper's code lists them.
+  assumed: true
+- claim: intact-depolarize-in-acid
+  outcome: reproduced
+  notebook: reproduce_haley_2018.ipynb
+  output: claim:intact-depolarize-in-acid
+  notes: In intact preparations, PD (7 with a 5.5 file, of 9) and LP (5 of 6) are depolarized at 5.5 against the
+    acid control, by 18.2 and 11.7 mV. Every one of them is depolarized, and the acid ANOVAs give p = 2.9e-11 (PD)
+    and 6.9e-05 (LP). Readings (a) and (b) both hold, and the code's slow-wave troughs give the same result.
+  deviations:
+  - The waveform parameters are the code's starting values (maxBurstFreq 2 and 10 Hz, minSpikeHeight 10 and 3 mV;
+    intracellularAnalysis.m), which the authors adjusted by hand; assumed.
+  - Intracellular PD and LP channels as the READMEs name them (Vm1_1 in a README is VM1 in files without VM1_1).
+  assumed: true
+findings:
+- kind: data_missing
+  about: data
+  severity: major
+  statement: Two experiments that the paper's code analyses are not in the project. STG 877_127 is one of the 15
+    STG preparations (pHCumulative.m), and CG 887_017 (unit CG3L) one of the 15 CG units. The STG and CG analyses
+    can use 14 of 15 each.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-missing-experiments
+- kind: data_missing
+  about: data
+  severity: minor
+  statement: Seven experiments have no file for one pH step. 877_093 and 887_069 lack 5.5; 887_005, 887_011 and
+    887_149 lack 10.4 (their READMEs list 11 files). Among the PTX folders, 903_046 lacks 6.1 and 903_060 lacks
+    10.4. The paper's code handles a missing condition, so the steps may never have been recorded, but the READMEs
+    do not say so.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-missing-steps
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: Several READMEs disagree with their folders. 887_145's README lists its files under the names 887_149_0001.abf
+    to 887_149_0014.abf. 877_149's lists 877_149_00010.abf for 877_149_0010.abf. 887_011_0001.abf and 887_049_0026.abf
+    are in the folders but not in the READMEs. 887_061's README names an IN 15 channel that the files do not have
+    (they have IN 14), and 877_149's IN 9 and 897_041's IN 10 are in only some files.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-readme-mismatch
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: The nine PTX folders (903_046 to 903_064) have no README. Nothing names the pH of each file, the protocol
+    order or the nerves beyond the channel names. Here the pH was inferred from the bath pH signal recorded in each
+    file, which separates the steps cleanly.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-ptx-order
+- kind: other
+  about: data
+  severity: minor
+  statement: In 903_058 and 903_060 the recorded bath pH shows the file after 8.3 at the 9.3 level and the next
+    file at the 8.8 level (903_058_0014 and 0015, 903_060_0003 and 0004), so these solutions were applied out of
+    their nominal order. An analysis that assumes the file order is the protocol order swaps these two steps.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-ptx-order
+- kind: metadata_error
+  about: data
+  severity: critical
+  statement: In 903_046_0002 the intracellular channels are named the other way round from the other ten files of
+    the experiment. The input the others call PD3 is LP3 there, and LP4 is PD4. The input named LP3 is followed by
+    a pdn spike 38 ms later for 1.00 of its spikes, as PD3 is in the other files, while the input named PD4 matches
+    at 0.13 against 0.15 by chance, so the labels of 903_046_0002 are swapped. Nothing in the file or the project
+    shows it, and an analysis by channel name exchanges PD and LP in that acid control file.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-ptx-label-swap
+  versions:
+  - '2019-01-08T14:49:50'
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  statement: 877_101, one of the paper's 15 STG preparations, has no pdn, and its intracellular channel ME1_Vx is
+    not named in the README. The PD unit can only be taken from the lvn, where it shares the nerve with LP and PY,
+    so this attempt left it out of the PD measures.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-no-pdn
+- kind: data_missing
+  about: data
+  severity: major
+  statement: The project holds only the raw .abf files and the READMEs. The manual state annotations (stateData_STG.xlsx,
+    stateData_CG.xlsx), the Spike2 spike and burst output, and the gastric-rhythm annotation behind Figures 3, 5,
+    7 and 8 are not deposited. The state transition analyses and the gastric counts cannot be repeated, and every
+    burst measure depends on thresholds that have to be set again.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-no-annotations
+- kind: other
+  about: data
+  severity: minor
+  statement: The project links a GitHub storage add-on that the OSF API does not list for an anonymous reader (HTTP
+    403), and the registry's target list names OSF Storage only. The files read here are all in OSF Storage, and
+    the live listing matches the pinned 408 files.
+- kind: code_mismatch
+  about: paper
+  statement: pHCumulative.m compares a file length in seconds with sampleFreq*480 in samples, so its window is the
+    480 s after the first burst of each file, where the Methods say the last 8 min. With the code's window the acid
+    ANOVA on PD frequency gives p = 0.061, matching the Results' relatively invariant frequency in acid. With the
+    last 8 min it gives p = 1.6e-07. The paper's statistics may rest on the start of each step.
+- kind: methods_unavailable
+  about: paper
+  statement: Questions for the authors. (1) The Spike2 thresholds and burst parameters per file, which the code
+    sets by hand and does not record. This attempt set thresholds automatically and used a 1.0 s, one-spike burst
+    rule for the LC. (2) How a missing pH step entered the statistics; the code gives it 0 (silent), and this attempt
+    shows that and leaving it out. (3) Which PTX file is which pH, and whether 903_058 and 903_060 received 9.3
+    before 8.8. (4) Which file stands for a condition where a README lists two controls in a row (887_141, 897_005)
+    or repeated acid steps (887_061). (5) Whether 877_101's PD was measured on the lvn. (6) The criteria for a gastric-like
+    rhythm, identified by eye in the paper.
+- kind: selection_undocumented
+  about: paper
+  statement: The paper reports 15 CG preparations, while its code lists 15 Large Cell units from 10 experiments
+    (877_149, 887_149 and 897_041 contribute two or three units each). The statistics treat units of one ganglion
+    as independent preparations, which the paper does not say.
+- kind: other
+  about: data
+  severity: minor
+  statement: The bath pH electrode of PTX experiment 903_052 responds less than those of the other eight (a slope
+    of -37.6 mV per pH unit against -45.2 to -46.7), so on the common slope its 10.4 and 5.5 files read as pH 9.75
+    and 5.87. The response is linear over all its files, so the steps can still be ranked, but with no README it
+    cannot be told whether the electrode or the solutions differed.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-ptx-electrode
+verifications:
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper''s full text under paper/. The verifier checked the archive''s file list
+    for the blocked claims (877_127 and 887_017 absent) and tested rm_anova, mixed_anova, bursts_from_spikes, burst_bins
+    and rhythmic_seconds on synthetic inputs. Points not tied to one claim and the replies: (1) the state proxy:
+    the STG reading now requires lvn firing between PD bursts, with every variant shown; the gap factor stays an
+    assumption, shown at 2, 3 and 5. (2) LC isolation: a per-unit height histogram with the threshold and the counted
+    heights against control is now printed, and the CG measures without the four named units; the 1.0 s, one-spike
+    rule is kept, as the code''s 0.3 s, two-spike rule leaves the control fraction rhythmic at 0.75. No trace overlays,
+    as the entry has no plotting package. (3) Missing steps as 0: kept as the main reading, since the paper''s code
+    does this (extracellularAnalysis.m, includeSpike2 = [] for a NaN condition; pHCumulative.m sets an empty bin
+    to 0 and a NaN state counts towards no state); the variant is now run for fig8a, fig8b and fig8b-cross. (4)
+    and (11) are asked of a reader in questions/haley-2018.yaml. (8) 877_101 was not taken from its lvn or ME1_Vx:
+    PD would have to be sorted from LP and PY on the lvn, and ME1_Vx is not named. (10) The conclusions now say
+    where [RM] runs no t-tests. The notebook now reads OSF through WaterButler with a throttle, as osf.io answered
+    with 429; this changes no number (the outputs of two runs agree).'
+  results:
+  - claim: fig2a-stg1-traces
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: 897_037 is rhythmic (proxy) 1.0 in every step and recovery. At 10.4, spikes per burst are
+      12.43 vs 13.10 and slow wave is 17.65 vs 18.03 mV. Both drops are small, and the state part rests on the PD-only
+      proxy.'
+    response: No change of outcome. The STG fraction rhythmic now also requires at least 2 lvn spikes between successive
+      PD bursts (problem 1), so state 3 no longer counts; PD bursting alone, 1 and 4 lvn spikes and gap factors
+      2 and 5 are shown. 897_037 is rhythmic 1.0 in every step under every reading.
+  - claim: fig2bcd-stg1-measures
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: readings (a) and (b) both hold: frequency +0.118 in acid and -0.266 in base, spikes at 5.5
+      -5.4, duty in base -0.048.'
+    response: No change.
+  - claim: fig3a-stg-variability-examples
+    agrees: true
+    outcome: blocked
+    reason: There is no state annotation in the archive (confirmed). The rhythmic/silent part could have been tested
+      with the proxy (887_097, 887_105 and 887_145 fit it) and was not run.
+    response: 'Still blocked, as states 1 and 2 cannot be told apart. The parts that can be read are now run and
+      printed: 887_005, 887_097, 887_105 and 887_145 are rhythmic for most of 6.1 to 9.8 and not at 5.5; at 10.4
+      887_005 has fraction 0 and the other three 1.0.'
+  - claim: fig3c-stg-rhythmic-fraction
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 27: both ANOVAs and the 5.5 test pass, but 10.4 has p_corr 0.306 (0.22 to 0.61 across variants).
+      n is 13, against an expected 15 with tolerance 0. The proxy overstates STG rhythmicity, so this failure is
+      weak evidence.'
+    response: 'Changed from partially_reproduced to not_reproduced: the criterion has no partial condition, and
+      the expected 15 preparations are 13. The STG fraction rhythmic now also requires at least 2 lvn spikes between
+      successive PD bursts (problem 1), so state 3 no longer counts; PD bursting alone, 1 and 4 lvn spikes and gap
+      factors 2 and 5 are shown. 10.4 stays at p = 0.31 (0.22 to 0.61).'
+  - claim: stg-state-transitions
+    agrees: true
+    outcome: blocked
+    reason: No annotation in the archive (confirmed). [STATE] allows annotating from lvn units, which the notebook
+      did not try.
+    response: Still blocked. The lvn is now used, but LP and PY are not told apart, so states 1 and 2 cannot be
+      separated and the transitions the criterion counts cannot be read.
+  - claim: fig3d-stg-frequency
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 29: acid ANOVA p = 1.6e-7 (the claim needs >= 0.05). 9.3 has p_corr 0.651; 10.4 passes (0.047).
+      Every variant fails. See problem 4.'
+    response: 'Changed from partially_reproduced to not_reproduced: the criterion has no partial condition. Problem
+      4 is asked of a reader in questions/haley-2018.yaml; the claim is tested as written.'
+  - claim: fig3e-stg-spikes-per-burst
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 31: acid p 1.6e-11, base p 1e-6, 5.5 p_corr 3e-5 (lower).'
+    response: No change.
+  - claim: fig3f-stg-duty-cycle
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 33: both ANOVAs pass, but duty at 6.1 is lower than control (-0.023, p_corr 0.93), not higher.'
+    response: 'Changed from partially_reproduced to not_reproduced: the criterion has no partial condition.'
+  - claim: fig3s2-stg-control-variability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 35: reading (b), Kruskal-Wallis p about 0, holds for all three measures. Reading (a) fails for
+      hz and duty. n is 13.'
+    response: No change of outcome. Whether reading (b) tests the claim (problem 11) is asked of a reader in questions/haley-2018.yaml.
+  - claim: fig4a-ptx-example
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37: only 903_052 meets every part, and its PD label is doubtful (problem 5).'
+    response: 'No change of outcome. The PD label check now allows for the conduction delay to the pdn: in 7 of
+      903_052''s 9 files with PD spikes, 0.61 to 1.0 of them are followed by a pdn spike 34 to 38 ms later, against
+      at most 0.037 by chance, so PD3 is PD. The 5 ms window of the first round missed this delay.'
+  - claim: fig4bc-membrane-potential
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 39: PD acid and LP base ANOVAs pass and all six t-tests pass, under both the Methods and code
+      readings. The absence parts hold too (LP acid p 0.648, PD base p 0.128).'
+    response: 'No change of outcome. The LP 8.8 test without 903_056 (problem 6) is now shown: corrected p = 0.056,
+      which would make the outcome partial; the notes say so.'
+  - claim: fig4de-spike-amplitude
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 41: acid effects and both 5.5 reductions hold, and PD base is absent as claimed. The LP base ANOVA
+      (p 0.095) and LP 6.1 (p_corr 0.113) fail.'
+    response: No change.
+  - claim: fig4fg-ptx-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 43: all four ANOVAs pass and 6 of 7 t-tests pass. LP at 8.3 rises (+2.2 Hz) instead of falling.'
+    response: No change.
+  - claim: gastric-like-rhythm-counts
+    agrees: true
+    outcome: blocked
+    reason: No 8.x codes in the archive (confirmed). The claims file gives a fallback (LG bursts alternating with
+      DG on lgn/dgn) that was not attempted. Blocked (methods_underspecified), arguable.
+    response: 'Kept blocked. The electrode list of every STG experiment is now printed: 8 of 15 have an lgn and
+      a dgn, so in the other 6 in the project LG would have to be sorted from the lvn; the fallback has no thresholds
+      for rhythmic or alternating bursting in the paper or its code.'
+  - claim: gastric-conditions-co-occur
+    agrees: true
+    outcome: blocked
+    reason: Depends on the gastric counts claim.
+    response: No change.
+  - claim: fig5-gastric-recovery-example
+    agrees: true
+    outcome: blocked
+    reason: Same reason as the gastric counts claim. The notebook does not list which experiments record lgn, dgn
+      and ion.
+    response: 'Kept blocked. The notebook now lists them: 887_097, 887_105, 887_137 and 897_005 record lgn, dgn
+      and ion.'
+  - claim: fig6-cg1-measures
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 45: LC spikes per burst fall in acid (-6.05) and duty rises in base (+0.018) under both readings.
+      CG detection is doubtful (problem 2).'
+    response: 'Changed from partially_reproduced to not_reproduced: the criterion has no partial condition. The
+      new LC isolation check shows 15 to 25 spikes per burst in this unit and counted spikes 3.1 to 3.4 times the
+      control height at 5.5 and 10.4; the notes say its isolation is in doubt.'
+  - claim: fig6a-cg2-less-rhythmic
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 47: 887_093 CG2L meets the criterion with proxy factors 2, 3 and 5.'
+    response: No change.
+  - claim: fig7b-cg-rhythmic-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 49: acid ANOVA p 0.058 and 5.5 has p_corr 0.246. With factor 2 the acid ANOVA passes (p 0.023),
+      which would make it partial, so the outcome depends on the proxy.'
+    response: No change of outcome; the dependence on the gap factor is recorded in the notes, with the variant
+      without the four units of doubtful isolation (acid p = 0.045, 5.5 p = 0.50).
+  - claim: cg-state-transitions
+    agrees: true
+    outcome: blocked
+    reason: No annotation in the archive. The proxy follows only the LC unit.
+    response: No change; SC-only bursting is not read.
+  - claim: fig7c-cg-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 51: base ANOVA p 0.0555 and 10.4 has p_corr 0.84. Every variant fails.'
+    response: No change of outcome. Without the four units of doubtful isolation, 10.4 is significant (corrected
+      p = 8.7e-04); the notes say the outcome depends on them.
+  - claim: fig7d-cg-spikes-per-burst
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 53: acid ANOVA p 0.54. There is no increase at 5.5 or 6.1; only 10.4 passes.'
+    response: No change.
+  - claim: fig7e-cg-duty-cycle
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 55: base p 4.8e-5, acid p 0.52, robust across variants.'
+    response: No change.
+  - claim: fig7s2-cg-control-variability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 57: reading (b) holds for all three measures.'
+    response: No change; reading (b) is asked of a reader (problem 11).
+  - claim: fig8a-ganglion-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 59: with sum coding all 6 ANOVA effects pass (both readings c and d), and STG is lower at 5.5
+      (p_corr 0.042). STG at 9.3 and 9.8 is not significantly higher (0.36, 0.21). The criterion''s partial clause
+      does not cover this pattern.'
+    response: No change of outcome. With the new STG reading 5.5 gives p = 0.029. The missing-steps-left-out and
+      PD-alone variants are now run. The missing partial category is asked of a reader.
+  - claim: fig8b-individual-preparations
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 61: STG ceased is at most 6+2 of 13 (expected 14 +- 1.4). CG reduced at 5.5 is 5 (expected 6 +-
+      0.6), and CG normal everywhere is 2 (expected 3). The 2 STG counted in the +2 count only because of zero-filled
+      missing files.'
+    response: No change. The variant with missing steps left out is now run (CG reduced 5; normal 2 or 4).
+  - claim: fig8b-cross-predictive
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 63: reading (a) fails in both ganglia (877_121 in STG, 877_149 CG1L in CG).'
+    response: No change; it also fails with missing steps left out and with PD bursting alone.
+  - claim: baseline-frequency-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 65: no combination holds. Extracellular PD has r <= 0.55 with p > 0.05, and the PTX PD acid correlation
+      is r = -0.81.'
+    response: No change.
+  - claim: robust-6-1-to-8-8
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 67: 0 significant decreases in either ganglion, under every proxy factor. The STG proxy is biased
+      toward rhythmic, which favours this absence claim.'
+    response: No change of outcome. With the lvn requirement (state 3 not counted) there are still no significant
+      decreases (smallest corrected p 0.53).
+  - claim: intact-depolarize-in-acid
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 69: PD 7/7 and LP 5/5 preparations are depolarized at 5.5, with acid ANOVAs p 3e-11 and 7e-5 (both
+      minimum-Vm readings).'
+    response: No change.
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook (103 cells) after the round-1 revision, the helper module, the claims
+    file and the attempt record, with the paper''s full text under paper/. Points not tied to one claim and the
+    replies: the sentences the outputs did not support were corrected (fig8b-cross 877_121 fraction, finding 6, the
+    887_005 zero-fill at 10.4, the README run time and data volume, the read time and memory in the notebook, 877_141
+    at 5.5). The LC isolation variant now also drops the three units the verifier named (887_127 CG1L, 897_041 CG1L,
+    887_005 CG2L) and is printed for the CG measures and Figure 8A. The 903_052 bath electrode slope is now printed
+    for every PTX experiment, and the 6.7 file''s PD identity is stated as unconfirmed. Not done: a comparison of
+    the state reading with Figure 8B, as the values would have to be read off the figure, and the entry may not embed
+    numbers read from a figure; and trace overlays, as the entry has no plotting package and the height histograms
+    and pdn matches print what overlays would show. The gastric fallback stays unattempted (see those claims).'
+  results:
+  - claim: fig2a-stg1-traces
+    agrees: true
+    outcome: reproduced
+    reason: The lvn condition barely discriminates. 1, 2 and 4 lvn spikes and PD bursting alone give nearly identical
+      fractions (cell 21); they differ only at 5.5, in 877_121 and 887_049. So "triphasic" still rests mainly on PD
+      bursting.
+    response: No change of outcome. The conclusion and the notes now say that the lvn condition changes the fraction
+      only at 5.5 in 877_121 (0.19) and 887_049 (0.04), so the reading rests mainly on PD bursting.
+  - claim: fig2bcd-stg1-measures
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3a-stg-variability-examples
+    agrees: true
+    outcome: blocked
+    reason: States 1 and 2 cannot be separated without telling LP from PY. Cell 32 and the notes say "at 10.4, 887_005
+      has fraction 0", but 887_005 has no 10.4 file (cell 12), so this 0 is the zero-fill, which the text does not
+      say.
+    response: Still blocked. The table now prints which candidates have a 10.4 file, and the conclusion and notes
+      say that 887_005's 0 at 10.4 is the zero-fill of a missing step.
+  - claim: fig3c-stg-rhythmic-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: 10.4 has p_corr 0.31; the criterion has no partial condition.
+    response: No change.
+  - claim: stg-state-transitions
+    agrees: true
+    outcome: blocked
+    reason: States 1 and 2 cannot be separated without telling LP from PY.
+    response: No change.
+  - claim: fig3d-stg-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as the criterion is written. The criterion probably misreads "relatively invariant" (round-1 point
+      4, now sent to a reader).
+    response: No change; the question stays open in questions/haley-2018.yaml.
+  - claim: fig3e-stg-spikes-per-burst
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3f-stg-duty-cycle
+    agrees: true
+    outcome: not_reproduced
+    response: No change.
+  - claim: fig3s2-stg-control-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under reading (b). Reading (b) passes almost any data (round-1 point 11).
+    response: No change; the question stays open in questions/haley-2018.yaml.
+  - claim: fig4a-ptx-example
+    agrees: true
+    outcome: reproduced
+    reason: Rests on one preparation (903_052). Its pH compression is unaddressed, as the "10.4" file estimates pH
+      9.75 and the "5.5" file 5.87 (cell 10). The 6.7 file used for the slow-wave part has a PD to pdn match of 0.02,
+      near its chance of 0.011, so PD identity in that file is unconfirmed.
+    response: 'No change of outcome. A new cell (finding-ptx-electrode) prints each PTX experiment''s electrode slope:
+      903_052 responds at -37.6 mV per pH unit against -45.2 to -46.7 in the other eight, linearly (r = -0.999), which
+      fits a less sensitive electrode; the labels follow the rank within complete runs, and the data cannot exclude
+      off solutions. Recorded as a new minor finding (13). The conclusion and notes now say PD identity in the 6.7
+      file is not confirmed and rests on the electrode staying in the same cell.'
+  - claim: fig4bc-membrane-potential
+    agrees: true
+    outcome: reproduced
+    reason: Fragile. LP 8.8 depends on 903_056 (p_corr 0.056 without it, cell 52).
+    response: No change; the notes already say so.
+  - claim: fig4de-spike-amplitude
+    agrees: true
+    outcome: partially_reproduced
+    response: No change.
+  - claim: fig4fg-ptx-frequency
+    agrees: true
+    outcome: partially_reproduced
+    response: No change.
+  - claim: gastric-like-rhythm-counts
+    agrees: true
+    outcome: blocked
+    reason: Accept, arguable. The claims file gives a fallback (rhythmic LG bursting on lgn or lvn with alternating
+      DG bursting on dgn where recorded). Blocking it for lack of thresholds is the attempt's choice; nothing in the
+      data or methods forces it.
+    response: Kept blocked. The fallback still has no threshold for rhythmic or alternating bursting in the paper or
+      its code, and in 6 of the 14 STG experiments in the project LG would have to be sorted from the lvn; the disagreement
+      is recorded here.
+  - claim: gastric-conditions-co-occur
+    agrees: true
+    outcome: blocked
+    reason: As the gastric counts claim.
+    response: Kept blocked, as above.
+  - claim: fig5-gastric-recovery-example
+    agrees: true
+    outcome: blocked
+    reason: As the gastric counts claim.
+    response: Kept blocked, as above.
+  - claim: fig6-cg1-measures
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as computed, but weak evidence. The isolation check (cell 23) shows 877_149 CG2L counting events
+      3.1 times the control height, already at ctl_base, with 15 to 25 spikes per burst.
+    response: No change of outcome. The conclusion and notes now say the counted heights are 3.1 times control already
+      at the control before base, and that the outcome is weak evidence.
+  - claim: fig6a-cg2-less-rhythmic
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig7b-cg-rhythmic-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on the main reading, but fragile. With factor 2 it would be partial (stated). Without the four
+      doubtful units it would also be partial, as both ANOVAs pass (0.045 and 1.3e-11) and 9.8 and 10.4 pass (cell
+      23); the record does not say this. Isolation is also doubtful in units the variant keeps (887_127 CG1L at 10.4,
+      897_041 CG1L at ctl_base, 887_005 CG2L at 5.5).
+    response: No change of outcome. The conclusion and notes now say the four-unit variant would be partial. A variant
+      without the three further units is now run (7 units); its acid ANOVA gives p = 0.15, as in the main reading.
+  - claim: cg-state-transitions
+    agrees: true
+    outcome: blocked
+    reason: States cannot be separated from the LC unit alone.
+    response: No change.
+  - claim: fig7c-cg-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as computed. Depends on the four doubtful units (stated); without them both ANOVAs and 10.4 pass.
+    response: No change of outcome. Without the three further units too, 10.4 is again significant (p = 9.4e-04);
+      the notes say so.
+  - claim: fig7d-cg-spikes-per-burst
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Doubtful isolation in units the variant keeps affects fig7b to fig7d.
+    response: No change of outcome. Without the three further units (7 units) both ANOVAs and the falls at 9.8 and
+      10.4 are significant and the rises at 5.5 and 6.1 are not, which would be partial; the conclusion and notes
+      say the outcome depends on the LC isolation.
+  - claim: fig7e-cg-duty-cycle
+    agrees: true
+    outcome: reproduced
+    response: No change; the outcome is the same without the four units and without seven.
+  - claim: fig7s2-cg-control-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under reading (b). Reading (b) passes almost any data (round-1 point 11).
+    response: No change; the question stays open in questions/haley-2018.yaml.
+  - claim: fig8a-ganglion-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: The partial condition needs all three t-tests. The gap factor still matters, as the acid ganglion effect
+      has p 0.143 at factor 2 and the base effect p 0.061 at factor 5 (cell 84), which cell 85 does not mention.
+    response: No change of outcome. The conclusion and notes now give both p-values, and Figure 8A is now run without
+      the four and the seven CG units of doubtful isolation; every variant fails the three t-tests.
+  - claim: fig8b-individual-preparations
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 88 and the record say "877_141, 887_141 and 897_037 burst throughout 5.5", but 877_141 has fraction
+      0.954 there. This is minor.
+    response: Corrected; 887_141 and 897_037 have fraction 1.0 and 877_141 0.954. No change of outcome.
+  - claim: fig8b-cross-predictive
+    agrees: true
+    outcome: not_reproduced
+    reason: The notes' "877_121 keeps a fraction of 0.59 at 5.5" is wrong; in the main reading it is 0.398 (cells 19
+      and 87). 0.59 is the PD-alone value.
+    response: Corrected to 0.40 (0.59 with PD bursting alone). No change of outcome.
+  - claim: baseline-frequency-correlations
+    agrees: true
+    outcome: not_reproduced
+    response: No change.
+  - claim: robust-6-1-to-8-8
+    agrees: true
+    outcome: reproduced
+    reason: Still favoured by a proxy that hardly separates out state 3.
+    response: No change of outcome; the fig2a notes now say how little the lvn condition changes.
+  - claim: intact-depolarize-in-acid
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  findings:
+  - finding: 6
+    agrees: false
+    severity: critical
+    reason: It is data filed under the wrong label, and nothing in the file's metadata shows it. An analysis by channel
+      name silently swaps PD and LP in that experiment's acid control. Cell 15 shows it, as the file's channels are
+      ['PY1', 'LP3', 'stn', 'PD4'] where the other files have ['PY1', 'PD3', 'stn', 'LP4']; the "LP3" channel matches
+      the pdn at 1.00 (38 ms lag), and the "PD4" channel at 0.13 against chance of 0.154. The finding gives no versions
+      or fixed_in.
+    response: Changed to critical, as the verifier would rate it. The statement now gives the match at the 38 ms lag
+      in place of the unprinted 5 ms figure, and the finding lists the version it was seen in; the live OSF listing
+      shows no file changed since, so there is no later version to check.

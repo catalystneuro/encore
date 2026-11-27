@@ -1,0 +1,50 @@
+A. Outcomes for the 21 claims in the claims file. The notebook tests all 21 and treats none as blocked.
+
+| Claim | My outcome | Reason |
+|---|---|---|
+| fig1c-cells-per-protocol | partially_reproduced | Cell 12: ramp has 3275 cells (expected 3220 ± 322) and brief pulse 2166 (2154 ± 215). Long pulse fails under every reading: 3276, 1957 or 1881 against 2270 ± 227. In the data the long and ramp sets are almost the same cells (3276 vs 3275); in the paper long has about 950 fewer. |
+| fig1d-driver-line-coverage | reproduced | Cell 14: the 9 largest lines (long, all-steps reading; ramp) and the 11 largest (brief) are exactly the lines the paper names. All 8 shared lines are present in every geometry (at least 91 cells each). The shared count of 8 is inside the 7 ± 1 tolerance. |
+| fig2a-longpulse-low-dimensional | not_reproduced | Cell 16: 0 of 24 readings. The closest (no command bins) gives PC1 41.9% (passes), PC2 18.8% (limit 13.5–16.5) and PC1–5 85.2% (limit 68.4–83.6). |
+| fig2b-longpulse-continuous-biased | reproduced | Cell 18: permutation fraction 0.0 for all, 5 and 2 PCs; observed mean distance 1.90 against a null maximum of 0.49. The continuum is supported only by proxies (bimodality coefficients 0.53 and 0.44, below 0.555; line silhouette −0.19) because the scatter was never rendered. |
+| fig2d-longpulse-loadings | reproduced | Cell 20: with no command bins (all-steps and LP_named sweeps), PC1 overlap is 6–7 of 8 and PC2 overlap 6–7 of 8, and all stated signs hold. In the main reading, spiking fraction −0.448 and baseline noise −0.189 are opposite to first-spiking current +0.396, maximum rate, maximum count, subthreshold fraction and rate slope. |
+| fig2c-longpulse-centroid-distances | reproduced | Cell 22: 60 of 72 readings. In the main reading the two largest distances are Sncg–Pvalb 4.62 and Pvalb–Vip 4.02. |
+| fig2e-longpulse-pc2-pvalb-high-vip-low | reproduced | Cell 24: 15 of 48 readings, every no-bins all-steps and LP_named reading. Main reading medians: Pvalb 2.26 (highest), Vip −1.04 (lowest). |
+| fig3a-ramp-variance | reproduced | Cell 26: holds only for the broad set with dV/dt spike detection (36.2, 21.1, 85.4%). The Figure 3D set, which is the notebook's main ramp reading, gives PC1 61–65%. |
+| fig3b-ramp-continuous-biased | reproduced | Cell 28: permutation fraction 0.0 (1.47 against a null maximum of 0.37). Bimodality coefficients 0.49 and 0.35; silhouette −0.22. Same proxy caveat as fig2b. |
+| fig3d-ramp-loadings | reproduced | Cell 30: PC1's top 4 are the recruitment and latency features under every reading. PC2 holds only for the Figure 3D set with dV/dt detection: counts and rates about +0.28 to +0.53, recruitment and latency about −0.25. That is not the reading that reproduces fig3a (problem 3). |
+| fig3e-ramp-recruitment-current-order | reproduced | Cell 32, both spike detections: Pvalb 280 pA highest; Sncg 80 and Vip 62 (or 79 and 61) the two lowest. |
+| fig4a-brief-response-variance | reproduced | Cell 34: 2 of 16 readings (Figure 4C features plus gain, 50 ms window: 47.8, 18.1, 92.2%). The fast-response window was not varied (problem 4). |
+| fig4b-brief-continuous-biased | reproduced | Cell 36: permutation fraction 0.0 (1.75 against a null maximum of 0.54); centroid distances 0.38–4.14. Bimodality coefficients 0.33 and 0.20. |
+| fig4c-brief-response-pc1-loadings | reproduced | Cell 38: under readings (b) and (b)+gain, the top 5 PC1 loadings are all amplitude features with one sign. No gain, timing or baseline feature is in the top 3 under any reading. |
+| fig4e-brief-response-base-alignment | reproduced | Cell 40, main reading: base PC2 \|Pearson r\| 0.886 and \|Spearman r\| 0.876 with n = 2166; base PC2 is the best-matching base PC under every reading. |
+| fig4f-brief-gain-vip-cck-high | reproduced | Cell 42, both windows: Cck 0.0855 and Vip 0.0805 mV/pA are the two highest; Pvalb 0.0477 is below the median of line medians (0.0566). The ranking is unchanged when spiking sweeps are excluded. |
+| disc-brief-gain-sncg-cck-non-pvalb | reproduced | Cell 44: Cck ranks 1, Sncg 3, Pvalb 10 of 11. |
+| fig5a-longpc2-ramppc1-centroids | reproduced | Cell 46, main readings: Spearman r 0.900, p 0.0009 (32 of 128 combinations hold). Pvalb is highest on both axes; on ramp PC1 the lowest line is Sncg (−1.50), not Vip (−1.39). The criterion does not test that part of the statement. |
+| fig5b-long-ramp-distance-alignment | reproduced (fragile) | Cell 48: 32 of 384 combinations hold (r 0.637–0.667, p ≈ 1e-5), all with long = suprathreshold sweeps. One chain also satisfies its dependencies: suprathreshold no-bins long, broad dV/dt ramp, 5 PCs gives r 0.641. The readings that reproduce fig2d, fig2e and fig5a give r 0.877–0.881, above the 0.636–0.778 band. r is positive with p < 0.001 under every reading. |
+| fig5c-balanced-correlations-positive | partially_reproduced | Cell 50: every median is positive in all 6 settings (fraction r > 0 is at least 0.90), but only 0–2 of the 6 pairs fall inside tolerance per setting. Long vs ramp is 0.870 with the smallest line count (limit 0.869); long vs gain 0.42–0.46 against 0.558–0.682. |
+| fig5d-f-true-above-shuffle-null | reproduced (fragile) | Cell 52: with the smallest-line count and labels shuffled in both geometries, all 6 pairs have p < 0.05 for every PC count, and null medians are −0.044 to 0.003. Long vs gain is marginal (p 0.034–0.048, and 0.051 when only one geometry is shuffled), and it fails with 20 cells per line (p 0.11–0.19). |
+
+B. Problems
+
+1. [affects a conclusion] Cell 50, `setup()`: for brief response vs brief gain, the code uses the 8 lines shared by all three protocols, although those two geometries share all 11 lines. Long vs ramp, by contrast, uses its pairwise 9. Methods 5 says "for each pair of geometries, shared driver lines were identified", and the 11-line reading was not run. This can move the brief-vs-gain median in fig5c (0.70 against 0.62 ± 0.062) and its p in fig5d-f.
+2. [affects a conclusion] Cells 50 and 52 run balanced resampling only on the main feature-set readings. The alternatives (broad ramp set; suprathreshold or LP_named long sweeps), which change long-vs-ramp r from about 0.88 to about 0.65 in cell 48, were not run. fig5c is partial with one median 0.001 outside tolerance, so this could change its outcome.
+3. [affects a conclusion] Cells 26 and 30: no single ramp feature set reproduces both fig3a (needs the broad set) and fig3d (needs the Figure 3D set). The notebook's main ramp reading (Figure 3D set) fails fig3a badly (PC1 61% against 33%). Likewise fig5b holds only under the suprathreshold long reading, under which fig2d and fig2e fail and fig5a gives r ≈ −0.3 (cells 20, 24, 46). Each claim passes "under a reading", but the readings are not jointly consistent.
+4. [affects a conclusion] `geometry.FAST_MS = 2` (fast-response window) is fixed, although the claims file lists it as open. fig4a passes in only 2 of 16 readings and depends on the fast-response features. The long-pulse thresholds are also author choices that were never varied: strong depolarization ≥ 20 mV, high spiking ≥ 20 Hz, and the command bins. fig2a fails on PC2 and PC1–5 under all readings, and these thresholds could plausibly shift those values.
+5. [does not affect a conclusion] Cells 18, 28, 36 and 52: `matplotlib.use("Agg")` followed by `plt.show()` leaves no images in the notebook. The scatter plots the claims say decide "continuity", and the null histograms, cannot be inspected. Continuity rests on the 1-D bimodality coefficient and the line silhouette, and the silhouette tests line overlap, not whether cells form a continuum.
+6. [does not affect a conclusion] Cells 46 and 48 skip the LP_named long reading (`continue`) even though it is used for fig1c and fig2a–2e and passes fig2d and fig2e. It is not a reading named in the claims file.
+7. [does not affect a conclusion] Cell 14: no single minimum-cell rule gives 9, 9 and 11 lines. Long needs a cutoff of 147–156 cells, brief one of 80–91. The geometries are also filtered to the paper's named lines before PCA (cell 10), so line membership is imposed rather than derived. The shared count (8) is `set(L9) & set(L11)`, from the paper's lists rather than the data, although the data do contain all 8.
+8. [does not affect a conclusion] Cell 48 takes the fig5b p-values from `spearmanr` over 36 line pairs, which are not independent (they come from one distance matrix). A Mantel test would be the correct test, but p is about 1e-5 or smaller under every reading.
+9. [does not affect a conclusion] `long_features` mixes 0.5 s and 1.0 s steps in its spike-count features, which are not normalised by duration (cell 4 shows both durations).
+10. Checked, no problem found:
+    - Units: mV and pA, ramp slope 25 pA/s, gain values in line with Figure 4F.
+    - Spike detection, recruitment current, brief-pulse gain and the balanced null, all tested on synthetic inputs. The null is centred near 0, and independent geometries give r ≈ 0.
+    - Feature lists against Supplementary Table 1: 15 long, 14 ramp and 23 brief features, all matching.
+    - Driver labels against the archive's asset metadata (all 4435 assets): the "first" reading equals the Cre allele wherever a Cre allele exists.
+    - No train/test split exists, so there is no leakage.
+
+C. What I could not check
+- The paper's figure panels: no PDF renderer is available here. So I could not confirm that `FIG2D1` and `FIG2D2` (cell 20) and the Figure 4C mapping (`BRIEF_RESPONSE_B`) match the plotted labels, or judge continuity visually. Saving the figures with `savefig` or an inline backend would have let me see the embeddings.
+- The cause of the long-pulse count gap in fig1c. A per-cell table of QC failure reasons and stimulus families for long vs ramp would show which selection gives about 2270.
+- fig5c and fig5d-f under the 11-line brief-vs-gain set and under the alternative ramp and long feature sets.
+- fig4a with a 1 ms and a 5 ms fast-response window.
+- fig2a under other strong-depolarization and high-spiking thresholds.

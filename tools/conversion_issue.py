@@ -21,7 +21,7 @@ from agent_run import ROOT, records_of  # noqa: E402
 import paper_records  # noqa: E402
 
 SITE = "https://encorescience.org"
-REPO = "https://github.com/catalystneuro/encore"
+REPO = "https://github.com/encorescience/encore-registry"
 
 
 def issue(dandiset: str) -> str:
