@@ -2988,30 +2988,25 @@ def page_institutions(data: dict) -> str:
 <main class="journals institutions">
   <div class="grid2">
     <div class="panel" id="tool"><h2>The tool</h2>
-      <p>The <a href="{root}check/"><code>encore</code> command</a> is free and open source. A lab runs
-      <code>encore check</code> on its own machine, with its own Claude account, as often as it likes. The run is
-      registered nowhere. The report and the record are written to the lab's machine and stay there.</p>
-      <p>The agents send what they read of the paper and the data to the model, under the terms of the lab's own
-      account (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>). Their commands run in a sandbox that can
-      write only inside the run's directory and can reach only the archives, Python's package index, GitHub and
-      doi.org.</p></div>
+      <p>The <code>encore</code> command is free and open source. A lab runs a check on its own machine, as often
+      as it likes. The run is registered nowhere, and the report and the record stay on the lab's machine.</p>
+      <p>The check is made by an AI model, so the model's provider receives what the agents read of the paper and
+      the data. A lab can use its own Claude account. An institution with an enterprise licence can supply its own
+      API key, and the check then runs under the institution's own agreement with the provider.</p>
+      <p class="sub">For developers: <a href="{root}check/">how a check runs</a> and
+      <a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>.</p></div>
     <div class="panel" id="record"><h2>The record</h2>
-      <p>Every check writes a file, <code>record.json</code>, beside its report
-      (<a href="{RECORD_SCHEMA_URL}">its schema</a>). The record names:</p>
-      <ul class="receives">
-        <li>The paper file, by its SHA-256 hash.</li>
-        <li>The dataset, by its version in the archive. Files that are not in an archive are named by a hash.</li>
-        <li>The protocol, the model and the version of Encore.</li>
-        <li>The outcome of every claim: reproduced, partially reproduced, not reproduced, or blocked.</li>
-        <li>Every finding about the data, the paper and its code.</li>
-      </ul></div>
+      <p>Every check ends with a record. It states which version of the paper and which version of the data were
+      checked, what came of each claim, and every problem the check found in the data, the paper or its code.</p>
+      <p>The record is tied to that one version of the paper and of the data, so it shows exactly what was
+      checked.</p>
+      <p class="sub">For developers: <a href="{RECORD_SCHEMA_URL}">the format of the record</a>.</p></div>
   </div>
   <div class="panel" id="policy"><h2>Policy</h2>
     <p>The record gives your institution something to audit. With it, a policy can require the check for papers
     before submission, for theses before deposit, and for compliance with data-sharing requirements.</p>
-    <p>The policy we suggest is &ldquo;run the check and respond to every finding&rdquo;. It is not
-    &ldquo;pass&rdquo;. A lab responds to a finding by fixing the data, by correcting the paper, or by explaining why
-    the finding is wrong. The agents make mistakes, so a claim that did not reproduce is a question for the lab, and
+    <p>The policy we suggest is &ldquo;run the check and respond to every finding&rdquo;. A lab responds to a
+    finding by fixing the data, by correcting the paper, or by explaining why the finding is wrong. The agents make mistakes, so a claim that did not reproduce is a question for the lab, and
     the lab's answer may be that the agent was wrong.</p></div>
   <h2 class="section-head" id="runs">Three kinds of run</h2>
   <div class="panel runs-panel">
