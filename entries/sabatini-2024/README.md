@@ -1,33 +1,27 @@
-# Sabatini & Kaufman (2024) from dandiset 000070
+# Sabatini and Kaufman (2024) on DANDI:000070
 
-Tests the findings of [Sabatini & Kaufman (2024)](https://doi.org/10.1038/s41467-024-51308-7) on
-[DANDI:000070](https://dandiarchive.org/dandiset/000070/0.260528.0919), version 0.260528.0919, which holds
-the two maze-task sessions the paper names (monkey J, 2009-09-18; monkey N, 2010-09-23), each with a PMd
-and an M1 Utah array and hand position. The notebook rebuilds the paper's four datasets (M1-J, PMd-J,
-M1-N, PMd-N) and tests its claims on jPCA, single-condition dynamics, the temporal basis factorization,
-the orientation of rotational planes, the state space location, and LDR encoding and decoding.
+Tests the findings of [Sabatini and Kaufman (2024)](https://doi.org/10.1038/s41467-024-51308-7),
+"Reach-dependent reorientation of rotational dynamics in motor cortex", on
+[DANDI:000070](https://dandiarchive.org/dandiset/000070/0.261122.2046) version 0.261122.2046, using the
+two maze sessions the paper names (monkey J 2009-09-18, monkey N 2010-09-23). Four datasets are analysed
+separately: M1-J, PMd-J, M1-N, PMd-N.
 
-| Group | Outcomes |
+- `reproduce_sabatini_2024.ipynb`: data check, temporal basis factorization, single-condition dynamics,
+  jPCA and the geometry of the rotations.
+- `reproduce_sabatini_2024_kinematics.ipynb`: prediction of rotations, LDR encoding and single-trial LDR
+  decoding.
+- `ldr.py`: loading (streamed from the archive) and the measures, with the source of each parameter.
+
+| Claims | Outcome |
 |---|---|
-| Reproduced | 10 claims, among them the factorization's variance explained, the misalignment of rotational planes across conditions, the segregation of frequencies, prediction of rotations from each other and from the location, and LDR encoding against standard encoding models |
-| Partially reproduced | 13 claims, among them LDR decoding, the prediction of the location from the reach kinematics, the time-shuffle control, and the comparison with instantaneous decoders, run without the GPFA decoders |
-| Not reproduced | 11 claims, among them the eigenvalue frequencies and distances, the basis frequencies, the single-LDS fit, the dimensionality of rotation orientations and location, and the warping control |
+| Factorization variance, shuffle control, recoverability; jPCA variance; single-condition LDS; location distinct from rotations; rotation and location prediction; location tracks direction; LDR encoding, its controls and decoding | Reproduced |
+| Data composition; basis frequencies; jPCA R2; plane alignment and its jPCA link; frequency segregation; excursion angles; location alignment; kinematics predict location; curvature decoding; decoder comparison of Figure 7f (all but GPFA) | Partially reproduced |
+| Duration warping; single LDS; eigenvalue clusters and distances; eigenvalues from kinematics; model comparison; jPCA variance correlation; orientation and location dimensionality; no output-potent dependence | Not reproduced |
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
-the differences from the paper's method.
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
 
-The dandiset's units are one per electrode, with no single- or multi-unit label, where the paper used
-sorted units; the Nitschke file joins five recording segments whose clocks overlap, and in the Jenkins
-file one unit's spike train continues in the next unit's row. The main notebook
-uses all successful trials; `reproduce_sabatini_2024_trials_b.ipynb` runs the same analyses on trials
-with a delay above 400 ms, the claims file's other reading, and every outcome is the same.
-`reproduce_sabatini_2024_stable_units.ipynb` leaves out three units whose spike trains are not one stable
-unit's (in the Jenkins file, unit 0's train continues in unit 1's row; in the Nitschke file, unit 170 fires
-above 100 spikes/s on 229 trials of one segment), and every outcome is the same except
-fig6e-kinematics-predict-location: there M1-N's kernel value lies above its range, and as the paper used
-stable units, that claim's outcome (partially reproduced) is taken from this notebook. The attempt record,
-with the reasons, the differences from the paper's method and the findings about the dataset, is
-[`attempts/sabatini-2024-01.yaml`](../../attempts/sabatini-2024-01.yaml).
-
-Run with `python tools/entry.py run entries/sabatini-2024`; it streams about 1 GB of spike times and hand
-position and the three notebooks take about 25, 15 and 25 minutes.
+The record, with the reasons and the differences from the paper's method, is
+[`attempts/sabatini-2024-02.yaml`](../../attempts/sabatini-2024-02.yaml). Among other things it reports
+that the dandiset's units are unsorted threshold crossings, one per electrode, where the paper analysed
+sorted single units and stable multi-units.

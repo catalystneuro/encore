@@ -1,0 +1,58 @@
+questions:
+- claim: fig2gi-circulant-noise-collapses
+  question: The criterion places each final state by the peak neuron of its smoothed input currents across
+    the 1,533 sorted neurons, merges positions within 31 neurons, and asks the sorted optimal matrix to
+    keep at least 50 states. Fig. 2g plots the steady states against the manifold coordinate theta, so
+    the continuum the paper shows is one of manifold angles. Should a state be placed by its manifold
+    angle (for example the angle of the nearest target point), with the 50 states counted on that coordinate?
+  passage: Results, Dynamics of the data-derived network model, "The optimal weights (Fig. 2b) maintain
+    a continuum of stable, heterogeneous states (Fig. 2g)"; Fig. 2 legend, "g-i, Steady-state activity
+    across ordered neurons at manifold coordinate theta, not to be confused with tuning curves across
+    theta".
+  why: On the criterion's position measure the 50 states cannot be reached by any matrix. The heterogeneous
+    currents of the 1,533 neurons peak on few neurons, so even the 100 initial states give only 24 to
+    33 states (single linkage, greedy and bins), and the sorted matrix keeps 24 to 31; the claim is then
+    partially reproduced. Placed by the manifold angle of the nearest target point, the sorted matrix
+    keeps all 50 bins of width 2 pi / 50 while the circulant plus noise keeps 7, which would make the
+    claim reproduced if the circulant shift test also holds.
+- claim: figs8-s9-lambda-and-c
+  question: The criterion asks for the flow error at lambda 1e-8 to be lower than at 1e-2 and at 1e-12.
+    The supplement says lambda 1e-8 "sits just above the minimum", with the error rising at small lambda
+    where the kernel is ill-conditioned; it does not say that 1e-8 is below 1e-12. Should the test be
+    that the flow error rises at both ends of the grid, with its minimum below 1e-8 and the error at 1e-8
+    still small?
+  passage: Supplementary Note 3, section 8.4, "Supplementary Fig. 9 shows the mean squared flow rising
+    with larger lambda and also rising at small lambda, where the optimization kernel becomes ill-conditioned.
+    The value lambda = 10^-8 used in the paper sits just above the minimum, beyond the ill-conditioned
+    regime but with the flow error still negligible."
+  why: Here the flow error is lowest at lambda 1e-10 and rises on both sides, and the error at 1e-8 (1.7e-8)
+    is above that at 1e-12 (2.6e-9 to 3.6e-9 over the runs of this attempt, as the solve there is ill-conditioned). The paper's own cached errors (err_grid of pc_convergence_grid.npz
+    on Zenodo) are the same, 1.7e-8 at 1e-8 and 3.8e-9 at 1e-12, so the part fails on the paper's numbers
+    as well. Under the supplement's wording this part would hold, and the claim would then turn on the
+    test of collapse at lambda 1e-2 and c 1 alone.
+- claim: figs1-s2-spectrum-does-not-fix-symmetry
+  question: The criterion asks the eigenvalues of the two finite weight matrices (one draw of each ensemble,
+    N 10,000) to agree within 5%. The paper says the two ensembles share their second-order statistics
+    and hence the spectrum of J at large N, which is a statement about the population eigenvalues, not
+    about one finite draw of each. Should this part test the large-N (population) spectrum, or use a tolerance
+    set by the sampling spread of a finite draw?
+  passage: Supplementary Note 1, after Eq. 37, "Note that the spectrum of J at large N therefore depends
+    only on second-order statistics of the loadings"; and before Example 1, "a modification of our model
+    that preserves the second-order statistics, and therefore the spectrum, while changing the dynamics".
+    Discussion, "we can construct ensembles that match our model's second-order statistics and hence its
+    spectrum".
+  why: The two ensembles have the same population eigenvalues (100, 100, 25 and 25) by construction. The
+    finite matrices differ from them by sampling, and by up to 5.18% from each other under the claim's
+    seed (2.4% to 5.2% over five seeds, 3.3% for the paper's seed-42 matrices), so the 5% test passes
+    or fails with the draw. Under a population reading this part holds, and with the dynamics part, which
+    holds under all five seeds, the claim would be reproduced.
+- claim: fig7-dmft-mexican-hat-and-stability
+  question: The statement says that at a bump state all Jacobian eigenvalues have negative real parts except
+    the symmetry-induced zero, but the criterion tests only that the second eigenvalue is negative. Should
+    the criterion also test that the leading eigenvalue is zero (the symmetry-induced mode) at every grid
+    point?
+  passage: Results, Dynamical mean-field theory, "At a bump state, all eigenvalues of M(theta, theta') have
+    negative real parts except the symmetry-induced zero (Fig. 7f, teal curve)".
+  why: On the 40 by 20 grid of dmft.ipynb the second eigenvalue is negative at all 800 points, so the criterion
+    is met, but at 293 points the leading eigenvalue is below -1e-6 (down to -0.22), with a bump that is
+    not flat (median amplitude 0.95). With a test of the zero mode the claim would be partially reproduced.

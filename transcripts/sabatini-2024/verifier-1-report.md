@@ -1,67 +1,78 @@
-**A. Outcomes**
+**Verifier report, round 1: Sabatini & Kaufman 2024 on DANDI:000070 (two notebooks, 34 claims in the claims file)**
 
-The claims file has 34 claims and the notebook tests all of them. My outcomes: 10 reproduced, 13 partially reproduced, 11 not reproduced, none blocked.
+Overall: 13 reproduced, 10 partially reproduced, 10 not reproduced, 1 blocked.
 
-| Claim | Outcome | Reason |
+### A. Outcomes
+
+| claim | outcome | reason |
 |---|---|---|
-| data-composition | reproduced | Both monkeys have 72 conditions (36 straight, 36 curved). Trial counts are within tolerance under both readings (J 1595/1381, N 2121/1884), and each array has 96 units, inside 71–130 (cell 13). The units carry no single/multi-unit label, so all units are counted (see B6). |
-| jpca-fit-r2 | partially_reproduced | Under reading (a), straight (0.75–0.84) and curved (0.56–0.71) are all inside their ranges. For all conditions together, PMd-N's 0.452 falls outside 0.576–0.803, so 3 of 4 pass. The per-condition signed-rank test is significant only for M1-N, and it does not decide (cell 59). |
-| jpca-variance-explained | partially_reproduced | Means are 8.9, 11.6, 11.7 and 5.1%; PMd-N falls below 6.3%. The s.d. is ≤11.6%, consistent with the paper's <13% (cell 61). |
-| single-lds-variance | not_reproduced | Means are 0.77–0.82 under reading (a) and 0.79–0.87 under (b). All four are above 0.726 under both readings (cell 32). |
-| fig2c-condition-lds-variance | reproduced | Chosen k is 5, 5, 7, 5 (all in 5–9, the same under all five seeds). Mean variance explained is 0.84–0.94, inside 63.9–100% (cell 15). |
-| fig3a-eigenvalue-clusters | not_reproduced | Median pair frequencies are within 10% of the targets only for PMd-J (0.54, 1.53). M1-J (0.85, 2.35), M1-N (0.68, 1.74, 3.21) and PMd-N (0.73, 1.67) miss (cell 17). |
-| fig3c-eigenvalue-distance-auc | not_reproduced | AUC under the Poisson null: 0.81, 0.71, 0.63, 0.70. Under the half-split null: 0.70, 0.64, 0.66, 0.68. At most one dataset is inside 0.459–0.638 under either null, and the result is stable across seeds (cell 20). |
-| suppfig2-eigenvalues-from-kinematics | not_reproduced | Pooled mean R² is 0.275 under both kinematic readings, against 0.1 ± 0.05 (cell 74). |
-| fig3g-basis-frequencies | not_reproduced | PMd-J has only 2 rotation pairs. The frequencies (0.64–0.74, 1.54–1.82, 2.71–3.23 Hz) sit systematically above 0.5/1.5/2.5 Hz; the 0.5 Hz rotation misses in all four datasets (cell 22). |
-| tbf-variance-explained | reproduced | Means are 0.935, 0.936, 0.966, 0.953 under reading (a) and 0.92–0.96 under (b), all inside 81–100% (cell 24). |
-| tbf-shuffle-control | partially_reproduced | Shuffled means are 42.2, 28.7, 41.8 and 42.1%; PMd-J falls below 31.5%. The rank-sum test gives p = 3.9e-25 with real data higher on 72/72 conditions in every dataset (cell 27). |
-| fig3h-recoverability | partially_reproduced | Real recoverability is 0.973–0.986 with rank-sum p < 0.001. The paper states chance as 63–80%. The notebook's chance is 0.896, 0.860, 0.890, 0.896, so 3 of 4 exceed the widened bound of 88% (cell 28; see B4). |
-| fig3i-duration-warping | not_reproduced | Unwarped M1-N is rho +0.235 (paper −0.26). Under the main (truncating) warp, only M1-J (−0.514) lies in −0.693 to −0.468; under the 250 ms post-reach warp, none do (cell 30). |
-| suppfig3-model-comparison | not_reproduced | Under the main reading, cross-validated TBF (0.71–0.87) is below the in-sample single-condition LDS (0.84–0.94) in every dataset. The all-in-sample variant passes in every dataset (cell 63; see B11). |
-| fig4b-plane-alignment | reproduced | All 11 rotation AUCs are 0.861–0.958 with observed alignment lower. Signed-rank p = 1.7e-13 with observed lower on 72/72 conditions (cell 36). |
-| fig4c-subspace-excursion-angles | partially_reproduced | Counts above 45° are 5, 13, 11, 7, 14, 3, 9, 11, 7, 18, 25; 8 of 11 are inside 5.4–22. The second part (more dimensions above chance than above 45°) fails for most rotations, but it rests on the notebook's own chance definition (B3). |
-| rotation-orientation-dimensionality | not_reproduced | PCs to 80% are 2–23 and participation ratio is 1.7–18.7, against 20.7–44 and 15–40.5; under both PCA inputs only one rotation falls inside each range. The SNR dimensions hit the 96 ceiling for two rotations because of a bug (B2) (cell 44). |
-| fig4d-jpca-variance-correlation | not_reproduced | Per-dataset mean rho is 0.33, 0.93, 0.65, 0.68; the significant planes have 0.63–0.93. Neither reading falls in 0.351–0.506, and 5 of 6 planes (83%) are significant, not 66 ± 6.6% (cell 66). |
-| fig4f-plane-alignment-explains-jpca | partially_reproduced | rho is 0.94, 0.93, 0.83, 0.69, 0.82, 0.82, all with p < 0.001. M1-N plane 1 (0.689) is below 0.738, so 5 of 6 pass (cell 67). |
-| fig5a-frequencies-segregated | reproduced | Under reading (a), all 20 comparisons have p < 0.001 with mean same-minus-different positive. For M1-N rot2 the same-frequency median is lower and fewer than half of the pairs favour same, so "higher" rests on the mean (cell 48; B10). |
-| fig5c-rotations-predict-rotations | reproduced | Pair means are 0.41–0.95, inside 38.7–100%. Every pair beats its null with signed-rank p ≤ 2.4e-12, stable across seeds (cell 52). |
-| suppfig6a-location-alignment | partially_reproduced | AUCs are 0.883, 0.748, 0.870, 0.945; PMd-J falls below 0.792. p < 1e-12 with observed lower (cell 38). |
-| suppfig6b-location-dimensionality | not_reproduced | SEA dimensions above 15° are 0–1 (1–2 counting the seed), against 3.6–5.5. PCs are 2–5 against 18.9–33, and participation ratio is 1.9–4.3 against 13.6–29. SNR is 72 in all four datasets, the ceiling, because of the B2 bug (cell 45). |
-| suppfig6c-location-distinct-from-rotations | reproduced | Location-to-location median is 0.93–0.97 against 0.08–0.67 onto rotations, p ≈ 0 under both readings in every dataset (cell 49). |
-| fig6b-location-predicts-rotations | reproduced | Means are 0.709, 0.723, 0.809, 0.716 (inside 60.3–88%), with signed-rank p < 1e-12 against the null. The code variant also passes (cell 53). |
-| fig6c-location-tracks-direction | partially_reproduced | After flipping PC 2, the circular correlation is 0.61, 0.70 and 0.25 (all p < 0.05) for three datasets. PMd-N has 0.05, p = 0.62 (cell 55). |
-| fig6e-kinematics-predict-location | reproduced | Under kinematic reading (a), linear is 0.53, 0.55, 0.70, 0.41 (inside 33.3–78.1%) and the OU kernel is 0.70, 0.69, 0.89, 0.77 (inside 62.1–89.1%). Both beat all 1000 permutations. The Gaussian kernel reading fails (cell 72). |
-| fig7c-ldr-encoding | reproduced | Linear is 0.68–0.84 (inside 54–85.8%) and kernel 0.84–0.92 (inside 63.9–95.7%), with p ≤ 2.6e-8 against the nulls, under both kinematic readings (cell 77). |
-| suppfig7a-not-memorization | partially_reproduced | Kernel beats nearest neighbour at p < 1e-9 in three datasets. PMd-J has p = 0.019 under reading (a) and 0.89 under (b) (cell 78). |
-| fig7c-standard-encoding-worse | partially_reproduced | Both LDR models beat the linear standard model (0.52–0.53) at p < 1e-9. Both kernel standard models return exactly 0.000 in every dataset, so 16 of the 24 comparisons test nothing (B1) (cell 81). |
-| fig7f-ldr-decoding | partially_reproduced | Mean variance explained is 0.774, 0.747, 0.874, 0.734 under reading (a). PMd-J and PMd-N fall below 0.756, so 2 of 4 pass; reading (b) gives the same pattern (cell 84). |
-| fig7f-decoder-beats-standard | partially_reproduced | LDR wins with p < 1e-180 in 24/24 comparisons against the non-GPFA decoders. The GPFA decoders were not run, which the criterion scores as partial (cell 89; see B7). |
-| suppfig8-no-output-potent-dependence | not_reproduced | Removing the kinematic-potent dimensions drops variance explained by 3.9–6.3 percentage points, with p < 0.001 in all datasets, against the threshold of p ≥ 0.036 (cell 86). Archive metadata for both assets lists Position, Units, ElectricalSeries, with no EMG, so the EMG part cannot be tested. |
-| trial-curvature-decoding | partially_reproduced | Under reading (a), 6 of 8 correlations are inside 0.144–0.451; PMd-J parameter 4 (0.093) and M1-N parameter 4 (0.548) fall outside. All have p < 0.001. Reading (b) gives 5 of 8 (cell 85). |
+| data-composition | partially_reproduced | 72 conditions (36 straight, 36 curved). Trials are 1595/2121 under reading (a) and 1381/1884 under (b), all within tolerance (nb1 cell 7). The unit criterion cannot be applied: the files hold 96 unsorted threshold-crossing channels per array, none marked single- or multi-unit (cell 5; the archive's file metadata agrees). |
+| jpca-fit-r2 | partially_reproduced | Straight 4/4 and curved 4/4 in range under both readings. All conditions: 2/4 (best) or 1/4 (skew) (cell 20). The signed-rank test gives p<0.001 only in M1-J; it is reported, not decisive. |
+| jpca-variance-explained | reproduced | 9.1, 10.6, 10.8 and 6.8%, all in 6.3–13.2%; s.d. below 13 (cell 22). |
+| single-lds-variance | not_reproduced | 77.3–82.6% under (a) and 79.6–86.5% under (b); all above 72.6% (cell 28). |
+| fig2c-condition-lds-variance | reproduced | k = 5, 5, 7, 7 (or 5, 5, 7, 5); variance explained 83.2–94.1% (cell 31). |
+| fig3a-eigenvalue-clusters | not_reproduced | Median pair frequencies are off: M1-J [0.85, 2.38] and M1-N [0.63, 1.74, 3.19] Hz. Only 3 of 10 pairs are within 10% (cell 35). |
+| fig3c-eigenvalue-distance-auc | not_reproduced | AUC 0.58–0.72 with the half-split null and 0.59–0.80 with the Poisson null. Only PMd-N is within 0.459–0.638 (cell 38). |
+| suppfig2-eigenvalues-from-kinematics | not_reproduced | Pooled R² 0.247 or 0.298, against 0.10 ± 0.05 (cell 42). |
+| fig3g-basis-frequencies | partially_reproduced | Every dataset has 3–4 rotation pairs plus one offset. Only 5 of 14 frequencies are within 10%; the lowest is 0.61–0.73 Hz everywhere (cell 9). The criterion has no partial clause; I read the count and offset holding while the frequencies fail as partial. |
+| tbf-variance-explained | reproduced | 92.3–97.1%, s.d. ≤1.3 (cell 11). |
+| tbf-shuffle-control | reproduced | Shuffled 35.1–45.6%; rank-sum p ≈ 4e-25, real higher (cell 14). |
+| fig3h-recoverability | reproduced | Real 95.1–96.6%, rank-sum p<0.001 (cell 15). Chance is 84.8–87.8%, above the paper's stated 63–80% in all four; it is inside only because the upper bound is widened to 88. |
+| fig3i-duration-warping | not_reproduced | Unwarped M1-N rho = 0.013 (paper −0.26) and PMd-N 0.246 is out of range. Warped (truncate) is in range in only 2/4 (PMd-J −0.06, PMd-N −0.27), so the partial condition also fails (cell 18). |
+| suppfig3-model-comparison | not_reproduced | Under the claims file's main reading, held-out TBF (73.5–88.8%) is below the in-sample LDS (83.2–94.1%) in 4/4. The in-sample variant reproduces (cell 44). See problem 3. |
+| fig4b-plane-alignment | partially_reproduced | 13 of 14 rotations have AUC 0.83–0.94 with signed-rank p<0.001. PMd-N 3.65 Hz has AUC 0.545 (cell 48). |
+| fig4c-subspace-excursion-angles | partially_reproduced | Counts are in range for 3 of 4 datasets. PMd-N gives 23–25 (saturating at the 25-dimension cap); 10 of 14 counts in range (cell 57). |
+| rotation-orientation-dimensionality | not_reproduced | PCs to 80% are 3–24 (3/14 in range) and participation ratio 2–20 (2/14), under both PCA readings. The SNR dimensions (13/14) are the only part that holds (cell 60). |
+| fig4d-jpca-variance-correlation | not_reproduced | 5/6 planes at p<0.05 (83%, tolerance 59.4–72.6). Plane rho values are −0.09 to 0.92 and neither reading falls in 0.351–0.506 (cell 24). |
+| fig4f-plane-alignment-explains-jpca | partially_reproduced | 5 of 6 planes have rho ≥0.738 with p<0.001; M1-N plane 1 is 0.685 (cell 26). |
+| fig5a-frequencies-segregated | partially_reproduced | 35/36 comparisons pass with the paired test and 33/36 with rank-sum; 80% or more is the partial rule (cell 53). |
+| fig5c-rotations-predict-rotations | reproduced | Rotation pairs explain 40.9–90.5%; 36/36 above the null at p<0.001 (nb2 cell 6). |
+| suppfig6a-location-alignment | partially_reproduced | AUC 0.890, 0.698, 0.889, 0.764: 2 of 4 in range. Observed alignment is below noise with p<0.001 in all four (cell 50). The criterion has no partial clause; I read it as following fig4b, as its criterion says. |
+| suppfig6b-location-dimensionality | not_reproduced | SEA angles >15°: 1–2 (needs 3.6–5.5). PCs 3–15 and participation ratio 2–7, 0/4 in range. SNR 3/4 (cells 61, 60). |
+| suppfig6c-location-distinct-from-rotations | reproduced | Location-to-location alignment (0.89–0.97) is above location-to-rotation in every comparison, p≈0 (cell 54). |
+| fig6b-location-predicts-rotations | reproduced | 65.4–83.0%; signed-rank p ≤ 7e-12 against the null (nb2 cell 9). |
+| fig6c-location-tracks-direction | reproduced | Circular correlation 0.66, 0.72, 0.63, 0.36 after a per-dataset PC sign flip; p ≤ 9e-4 (cell 11). |
+| fig6e-kinematics-predict-location | partially_reproduced | Linear in range 3/4 (PMd-N 0.24). Kernel in range 2/4 (Ornstein-Uhlenbeck) or 0/4 (Gaussian). All beat all 1000 permutations (cell 14). |
+| fig7c-ldr-encoding | reproduced | Linear 68.9–85.4% and kernel 84.7–92.9%, p<0.001 against the null, under both kinematic readings (cell 17). |
+| suppfig7a-not-memorization | reproduced | Kernel beats nearest-neighbour in all datasets, p ≤ 1.5e-4 (cell 19). |
+| fig7c-standard-encoding-worse | reproduced | LDR models beat the standard models in 24/24 comparisons, p<0.001 (cell 22). |
+| fig7f-ldr-decoding | reproduced | Mean over trials 88.9–93.3% (cell 25). |
+| fig7f-decoder-beats-standard | blocked (too_large) | Only the single-trial kernel decoders are plausibly too large; the archive holds the spikes and hand position needed. The linear decoders and the decoders trained on trial averages were feasible and not run. GPFA is missing from the environment, which is not a data block. |
+| suppfig8-no-output-potent-dependence | not_reproduced | p ranges from 1e-5 to 5e-10 in all datasets, below 0.036. The mean drop is only 0.3–0.9 points (cell 29). No EMG is in the files; I checked the NWB processing modules. |
+| trial-curvature-decoding | partially_reproduced | 7 of 8 correlations in range with the svd kinematic reading; PMd-J y curvature is 0.092. 6 of 8 with the skew-normal reading (cell 27). |
 
-**B. Problems**
+### B. Problems
 
-1. [affects a conclusion] Cell 80, `std_job`, together with `ldr.kernel_fit`. The notebook assumes a kernel penalty of 0.1 for the standard encoders; the Methods give none. With an OU length scale of 10^12 or 10^11, the kernel matrix is all ones to within about 1e-10, so the fit returns the training mean. That is why both kernel encoders score exactly 0.000 everywhere. On a synthetic test with that kernel, a penalty of 0.1 gives R² = −0.001 (prediction s.d. ~1e-7), while a penalty of 1e-8 gives R² = 0.86. The 10^12 scale only makes sense with a near-zero penalty, as for the LDR encoder.
-2. [affects a conclusion] Cell 43, `snr_job`. PCA runs on mean-centred loadings, but the bottleneck is applied to uncentred loadings. The direction shared across conditions is then only restored at full rank, so the alignment index keeps rising to the maximum dimension. On synthetic data with 4 true dimensions, the procedure returns 72 of 72; with uncentred PCA it returns 4. This is why the location SNR is 72 in all datasets and M1-N/PMd-N rot0 reach 96. The outcomes of rotation-orientation-dimensionality and suppfig6b do not change, since PCs and participation ratio already fail, but the SNR values are unusable.
-3. [affects a conclusion] Cells 39–41. The fig4c chance level is the author's own: the 95th percentile of the largest principal angle between half-split planes of a single condition. That is neither the claims file's fraction of noise SEA above the data nor a like-for-like comparison with excursion angles to a growing union. The "more dimensions above chance" part fails only under this definition.
-4. [affects a conclusion] Cells 26 and 28, `recoverability`. Real recoverability uses the de-mixed basis; chance uses the raw SVD basis of the shuffled data. Variance explained in B is not invariant to the non-orthogonal de-mixing transform, so the chance level of 86–90%, compared against the paper's 63–80%, is not measured the same way as the real value.
-5. [affects a conclusion, borderline cases] Cells 6–7. Only trial reading (b) is analysed. The stated reason, that (b) is closer to the paper's counts, is false for monkey N: (a) is +107, (b) is −130. Several outcomes sit at a range edge and were never run under (a): fig7f PMd-J 0.747 against 0.756, PMd-N 0.734, tbf-shuffle PMd-J, and fig3c PMd-J 0.641 against 0.638.
-6. [does not affect a conclusion] Cell 13. The "units per electrode" check is `np.bincount(np.arange(192))`, which always prints [1]; it checks nothing. Each array has exactly 96 units, equal to its electrode count, which suggests channel-level units rather than the paper's 79–118 sorted units. That is never examined, and it may underlie several mismatches in level.
-7. [affects a conclusion, partly] Cell 88. Rates are z-scored before the OU decoder (length scale 100). The paper does not do this, and it changes the effective length scale. The 3000-point training subset is also an assumption. The instantaneous decoders are scored over −250 to +850 ms while LDR is scored over −350 to +850 ms, and only kinematic reading (a) is run. The very low baselines (0.005–0.06 with 20 ms smoothing) are never sanity-checked.
-8. [does not affect a conclusion] Cell 19. The Poisson null simulates from already-smoothed rates at 10 ms and smooths again, which lowers the noise. It uses 100 repeats rather than 500. The half-split null fails as well, so the outcome stands.
-9. [does not affect a conclusion] Cell 59. The straight/curved pairing assumes that maze m+1 is the curved version of straight maze m with the same target. Targets are not compared, and the test is not decisive.
-10. [does not affect a conclusion] Cells 48 and 52. Signed-rank p values are two-sided with no direction printed; for fig5a M1-N rot2, "same higher" rests on the mean difference alone.
-11. [affects a conclusion; claims-file reading, reported only] suppfig3. The main reading compares held-out TBF variance against in-sample LDS and jPCA values, so the outcome flips between readings: not reproduced under the main one, reproduced under the variant.
-12. [does not affect a conclusion] `ldr.load_session`. The time shuffle permutes bins over −500 to +1001 ms, an assumption that sets the shuffled level; PMd-J's 28.7% is near the bound. In `ldr.kin_basis`, `Bp = cumsum(Bv)` fixes the scale of the reach parameters, and with it the effective OU length scale (10^3) in fig6e, fig7c and suppfig7a. This is not stated as an assumption.
+1. **[affects a conclusion] fig3i, `durations` and `warped_average` (nb1 cell 17).**
+   - The criterion defines reach duration per trial and correlates each condition's mean duration. The notebook takes one duration from the condition-mean hand speed and warps every trial with it.
+   - The warp scales `0 < st < wf` with `st` offset by +100 ms. That warps −100 to wf−100 ms, not −100 ms to the end of the reach as the notebook's own text says, so the last 100 ms of each reach falls in the unwarped segment.
+   - The per-trial reading was not run.
+2. **[affects a conclusion] Alignment event, `ldr.load_session`.** All data are aligned on online `move_begins_time`. The offline onset in the file differs by a median of 25 ms (J) and 52 ms (N), and the paper does not say which onset it used. The analysis was not rerun under the second reading, although the jPCA window (−160 to +40 ms) and the fig3i durations depend on it.
+3. **[affects a conclusion] Claims-file misreading, suppfig3.** The Supplementary Figure 3 legend says the LDR model "explains greater neural variance when cross-validated" than the condition-specific LDS. The main reading compares held-out TBF with in-sample LDS. The notebook's own held-out LDS scores (cell 31, split 0.5, chosen k) are 0.675, 0.768, 0.835 and 0.788, all below held-out TBF (0.735, 0.810, 0.888, 0.817). A like-for-like comparison would therefore favour TBF in 4/4, though the windows differ.
+4. **[affects a conclusion] fig4d and fig4f (cells 24, 26).** The Methods soft-normalise and mean-subtract before extracting the temporal basis functions. The notebook reuses the basis from unnormalised data and only rescales and centres the loadings.
+5. **[affects a conclusion] Kernel length scales, fig6e and fig7c (nb2 cells 3, 13).**
+   - The four reach parameters' scale depends on how the kinematic basis is normalised. Here they span ±30, from unit-norm SVD vectors summed cumulatively.
+   - The paper's length scales (10³ and 400) were tuned to `kinFuncEval`'s unknown scale, so they do not transfer.
+   - The scale was never checked. The fig6e kernel failures (Gaussian 0/4) may come from this.
+6. **[affects a conclusion] fig7f-decoder-beats-standard (nb2 cell 30).** The linear decoders and the kernel decoders trained on trial averages (about 4,000 samples) fit in memory and were not run. They would have tested most of the comparison set.
+7. **[affects a conclusion] Data difference, all claims (nb1 cell 5).** The paper used 79–118 sorted single and multi-units per array; the files hold 96 unsorted threshold crossings. The notebook states this, but it bears on the dimensionality claims (PCs, participation ratio, single LDS) that fail.
+8. **[does not affect a conclusion] fig3c (cell 36).** The markdown says the Poisson null has 50 repeats; the code runs 30. The half-split null runs 150 repeats instead of 500. AUCs are stable across seeds (cell 40).
+9. **[does not affect a conclusion] jpca-fit-r2, `per_cond` (cell 20).** It projects data that lacks jPCA's second soft-normalisation and PC centring onto the jPC plane, so the per-condition R² is approximate. It only feeds the non-decisive signed-rank test. The straight/curved pairing (condition 3j+1 with 3j+2 as the same target) is assumed and never printed.
+10. **[does not affect a conclusion] suppfig8 (nb2 cell 29).** `Kp.mean(1)` removes the mean across the four kinematic variables at each sample, while neurons have their mean removed over time. This looks like a transposed MATLAB `mean`, and I could not verify it against `removePotent.m`. The drops are small and consistent, so p would likely stay below 0.036.
+11. **[does not affect a conclusion] suppfig2 (cell 42).** Both members of each conjugate pair enter as targets, so every real part is counted twice in the pooled mean.
+12. **[does not affect a conclusion] fig6e (cell 13).** The target offset columns come from a TBF fitted on all 72 conditions, including the held-out ones. Only the predictors are kept out of training.
 
-**C. What I could not check, and the output that would have let me**
+I tested the helpers on synthetic data and they behave correctly: `eig_transform` recovers 0.5, 1.5 and 2.5 Hz and a 0.3 s half-life exactly; `lds_eigs_batch` returns 0.49, 1.51 and 2.50 Hz. `alignment_index`, `auc_folded`, `pca_dims`, `circ_corr`, `sea` and `split_halves` give the expected values. So the frequency, AUC and dimensionality misses are not helper bugs.
 
-- Whether the units are sorted units or per-channel threshold crossings: the units table's columns, including any quality or sort fields, and the per-unit electrode IDs.
-- Effect of trial reading (a) on the borderline claims: fig7f-ldr-decoding, tbf-shuffle-control, fig3c, jpca-variance-explained and suppfig7a rerun under reading (a).
-- Direction of the signed-rank tests: the median of paired differences, or one-sided p, in cells 48, 52 and 86.
-- Whether the standard decoders are sound: their in-sample variance explained and their variance explained on trials of training conditions (cell 89).
-- Recoverability chance with the de-mixed basis on the shuffled data (cell 28).
-- The fig3g and fig3a frequency shift (0.7/1.8/3.1 Hz against 0.5/1.5/2.5). The de-mixing helper recovers 0.5, 1.5 and 2.5 Hz exactly on synthetic data, so the shift comes from the data or the window, not from de-mixing. Frequencies under a different fitting window, or on reading-(a) trials, would separate those causes.
-- The jPCA port's fidelity to the codepack: R² on the codepack's example data.
-- The GPFA decoders: never run. The spike trains on the archive would allow it, so this is not blocked by the data.
-- None of the claims is blocked. The EMG half of suppfig8 is missing from the data, per the archive metadata.
+### C. What I could not check
+
+- **Code the notebooks cite.** `warpTrial.m`, `removePotent.m`, `getRotations.m` and the jPCA codepack's R² definition were not available to me. These outputs would have settled problems 1, 2, 4, 5 and 10:
+  - fig3i run with per-trial durations, and with the warp ending at st = wf + 100;
+  - the whole pipeline rerun on `offline_move_onset_time`;
+  - fig4d and fig4f with the basis re-extracted from soft-normalised, mean-subtracted data;
+  - a fig6e and fig7c kernel sweep over the reach-parameter scale or length scale;
+  - a print of the first rows of `Kp` and `Dsub` for suppfig8.
+- **suppfig3.** A table of held-out LDS against held-out TBF on the same −160 to +850 ms window and split would show whether problem 3 changes the outcome.
+- **fig7f-decoder-beats-standard.** The linear decoders and the decoders trained on trial averages, run against LDR with signed-rank tests.
+- **Straight/curved pairing.** A print of target positions for conditions 3j+1 and 3j+2.
+- **Plots.** The figures in nb1 cell 9 and nb2 cells 2 and 11 were judged only from the printed statistics.

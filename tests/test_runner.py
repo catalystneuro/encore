@@ -403,6 +403,26 @@ def test_a_chain_whose_recorder_has_run_only_finishes(tmp_path):
     assert runs(rounds, proposed="true") == ["the paper match of dandi-000001", "claims", "claims-check", "verifier-3", "author-revise-3"]
 
 
+def test_a_first_attempt_reads_its_claims_even_when_a_version_is_named():
+    # 2026-11-25: four run requests for costabile-2023 named their published versions. The chain took a version
+    # for a repeat attempt, which keeps the claims file, but main had none: the author ran with no claims.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index('if [ -n "$recorded" ]; then\n  :'):chain.index("step author\n")]
+    def runs(version, claims_on_main, ready="false"):
+        script = (f'd=x-2020\nVERSION="{version}"\nREPLICATE=""\nrecorded=""\ndeprecated=false\non_main={ready}\n'
+                  'is_done(){ return 1; }\nlog(){ :; }\nfetch(){ :; }\nend(){ echo "END $*"; exit 0; }\n'
+                  'step(){ echo "RUN $1"; }\nclaims_file(){ echo claims/x-2020.yaml; }\nhere=/nonexistent\n'
+                  f'git(){{ [ "$1 $2" = "cat-file -e" ] && return {0 if claims_on_main else 1}; return 0; }}\n'
+                  'on_branch(){ echo "checks: [{ready: true}]"; }\n'
+                  f'python(){{ {sys.executable} "$@"; }}\n' + block)
+        out = subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout
+        return [line[4:] for line in out.splitlines() if line.startswith("RUN ")]
+    assert runs("0.230316.1519", claims_on_main=False)[:2] == ["claims", "claims-check"]
+    assert runs("", claims_on_main=False)[:2] == ["claims", "claims-check"]
+    assert runs("0.261124.1906", claims_on_main=True) == []                  # a repeat keeps the claims file
+    assert runs("", claims_on_main=True, ready="true") == []                  # checked claims on main
+
+
 def test_a_failed_commit_job_is_found_by_its_name_in_a_called_workflow():
     # Since the runs are encore-protocol's workflows, called from the registry's, the commit job is named
     # `attempt / commit` or `papers / commit` in the failed log; before, `commit`.

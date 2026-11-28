@@ -1,23 +1,25 @@
-I left all 34 outcomes as verified: 11 reproduced, 12 partially reproduced, 11 not reproduced. Two ratings went up to critical, and I proposed one outcome change for round 3. `python tools/entry.py all entries/sabatini-2024` ran from a clean environment and passed for all three notebooks, and `check` reports 0 errors. One wrong sentence remains in the notebook summary (see the end).
+I've worked through the round-2 report. No outcome changed and nothing is proposed for a third round: the verifier agreed with all 34, which stay at 13 reproduced, 11 partially reproduced and 10 not reproduced. The entry was re-run twice with `python tools/entry.py all entries/sabatini-2024`, both passing with 0 check errors (notebook 1 in about 40 min, notebook 2 in about 22). Nothing is committed.
 
-**Outcomes**
-- **Proposed change (fig6e-kinematics-predict-location):** the verified outcome stays reproduced, with partially reproduced written under `proposed`. The cause is three bad units, described under Findings below, which the main analyses keep. A new companion notebook, `reproduce_sabatini_2024_stable_units.ipynb`, leaves them out. The paper used "single-units and stable multi-units". In that notebook, M1-N's kernel value is 90.9% (89.2 to 90.9% over the five seeds), above the 89.1% bound. That fig6e figure is the only outcome that changes there.
-- **Shuffle span (tbf-shuffle-control):** the paper's code fixes it to the analysis window (`scrambleTrials.m` and `preprocessTrials.m`). I ran that span: shuffled values are 42.0, 29.4, 41.9 and 42.1%, and recoverability chance is 89.9, 86.8, 89.5 and 89.9%. PMd-J is still below its range, so neither outcome changes.
+**Why most of the quoted numbers did not match.** The verifier read a copy that had been run on a different machine. My two runs here printed identical outputs to each other, but they differ from that copy in the last digit of some fits. For example, the fig2c single-condition LDS gives 83.4% here and 83.2% there. My first run printed exactly the numbers the round-1 text already gave, so I put back the few I had "corrected" to the verifier's copy. Each notebook's summary now says the numbers depend on the machine and gives the other copy's values; no count against a criterion differs between the two. The round-2 responses explain this claim by claim.
 
-**Findings**
-- **Finding 1 (overlapping clocks in the Nitschke file):** raised to critical, the verifier's rating. The segment bounds now quote the printed values.
-- **Finding 3 (Jenkins unit 1):** the new output settles it, and it is now critical. Unit 0's spike train stops at 4259.0 s. 55 ms later the first of unit 1's two runs begins: 196,608 spikes running to the end of the session. The two runs share only 1,049 spike times. Neither run alone has intervals under 1 ms, but 3.5% of intervals are once merged. The first run matches other units' spike times the way unit 0 does (37.4% against 27.9%); the second run matches at most 2.5%. So unit 1's row appears to hold the rest of unit 0's train.
-- **Finding 6 (segment 3):** rewritten and raised to major. It is not a change of the recorded units, as the old text said. One M1 unit (170) fires above 100 spikes/s on 229 of the 532 trials in segment 3. Without it, decoding within segment 3 rises from 0.179 to 0.425. The per-trial spike-count distributions the verifier asked for are printed and are similar across segments.
+**Real errors, now corrected in the notebooks and the record:**
+- **fig3i:** the seed spread is at most 0.005, not 0.004.
+- **fig4f:** the ranges are 0.816 to 0.952 and 0.824 to 0.947.
+- **fig3a:** on the offline onset 3 of 10 frequencies are within 10%, not 2.
+- **fig7f-ldr-decoding:** the null and seed ranges mixed the two kinematic bases; they are now given per basis.
+- **fig6e:** the seed range is now given per basis.
+- **suppfig8:** the p-value ranges are now given per basis.
 
-**Other corrections**
-- Fixed the verifier's text slips in cell 64 (fig5a wording), cell 98 (four other seeds now 65.5 to 87.1%) and the fig3a row of the Summary.
-- The fig7f-decoder-beats-standard notes now say the instantaneous baselines test little.
-- Added round 2 under `verifications`: all 34 claims agreed, in the verifier's words, plus its review of findings 1 and 3.
-- Also updated the units deviation on every outcome, the README, `entry.yaml`, and one of the questions to the paper's authors.
+**Added:**
+- **Hand-position units:** notebook 1's data check now prints the hand position's unit and conversion factor, which the sanity finding relied on without showing.
+- **Finding 2:** now names the notebook and the cell that shows it.
+- **Online-onset assumption:** the 15 claims the offline-onset variant does not cover are now marked `assumed: true`, with a deviation saying so.
+- **Round-1 reasons:** the verifier's round-1 problem 2 (which movement onset to align on) is added to the reasons of the eight claims it was raised for.
+- **Round 2:** recorded under `verifications` for all 34 claims, with the verifier's reasons and my responses.
 
-**Not done**
-- **Wrong summary sentence:** the notebook Summary says unit 1's first run shares "0.4% of its times" with its own second run. The correct figure is 0.5% of the first run (1,049 of 196,608); 0.4% is the share of the second run. The full run takes 100 minutes and would not have finished before the 21:22 cutoff, so this was not corrected. The attempt record gives the correct count. It needs fixing in the next revision.
-- GPFA decoders: not run.
-- jPCA port fidelity: still unchecked, because the paper's code needs preprocessed files that are only available on request.
-- The fig7f baselines keep the paper's length scale of 100.
-- No new question for a reader: the verifier reported no new place where the claims file misreads the paper.
+**Problem 10 (suppfig8 centring) is settled.** I cloned the paper's code at commit b65f28d. `removePotent.m` sets up `kinParams` as samples × 4, so `mean(kinParams,2)` is each sample's mean over the four variables. That is the notebook's main reading, not the alternative the verifier suspected; the notebook text and the record now cite it.
+
+**Not done:**
+- **suppfig3:** stays not reproduced on the claims file's reading. The verifier's misreading point is already in `questions/sabatini-2024.yaml` for a reader to answer.
+- **Unsorted units:** the data contain only unsorted threshold crossings, which cannot be fixed. The notes already say this bears on the claims that count dimensions.
+- **Round-2 `findings`:** left empty, because no finding is rated `critical`. The verifier found the `major` and `minor` ratings reasonable, which I noted under `reviewed`.

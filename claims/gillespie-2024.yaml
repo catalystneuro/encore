@@ -1,0 +1,1232 @@
+# Claims for Gillespie, Astudillo Maya, Denovellis, Desse & Frank (2024), "Neurofeedback training
+# can modulate task-relevant memory replay rate in rats", eLife 12, RP90944, tested on dandiset
+# 000115.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-26,
+# protocol pilot-19 as stated in docs/protocol.md.
+#
+# Text read: the version of record (eLife RP90944, PMC11221834), in paper/10.7554-elife.90944.txt:
+# Introduction, Results, Discussion, Methods, the legends of Figures 1 to 5 and of the figure
+# supplements (Figure 1-figure supplement 1, Figure 2-figure supplement 1, Figure 4-figure
+# supplement 1, Figure 5-figure supplement 1), which are inline in the text, the eLife assessment,
+# the public reviews and the author response. The PDF was not opened; no claim needed a figure
+# value that the text does not give. The author response is not used for claims.
+#
+# Data the paper used. Eight male Long-Evans rats in two cohorts, each implanted with 30 tetrodes
+# in dorsal CA1, performing the same spatial memory task: a trial starts with a nosepoke at the
+# home port, then a nosepoke held at whichever of two center ports lights until a tone and small
+# reward (the "pre-reward" period, reward delivery, then the "post-reward" period until the rat
+# leaves the port), then a visit to one of eight arms, one of which (the goal) gives a large
+# reward; the goal changes after a number of rewards.
+#   - Control cohort (rats jaq, roquefort, despereaux and montague, in that order in every legend
+#     according to the code): both center ports impose a random delay. These are the rats of
+#     Gillespie et al. 2021 and are the data of dandiset 000115. The paper uses "trials from all
+#     days of reliable post-implant task performance".
+#   - Manipulation (neurofeedback) cohort (remy, gus, bernard and fievel, rat1 to rat4): one center
+#     port is the neurofeedback (NF) port, where reward follows the first online-detected
+#     suprathreshold SWR; the other is a delay port whose delay is drawn from the 8 previous NF
+#     latencies. Only the stable ("plateau") period of training is analysed, except Figure 2-figure
+#     supplement 1A and B. These data are in dandiset 000629, which the paper deposited and which
+#     is not the dataset of this record; every claim that needs them is data elsewhere.
+# Measured variables: CA1 LFP and spike marks (30 kHz), online SWR trigger times, port beam breaks,
+# reward delivery, head LED position. Processed outputs are on figshare
+# (doi:10.6084/m9.figshare.24919590.v1); no claim relies on them.
+#
+# Code read: github.com/LorenFrankLab/Gillespie_eLife_2024, commit
+# ad5801a28a0cf2a0ea97a1e25328db1c8376086c (the head, and the revision archived at Software
+# Heritage that the paper cites). MATLAB scripts in the Frank lab filter framework. The README maps
+# figure panels to script parts; for Figure 2-figure supplement 1F to H it is out of date
+# (dfs_rips_vsctrlrats.m part 11 makes 1F, part 9 makes 1G, part 10 makes 1H). The SWR detector,
+# the position processing, the trial parser, label_trial_interval.m and the clusterless decoder
+# are not in the repository (filterframework_shared, trodes2ff_shared, Gillespie_Neuron_2021 and
+# replay_trajectory_classification).
+#
+# Shared methods, settled by the code where the Methods are silent, used by the criteria below:
+#   - Epochs (dfs_rips_vsctrlrats.m). Control cohort, Figures 2 and 3 and their supplements:
+#     run epochs with ripthresh 0, environment "goal" and forageassist 0. Figures 4 and 5: the same
+#     with gooddecode 1 (dfs_ripcontent_vsctrlrats.m). Manipulation cohort: cond_phase "plateau",
+#     environment "goal".
+#   - Trials (dfa_ripquantpertrial_allphase_NF.m): trials with no lockout and leavehome > 0, or with
+#     a successful center port visit followed by a lockout. Pre-reward period from center port
+#     entry (RWstart) to reward delivery (RWend); post-reward period from RWend to leaving the port
+#     (leaveRW). Control trials are all trial types (type >= 1); manipulation type 1 is NF, type 2
+#     delay.
+#   - SWRs: offline consensus detection as in the Methods (150 to 250 Hz, squared, summed over CA1
+#     cell layer tetrodes, 4 ms gaussian, square root, 2 sd above the behavioral epoch mean,
+#     at least 15 ms). The code keeps only SWRs whose start and end both fall in immobility (head
+#     speed below 4 cm/s, ag_get2dstate, no buffer), all sizes (maxthresh > 2). An SWR belongs to a
+#     period when its start time falls inside it. Rate per trial is count over period duration.
+#   - Speed: the per-trial mean of the position structure's smoothed velocity (column 9) over the
+#     period. The smoothing is in the position processing, not in the repository.
+#   - Within-subject NF against delay: Wilcoxon rank-sum per rat, Benjamini-Hochberg over the four
+#     rats (fdr_bh). Cohort comparisons (allrat_lmeplot.m): two separate models, control trials
+#     against NF trials and control trials against delay trials, Variable ~ Cohort + (1|Indiv),
+#     linear (fitglme/fitlme) for rates, durations, sizes and fractions, Poisson for counts; the
+#     p-value is that of the Cohort fixed effect. The bar inset is the mean over rats of each rat's
+#     median, and the code prints the ratios control/NF, control/delay and NF/delay of those means.
+#   - Replay (dfa_ripcontent_nf.m, dfs_ripcontent_vsctrlrats.m): an SWR is replay when its
+#     decode is classed continuous and its largest maze-segment share (arm_prop, box plus 8 arms)
+#     exceeds 0.3; remote when that segment is an arm (the rat is in the box at the center ports).
+#     The Methods state the class as "the probability of the continuous movement model exceed a 0.8
+#     threshold"; the code uses max_state == 1, computed upstream. Both readings are named where a
+#     claim depends on them.
+#   - Task phase of a trial: label_trial_interval.m of Gillespie et al. 2021 (search trials have
+#     phase <= 1, repeat trials > 1, error trials a fractional part above 0 and below 0.85), as in
+#     claims/gillespie-2021.yaml.
+# Details none of the sources fix are named in the criteria.
+#
+# A discrepancy the claims do not rest on: the trigger delay is 75, 100, 50 and 50 ms for rat1 to
+# rat4 in the Methods and in the code (ratoffset), and 100, 50, 75 and 75 ms in the Figure 1-figure
+# supplement 1B legend.
+schema_version: 2
+paper: doi:10.7554/elife.90944
+claims:
+- id: control-cohort-trial-counts
+  kind: link
+  statement: The control cohort data used for the center port analyses comprise 2490, 2629, 2027
+    and 3021 trials for the four control rats.
+  source: Figure 2C legend (the same counts in Figure 1-figure supplement 1C, Figure 2-figure
+    supplement 1E and F)
+  quote: control cohort n=2490, 2629, 2027, and 3021 trials
+  expected:
+  - quantity: jaq trials
+    value: 2490
+    tolerance: 249
+  - quantity: roquefort trials
+    value: 2629
+    tolerance: 263
+  - quantity: despereaux trials
+    value: 2027
+    tolerance: 203
+  - quantity: montague trials
+    value: 3021
+    tolerance: 302
+  criterion: Trials selected as in the header (Shared methods, Epochs and Trials), counting
+    trials with a pre-reward period, per rat in the order jaq, roquefort, despereaux, montague
+    (dfs_rips_vsctrlrats.m). If the dandiset does not mark the epoch flags (ripthresh,
+    environment, forageassist), the readings are (a) all run epochs of the full delay task and
+    (b) those epochs minus any the dandiset or Gillespie et al. 2021 marks as forage assist or no
+    delay. Reproduced when all four counts are within tolerance under one reading; partially
+    reproduced when two or three are.
+- id: control-decode-counts
+  kind: link
+  statement: The control cohort data used for the replay and behavior analyses comprise 24, 32,
+    23 and 33 behavioral epochs, 2058, 2509, 1879 and 2795 trials for remote replay rate, and
+    1458, 1636, 1464 and 2181 trials for the replay GLM.
+  source: Figure 4D, 4E and 4G legends; Figure 5 legend
+  quote: control cohort n=24, 32, 23, and 33 behavioral epochs
+  expected:
+  - quantity: jaq epochs
+    value: 24
+    tolerance: 2.4
+  - quantity: roquefort epochs
+    value: 32
+    tolerance: 3.2
+  - quantity: despereaux epochs
+    value: 23
+    tolerance: 2.3
+  - quantity: montague epochs
+    value: 33
+    tolerance: 3.3
+  - quantity: jaq trials, Figure 4E
+    value: 2058
+    tolerance: 206
+  - quantity: roquefort trials, Figure 4E
+    value: 2509
+    tolerance: 251
+  - quantity: despereaux trials, Figure 4E
+    value: 1879
+    tolerance: 188
+  - quantity: montague trials, Figure 4E
+    value: 2795
+    tolerance: 280
+  - quantity: jaq trials, Figure 4G
+    value: 1458
+    tolerance: 146
+  - quantity: roquefort trials, Figure 4G
+    value: 1636
+    tolerance: 164
+  - quantity: despereaux trials, Figure 4G
+    value: 1464
+    tolerance: 146
+  - quantity: montague trials, Figure 4G
+    value: 2181
+    tolerance: 218
+  criterion: Epochs as in the header (Epochs, with gooddecode 1). Figure 4E trials are
+    trials with a task phase (non-lockout trials with leavehome > 0, dfa_ripcontent_nf.m).
+    Figure 4G trials are those with a task phase and a previous goal (from the second goal block
+    on, Methods, Replay content analysis). If the dandiset does not mark gooddecode, the reading
+    is the epochs of control-cohort-trial-counts, and the epoch counts are then reported as not
+    comparable. Reproduced when the epoch counts and at least one of the two trial-count sets are
+    within tolerance for all four rats; partially reproduced when the trial counts match for
+    at least two rats under either reading.
+- id: fig2s1c-control-prereward-swr-counts
+  statement: The control cohort has 2660, 581, 2192 and 5429 SWRs in the pre-reward period at the
+    center ports.
+  source: Figure 2-figure supplement 1C legend
+  quote: control cohort n=2660, 581, 2192, and 5429 SWRs
+  expected:
+  - quantity: jaq pre-reward SWRs
+    value: 2660
+    tolerance: 266
+  - quantity: roquefort pre-reward SWRs
+    value: 581
+    tolerance: 58
+  - quantity: despereaux pre-reward SWRs
+    value: 2192
+    tolerance: 219
+  - quantity: montague pre-reward SWRs
+    value: 5429
+    tolerance: 543
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: SWRs detected and assigned as in the header (SWRs), summed over the trials of
+    control-cohort-trial-counts (dfs_rips_vsctrlrats_excltrig.m part 2). Open, as the detector is
+    not in the repository and the Methods say only "2 sd above the behavioral epoch mean";
+    whether the mean and sd are taken over the whole epoch or over immobile times. Readings (a)
+    whole epoch, (b) immobile times (speed < 4 cm/s); and, as a variant, SWR detections the
+    dandiset may hold. Reproduced when all four counts are within tolerance under one reading;
+    partially reproduced when at least two are.
+- id: fig2s1a-trigger-size-increase
+  statement: Over neurofeedback training, as the detection threshold rose, manipulation subjects
+    produced increasingly large trigger SWRs at the NF port.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 1; Figure 2-figure supplement 1A
+  quote: subjects in the manipulation cohort successfully produced increasingly large trigger events
+    at the neurofeedback port over the course of training
+  data: elsewhere
+  where: DANDI 000629
+  criterion: Per rat, mean trigger SWR size (sd) of NF trials in the second half of each epoch,
+    over the epochs before the plateau (Figure 2-figure supplement 1A legend;
+    dfs_rips_timecourse.m part 1). Reproduced when the size rises across training (positive
+    Pearson correlation with epoch order) in all four rats.
+- id: fig2s1b-faster-than-predicted
+  statement: Manipulation subjects produced large SWRs much faster than predicted from the
+    prevalence of similar-sized events before and early in training.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 1; Figure 2-figure supplement 1B; Methods, Neurofeedback wait time prediction
+  quote: subjects produced large SWR events much faster than would have been predicted based on the
+    initial prevalence of similarly sized events
+  data: elsewhere
+  where: DANDI 000629
+  criterion: Predicted wait from size-binned occurrence rates at the center ports (pre and post
+    reward) during the first ~7 days of pretraining and early training, bins with at least 10
+    events; actual and predicted waits concatenated over sessions and smoothed with a 200-trial
+    moving average (Methods; dfs_RWsimulation.m). Reproduced when the smoothed actual wait lies
+    below the predicted wait for most of later training in all four rats.
+- id: fig2s1c-swr-size-not-increased
+  statement: SWR size in the pre-reward period was not consistently larger on NF than on delay
+    trials (two of four rats showed very slight significant increases), and neither trial type
+    differed in size from the control cohort.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 3; Figure 2-figure supplement 1C
+  quote: subjects did not consistently increase SWR size ... only two out of four subjects showed
+    very slight but significant increases
+  statistics:
+  - about: NF against delay SWR size, rat1
+    test: ranksum
+    p: 1.734e-16
+    corrected: Benjamini-Hochberg
+    n: 13209 NF and 8716 delay SWRs
+  - about: NF against delay SWR size, rat2
+    test: ranksum
+    p: 7.389e-9
+    corrected: Benjamini-Hochberg
+    n: 3060 NF and 1618 delay SWRs
+  - about: NF against delay SWR size, rat3
+    test: ranksum
+    p: 0.921
+    corrected: Benjamini-Hochberg
+    n: 5369 NF and 2535 delay SWRs
+  - about: NF against delay SWR size, rat4
+    test: ranksum
+    p: 0.921
+    corrected: Benjamini-Hochberg
+    n: 7165 NF and 3855 delay SWRs
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.234
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.184
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig2s1c-control-prereward-swr-counts
+  criterion: SWR size (maximum threshold in sd) of pre-reward SWRs, all suprathreshold events
+    excluded on both trial types (online triggers matched to the SWR containing them, Methods,
+    SWR size quantification; dfa_ripquantpertrial_allphase_NF.m with excltrigger 1). Tests as in
+    the header. Claims of absence, judged on the paper's tests. Reproduced when at most two of
+    the four corrected ranksums have p < 0.05 and neither mixed model finds a cohort effect at
+    p < 0.05; the size differences are reported.
+- id: fig2s1d-twice-events-all-sizes
+  statement: Within the manipulation cohort, NF trials contained roughly twice as many pre-reward
+    SWRs as delay trials per unit time, at every SWR size.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 3; Figure 2-figure supplement 1D
+  quote: neurofeedback trials contained roughly twice as many events relative to delay trials for
+    all SWR sizes
+  data: elsewhere
+  where: DANDI 000629
+  expected:
+    quantity: NF over delay occurrence rate, per size bin
+    value: 2
+    tolerance: 0.5
+  criterion: Per epoch, SWRs of each type binned by size in 1 sd bins from 2 to 30 sd, divided
+    by the summed pre-reward duration of that trial type; fold change NF over delay in bins
+    occupied on both; averaged over epochs (dfs_rips_vsctrlrats_excltrig.m part 4),
+    suprathreshold events excluded. The tolerance (0.5) is for "roughly"; a fold change from 1.5
+    to 2.5 reads as roughly twice. Reproduced when the fold change in every bin from 2 to 14 sd
+    (the plotted range) with data lies in that range for all four rats; partially reproduced
+    when it exceeds 1 in every such bin but leaves the range.
+- id: fig2c-prereward-rate
+  statement: In the pre-reward period SWR rate was about twice as high on NF as on delay trials,
+    and both manipulation trial types had higher rates than control cohort trials.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 5; Figure 2C, left
+  quote: during the pre-reward period, SWR rates were approximately twice as high on neurofeedback
+    compared to delay trials, and both trial types from the manipulation cohort had much higher
+    rates than trials from the control cohort
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 4.382e-258
+    corrected: Benjamini-Hochberg
+    n: 1892 NF and 2022 delay trials
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 7.111e-83
+    corrected: Benjamini-Hochberg
+    n: 684 NF and 640 delay trials
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 5.689e-214
+    corrected: Benjamini-Hochberg
+    n: 1157 NF and 1201 delay trials
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 3.285e-191
+    corrected: Benjamini-Hochberg
+    n: 1602 NF and 1552 delay trials
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 1.126e-16
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.009
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-cohort-trial-counts
+  expected:
+    quantity: NF over delay pre-reward SWR rate
+    value: 2
+    tolerance: 0.3
+  criterion: Per-trial pre-reward rate, trigger SWR included (dfs_rips_vsctrlrats.m part 1),
+    tests as in the header. The ratio is the code's inset ratio (mean over rats of per-rat
+    medians, NF over delay); as variants the ratio of means of per-trial rates and the mean of
+    per-rat ratios of medians. Tolerance 0.3 for "approximately twice" (1.7 to 2.3 rounds to
+    twice, not to 1.5 or 2.5). Reproduced when all four corrected ranksums have p < 0.05 with NF
+    higher, both mixed models give p < 0.05 with the manipulation trials higher, and the ratio is
+    within tolerance under one reading; partially reproduced when the tests hold and the ratio
+    does not.
+- id: fig2s1e-prereward-rate-excluding-suprathreshold
+  statement: The pre-reward SWR rate effect did not depend on the trigger SWR; excluding
+    suprathreshold events from both NF and delay trials gave the same result.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 5; Figure 2-figure supplement 1E
+  quote: This effect was not dependent on the trigger SWR, as excluding suprathreshold events from
+    both neurofeedback and delay trials did not change the result
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 9.873e-136
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 2.562e-34
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 4.017e-91
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 7.171e-49
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 5.574e-8
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.040
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig2c-prereward-rate
+  criterion: As fig2c-prereward-rate, with suprathreshold events excluded on both trial types
+    (dfs_rips_vsctrlrats_excltrig.m part 1). Reproduced when all six tests give p < 0.05 in the
+    direction of fig2c-prereward-rate.
+- id: fig2c-postreward-rate
+  statement: After reward, SWR rate was slightly but significantly higher on delay than on NF
+    trials, and did not differ between the cohorts.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 6; Figure 2C, middle
+  quote: SWR rate was slightly but significantly higher during delay trials compared to
+    neurofeedback trials in the manipulation cohort subjects but was overall indistinguishable
+    between the cohorts
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 3.646e-127
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 0.038
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 6.538e-11
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 2.768e-23
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.142
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.691
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Per-trial post-reward rate (dfs_rips_vsctrlrats.m part 2), tests as in the header.
+    Reproduced when all four corrected ranksums give p < 0.05 with delay higher and neither mixed
+    model finds a cohort effect at p < 0.05 (the absence part judged on the paper's test).
+- id: fig2s1f-rate-change-post-minus-pre
+  statement: Relative to the pre-reward period, SWR rate stayed at a high level after reward on NF
+    trials, while it increased substantially on delay and control trials.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 6; Figure 2-figure supplement 1F
+  quote: Relative to the pre-reward period, SWR rates were maintained at a high level during
+    neurofeedback trials, while they increased substantially during delay and control trials
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 0
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 2.132e-36
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 4.528e-117
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 3.821e-139
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 1.352e-5
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.139
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig2s1f-control-rate-increase
+  criterion: Per-trial post-reward minus pre-reward rate (dfs_rips_vsctrlrats.m part 11), tests
+    as in the header. Reproduced when NF differences are lower than delay differences in all four
+    rats (corrected ranksum p < 0.05), the NF-control mixed model gives p < 0.05, and the median
+    difference is positive on delay and control trials.
+- id: fig2s1f-control-rate-increase
+  statement: In the control cohort, SWR rate increased substantially from the pre-reward to the
+    post-reward period at the center ports.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 6; Figure 2-figure supplement 1F
+  quote: Relative to the pre-reward period, SWR rates were maintained at a high level during
+    neurofeedback trials, while they increased substantially during delay and control trials
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: For each control rat, the per-trial post-reward rate minus pre-reward rate, over
+    the trials of control-cohort-trial-counts (dfs_rips_vsctrlrats.m part 11). The paper reports
+    no test on the control cohort alone; "substantially" is not quantified. Reproduced when the
+    median and the mean of the difference are positive in all four control rats; partially
+    reproduced in three. The per-rat median and mean differences are reported.
+- id: fig2b-control-timecourse
+  statement: Control cohort subjects rarely generated SWRs during the pre-reward period.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 4; Figure 2B, bottom row
+  quote: subjects in the control cohort rarely generated SWRs during the pre-reward period but
+    showed much higher SWR rates than the manipulation cohort after reward delivery
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Rate in 0.5 s bins from -20 to 20 s around reward delivery, each trial's SWR times
+    from center port entry to exit, mean over trials that cover the bin, bins with more than 100
+    contributing trials (Methods, Timewise SWR rate quantification; dfs_rips_vsctrlrats.m part 5).
+    The comparison with the manipulation cohort after reward is in fig2b-manipulation-timecourse.
+    The paper does not quantify "rarely"; it is read here against the control rats' own
+    post-reward rate, as Figure 2B shows the two periods side by side. Reproduced
+    when, in all four control rats, the mean over the valid pre-reward bins is below the mean
+    over the valid post-reward bins; partially reproduced in three. Both means and their ratio
+    are reported.
+- id: fig2b-manipulation-timecourse
+  statement: Manipulation cohort subjects showed high, stable SWR rates before reward delivery,
+    higher on NF than on delay trials, while control subjects had much higher rates than the
+    manipulation cohort after reward delivery.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 4; Figure 2B
+  quote: Subjects in the manipulation cohort all showed high, stable SWR rates before reward
+    delivery, with neurofeedback trials showing higher SWR rate than delay trials
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig2b-control-timecourse
+  criterion: Binned rates as in fig2b-control-timecourse, trigger SWR excluded on NF trials
+    (Figure 2B legend). Reproduced when, in all four manipulation rats, the NF curve lies above
+    the delay curve in most valid pre-reward bins, and the control rats' mean over the first 5 s
+    after reward exceeds the manipulation rats' mean over the same bins on both trial types. The
+    5 s window is a choice made here (the paper names none); the full valid post-reward range is
+    shown as a variant.
+- id: fig2c-combined-rate
+  statement: Over the pre- and post-reward periods combined, NF trials still had higher SWR rates
+    than delay trials, but neither trial type differed from the control cohort.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 6; Figure 2C, right
+  quote: the neurofeedback trials still showed higher SWR rates than delay trials within the
+    manipulation cohort, but the differences between each trial type and the control cohort were
+    not significant
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 3.324e-64
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 3.136e-40
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 2.996e-69
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 9.066e-50
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.237
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.504
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Per-trial rate over pre plus post (total count over total duration,
+    dfs_rips_vsctrlrats.m part 4), tests as in the header. Reproduced when all four corrected
+    ranksums give p < 0.05 with NF higher and neither mixed model gives p < 0.05.
+- id: fig2d-swr-counts
+  statement: SWR counts matched the rates before reward, but after reward NF trials had fewer
+    SWRs than delay trials and both had far fewer than control trials; over the whole port time
+    the cohorts did not differ.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 7; Figure 2D
+  quote: neurofeedback trials contained fewer SWRs than delay trials, and both trial types
+    contained far fewer SWRs post-reward than trials from the control cohort
+  statistics:
+  - about: pre-reward, NF against delay, rat1
+    test: ranksum
+    p: 3.133e-96
+    corrected: Benjamini-Hochberg
+  - about: pre-reward, NF against delay, rat2
+    test: ranksum
+    p: 8.936e-37
+    corrected: Benjamini-Hochberg
+  - about: pre-reward, NF against delay, rat3
+    test: ranksum
+    p: 1.266e-106
+    corrected: Benjamini-Hochberg
+  - about: pre-reward, NF against delay, rat4
+    test: ranksum
+    p: 6.024e-65
+    corrected: Benjamini-Hochberg
+  - about: pre-reward, manipulation NF against control
+    test: Poisson mixed-effects model
+    p: 6.790e-7
+  - about: pre-reward, manipulation delay against control
+    test: Poisson mixed-effects model
+    p: 0.0018
+  - about: post-reward, NF against delay, rat1
+    test: ranksum
+    p: 1.797e-137
+    corrected: Benjamini-Hochberg
+  - about: post-reward, NF against delay, rat2
+    test: ranksum
+    p: 6.100e-10
+    corrected: Benjamini-Hochberg
+  - about: post-reward, NF against delay, rat3
+    test: ranksum
+    p: 6.688e-13
+    corrected: Benjamini-Hochberg
+  - about: post-reward, NF against delay, rat4
+    test: ranksum
+    p: 2.152e-130
+    corrected: Benjamini-Hochberg
+  - about: post-reward, manipulation NF against control
+    test: Poisson mixed-effects model
+    p: 2.361e-12
+  - about: post-reward, manipulation delay against control
+    test: Poisson mixed-effects model
+    p: 5.820e-9
+  - about: pre plus post, NF against delay, rat1
+    test: ranksum
+    p: 1.534e-19
+    corrected: Benjamini-Hochberg
+  - about: pre plus post, NF against delay, rat2
+    test: ranksum
+    p: 5.828e-14
+    corrected: Benjamini-Hochberg
+  - about: pre plus post, NF against delay, rat3
+    test: ranksum
+    p: 6.735e-32
+    corrected: Benjamini-Hochberg
+  - about: pre plus post, NF against delay, rat4
+    test: ranksum
+    p: 0.083
+    corrected: Benjamini-Hochberg
+  - about: pre plus post, manipulation NF against control
+    test: Poisson mixed-effects model
+    p: 0.366
+  - about: pre plus post, manipulation delay against control
+    test: Poisson mixed-effects model
+    p: 0.299
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Per-trial counts (dfs_rips_vsctrlrats.m parts 1, 2 and 4), Poisson mixed models and
+    ranksums as in the header. Reproduced when the pre-reward ranksums give p < 0.05 with NF
+    higher and the post-reward ranksums give p < 0.05 with delay higher in all four rats, both
+    pre-reward mixed models give p < 0.05 with manipulation higher, both post-reward mixed models
+    give p < 0.05 with control higher, and neither pre plus post mixed model gives p < 0.05. The
+    pre plus post ranksums are reported; the paper calls them "largely consistent" with the
+    rates (three of four significant).
+- id: fig2e-postreward-dwell
+  statement: Post-reward dwell time was slightly but significantly shorter on NF than on delay
+    trials, and manipulation subjects stayed at the port about half as long as control subjects.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraphs 7 and 8; Figure 2E
+  quote: subjects in the manipulation cohort remained at the port for approximately half as long as
+    subjects in the control cohort
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 1.397e-23
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 8.588e-49
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 6.180e-4
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 7.127e-257
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 4.075e-18
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 1.835e-18
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-cohort-trial-counts
+  expected:
+    quantity: manipulation over control post-reward dwell time, each trial type
+    value: 0.5
+    tolerance: 0.1
+  criterion: Per-trial post-reward duration, RWend to leaveRW (dfs_rips_vsctrlrats.m part 3),
+    tests as in the header. The ratio is that of the code's inset means of per-rat medians
+    (NF over control and delay over control); as a variant the ratio of means of per-trial
+    durations. Tolerance 0.1 for "approximately half" (0.4 to 0.6). Reproduced when all four
+    corrected ranksums give p < 0.05 with NF shorter, both mixed models give p < 0.05 with control
+    longer, and both ratios are within tolerance under one reading.
+- id: fig2s1h-control-dwell-increases
+  statement: In the control cohort, the time spent at the center port after reward delivery
+    tended to increase as subjects gained experience with the task.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 8; Figure 2-figure supplement 1H
+  quote: For the control cohort, the amount of time spent post reward delivery at the center well
+    tends to increase as subjects gain more experience with the task
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Per control rat, the mean post-reward duration of each epoch's trials, against the
+    epoch's order (1 to N over the rat's selected epochs in chronological order), Pearson
+    correlation (dfs_rips_vsctrlrats.m part 10, which prints r squared and p; the sign is that of
+    r). The paper reports no statistic. Reproduced when r is positive in all four rats; partially
+    reproduced in three. Each rat's r and p are reported.
+- id: fig2s1g-no-refractory
+  statement: The slightly lower post-reward SWR rate on NF trials is not explained by a refractory
+    period after the trigger SWR; SWR rate after suprathreshold events on delay trials shows no
+    extended suppression.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 6; Figure 2-figure supplement 1G
+  quote: shows no extended suppression of SWR rate following suprathreshold events
+  data: elsewhere
+  where: DANDI 000629
+  criterion: Delay trials with an online suprathreshold event in the pre-reward period and at
+    least 2 s left before reward; SWR rate in 0.5 s bins from 0 to 10 s after the largest SWR of
+    the trial, bins with more than 10 trials (Figure 2-figure supplement 1G legend;
+    dfs_rips_vsctrlrats.m part 9). "Extended suppression" is not defined by the paper. Readings
+    (a) the rate in the 0.5 to 1 s bin is at least half the mean rate over 1 to 2 s; (b) the
+    rate over 0.5 to 2 s is at least half the trials' mean pre-reward rate. Reproduced when all
+    four rats meet one reading.
+- id: fig3a-speed-below-immobility
+  statement: Mean head speed while nosepoked before reward was below the 4 cm/s immobility cutoff
+    for all trial types, and slightly but significantly lower on NF trials than on delay and
+    control trials.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 10; Figure 3A
+  quote: The mean speeds of the head-mounted LEDs while the subjects were nosepoked were below our
+    cutoff for immobility (4 cm/s) for all trial types
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 2.447e-223
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 2.760e-85
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 3.247e-80
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 9.077e-36
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 1.260e-7
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 1.121e-4
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig3a-control-speed
+  criterion: Per-trial mean speed over the pre-reward period (header, Speed;
+    dfs_rips_vsctrlrats.m part 7), tests as in the header. Reproduced when every rat and trial
+    type is below 4 cm/s under a reading of fig3a-control-speed, all four corrected ranksums give
+    p < 0.05 with NF slower, and the NF-control mixed model gives p < 0.05 with NF slower.
+- id: fig3a-control-speed
+  statement: In the control cohort, mean head speed during the pre-reward nosepoke was below the
+    4 cm/s immobility cutoff.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 10; Figure 3A
+  quote: The mean speeds of the head-mounted LEDs while the subjects were nosepoked were below our
+    cutoff for immobility (4 cm/s) for all trial types
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Per-trial mean of the smoothed head speed over the pre-reward period
+    (dfa_ripquantpertrial_allphase_NF.m, meanvel). Open, as the smoothing of the speed is done
+    upstream and the "mean speed" of a rat can be read as (a) the median over trials of the
+    per-trial mean (the box plot centre) or (b) the mean over trials; and the speed as (i) the
+    speed the dandiset provides for the head position or (ii) the speed computed from the head
+    LED position with a standard Gaussian smoothing, named in the notebook. Reproduced when all
+    four control rats are below 4 cm/s under one reading of each pair; the values under every
+    reading are reported.
+- id: fig3bc-speed-matched-rates
+  statement: The quartile of NF trials with the highest mean speeds still had higher pre-reward
+    SWR rates than the slowest quartiles of delay and control trials, so movement does not
+    explain the increase.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 10; Figure 3B and C
+  quote: Even with much higher mean speeds ( Figure 3B ), the neurofeedback trials showed higher
+    SWR rates than control and delay trials ( Figure 3C )
+  statistics:
+  - about: mean speed of the selected trials, NF against delay, rat1
+    test: ranksum
+    p: 1.342e-160
+    corrected: Benjamini-Hochberg
+  - about: mean speed of the selected trials, NF against delay, rat2
+    test: ranksum
+    p: 1.053e-55
+    corrected: Benjamini-Hochberg
+  - about: mean speed of the selected trials, NF against delay, rat3
+    test: ranksum
+    p: 9.488e-98
+    corrected: Benjamini-Hochberg
+  - about: mean speed of the selected trials, NF against delay, rat4
+    test: ranksum
+    p: 4.751e-130
+    corrected: Benjamini-Hochberg
+  - about: mean speed of the selected trials, manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.989
+  - about: mean speed of the selected trials, manipulation delay against control
+    test: linear mixed-effects model
+    p: 4.196e-4
+  - about: SWR rate, NF against delay, rat1
+    test: ranksum
+    p: 3.923e-11
+    corrected: Benjamini-Hochberg
+  - about: SWR rate, NF against delay, rat2
+    test: ranksum
+    p: 1.155e-8
+    corrected: Benjamini-Hochberg
+  - about: SWR rate, NF against delay, rat3
+    test: ranksum
+    p: 1.902e-18
+    corrected: Benjamini-Hochberg
+  - about: SWR rate, NF against delay, rat4
+    test: ranksum
+    p: 5.081e-6
+    corrected: Benjamini-Hochberg
+  - about: SWR rate, manipulation NF against control
+    test: linear mixed-effects model
+    p: 1.019e-6
+  - about: SWR rate, manipulation delay against control
+    test: linear mixed-effects model
+    p: 7.958e-3
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig3a-speed-below-immobility
+  criterion: Per rat, NF trials with mean speed above the 75th percentile of NF trial speeds, and
+    delay trials below the 25th percentile of delay trial speeds; for control rats, trials of all
+    types (type >= 1) below the 25th percentile of the speeds of type 1 trials only
+    (dfs_rips_vsctrlrats.m part 8, rinds = type>=1 & vel<prctile(vel(type==1),25)); this explains
+    control subsets that are not a quarter of the trials. As a variant, control trials below the
+    25th percentile of all control trials. Pre-reward rates and tests as in the header. Expected
+    subset sizes 473, 171, 289 and 400 NF, 505, 160, 300 and 388 delay, 624, 794, 423 and 913
+    control trials (Figure 3B legend). Reproduced when all four corrected ranksums and the
+    NF-control mixed model give p < 0.05 with NF higher.
+- id: trialwise-pre-post-correlation
+  statement: Across single trials, pre-reward and post-reward SWR counts were only weakly
+    correlated, positively in some manipulation subjects and negatively in others.
+  source: Results, Neurofeedback training increases SWR rate during the targeted interval,
+    paragraph 11
+  quote: the correlation coefficients between pre-reward and post-reward SWR counts were positive in
+    some subjects and negative in others, and always very small in magnitude
+  statistics:
+  - about: rat1
+    test: correlation
+    statistic: r = -0.084
+    p: 1.47e-7
+  - about: rat2
+    test: correlation
+    statistic: r = 0.130
+    p: 3.84e-6
+  - about: rat3
+    test: correlation
+    statistic: r = 0.118
+    p: 8.60e-9
+  - about: rat4
+    test: correlation
+    statistic: r = -0.061
+    p: 6.01e-4
+  data: elsewhere
+  where: DANDI 000629
+  expected:
+  - quantity: r, rat1
+    value: -0.084
+    tolerance: 0.0084
+  - quantity: r, rat2
+    value: 0.130
+    tolerance: 0.013
+  - quantity: r, rat3
+    value: 0.118
+    tolerance: 0.0118
+  - quantity: r, rat4
+    value: -0.061
+    tolerance: 0.0061
+  criterion: Pearson correlation (corrcoef) of per-trial pre-reward and post-reward SWR counts,
+    per rat, over the trials of both types pooled across the epochs that have more than 10 NF and
+    more than 10 delay trials, trials with both periods only (dfs_rips_vsctrlrats.m, unnumbered
+    part "rw-postrw correlations ... trialwise" after part 11, nums_both; the code prints this
+    value under the label r2 but it is r). As variants, NF trials alone and delay trials alone
+    (nums_rip, nums_wait). Reproduced when every |r| is below 0.2 with the signs of the paper and
+    the four r values are within tolerance; partially reproduced when the signs and magnitudes
+    hold but the values do not.
+- id: fig4d-fraction-replay-preserved
+  statement: The fraction of pre-reward SWRs that qualified as replay did not differ between the
+    cohorts, nor consistently between NF and delay trials.
+  source: Results, Neurofeedback training preserves replay content during SWRs, paragraph 3;
+    Figure 4D
+  quote: there was no difference in the fraction of SWRs that qualified as replay between the two
+    cohorts, and within each manipulation cohort subject, there was no consistent difference
+    between neurofeedback and delay trials
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 0.1813
+    corrected: Benjamini-Hochberg
+    n: 37 epochs
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 0.5978
+    corrected: Benjamini-Hochberg
+    n: 14 epochs
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 0.0273
+    corrected: Benjamini-Hochberg
+    n: 18 epochs
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 0.6738
+    corrected: Benjamini-Hochberg
+    n: 26 epochs
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.5523
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.2098
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-decode-counts
+  criterion: Per epoch, replay SWRs over all decoded SWRs in the pre-reward period
+    (dfs_ripcontent_vsctrlrats.m part 1), replay defined under the two readings of the header
+    (Replay); tests as in the header, on epochs. Requires decoding the dandisets with the
+    clusterless state space decoder of Denovellis et al. 2021 as in Gillespie et al. 2021. A
+    claim of absence judged on the paper's tests. Reproduced when neither mixed model gives
+    p < 0.05 and at most one rat's corrected ranksum gives p < 0.05.
+- id: fig4e-remote-replay-prereward
+  statement: Remote replay rate in the pre-reward period was much higher on NF than on delay
+    trials, and low on control cohort trials.
+  source: Results, Neurofeedback training preserves replay content during SWRs, paragraph 4;
+    Figure 4E
+  quote: we find much higher rates of remote replay during the pre-reward period in neurofeedback
+    trials compared to delay trials within the manipulation cohort, and low rates of remote replay
+    during this time in trials from the control cohort
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 6.507e-126
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 9.703e-30
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 2.991e-79
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 6.293e-55
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 9.073e-4
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.4304
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-decode-counts
+  criterion: Per-trial count of remote replay SWRs over pre-reward duration
+    (dfs_ripcontent_vsctrlrats.m part 1), tests as in the header, under the two replay readings.
+    Reproduced when all four corrected ranksums give p < 0.05 with NF higher and the NF-control
+    mixed model gives p < 0.05 with NF higher.
+- id: fig4f-remote-replay-combined
+  statement: Over pre- and post-reward periods combined, remote replay rate did not differ between
+    the cohorts for either trial type, and NF trials had slightly but significantly higher rates
+    than delay trials.
+  source: Results, Neurofeedback training preserves replay content during SWRs, paragraph 4;
+    Figure 4F
+  quote: if we consider both the pre-and post-reward periods combined, we find no difference in
+    remote replay rate between the two cohorts for either trial type
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 7.666e-47
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 1.573e-6
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 1.044e-16
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 5.768e-6
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.6644
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.1477
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig4e-remote-replay-prereward
+  criterion: As fig4e-remote-replay-prereward over pre plus post (dfs_ripcontent_vsctrlrats.m
+    part 2). Reproduced when neither mixed model gives p < 0.05 and all four corrected ranksums
+    give p < 0.05 with NF higher.
+- id: fig4g-control-replay-glm
+  statement: In the control cohort, pre-reward remote replay over-represents the previous goal
+    arm, under-represents the immediately previously visited arm and slightly over-represents the
+    upcoming choice arm.
+  source: Figure 4G; Results, Neurofeedback training preserves replay content during SWRs,
+    paragraph 5
+  inferred: Figure 4G plots the control rats' GLM coefficients, and the Results describe the
+    manipulation cohort's pattern as the one "previously seen in the control cohort"; no sentence
+    states the control values. The statement reads the pattern of the manipulation cohort
+    sentence onto the control cohort.
+  depends_on:
+  - control-decode-counts
+  criterion: Per control rat, a Poisson GLM (fitglm) of each arm's remote replay count per trial
+    on three binary predictors (previous arm, counting visits during lockouts; future arm; previous
+    goal arm), one row per arm per trial, search and repeat trials from the second goal block on,
+    pre-reward SWRs; fold change exp(beta) with 99% intervals (coefCI(mdl, .01))
+    (Methods, Replay content analysis; dfs_ripcontent_vsctrlrats.m part 3), under the two replay
+    readings. Reproduced when, in all four rats, the previous goal interval lies above 1 and the
+    previous arm interval below 1, and the future arm fold change exceeds 1; partially reproduced
+    when this holds in three rats or the future arm does not exceed 1. Each fold change and
+    interval is reported.
+- id: fig4g-manipulation-replay-glm
+  statement: Within the manipulation cohort, on both NF and delay trials, pre-reward replay
+    over-represented previous goal locations, under-represented the immediately previously visited
+    arm and slightly over-represented the upcoming choice arm, as in the control cohort.
+  source: Results, Neurofeedback training preserves replay content during SWRs, paragraph 5;
+    Figure 4G
+  quote: we observed consistently enhanced representation of previous goal locations in replay
+    events during the pre-reward period in both neurofeedback and delay trials within the
+    manipulation cohort
+  data: elsewhere
+  where: DANDI 000629
+  depends_on:
+  - fig4g-control-replay-glm
+  criterion: As fig4g-control-replay-glm, separately for NF and delay trials of each manipulation
+    rat (expected trial counts 1661, 392, 866 and 1281 NF and 1705, 367, 894 and 1213 delay,
+    Figure 4G legend). Reproduced when the previous goal interval lies above 1 and the previous
+    arm interval below 1 in all eight rat and trial type fits, and the future arm fold change
+    exceeds 1 in most.
+- id: fig4s1-replay-glm-pre-post
+  statement: The replay GLM results are unchanged when replay during both pre- and post-reward
+    time at the center ports is included.
+  source: Results, Neurofeedback training preserves replay content during SWRs, paragraph 5;
+    Figure 4-figure supplement 1
+  quote: These results also remain unchanged when we analyzed replay events during both pre- and
+    post-reward time at the center ports
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - fig4g-manipulation-replay-glm
+  criterion: As fig4g-control-replay-glm and fig4g-manipulation-replay-glm with pre plus post
+    SWRs (dfs_ripcontent_vsctrlrats.m part 4). Reproduced when every fold change has the same
+    side of 1 as in the pre-reward fits, for all twelve rat and trial type fits. The control
+    cohort part can be run on 000115 alone and is reported separately.
+- id: fig5a-search-efficiency
+  statement: Manipulation subjects showed a slight improvement in search efficiency over control
+    subjects, significant only on delay trials, with no difference between NF and delay trials.
+  source: Results, Neurofeedback does not alter behavioral performance in a trial-by-trial manner,
+    paragraphs 2 and 3; Figure 5A
+  quote: The manipulation cohort subjects show a slight improvement in search efficiency compared to
+    control subjects, which only reached significance on delay trials
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 0.9562
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 0.7509
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 0.7509
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 0.9562
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.5425
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.0069
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-decode-counts
+  criterion: Per epoch, among search trials (task phase <= 1), the fraction that are not errors
+    (dfs_ripcontent_vsctrlrats.m part 5), tests as in the header on epochs. Reproduced when no
+    corrected ranksum gives p < 0.05, the delay-control mixed model gives p < 0.05 with the
+    manipulation cohort higher, and the NF-control mixed model does not.
+- id: fig5s1-control-search-efficiency-increases
+  statement: In the control cohort, search efficiency tends to increase over behavioral epochs.
+  source: Figure 5-figure supplement 1; Results, Neurofeedback does not alter behavioral
+    performance in a trial-by-trial manner, paragraph 2
+  quote: For the control cohort, search efficiency tends to increase over behavioral epochs
+  depends_on:
+  - control-decode-counts
+  criterion: Per control rat, each epoch's fraction of search trials (task phase <= 1) that are
+    not errors (an error trial has a fractional part of its task phase above 0 and below 0.85,
+    dfs_ripcontent_vsctrlrats.m part 5), against the epoch's order over the selected epochs
+    (gooddecode epochs, as the figure is made from the content analysis output), Pearson
+    correlation (dfs_ripcontent_vsctrlrats.m part 5, which prints r squared and p). The paper
+    reports no statistic; the text calls it "a subtle but consistent increase". Reproduced when r
+    is positive in all four rats; partially reproduced in three. As a variant, the epochs of
+    control-cohort-trial-counts.
+- id: fig5b-redundant-search-balanced
+  statement: Redundant search trials were not biased toward either trial type; NF trials made up
+    about half of them in each subject.
+  source: Results, Neurofeedback does not alter behavioral performance in a trial-by-trial manner,
+    paragraph 3; Figure 5B
+  quote: neurofeedback trials accounted for approximately half of redundant search trials for each
+    subject
+  statistics:
+  - about: rat1
+    test: two-sided sign test against 0.5
+    p: 0.1102
+    n: 37 epochs
+  - about: rat2
+    test: two-sided sign test against 0.5
+    p: 0.2668
+    n: 14 epochs
+  - about: rat3
+    test: two-sided sign test against 0.5
+    p: 1
+    n: 18 epochs
+  - about: rat4
+    test: two-sided sign test against 0.5
+    p: 1
+    n: 26 epochs
+  data: elsewhere
+  where: DANDI 000629
+  criterion: Per epoch, the fraction of redundant search trials (search error trials) that are NF
+    trials; sign test against 0.5 (dfs_ripcontent_vsctrlrats.m part 5). A claim of absence judged
+    on the paper's test. Reproduced when no rat gives p < 0.05.
+- id: fig5c-repeat-accuracy-unchanged
+  statement: On repeat trials the fraction of correct goal visits did not differ between the
+    cohorts or between NF and delay trials.
+  source: Results, Neurofeedback does not alter behavioral performance in a trial-by-trial manner,
+    paragraph 4; Figure 5C
+  quote: We also saw no difference between the two cohorts or between neurofeedback and delay trials
+    on this measure
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 0.7202
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 0.7202
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 0.8123
+    corrected: Benjamini-Hochberg
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 0.7202
+    corrected: Benjamini-Hochberg
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 0.6946
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 0.2857
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-decode-counts
+  criterion: Per epoch, among repeat trials (task phase > 1), the fraction that are not errors
+    (dfs_ripcontent_vsctrlrats.m part 5); tests as in the header on epochs. A claim of absence
+    judged on the paper's tests. Reproduced when no test gives p < 0.05.
+- id: fig5d-repeat-errors-balanced
+  statement: Within the manipulation cohort, repeat error trials were equally distributed between
+    NF and delay trials.
+  source: Results, Neurofeedback does not alter behavioral performance in a trial-by-trial manner,
+    paragraph 4; Figure 5D
+  quote: error trials, when subjects do not choose to visit a known goal arm, were equally
+    distributed between neurofeedback and delay trials
+  statistics:
+  - about: rat1
+    test: two-sided sign test
+    p: 0.3770
+  - about: rat2
+    test: two-sided sign test
+    p: 0.7744
+  - about: rat3
+    test: two-sided sign test
+    p: 1
+  - about: rat4
+    test: two-sided sign test
+    p: 0.0227
+  data: elsewhere
+  where: DANDI 000629
+  criterion: Per epoch, the fraction of repeat error trials that are NF trials; sign test against
+    0.5 (dfs_ripcontent_vsctrlrats.m part 5). The paper states equality while one rat's
+    uncorrected p is 0.0227. Judged on the paper's test as printed. Reproduced when the same
+    pattern holds, at most one rat with p < 0.05; the fractions are reported.
+- id: fig1s1c-prereward-dwell-matched
+  statement: Time spent at the center ports before reward was approximately matched between NF
+    and delay trials by the yoked delay design.
+  source: Results, A neurofeedback paradigm to promote SWRs, paragraph 3; Figure 1-figure
+    supplement 1C
+  quote: such that the amount of time spent waiting at each of the center ports was approximately
+    matched
+  statistics:
+  - about: NF against delay, rat1
+    test: ranksum
+    p: 0.228
+  - about: NF against delay, rat2
+    test: ranksum
+    p: 0.690
+  - about: NF against delay, rat3
+    test: ranksum
+    p: 0.005
+  - about: NF against delay, rat4
+    test: ranksum
+    p: 0.002
+  - about: manipulation NF against control
+    test: linear mixed-effects model
+    p: 2.936e-9
+  - about: manipulation delay against control
+    test: linear mixed-effects model
+    p: 2.178e-5
+  data: elsewhere
+  where: DANDI 000629 (manipulation cohort); the control cohort is in 000115
+  depends_on:
+  - control-cohort-trial-counts
+  criterion: Per-trial pre-reward duration, RWstart to RWend (dfs_rips_vsctrlrats.m part 6).
+    "Approximately matched" is not quantified; the paper's own tests find differences in two
+    rats. Reproduced when the per-rat median NF and delay durations differ by less than 10% in
+    all four rats (a threshold chosen here, as the paper gives none), with the ranksum and
+    mixed model p-values reported.
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - trialwise-pre-post-correlation. The criterion said the code computes r per epoch and listed three readings. The code (dfs_rips_vsctrlrats.m, trialwise correlation part after part 11) pools trials of both types across epochs with more than 10 NF and 10 delay trials and computes one r per rat (nums_both, printed under the label r2). The criterion now follows the code, with NF only and delay only as variants.
+  - fig3bc-speed-matched-rates. The control quartile was described as trials below their own 25th percentile. The code (part 8) takes control trials of all types below the 25th percentile of type 1 trials only, which is why the Figure 3B control n are not a quarter of the trials. The criterion now follows the code, the other reading as a variant. Added the Figure 3B speed tests, which support the "much higher mean speeds" part of the quote.
+  - fig2b-control-timecourse. The statement said control rats had much higher rates after reward; the paper says much higher than the manipulation cohort, which fig2b-manipulation-timecourse tests. The statement now says what the paper says of the control cohort alone (rarely generated SWRs pre-reward), and the criterion says how "rarely" is read.
+  - fig2d-swr-counts. The statement covers pre-reward counts and the whole port time, but the Figure 2D legend's pre-reward and pre plus post ranksums were missing. Added them, and the pre-reward ranksums to the criterion.
+  - fig5s1-control-search-efficiency-increases and header, task phase. "Fractional phase below 0.85" misdescribed an error trial; the code (dfs_ripcontent_vsctrlrats.m part 5) marks an error by a fractional part above 0 and below 0.85.
+  - Checker. Six p-values were reported not found (6.790e-7, 6.100e-10, 5.820e-9, 6.180e-4, 1.260e-7, 8.60e-9); each is in the text as printed, with trailing zeros the checker does not match.
+  - Open. The epoch flags (ripthresh, forageassist, gooddecode) that select the control epochs may not be in the dandiset; the link claims name the readings, and the trial and epoch counts will show which holds.
+  - Open. Whether the offline SWR threshold is taken over the whole epoch or over immobile times, and whether replay is classed by the 0.8 continuous probability of the Methods or by the code's max_state; both are named as readings in the claims that use them.
+  - Open. The trigger delays per rat in the Methods and code (75, 100, 50, 50 ms) disagree with the Figure 1-figure supplement 1B legend (100, 50, 75, 75 ms); no claim rests on them.
+  - Open. The sentence that pre- and post-reward SWR rates and dwell times were not consistently correlated across trials (Results, paragraph 11) has no claim; the paper gives no values for it.

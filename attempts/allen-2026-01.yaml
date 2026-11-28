@@ -1,0 +1,1093 @@
+# Attempt on Allen, Yan, Kuan et al. (2026) with Dryad rjdfn2zqz version 439366 (docs/protocol.md).
+schema_version: 3
+id: allen-2026-01
+datasets:
+- archive: dryad
+  id: rjdfn2zqz
+  version: '439366'
+  doi: 10.5061/dryad.rjdfn2zqz
+  relation: primary
+paper: doi:10.1038/s42003-025-09506-6
+date: '2026-11-25'
+entry: allen-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45691797114
+inputs:
+- what: Number of sequences of the paper's assembled transcriptome, from the NCBI TSA master record (E-utilities
+    esummary), for the transcript count of rnaseq-assembly. The other transcriptomic claims were tested
+    on the count matrix and R workspace in the dataset, which the authors derived from the same reads
+    (SRA BioProject PRJNA1204452), not on the reads.
+  source: NCBI TSA GLBY00000000.1 (GLBY01000000), https://www.ncbi.nlm.nih.gov/nuccore/GLBY00000000.1
+outcomes:
+- claim: fig1b-metabolic-rate
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig1b-metabolic-rate
+  measured:
+  - 16.88
+  - 18.93
+  - 23.88
+  - 41.5
+  notes: Means 16.88, 18.93 and 23.88 umol O2 g-1 h-1 (11, 9 and 6 squid), chronic-OA 41.5% above control.
+    One-way ANOVA F(2,23) = 3.80, p = 0.0375, eta^2 = 0.25; Tukey control against chronic-OA p = 0.030,
+    control against acute-OA p = 0.64, acute-OA against chronic-OA p = 0.17. The paper's ANOVA has 29
+    squid, F(2,26) = 4.473, p = 0.021 (SS 235.4 and 684.2 against 191.3 and 578.9 here); the deposited
+    means equal the paper's means to the printed digits.
+  deviations:
+  - The per-squid values are taken as deposited; the raw recordings they were computed from are not in
+    the dataset.
+  - 26 squid where the paper's ANOVA has 29 (finding).
+- claim: fig1c-ammonia-excretion
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig1c-ammonia-excretion
+  measured:
+  - 3.34
+  - 2.86
+  - 1.61
+  - 51.8
+  - 43.6
+  notes: Means 3.34, 2.86 and 1.61 umol g-1 h-1 (5, 9, 7 squid); reductions of chronic-OA 51.8% against
+    control and 43.6% against acute-OA. One-way ANOVA on log10 rates F(2,18) = 6.382, p = 0.008038, the
+    paper's values and sums of squares; Tukey control against chronic-OA p = 0.009, acute-OA against chronic-OA
+    p = 0.038, control against acute-OA p = 0.52. Untransformed, F = 4.49, p = 0.026.
+  deviations:
+  - The per-squid values are taken as deposited; the raw recordings they were computed from are not in
+    the dataset.
+- claim: fig1d-blood-ph
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig1d-blood-ph
+  measured:
+  - 7.092
+  - 7.145
+  - 7.175
+  notes: Means 7.092, 7.145 and 7.175 (7, 6, 9 squid). Welch's ANOVA W = 6.347, df 2, 9.196, p = 0.0185;
+    the paper prints W = 5.983 with the same df and p = 0.00965. Dunnett's T3 control against chronic-OA
+    p = 0.017, control against acute-OA p = 0.46, acute-OA against chronic-OA p = 0.86 (paper 0.015, 0.391,
+    0.754). The intervals here are wider than the paper's (control against chronic-OA -0.150 to -0.015
+    against -0.129 to -0.036); the paper's intervals imply a critical value near 1.96, where the studentized
+    maximum modulus gives 2.83 at 10 df. The paper's pH line is inconsistent in itself, as W = 5.983 on
+    (2, 9.196) df gives p = 0.022, not 0.00965 (finding). None of this changes a verdict.
+  deviations:
+  - Welch's ANOVA and Dunnett's T3 are implemented in squidoa.py (Welch 1951; studentized maximum modulus
+    with k = 3); GraphPad Prism, which the paper used, was not available, and its W and intervals differ
+    from these on the same values.
+- claim: fig1e-blood-pco2
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig1e-blood-pco2
+  measured:
+  - 1057.4
+  - 1583.8
+  - 2778.7
+  - 2.63
+  - 1.5
+  notes: Means 1057.4, 1583.8 and 2778.7 uatm, fold changes 2.63 (chronic-OA) and 1.50 (acute-OA). Welch's
+    ANOVA W = 29.815, df 2, 12.04, p = 2.2e-05 (paper 27.653, df 2, 9.379, p < 0.0001). Dunnett's T3 p
+    = 0.014 (control against acute-OA), below 0.0001 (control against chronic-OA) and 0.0008 (acute-OA
+    against chronic-OA). The deposited PCO2 is a tenth of what the formula printed beside each value in
+    Carbonate_calibration.csv gives (finding). The formula's value is the one consistent with the measured
+    TCO2 and pH under the stated alphaCO2 (0.0312, near CO2 solubility in mmol l-1 per matm at 32 ppt and
+    25 C); the printed PCO2 would need alphaCO2 near 0.31. The ratio between the two scales varies from
+    9.997 to 10.049 between squid, so on the formula's scale the results are close but not identical,
+    fold changes 1.50 and 2.63, Welch's W = 29.861 (p = 2.2e-05) and Dunnett's T3 p = 0.014, below 0.0001
+    and 0.0008. The absolute PCO2 values of the deposit and the paper are in doubt.
+  deviations:
+  - PCO2 as deposited (the criterion), not derived again; the deposit's own Eq. 1 with alpha 0.0312 and
+    pKa1 6.10 gives values 10 times larger.
+  - Welch's ANOVA and Dunnett's T3 implemented in squidoa.py, as for fig1d-blood-ph.
+- claim: fig1f-blood-bicarbonate
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig1f-blood-bicarbonate
+  measured:
+  - 3.56
+  - 5.9
+  - 11.08
+  - 3.11
+  - 1.65
+  notes: Means 3.56, 5.90 and 11.08 mmol/l, fold changes 3.11 (chronic-OA) and 1.65 (acute-OA). Welch's
+    ANOVA W = 42.84, df 2, 12.54, p = 2.5e-06 (paper 39.545, df 2, 12.59). Dunnett's T3 p = 0.0008, below
+    0.0001 and 0.0002. Eq. 2 with the printed PCO2 gives the deposited [HCO3-] (max difference 0.0006);
+    with the formula's tenfold PCO2 the values would be up to 1.08 mmol/l lower, and the group means 3.27,
+    5.45 and 10.30 mmol/l (fold changes 1.67 and 3.15; means and fold changes all still within tolerance).
+  deviations:
+  - '[HCO3-] as deposited (the criterion).'
+  - Welch's ANOVA and Dunnett's T3 implemented in squidoa.py, as for fig1d-blood-ph.
+- claim: methods-body-size
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file of the dataset holds fresh mass or mantle length (file list and every column in the notebook's
+    data check), and no object of Squid.RData does (every top-level object and the zip's README are printed
+    in the data check). Only rates already divided by mass and distances already divided by mantle length
+    are deposited.
+- claim: stable5-seawater-chemistry
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds seawater pH, total alkalinity or PCO2. Carbonate_calibration.csv, which the README
+    describes as carbonate calculations, holds the hemolymph calculation only, and no object of Squid.RData
+    holds seawater chemistry (data check). The paper's Data availability lists carbonate chemistry calculations
+    in the deposit.
+- claim: fig2c-velocity-unchanged
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2c-velocity-unchanged
+  measured:
+  - 0.2215
+  - 0.2074
+  - 0.2456
+  notes: Means 0.2215, 0.2074 and 0.2456 mantle lengths/s; the control mean lies within 0.15 to 0.25.
+    Kruskal-Wallis H = 0.4124, p = 0.8137, the paper's values (the velocities are the distances over 600
+    s for every squid, so the test is the same). The velocity file has 8 acute-OA squid, so there is no
+    ninth squid to show.
+  deviations:
+  - The per-squid values are taken as deposited; the raw recordings they were computed from are not in
+    the dataset.
+- claim: sfig2-distance-unchanged
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:sfig2-distance-unchanged
+  measured:
+  - 132.9
+  - 124.4
+  - 147.4
+  notes: Means 132.9, 124.4 and 147.4 mantle lengths (15, 8, 11 squid); Kruskal-Wallis H = 0.4124, p =
+    0.8137, the paper's values; epsilon^2 = 0.013.
+  deviations:
+  - Distance per squid as deposited; Eq. 3 and the handling of untracked samples cannot be applied, as
+    the 3-D tracks are not in the dataset.
+- claim: fig2d-acute-upper-zone
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2d-acute-upper-zone
+  measured:
+  - 30.0
+  - 86.0
+  - 14.7
+  notes: The zone file holds 9 acute-OA squid; leaving out the ninth (59.6% upper, 1.3% left, 6.7% front)
+    gives the paper's treatment sums of squares for all three zones (25397.6, 42.9, 2436.7), and no other
+    single exclusion comes near. With it, means 30.0, 86.0 and 14.7%, F(2,31) = 12.07, p = 0.000133, eta^2
+    = 0.44; Tukey control against acute-OA p = 0.0012, acute-OA against chronic-OA p = 0.0001, control
+    against chronic-OA p = 0.47. With all 9 acute-OA squid, acute-OA 83.1%, F(2,32) = 12.14, p = 0.00012
+    and the same Tukey pattern.
+  deviations:
+  - Zone percentages as deposited, so the denominator readings (a) and (b) of the criterion cannot be
+    told apart.
+  - The paper's 8 acute-OA squid are identified by matching the sums of squares of Supplementary Table
+    3; the dataset does not mark the excluded squid. This fits to the target, but the squid matches all
+    three sums of squares at once, and in the workspace's figure tables (F2D and F2C, 15 rows per group
+    each) its value is the one acute-OA zone value with no distance beside it. That it is the squid the
+    distance and velocity files lack assumes that the rows of the two tables are the same squid in the
+    same order; no identifier links them.
+- claim: stable3-acute-shallower
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Mean depth needs the vertical coordinate of the tracks, which are not in the dataset or in any
+    object of Squid.RData (data check); only the percentage of time in the upper zone is deposited.
+- claim: fig2e-left-right-unchanged
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2e-left-right-unchanged
+  measured:
+  - 55.8
+  - 54.1
+  - 57.1
+  notes: With the paper's 8 acute-OA squid (see fig2d-acute-upper-zone) means 55.8, 54.1 and 57.1%; one-way
+    ANOVA F(2,31) = 0.027, p = 0.973 (the paper's values), eta^2 = 0.002. Log10 variant (one zero left
+    out) F = 0.10, p = 0.90. With all 9 acute-OA squid, F = 0.27, p = 0.77.
+  deviations:
+  - The ninth acute-OA squid is left out to match the paper, as for fig2d-acute-upper-zone.
+- claim: fig2f-front-back-unchanged
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2f-front-back-unchanged
+  measured:
+  - 58.3
+  - 80.0
+  - 66.1
+  notes: With the paper's 8 acute-OA squid means 58.3, 80.0 and 66.1%; one-way ANOVA F(2,31) = 1.326,
+    p = 0.280 (the paper's values), eta^2 = 0.079. Log10 variant (two zeros left out) F = 1.63, p = 0.21.
+    With all 9, F = 0.52, p = 0.60.
+  deviations:
+  - The ninth acute-OA squid is left out to match the paper, as for fig2d-acute-upper-zone.
+  - The front/back divide was applied before deposit; the halfway assumption of the criterion cannot be
+    checked.
+- claim: fig2g-attack-willingness
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2g-attack-willingness
+  measured:
+  - 29
+  - 8
+  - 8
+  - 64.8
+  - 42.3
+  - 2.734
+  - 127.58
+  - 0.6992
+  notes: On the counts of the R workspace's Figure 2G table (F2G), 29 of 46, 8 of 36 and 8 of 22, the
+    paper's, reading (a) gives pH 2.734246 (p = 0.0422) and time 0.008351 (p = 0.246), null and residual
+    deviance 142.28 and 127.58, ROC area 0.6992, intercept -22.64; reductions 64.8% and 42.3%. Readings
+    (b) and (c) give the same deviances, pH p = 0.042 or 0.0005 and time p = 0.22 to 0.25. Squid_Prey_Capture.csv
+    holds 46, 36 and 11 squid with 29, 8 and 8 attacks; on it the chronic-OA reduction is -15.4% and reading
+    (a) gives pH -1.117 (p = 0.55) and time 0.0269 (p = 0.0045), so the result rests on the workspace's
+    counts and not on the per-squid file (finding). No object of Squid.RData holds per-squid prey capture
+    data for the 11 missing squid (workspace listing in the data check).
+  deviations:
+  - The regression is fitted on per-squid outcomes rebuilt from the counts of the workspace's F2G table,
+    which match the paper's; with two terms and three groups the model is saturated and depends on the
+    data only through these counts, so this is exact. The per-squid file, which lacks 11 chronic-OA squid,
+    is a variant.
+- claim: fig2h-hunt-duration
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2h-hunt-duration
+  measured:
+  - 106.7
+  - 262.2
+  - 2.46
+  notes: Means 106.7 s (control, 29 squid), 262.2 s (acute-OA, 8) and 109.5 s (chronic-OA, 8), acute-OA
+    2.46-fold control. ANOVA on log10 durations F(2,42) = 3.372, p = 0.0439 with the paper's sums of squares
+    (2.374 and 14.79); Tukey control against acute-OA p = 0.035 (paper 0.03), chronic-OA against control
+    p = 0.72 and against acute-OA p = 0.32. Untransformed, F = 4.26, p = 0.021.
+- claim: fig2i-strike-attempts
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig2i-strike-attempts
+  notes: 38 of 45 attacking squid (84.4%) needed 1 or 2 attempts (control 89.7%, acute-OA and chronic-OA
+    75%). Kruskal-Wallis H = 2.568, p = 0.2769, the paper's values. The file codes capture as success
+    or fail and every squid with attempts has a capture time; it records no squid that struck and failed,
+    so the capture part holds as far as the file can show.
+- claim: sfig3-prey-velocity-unchanged
+  outcome: partially_reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:sfig3-prey-velocity-unchanged
+  notes: Table S3 of the R workspace is the only copy of these data, and its CO2 10-20 min column is identical
+    to the control 10-20 min column (8 values; the legend gives 11 CO2 shrimp), so the CO2 shrimp at 20
+    min are not in the deposit (finding). The part that can be tested holds. At 0-10 min control 0.224
+    and CO2 0.170 cm/s (8 and 11 shrimp), one-way ANOVA F(1,17) = 0.23, p = 0.64 (Welch t p = 0.65, Mann-Whitney
+    p = 0.44); control shrimp at 0-10 against 10-20 min, 0.224 against 0.422 cm/s, F(1,14) = 0.88, p =
+    0.36. The time effect in the CO2 group and the interaction cannot be tested. The two-way ANOVA on the
+    table as deposited (pH p = 0.84, time p = 0.11, interaction p = 0.84) takes the copy as data and is
+    shown for reference only.
+  deviations:
+  - The criterion's two-way ANOVA cannot be run on valid data; the pH effect at 0-10 min and the time effect
+    within control shrimp, the parts the deposit allows, are tested by one-way ANOVA.
+  - 'A repeated-measures variant is not run: no shrimp identifier links the time points, and the CO2 columns
+    hold 11 and 8 values.'
+- claim: fig3c-ratio-declines
+  outcome: not_reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig3c-ratio-declines
+  notes: 'The dataset holds only group means per stimulus frequency. In no group is the mean ratio below
+    its 20 Hz value at every frequency above 40 Hz: control 0.998 (45 Hz) and 0.990 (50 Hz) against 0.977
+    at 20 Hz; acute-OA 0.998 (45 Hz) and 1.062 (57.5 Hz); chronic-OA 1.039 (47 Hz) against 0.996. The
+    65 Hz value is the lowest in acute-OA (0.300) but more than 0.1 above the lowest in control (0.391
+    against 0.284) and chronic-OA (0.361 against 0.252). The decline the statement describes is there
+    above 50 Hz: mean ratio up to 50 Hz 1.00, 0.97 and 0.80, above 50 Hz 0.38, 0.53 and 0.43 (control,
+    acute-OA, chronic-OA), apart from acute-OA at 57.5 Hz (1.062). The ratios up to 45 Hz in control
+    and acute-OA are whole numbers of FFT bins of 1.953 Hz (4 kHz sampling, Methods; 2048 points, the
+    bin width the values fit), and the two groups have the same mean there. Where an SD is given at these
+    frequencies it is 0 (acute-OA at 10, 40 and 45 Hz, control at 45 Hz), so every squid behind that mean
+    peaked in the same bin; elsewhere up to 40 Hz the SD is missing, and the file does not show whether
+    such a mean rests on one squid or several. The 20 Hz reference (0.977) is below 1 by this rounding,
+    and 45 Hz (0.998) fails on it alone. The criterion does not allow for this; a question has been filed
+    for a reader (questions/allen-2026.yaml). The other failures are not rounding to the nearest bin,
+    chronic-OA at 47 Hz being a peak at 25 bins, one above the bin nearest the stimulus, and acute-OA
+    at 57.5 Hz not a whole number of bins. The file gives no n per mean, so the paper''s n = 8, 8 and
+    9 cannot be checked.'
+  deviations:
+  - 'The criterion''s per-squid FFT analysis cannot be run: the ERG traces and spectra are not deposited.
+    The deposited group means of the ratio are used.'
+- claim: sfig4a-amplitude-attenuation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs ERG traces or spectra; the dataset holds only the ratio of maximum response frequency to
+    stimulus frequency as group means (Squid_ERG.csv, and the same table F3C in Squid.RData) and CFF per
+    squid. No object of Squid.RData holds ERG traces, spectra or per-squid ratios (data check).
+- claim: fig3d-cff-unchanged
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig3d-cff-unchanged
+  measured:
+  - 50.67
+  - 50.67
+  - 47.67
+  notes: 'Reading (b), the CFF the dataset gives per squid (3, 3, 6 squid): means 50.67, 50.67 and 47.67
+    Hz; one-way ANOVA F(2,9) = 0.541, p = 0.60, eta^2 = 0.11; Tukey p >= 0.68 for every pair; Kruskal-Wallis
+    p = 0.65. Reading (a) cannot be run (no per-squid ratios). From the deposited group mean ratios, the
+    highest frequency with a mean of at least 0.9 is 50, 57.5 and 47 Hz.'
+  deviations:
+  - Only reading (b) can be run; the per-squid ratios of reading (a) are not deposited.
+- claim: fig3d-cff-variance
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig3d-cff-variance
+  measured:
+  - 5.22
+  - 4.73
+  notes: Sample SDs 1.155, 6.028 and 5.465 Hz; ratios 5.22 (acute-OA) and 4.73 (chronic-OA), both in 3.6
+    to 5.5. The control SD rests on 3 squid. Not judged, a Brown-Forsythe test p = 0.61.
+- claim: rnaseq-assembly
+  outcome: partially_reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:rnaseq-assembly
+  notes: Four of the five values are within tolerance; the mean mapping rate is not in the dataset and
+    is not tested, so the criterion (every value within tolerance) is met only in part; the criterion
+    defines no partially reproduced condition, and the outcome is a judgement. Transcripts 902,413
+    (rows of the count matrix and of the workspace's rawMatrix); the public TSA assembly GLBY00000000.1
+    holds 870,834 sequences (3.5% fewer, within tolerance either way); E78N50 2038 bp and N50 475.5 bp
+    from the deposited ExN50.stats; 69,368 transcripts after the filter of the deposited script (reading
+    (a)) applied to the workspace's rawMatrix, the row count of the authors' DESeq2 results. Reading (b)
+    gives 172,901. The N50 of 475.5 bp is the ExN50 at Ex 100, computed over the 610,324 entries with expression
+    (the file's num_genes), not over all 902,413 transcripts; it is probably how the paper got 476, but
+    it is not the N50 of the whole assembly, which needs the assembly FASTA. The deposited count file alone
+    gives 66,006 on its 14 optic lobe columns, as it lacks Re_8.1_OL-3, and 67,088 on all 15 value columns,
+    which the authors' read.csv names as the 15 optic lobe samples (finding).
+  deviations:
+  - Assembly statistics read from the deposited ExN50.stats (Trinity's output), as the assembly FASTA
+    is not in the dataset; of the TSA record only its sequence count is used.
+  - 'The mapping rate (99.51%) is not tested: no alignment log is deposited, and realigning the SRA reads
+    is outside what this run can do.'
+  - Tested on the dataset's count matrix and R workspace, not on the SRA reads the claims file names under
+    where.
+- claim: fig4a-pca
+  outcome: partially_reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig4a-pca
+  measured:
+  - 35.0
+  - 15.0
+  notes: 'The deposited vstsva.adj.limma equals removeBatchEffect of vstsva.adj with the two surrogate
+    variables (max difference 1.4e-14). Reading (a), PCA of the 12 samples of the three groups: PC1 35.0%,
+    PC2 15.0%, the paper''s values. Acute-OA centroid 3.5 from control on PC1 against 62.9 for chronic-OA;
+    chronic-OA separated from control on PC1 (62.9 against a control range of 13.4). On PC2 the chronic-OA
+    centroid is 18.0 from control, less than the control range 29.6 and more than the control SD 12.8;
+    1 of 3 chronic-OA samples lies outside the control range. The outcome rests on the reading of spread:
+    under the range PC2 separation fails, under the SD it holds and the claim would be reproduced. The
+    criterion defines no partially reproduced condition; partially reproduced is a judgement, as the
+    variances, the acute-OA position and the PC1 separation hold and only the PC2 separation fails. The
+    script''s PCA of all 15 samples gives 29.0% and 13.5%. Reading (b), known batches removed from vst,
+    PCA on 12: PC1 31.7%, PC2 16.6% (outside 13.5 to 16.5), chronic-OA 15.7 from control on PC2 against
+    a control range of 63.3 and SD of 27.2, not separated under either reading; on 15 samples PC1 25.7%.
+    The first version of the notebook compared the batch factor, stored as text, with a number, removed
+    no batch and gave PC1 above 90% under (b); this is corrected.'
+  deviations:
+  - Tested on the authors' saved VST matrices, not recomputed from counts with DESeq2 and sva.
+  - Assumption. The criterion's control spread is read as the range of the 4 control samples on each PC,
+    so that chronic-OA must lie beyond the control samples to count as separated, which is how the paper's
+    "significant divergence along both PC1 and PC2" is read here; two of the three chronic-OA samples lie
+    among the controls on PC2. Under the SD reading the claim would be reproduced. The paper gives no measure
+    of divergence; a question has been filed for a reader (questions/allen-2026.yaml).
+  assumed: true
+- claim: sfig5b-acute-clusters-with-control
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:sfig5b-acute-clusters-with-control
+  notes: 'Euclidean distances on the batch-corrected matrix (12 samples, 69,368 rows): mean acute-OA to
+    control 187.7, chronic-OA to control 255.2, control to control 197.7, maximum 286.1. Reading (b), known
+    batches removed from vst, gives the same order (477.1 against 532.8); its distances are 2.1 to 2.5
+    times larger (control to control 457.2). vst has a lowest value of 0.005 against 3.65 for the matrix
+    of reading (a); why the distances differ by this much was not examined. The first version removed
+    no batch under (b) (see fig4a-pca) and gave 729.5 against 868.1.'
+  deviations:
+  - Tested on the authors' saved VST matrix.
+- claim: fig4b-shared-down-sets
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig4b-shared-down-sets
+  measured:
+  - 2
+  notes: In the authors' GSEA results exactly 2 sets are down-regulated in both treatments, organelle
+    inner membrane and mitochondrial inner membrane. The count 36 is matched under reading (a), the sets
+    significant in both treatments in either direction (36); readings (b) sets down in either treatment
+    and (c) all sets in the Venn diagram give 122 and 646. A reader answered this attempt's question (questions/allen-2026.yaml)
+    by adding reading (a) to the criterion, the Venn intersect that the Results call the intersect GSEA
+    ridgeplot; under the earlier readings alone, now (b) and (c), the outcome was partially reproduced.
+  deviations:
+  - GSEA and DESeq2 are not re-run (clusterProfiler, the authors' AnnotationForge database and R are not
+    in this environment); the authors' saved gseaResult objects are read. Their stored parameters match
+    the Methods, and their ranked lists equal the shrunken fold changes of the saved DESeq2 results. The
+    workspace's DESeq2 fits (designs ~condition and ~SV1 + SV2 + condition) hold the rounded rawMatrix rows
+    that pass the filter, and their stored size factors equal those computed here from these counts. This
+    outcome and those of fig4c-acute-ridge to optic-lobe-no-ion-regulation therefore show that the paper
+    agrees with the authors' saved results; they are not an independent recomputation from the counts.
+- claim: fig4c-acute-ridge
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig4c-acute-ridge
+  notes: 'In the acute-OA results (87 sets, all BH-adjusted p < 0.05) each named family has a down-regulated
+    term: cellular lipid metabolic process (NES -1.39), carboxylic acid and organic acid metabolic process
+    (-1.47), transferase complex (-1.62), endopeptidase complex (-1.92), ribosomal subunit (-2.24, also
+    large and small subunits); cell-cell adhesion is up (1.45).'
+  deviations:
+  - The authors' saved GSEA results are read, not re-run (see fig4b-shared-down-sets).
+- claim: fig4d-acute-tree
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig4d-acute-tree
+  notes: 'Down-regulated in acute-OA: respirasome and mitochondrial respirasome (-1.86, -2.15), respiratory
+    chain complex IV (-1.84, -2.00), mitochondrial envelope (-2.01), fatty acid biosynthetic process (-1.79)
+    and fatty acid elongase activity (-1.88), protein localization to membrane (-1.72) and to organelle
+    (-1.63), RNA 3''-end processing (-1.87) and ribonucleoprotein complex biogenesis (-1.53). All also
+    among the 51 sets of the script''s tree (acute-OA down, not significant in chronic-OA).'
+  deviations:
+  - The authors' saved GSEA results are read, not re-run.
+- claim: fig4e-chronic-synaptic-down
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig4e-chronic-synaptic-down
+  notes: 'Among 40 chronic-OA down-regulated sets: postsynaptic membrane (NES -1.91), synaptic membrane
+    (-1.92), transmitter-gated channel activity (-1.80), neurotransmitter receptor activity (-1.83), NAD(P)H
+    dehydrogenase (quinone) activity (-1.89), respiratory electron transport chain (-1.55), cell adhesion
+    (-1.40) and prefoldin complex (-2.02).'
+  deviations:
+  - The authors' saved GSEA results are read, not re-run.
+- claim: fig4fgh-chronic-up
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:fig4fgh-chronic-up
+  measured:
+  - 82
+  - 314
+  - 128
+  notes: 'Reading (b), chronic-OA sets with positive NES not down-regulated in acute-OA, per ontology: 82
+    CC (82 +- 8.2 expected), 314 BP (308 +- 30.8) and 128 MF (128 +- 12.8), all within tolerance. Reading
+    (a), all chronic-OA sets with positive NES, gives 101 CC (out of tolerance), 321 BP and 133 MF. Under
+    both readings every named family has an up-regulated term (vesicle 29 terms, endosome 4, Golgi 12,
+    purine biosynthesis 6, carbohydrate catabolic process 1, ribonucleoprotein 5, ubiquitin 13, oxidoreductase
+    4, hydrolase 10, transporter activity 4). A reader answered this attempt''s question (questions/allen-2026.yaml)
+    by adding reading (b), the script''s input to simplifyEnrichment, to the criterion and restating the
+    claim as the counts of the heatmaps; under reading (a) alone the outcome was partially reproduced.'
+  deviations:
+  - The authors' saved GSEA results are read, not re-run. simplifyEnrichment's GO_similarity, which the
+    script applies before the heatmaps, cannot be run here, so reading (b) counts the sets passed to it.
+- claim: chronic-nachr-subunits-down
+  outcome: reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:chronic-nachr-subunits-down
+  notes: 'Transcripts named by the authors'' annotation table (DB name): alpha-7 4, alpha-10 29, beta-4
+    1. Reading (a), core enrichment genes of the 10 chronic-OA down-regulated synaptic sets (59 genes)
+    include 2 alpha-7, 10 alpha-10 and the 1 beta-4 transcript. Reading (b), shrunken log2 fold change
+    chronic-OA against control: alpha-7 2 of 2 tested negative (-0.64, -1.03), alpha-10 14 of 17 negative,
+    beta-4 negative (-0.87); no transcript has adjusted p below 0.09.'
+  deviations:
+  - Subunits identified from the protein names of the authors' annotation table, the table the script
+    passes to AnnotationForge; the Supplementary GSEA results file the paper cites was not available.
+- claim: optic-lobe-no-ion-regulation
+  outcome: not_reproduced
+  notebook: reproduce_allen_2026.ipynb
+  output: claim:optic-lobe-no-ion-regulation
+  notes: 'No acute-OA term matches the criterion''s words. Three chronic-OA terms do, all up-regulated:
+    transition metal ion transmembrane transporter activity (NES 2.13, adjusted p = 0.004), organic anion
+    transmembrane transporter activity (1.87, p = 0.033, matched through "anion transmembrane transport")
+    and metal cation:proton antiporter activity (1.70, p = 0.034). The chronic-OA down-regulated sets
+    also include several ion channel activity terms (for example monoatomic ion gated channel activity,
+    NES -1.59), which the criterion''s words do not match. Whether the anion and transition metal ion terms
+    count as acid-base or ion regulation has been filed as a question for a reader (questions/allen-2026.yaml);
+    the proton antiporter term fails the claim either way.'
+  deviations:
+  - The authors' saved GSEA results are read, not re-run.
+findings:
+- kind: format_error
+  about: data
+  severity: critical
+  statement: RSEM.isoform.counts.matrix in squid.zip names 16 samples in its header (Ct_8.1_Gill-1 and
+    15 optic lobe samples) but each row holds a transcript id and 15 values. Matched against the authors'
+    rawMatrix in Squid.RData, value columns 2 to 15 are the first 14 optic lobe samples (Ct_8.1_OL-1 to
+    Re_8.1_OL-2); value column 1 matches no workspace sample and is, by its header position, the gill sample.
+    Re_8.1_OL-3 has no values. The authors' script (R_scritps.Rmd, line 57) reads the file with read.csv
+    and row.names = 1, which takes the first header name for the id column, so every sample name shifts
+    by one and value column 1 is labelled Ct_8.1_OL-1 (shown by emulating read.csv's naming). The expression
+    filter then gives 67,088 transcripts on the 15 columns so named, or 66,006 on the 14 optic lobe columns,
+    in place of the paper's 69,368, which the workspace's rawMatrix gives.
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-count-matrix-columns
+- kind: other
+  about: data
+  severity: critical
+  statement: In the prey shrimp table of the R workspace (behavior_and_physiology_data$S3, the only copy
+    of the Supplementary Figure 3 data), the column "pH 7.8 10-20 Min" is identical to "pH 8.1 10-20 Min"
+    (8 values), so the CO2-exposed shrimp at 20 min are the control shrimp's values; the legend gives
+    11 CO2 shrimp.
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-shrimp-duplicate-column
+- kind: data_missing
+  about: data
+  severity: major
+  statement: 'Squid_Prey_Capture.csv holds 11 chronic-OA squid (8 attacked), where the paper, its logistic
+    regression and the workspace''s Figure 2G table (F2G, N = 22, 36.36% attacking) have 22. The 11 missing
+    chronic-OA squid change the logistic regression of Figure 2G: on the file the pH effect is not significant
+    under the paper''s coding.'
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-prey-capture-chronic-missing
+- kind: other
+  about: data
+  severity: major
+  statement: In Carbonate_calibration.csv each row prints Eq. 1 with alphaCO2 0.0312, pKa1 6.10 and a
+    factor 10^3, which evaluates to 10.0 times the PCO2 printed in the same row (for example 4.20/[(1+10.35)x0.0312]x10^3
+    = 11,859 against 1186.2 uatm). Squid_Hemolymph.csv and the paper report the smaller values, and the
+    deposited [HCO3-] follows Eq. 2 with them. Either the formula or the values are off by a factor of
+    10, and alphaCO2 has no unit. The formula is the one consistent with the measured TCO2 and pH. The
+    README gives alphaCO2 for 32 ppt and 25 C, where CO2 solubility is about 0.03 mmol l-1 per matm,
+    and the printed PCO2 would need alphaCO2 near 0.31. If the printed values are the wrong ones, the
+    deposited [HCO3-] is up to 1.08 mmol/l too high.
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-pco2-factor-10
+- kind: data_missing
+  about: data
+  severity: major
+  statement: The paper's Data availability statement places the behavioural tracking data, ERG recordings
+    and carbonate chemistry calculations in this deposit. The dataset holds only per-squid summaries of
+    the tracking (distance, velocity, zone percentages), group means and SDs of the ERG response ratio
+    per frequency (no traces, spectra or per-squid values), CFF per squid, and the hemolymph carbonate
+    calculation; there are no 3-D tracks, depth, ERG recordings, seawater chemistry, body masses or mantle
+    lengths. Four of the paper's findings cannot be tested and three others only on the deposited summaries.
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-not-deposited
+- kind: selection_undocumented
+  about: data
+  severity: minor
+  statement: Squid_Behavioral_assessment.csv holds 9 acute-OA squid, where the paper's ANOVAs (F(2,31))
+    and the distance and velocity files have 8. Leaving out the ninth row (59.6% upper, 1.3% left, 6.7%
+    front) gives the paper's sums of squares for all three zones; nothing in the files marks it as excluded.
+    In the workspace's figure tables its value is the one acute-OA zone value with no distance beside it,
+    which makes it the squid the distance file lacks if the rows of those tables are the same squid in
+    the same order. With it, the acute-OA upper-zone mean is 83.1% against the paper's
+    86.0%.
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-zone-extra-acute-squid
+- kind: data_missing
+  about: data
+  severity: minor
+  statement: Squid_RMR.csv holds 26 squid (11, 9, 6), where Supplementary Table 1's ANOVA has 29 (F(2,26));
+    the deposited means equal the paper's to the printed digits.
+  notebook: reproduce_allen_2026.ipynb
+  output: finding-rmr-count
+- kind: identifier_missing
+  about: data
+  severity: minor
+  statement: No file gives a squid identifier, tank or rearing batch, so values cannot be linked across
+    files or checked against the paper's sampling across four tanks per treatment. Only the row layout
+    of the workspace's figure tables links zone and distance values per squid.
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: The README gives the hemolymph PCO2 unit as atm; the column header and values are in uatm
+    (785.9 to 3861.9). The README also calls the control group pH 8.1 for the behavioural file and pH
+    8.2 elsewhere.
+- kind: methods_unavailable
+  statement: Question for the authors. Figure 4A says chronic-OA samples showed significant divergence
+    along both PC1 and PC2. How was divergence along PC2 judged? On the deposited batch-corrected matrix
+    the chronic-OA centroid is 18.0 units from the control centroid on PC2, more than the control SD (12.8)
+    but less than the range of the four control samples (29.6); the attempt assumed the range.
+- kind: paper_inconsistency
+  statement: Supplementary Table 4 prints the logistic regression intercept as 22.364913 with z = -2.163;
+    the coefficients and the counts of the paper give -22.64 (z = -2.16), so the printed sign is wrong.
+- kind: code_mismatch
+  statement: The deposited R_scritps.Rmd computes the Figure 4A PCA on all 15 samples (including Re_8.1)
+    and keeps 12 (x[1:12,]), which gives PC1 29.0% and PC2 13.5%; the figure's 35% and 15% come from a
+    PCA of the 12 samples alone, which the chunk's last line also calls.
+- kind: paper_inconsistency
+  statement: Supplementary Table 2 prints Welch's ANOVA for hemolymph pH as W = 5.983 on 2 and 9.196 df with
+    p = 0.00965; that W on those df gives p = 0.022. The p-values of Dunnett's T3 for pH (0.391 and 0.754 for
+    the pairs with acute-OA) and its intervals also do not follow from the deposited values with the studentized
+    maximum modulus; the intervals imply a critical value near 1.96.
+verifications:
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper's full text. The verifier checked the Dryad file list for the blocked
+    claims and tested the statistics helpers (dunnett_t3, welch_anova) against independent checks. It had no
+    attempt record and took the claims from the claims file. Its report is transcripts/allen-2026/verifier-1-report.md.
+  results:
+  - claim: fig1b-metabolic-rate
+    agrees: true
+    outcome: reproduced
+    reason: Means 16.88, 18.93 and 23.88, and +41.5%, are all within tolerance. ANOVA p = 0.0375; Tukey control
+      vs chronic p = 0.030, the acute-OA pairs 0.64 and 0.17. The deposit has 26 squid, while the paper's ANOVA
+      has df 26 (29 squid), so F differs (3.80 vs 4.47).
+    response: No change.
+  - claim: fig1c-ammonia-excretion
+    agrees: true
+    outcome: reproduced
+    reason: F(2,18) = 6.382 and p = 0.008038 match exactly. Tukey p 0.52, 0.009, 0.038. Reductions 51.8% and
+      43.6% are within tolerance.
+    response: No change.
+  - claim: fig1d-blood-ph
+    agrees: true
+    outcome: reproduced
+    reason: Means are within tolerance. Welch p = 0.0185. Dunnett T3 p, control vs chronic 0.017, the other
+      two pairs 0.46 and 0.86. (Problem 6) dunnett_t3 agrees with independent checks but not with Prism, whose
+      intervals imply a critical value of about 1.96 and whose pair p-values differ; the paper's own pH line
+      is internally inconsistent, as W = 5.983 on (2, 9.196) gives p = 0.022, not 0.00965. None of this changes
+      a verdict.
+    response: The notebook now prints the p that the paper's W and df give (0.0217) and the result and notes
+      state the difference from Prism's critical value and p-values. The paper's pH line is recorded as a new
+      finding (paper_inconsistency, number 13). Outcome unchanged.
+  - claim: fig1e-blood-pco2
+    agrees: true
+    outcome: reproduced
+    reason: Means are within tolerance, fold changes are 1.50 and 2.63, and all three T3 pairs have p <= 0.014.
+      (Problem 7) The deposited PCO2 is one tenth of what Eq. 1 gives; with alpha = 0.0312, close to seawater
+      CO2 solubility in mmol per l per matm, the formula's value is the internally consistent one, and the
+      notebook leaves this unresolved. The criterion tests the values as deposited, so outcomes are unchanged,
+      but the paper's absolute PCO2 values are suspect.
+    response: The data check now computes the dissolved CO2 from the measured TCO2 and pH and the alphaCO2
+      the printed PCO2 would need (0.312 to 0.314), and the text, notes and finding 4 now say that the formula's
+      value is the one consistent with the measurements under the stated alphaCO2. Outcome unchanged, as the
+      criterion tests the deposited values.
+  - claim: fig1f-blood-bicarbonate
+    agrees: true
+    outcome: reproduced
+    reason: Means are within tolerance, fold changes are 1.65 and 3.11, and all three pairs have p <= 0.0008.
+      [HCO3-] would shift by up to 1.08 mmol/l under the formula's PCO2.
+    response: The data check now prints the group means of [HCO3-] under the formula's PCO2 (3.27, 5.45, 10.30
+      mmol/l), which with their fold changes are still within tolerance; added to the notes. Outcome unchanged.
+  - claim: methods-body-size
+    agrees: true
+    outcome: blocked
+    reason: The Dryad file list has no mass or mantle-length file. Whether Squid.RData holds them was never
+      shown; sq.top_level_names() exists but is never called, nor is the README printed.
+    response: The data check now prints every top-level object of Squid.RData and the README in squid.zip;
+      none holds mass or mantle length. Added to the notes. Outcome unchanged.
+  - claim: stable5-seawater-chemistry
+    agrees: true
+    outcome: blocked
+    reason: Not in the file list. Carbonate_calibration.csv covers hemolymph only. Same RData caveat.
+    response: As for methods-body-size, the workspace listing shows no seawater chemistry. Outcome unchanged.
+  - claim: fig2c-velocity-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Kruskal-Wallis p = 0.81. Velocity is exactly distance/600. The control mean 0.2215 lies outside
+      0.2 +- 0.02 but inside the 0.15 to 0.25 rounding range the criterion allows.
+    response: No change.
+  - claim: sfig2-distance-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: KW = 0.4124 and p = 0.813689 match exactly, and all three means are within tolerance.
+    response: No change.
+  - claim: fig2d-acute-upper-zone
+    agrees: true
+    outcome: reproduced
+    reason: 30.0 / 86.0 / 14.7%. F = 12.07, p = 0.000133. Tukey, acute differs from both groups, control vs
+      chronic p = 0.47. The same holds with all 9 acute squid (mean 83.1). (Problem 5) The left-out acute squid
+      is chosen by matching the paper's sums of squares, which is fitting to the target; it matches all three
+      SS at once, and the all-9 variant gives the same verdicts. Whether the dropped squid is the one absent
+      from the distance and velocity files could be settled by row identifiers or a row-wise comparison.
+    response: 'The notebook now sets the zone and distance tables of the workspace (F2D, F2C), which hold one
+      row per squid in parallel, side by side: the squid left out is the one acute-OA squid with zone values
+      and no distance, the one the distance and velocity files lack. The result text, deviations and finding
+      6 say so. Outcome unchanged.'
+  - claim: stable3-acute-shallower
+    agrees: true
+    outcome: blocked
+    reason: No depth or tracks in the CSVs or in the figure tables of the RData. Same RData caveat.
+    response: As for methods-body-size, the workspace listing shows no tracks or depth. Outcome unchanged.
+  - claim: fig2e-left-right-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.973 with 8 acute squid and 0.765 with all 9. The log variant is also not significant.
+    response: No change.
+  - claim: fig2f-front-back-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.280 with 8 acute squid and 0.60 with all 9. The log variant is also not significant.
+    response: No change.
+  - claim: fig2g-attack-willingness
+    agrees: false
+    outcome: reproduced
+    reason: Reproduced, on deposited counts. Squid_Prey_Capture.csv has only 11 chronic-OA squid (8 attacked),
+      and on that file the result reverses (chronic +15.4%, pH p = 0.55, time p = 0.0045). The workspace table
+      F2G gives 8 of 22. The GLM depends only on group counts, so refitting on those counts is exact, and it
+      reproduces Supplementary Table 4 (pH 2.734246, p = 0.0422; time p = 0.246; deviance 127.58; ROC area
+      0.6992). (Problem 4) The per-squid file contradicts the paper; the main reading and the variant are presented
+      in reverse order of validity.
+    response: Changed to reproduced. The main test is now the fit on per-squid outcomes rebuilt from the F2G
+      counts, exact for this saturated model, under readings (a) to (c); the per-squid file is the variant.
+      Measured values, notes, deviations, notebook text and summary follow. The missing 11 chronic-OA squid
+      stay a finding (number 3).
+  - claim: fig2h-hunt-duration
+    agrees: true
+    outcome: reproduced
+    reason: F(2,42) = 3.372 and p = 0.0439 match exactly. Tukey acute vs control p = 0.035, chronic vs the
+      other two 0.72 and 0.32. Fold change 2.46.
+    response: No change.
+  - claim: fig2i-strike-attempts
+    agrees: true
+    outcome: reproduced
+    reason: 84.4% of the 45 attackers needed 1 to 2 strikes. KW = 2.568 and p = 0.2769 match exactly. No squid
+      has strikes recorded without a capture.
+    response: No change.
+  - claim: sfig3-prey-velocity-unchanged
+    agrees: false
+    outcome: partially_reproduced
+    reason: In table S3 the pH 7.8 10-20 min column is an exact copy of the pH 8.1 10-20 min column. The CO2
+      10-20 min data are therefore missing, and the time and interaction terms are untestable. The two-way
+      ANOVA as deposited treats the copy as real data, which builds in no effect at 10-20 min (problem 2).
+      Only the 0-10 min comparison is valid, and it shows no effect (Welch p = 0.65).
+    response: Changed to partially reproduced. The cell now tests what the deposit allows, the pH effect at
+      0-10 min (one-way ANOVA p = 0.64) and the time effect within control shrimp (p = 0.36), states that the
+      time effect in the CO2 group and the interaction cannot be tested, and prints the two-way ANOVA on the
+      table as deposited for reference only, saying it is not evidence.
+  - claim: fig3c-ratio-declines
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion fails in all three groups (control at 45 and 50 Hz, acute at 45 and 57.5 Hz, chronic
+      at 47 Hz; 65 Hz more than 0.1 above the minimum in control and chronic). All groups do fall to about
+      0.3 to 0.5 above 50 Hz. (Problem 8) The ratios at 10 to 45 Hz equal FFT bin centres for 4 kHz sampling
+      with a 2048-point FFT, so the below-the-20-Hz test fails on quantization alone; reported against the
+      claims file. The notebook neither notices this nor explains why control and acute are identical at 10
+      to 45 Hz. The n behind each mean is not printed.
+    response: The cell now prints the SD per group and frequency and the implied peak frequency in FFT bins;
+      the result text explains the identical values (SD 0 or missing, every squid's peak in the same bin) and
+      the quantization. The file gives no n per mean, which the text now says. The criterion's frequency rule
+      is filed as a question for a reader (questions/allen-2026.yaml). Outcome unchanged.
+  - claim: sfig4a-amplitude-attenuation
+    agrees: true
+    outcome: blocked
+    reason: No traces or spectra in the file list. Squid_ERG.csv holds only group-mean ratios.
+    response: The workspace listing now printed shows no ERG traces, spectra or per-squid ratios. Added to
+      the notes. Outcome unchanged.
+  - claim: fig3d-cff-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), the deposited CFF per squid (n = 3, 3, 6), means 50.67, 50.67, 47.67, all within tolerance.
+      ANOVA p = 0.60. Reading (a) cannot be run because per-squid ratios are not deposited.
+    response: No change.
+  - claim: fig3d-cff-variance
+    agrees: true
+    outcome: reproduced
+    reason: SD ratios are 5.22 and 4.73, both within 3.6 to 5.5.
+    response: No change.
+  - claim: rnaseq-assembly
+    agrees: false
+    outcome: partially_reproduced
+    reason: Within tolerance, 902,413 transcripts, E78N50 2038, N50 475.5, and 69,368 transcripts after filtering
+      under reading (a). The mapping rate is not deposited. (Problem 9) N50 of all transcripts is taken as
+      ExN50 at E100, which covers 610,324 expressed genes, not the 902,413 transcripts; it probably matches
+      how the authors derived 476, but it is not the N50 of the assembly. (Problem 10) Cell 0 says no outside
+      data is used, but the notebook queries NCBI TSA through tsa_summary.
+    response: Changed to partially reproduced, as the criterion asks every value to be within tolerance and
+      the mapping rate cannot be tested. The result text and notes now say what the N50 at Ex 100 covers. The
+      introduction now names the TSA record as the one outside input.
+  - claim: fig4a-pca
+    agrees: true
+    outcome: partially_reproduced
+    reason: PCA on 12 samples gives PC1 35.0%, PC2 15.0%, acute nearer control on PC1, chronic separated on
+      PC1. On PC2, chronic is separated if spread means the control SD (17.96 > 12.84) but not if it means
+      the control range (29.63). Only 1 of 3 chronic samples lies outside the control range. (Problem 3) The
+      criterion does not define spread, and the verdict depends on it; the notebook prints both but does not
+      state that the outcome hinges on this choice.
+    response: 'The result text, the notes and the deviation now state that the outcome rests on this choice
+      and that under the SD it would be reproduced, with the reason for taking the range; the undefined spread
+      is filed as a question for a reader. In checking problem 11 a bug was found: the batch factor, stored
+      as text, was compared with a number, so reading (b) removed no batch. Corrected, reading (b) gives PC1
+      31.7% and PC2 16.6% (outside tolerance) with no PC2 separation under either reading of spread. Outcome
+      unchanged.'
+  - claim: sfig5b-acute-clusters-with-control
+    agrees: true
+    outcome: reproduced
+    reason: Mean distance acute-to-control 187.7 vs chronic-to-control 255.2. The same ordering holds under
+      reading (b). (Problem 11) Reading (b) gives PC1 of 90% and distances about 4 times those of reading (a);
+      this looks like a scale problem with the vst object or batch removal and was not checked. It is a variant
+      only.
+    response: Checked. Reading (b) removed no batch (the bug described under fig4a-pca); corrected, it gives
+      477.1 against 532.8, the same order. Its distances remain larger because vst has a lowest value of 0.005
+      against 3.65 for vstsva.adj, which the notebook now prints. Outcome unchanged.
+  - claim: fig4b-shared-down-sets
+    agrees: true
+    outcome: reproduced
+    reason: Exactly 2 sets are down in both treatments, mitochondrial inner membrane and organelle inner membrane.
+      The Venn intersect is 36. (Problem 1) GSEA and DESeq2 are not re-run. The notebook reads the authors'
+      stored gse.Normal and resNormal objects and only checks that the ranked list equals the stored fold changes.
+      These outcomes show the paper agrees with the authors' saved results; they are not an independent reproduction,
+      and the notebook should say so. A DESeq2 re-fit, or at least printing the stored design and size factors,
+      would show that resNormal derives from the deposited counts.
+    response: 'The GSEA section, summary, README and deviations now say that these outcomes show agreement
+      with the authors'' saved results and are not an independent recomputation. A new cell prints the designs
+      of the workspace''s DESeq2 fits (~condition and ~SV1 + SV2 + condition), shows that their counts are
+      the rounded rawMatrix rows that pass the filter, and recomputes DESeq2''s median-of-ratios size factors,
+      which equal the stored ones (max difference 1e-15). DESeq2 and GSEA are not re-run: R, clusterProfiler
+      and the authors'' AnnotationForge database are not in this environment. Outcome unchanged.'
+  - claim: fig4c-acute-ridge
+    agrees: true
+    outcome: reproduced
+    reason: All six down-regulated families and the up-regulated cell-cell adhesion term are present. Rests
+      on the authors' saved GSEA results (problem 1).
+    response: As for fig4b-shared-down-sets. Outcome unchanged.
+  - claim: fig4d-acute-tree
+    agrees: true
+    outcome: reproduced
+    reason: All six families are down, including in the script's acute-only variant. Rests on the authors'
+      saved GSEA results (problem 1).
+    response: As for fig4b-shared-down-sets. Outcome unchanged.
+  - claim: fig4e-chronic-synaptic-down
+    agrees: true
+    outcome: reproduced
+    reason: All eight families are down. Rests on the authors' saved GSEA results (problem 1).
+    response: As for fig4b-shared-down-sets. Outcome unchanged.
+  - claim: fig4fgh-chronic-up
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), CC 82, BP 314, MF 128, all within tolerance, and all 10 families are matched. Rests
+      on the authors' saved GSEA results (problem 1).
+    response: As for fig4b-shared-down-sets. Outcome unchanged.
+  - claim: chronic-nachr-subunits-down
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), alpha-7 (2 of 4 transcripts), alpha-10 (10 of 29) and beta-4 (1 of 1) are core-enrichment
+      genes of chronic-down synaptic sets. No individual transcript is significant (smallest adjusted p 0.09).
+      Rests on the authors' saved results (problem 1).
+    response: As for fig4b-shared-down-sets. Outcome unchanged.
+  - claim: optic-lobe-no-ion-regulation
+    agrees: true
+    outcome: not_reproduced
+    reason: Three chronic-OA terms match the criterion's keywords and are significant, transition metal ion
+      transmembrane transporter activity, organic anion transmembrane transporter activity, and metal cation:proton
+      antiporter activity. Possible misreading in the claims file, the substring ion transmembrane transport
+      catches anion and transition metal ion terms, which are arguably not acid-base regulation; the proton
+      antiporter term would fail the claim either way.
+    response: The keyword question is filed for a reader (questions/allen-2026.yaml) and noted in the result
+      text and notes; the claim is not changed. Outcome unchanged.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, the helper module, the claims file and the attempt
+    record, with the paper's full text (round 2). Its report is transcripts/allen-2026/verifier-2-report.md.
+  results:
+  - claim: fig1b-metabolic-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1c-ammonia-excretion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1d-blood-ph
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Round-1 problem 6 resolved, cell 20 prints p = 0.0217.
+    response: No change.
+  - claim: fig1e-blood-pco2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. The fig1e notes say "Fold changes and tests are the same under either
+      scale". No test is run on the formula-scale values. Cell 11 shows that the ratio between the two scales varies
+      from 9.997 to 10.049, so they are nearly the same, not identical. Round-1 problem 7 resolved (cell 11).
+    response: Cell 11 now runs the fold changes, Welch's ANOVA and Dunnett's T3 on the formula's PCO2 beside those
+      on the deposited values (W 29.861 against 29.815, the same pairs significant), and the notes and the cell
+      12 text say the scales are close but not identical, citing the ratio range. Outcome unchanged.
+  - claim: fig1f-blood-bicarbonate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. The summary says "the Welch W for pH and PCO2 ... differ from those
+      Supplementary Table 2 prints"; the [HCO3-] W differs as well, 42.839 against 39.545 (cell 20). Cell 12, "fall
+      by 0.25 to 0.9 mmol/l", is loose; cell 11 gives drops of 0.30, 0.45 and 0.78.
+    response: The summary now names the W of all three variables. Cell 11 prints the drops per group and cell 12
+      gives 0.30, 0.45 and 0.78 mmol/l. Outcome unchanged.
+  - claim: methods-body-size
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Round-1 point C resolved, cell 9 lists every workspace object.
+    response: No change.
+  - claim: stable5-seawater-chemistry
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Cell 9 lists every workspace object.
+    response: No change.
+  - claim: fig2c-velocity-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: sfig2-distance-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2d-acute-upper-zone
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 32 and the record say the figure tables "hold one row per squid
+      in parallel". That the rows of F2D and F2C line up is assumed. Cell 30 shows only that one acute-OA row has
+      a zone value and no distance, and that this value equals the squid left out. The choice is plausible but rests
+      on that assumption, and the text should say so. Round-1 problem 5 resolved (cell 30).
+    response: Cells 30 and 32, the deviation, finding 6 and the summary now say that the rows of F2D and F2C are
+      assumed to be the same squid in the same order, as no identifier links them, and state what cell 30 shows.
+      Outcome unchanged.
+  - claim: stable3-acute-shallower
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Cell 9 lists every workspace object.
+    response: No change.
+  - claim: fig2e-left-right-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2f-front-back-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2g-attack-willingness
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced on the F2G counts now matches the round-1 view (cells 35 to 37). The verifications
+      block omits one item of round-1 section C, whether the workspace holds a per-squid source for the 11 missing
+      chronic-OA squid; in practice the workspace listing in cell 9 answers it, since no object there holds per-squid
+      prey-capture data.
+    response: The notes now say that no object of Squid.RData holds per-squid prey capture data for the 11 missing
+      squid (cell 9). Outcome unchanged.
+  - claim: fig2h-hunt-duration
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2i-strike-attempts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: sfig3-prey-velocity-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; partially reproduced now matches the round-1 view (cells 45 to 47). Round-1 problem 2 resolved.
+    response: No change.
+  - claim: fig3c-ratio-declines
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Cell 50, "In control and acute-OA the ratio stays near 1 to 45 or 50
+      Hz and falls to 0.28 to 0.51 above 50 Hz", is not supported: acute-OA is 1.062 at 57.5 Hz. Cell 50, "Their
+      SD is 0 or missing, so every squid''s peak fell in the same bin": for control at 10 to 40 Hz every SD is missing,
+      and a missing SD does not show that several squid shared a bin. The record''s "fails partly on single-squid
+      means (rows without an SD)" makes the opposite inference while saying the file gives no n per mean; neither
+      is shown and they contradict each other. The n per mean cannot be checked. The outcome stands either way,
+      because acute-OA fails at 57.5 Hz (1.062) and chronic-OA at 47 Hz (1.039), which is not just bin quantization.'
+    response: Cell 50 and the notes now describe control and acute-OA separately (acute-OA 1.062 at 57.5 Hz), draw
+      the shared-bin inference only where the SD is 0, say that a missing SD does not show whether a mean rests
+      on one squid or several, drop the single-squid inference, and say that the 47 Hz and 57.5 Hz failures are
+      not nearest-bin rounding (25 bins, and 31.27 bins, in cell 49). The cell 49 print no longer suggests that
+      a missing SD means one squid. Outcome unchanged.
+  - claim: sfig4a-amplitude-attenuation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Cell 9 lists every workspace object.
+    response: No change.
+  - claim: fig3d-cff-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3d-cff-variance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: rnaseq-assembly
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; partially reproduced. Like fig4a, its criterion defines no partial condition, and the mapping
+      rate is untestable. Round-1 problems 9 and 10 resolved (cells 60 and 0).
+    response: The notes now say that the criterion defines no partially reproduced condition and that the outcome
+      is a judgement. Cell 59 now also prints the filter count on the 15 value columns as read.csv names them (67,088),
+      which finding 1 cites. Outcome unchanged.
+  - claim: fig4a-pca
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The only outcome with assumed true; the assumption is stated in the deviation, the result text
+      (cell 64) and a question. Reading the control spread as the range is reasonable, as 2 of the 3 chronic-OA
+      samples lie inside the control PC2 range (control -0.72 to 28.91, chronic-OA 4.42, -7.30, 2.47; cell 63);
+      the SD reading would also be defensible, and the record says so. The record leaves out that this criterion
+      defines no partially reproduced condition, so calling the outcome partially reproduced under the range reading
+      is a judgement; accepted, because the variances, the acute-OA position and the PC1 separation all hold. The
+      outcome depends on the undefined spread, a question for the reader; the analysis handles it correctly. Round-1
+      problem 11 resolved (cells 62 and 63).
+    response: The notes now say that the criterion defines no partially reproduced condition and why partially reproduced
+      was judged. The undefined spread is already a question for a reader (questions/allen-2026.yaml), which now
+      also notes the missing partial condition. Outcome unchanged.
+  - claim: sfig5b-acute-clusters-with-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Cell 67, "Its distances are about 2.5 times larger because it is computed
+      on vst, a VST whose lowest value is 0.005 ... so that low counts spread further": from cell 66 the ratios
+      are 2.54, 2.09 and 2.31, and the causal explanation is never tested. The notes repeat it.'
+    response: Cell 67 and the notes now give the three ratios (2.1 to 2.5), state the lowest values of the two matrices
+      without a causal claim, and say that the cause of the difference was not examined. Outcome unchanged.
+  - claim: fig4b-shared-down-sets
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced under reading (a), which the claims file added after this attempt's question and
+      which follows the deposited script; the record and notebook state the earlier outcome (cell 73). The GSEA
+      claims still rest on the authors' saved results; this is disclosed and cannot be fixed in this environment.
+      Round-1 problem 1 resolved (cell 69).
+    response: No change; DESeq2 and GSEA cannot be re-run here (no R, clusterProfiler or the authors' AnnotationForge
+      database).
+  - claim: fig4c-acute-ridge
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Rests on the authors' saved GSEA results, disclosed.
+    response: As for fig4b-shared-down-sets.
+  - claim: fig4d-acute-tree
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Rests on the authors' saved GSEA results, disclosed.
+    response: As for fig4b-shared-down-sets.
+  - claim: fig4e-chronic-synaptic-down
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Rests on the authors' saved GSEA results, disclosed.
+    response: As for fig4b-shared-down-sets.
+  - claim: fig4fgh-chronic-up
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced under reading (b), which the claims file added after this attempt's question and
+      which follows the deposited script; the record and notebook state the earlier outcome (cell 86). Rests on
+      the authors' saved GSEA results, disclosed.
+    response: As for fig4b-shared-down-sets.
+  - claim: chronic-nachr-subunits-down
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Rests on the authors' saved GSEA results, disclosed.
+    response: As for fig4b-shared-down-sets.
+  - claim: optic-lobe-no-ion-regulation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Rests on the authors' saved GSEA results, disclosed.
+    response: As for fig4b-shared-down-sets.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: 'Cell 58 shows a 16-name header against 15 values per row. Value columns 2 to 15 equal workspace samples
+      Ct_8.1_1 to Re_8.1_2, and Re_8.1_3 has no match. That value column 1 is the gill sample is inferred from its
+      header position; the output shows only that it matches no workspace sample. The shifted labels under the read.csv
+      naming are shown, through the helper''s emulation. The filter counts are not in cell 58: 66,006 is in cell
+      59 and 67,088 is printed nowhere. No cell prints the script line; the read.csv behaviour is emulated in squidoa.read_count_matrix("r"),
+      not shown from the Rmd. Critical is right: a gill sample gets labelled as a control optic lobe, and a standard
+      reader shifts the names silently.'
+    response: Severity kept. Cell 58 now prints lines 57 and 59 of R_scritps.Rmd (read.csv with row.names = 1, and
+      the selection of the 15 optic lobe names), and cell 59 prints 67,088 for the filter on the 15 value columns
+      as read.csv names them. The statement now says that value column 1 is the gill sample by its header position,
+      that the shift is shown by emulating read.csv's naming, and which count belongs to which reading. The summary
+      now includes the finding.
+  - finding: 2
+    agrees: true
+    reason: 'Cell 45 prints "identical: True" for the two 10-20 min columns, with 8 values each, while the legend
+      gives 11 CO2 shrimp. Cells 3 and 9 support "only copy". Critical is right: control values are filed under
+      the CO2 label with nothing marking it, and a two-way ANOVA that takes them as given builds in no effect; the
+      same kind of problem as one recording deposited as two.'
+    response: Severity kept. No change.

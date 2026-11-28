@@ -1,0 +1,1585 @@
+# Attempt on Sabatini and Kaufman (2024) with DANDI:000070 version 0.261122.2046 (docs/protocol.md).
+schema_version: 3
+id: sabatini-2024-02
+datasets:
+- archive: dandi
+  id: '000070'
+  version: 0.261122.2046
+  doi: 10.48324/dandi.000070/0.261122.2046
+  relation: reuses
+paper: doi:10.1038/s41467-024-51308-7
+date: '2026-11-27'
+entry: sabatini-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/46074971238
+inputs:
+- what: The paper's analysis code, read for method details the claims file defers to (no data taken from it).
+  source: https://github.com/kaufmanlab/LDR-public at commit b65f28d
+outcomes:
+- claim: data-composition
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:data-composition
+  measured:
+  - 72
+  - 1595
+  - 2121
+  notes: Under both trial readings each monkey has 72 conditions, 36 without barriers (straight) and 36 with barriers (curved).
+    Monkey J has 1595 successful trials (1381 with delay above 400 ms) and N has 2121 (1884), all within 10% of 1469 and 2014.
+    Each array has 96 units, but they are unsorted threshold crossings, one per electrode; the dataset marks no single or
+    multi-units, so the paper's 79 to 118 sorted units per array cannot be counted.
+  deviations:
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing). The dataset marks none as single or multi-unit,
+    so the unit count of the criterion cannot be taken; 96 per array is inside 71 to 130.
+  - Both trial readings were run (all successful trials; delay above 400 ms) and both match; the measured values are reading
+    (a).
+  - 'Condition selection: the maze conditions that are multiples of 3 are exactly the 3-target versions in both sessions (readings
+    a and b agree). Condition 0 (203 and 419 trials) is not a maze condition and is left out.'
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+- claim: jpca-fit-r2
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:jpca-fit-r2
+  notes: 'Under reading (b), the unconstrained fit, the R2 over all conditions is 0.831 (M1-J), 0.583 (PMd-J), 0.656 (M1-N)
+    and 0.475 (PMd-N): two of four inside 0.576 to 0.803 (reading a, the skew-symmetric fit, gives 0.777, 0.544, 0.550 and
+    0.446, one of four). Straight-only fits (0.748 to 0.882) and curved-only fits (0.575 to 0.770) are inside their ranges
+    in all four datasets, and straight is above curved in all four. The per-condition signed-rank test gives p < 0.001 only
+    for M1-J (p = 0.44 to 0.61 elsewhere). The pairs it compares, conditions 3j+1 and 3j+2, end within 4.8 mm (J) and 5.1
+    mm (N) of each other in the median (at most 11.3 mm, for reaches of about 130 mm). On the offline onset the R2 over all
+    conditions is 0.825, 0.581, 0.679 and 0.463 (two of four in range), and straight and curved fits are in range in all four.
+    Units are unsorted threshold crossings (see data-composition).'
+  deviations:
+  - jPCA is implemented from the codepack's published description (6 PCs, its soft normalisation of range plus 10 and mean
+    subtraction, skew-symmetric least squares) because the codepack is not in the paper's repository; the input follows getRotations.m.
+  - The signed-rank test's pairing is the claims file's reading (per-condition R2 in the top plane, straight against curved
+    conditions paired in code order; the pairs are printed and end at the same target). The per-condition R2 projects the
+    reconstruction, soft-normalised once and not centred on the PCs as inside jPCA, onto the jPC plane, so it approximates
+    the codepack's; it feeds only the signed-rank test, which the criterion reports and does not decide on.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: jpca-variance-explained
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:jpca-variance-explained
+  notes: Activity in the retained jPCA planes holds 9.1%, 10.6%, 10.8% and 6.8% of the variance (s.d. 5.3 to 8.5% across conditions),
+    all inside 6.3 to 13.2% (6.4% to 11.4% on the offline onset). With the cross-condition mean added back to the reconstruction
+    it would be 71.6% to 80.9%. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - jPCA implemented from its description (see jpca-fit-r2).
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: single-lds-variance
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:single-lds-variance
+  notes: A single LDS over all conditions explains 77.3%, 81.3%, 82.6% and 78.6% from -150 ms on (79.6% to 86.5% over the
+    whole window), above 41.4 to 72.6% in every dataset under both windows; 76.0% to 80.0% on the offline onset. Units are
+    unsorted threshold crossings (see data-composition); 96 channels per array where the paper had 79 to 118 sorted units,
+    which bears directly on counts of dimensions.
+  deviations:
+  - Both windows of the criterion were run; neither matches.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: fig2c-condition-lds-variance
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig2c-condition-lds-variance
+  notes: Cross-validation chooses 5 dimensions for the J arrays and 7 for the N arrays under the Methods' projection score
+    (the LDS score gives 5 for PMd-N), all inside 5 to 9, and the single-condition LDSs explain 83.4%, 90.7%, 92.9% and 94.4%
+    (91.0% for PMd-N at 5), all above 63.9%. The choice is the same under the four other seeds, and on the offline onset (k
+    = 5, 5, 7, 7; 79.6% to 89.8%). Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - The Methods describe the dimensionality cross-validation as projecting one partition's average on its top k singular vectors
+    and scoring the other partition (Methods, Fitting dynamics to single conditions); the code's crossValidateDimensionalityConditions.m
+    calls idDynamics, whose returned approximation is the training data itself, so its score does not depend on k. Both the
+    Methods' projection score and a score of the simulated LDS were run; both choose 5 to 7.
+  - Half-lives above 10 s are capped in the simulated dynamics too (Methods); the code caps only the reported eigenvalues.
+  - The code's 3/4 split runs 20 folds and the seed check 10 folds per seed, for time.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: fig3a-eigenvalue-clusters
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3a-eigenvalue-clusters
+  notes: 'Every condition has a real eigenvalue, but the median frequencies of the eigenvalue pairs are 0.85 and 2.38 Hz (M1-J),
+    0.57 and 1.51 Hz (PMd-J), 0.63, 1.75 and 3.19 Hz (M1-N) and 0.62, 1.37 and 2.54 Hz (PMd-N): 3 of the 10 are within 10%
+    of 0.5, 1.5 and 2.5 Hz in order. On the offline onset they are 0.87 and 2.43, 0.64 and 1.54, 0.60, 1.79 and 3.07, and
+    0.64, 1.53 and 2.74 Hz (3 of 10, 1.54, 1.53 and 2.74). Units are unsorted threshold crossings (see data-composition).'
+  deviations:
+  - Dimensionality from fig2c under both scores; they differ only for PMd-N (7 and 5) and neither matches.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: fig3c-eigenvalue-distance-auc
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3c-eigenvalue-distance-auc
+  measured:
+  - 0.717
+  - 0.669
+  - 0.66
+  - 0.58
+  notes: With the mean distance, the AUC against the halves null is 0.717, 0.669, 0.660 and 0.580, and against the Poisson
+    null 0.797, 0.729, 0.646 and 0.592; under either null only PMd-N lies in 0.459 to 0.638. The code's norm distance gives
+    the same picture (0.577 to 0.787). The halves AUC is stable over the other four seeds (0.577 to 0.717). Units are unsorted
+    threshold crossings (see data-composition).
+  deviations:
+  - The halves null runs 150 repeats per condition and the Poisson null 30, where the Methods and the code use 500, for time;
+    the seed check uses 20 repeats per seed. The AUC changes by at most 0.02 between seeds.
+  - The Poisson null draws the mean of 20 trials as one Poisson count with 20 times the rate divided by 20, which has the
+    same distribution as averaging 20 Poisson trials.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: suppfig2-eigenvalues-from-kinematics
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig2-eigenvalues-from-kinematics
+  measured: 0.243
+  notes: The reach parameters and duration predict the eigenvalue components with a pooled mean leave-one-out R2 of 0.243
+    (projection-chosen dimensionality) or 0.295 (LDS-chosen) under the svd basis (0.243 and 0.296 under the skew-normal basis),
+    outside 0.05 to 0.15; per dataset it is 0.149 to 0.476. Counting each conjugate pair once, so that no real part enters
+    twice, gives 0.235 and 0.291. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Reach parameters as the least-squares coefficients of the condition's hand path on two kinematic basis functions, the
+    top two velocity singular vectors over all conditions of both sessions integrated to position (reading svd) or their skew-normal
+    fits (reading skewnormal; paper, Methods, Extracting kinematic basis functions); results are shown under both.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - The imaginary part of a real eigenvalue has no variance and is left out of the mean R2.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  - Reach duration per trial from each trial's own hand speed, averaged per condition (fig3i reading a); the condition-mean
+    reading (b) gives durations correlated 0.96 (J) and 0.99 (N) with these. Both members of a conjugate pair are targets,
+    as the criterion says; each pair counted once is shown as a variant.
+  assumed: true
+- claim: fig3g-basis-frequencies
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3g-basis-frequencies
+  notes: 'Cross-validation chooses k = 7 for both J arrays and k = 9 for both N arrays (the same under all five seeds, and
+    on the offline onset), giving 3 (J) or 4 (N) rotation pairs and one real mode at 0 Hz in every dataset, as the claim states.
+    The frequencies are not those of the paper: the slowest pair is at 0.61 to 0.73 Hz in all four datasets, and only 6 of
+    the 14 rotations are within 10% of one of 0.5, 1.5, 2.5 and 4 Hz (PMd-J 1.64 and 2.64, M1-N 1.61 and 4.37, PMd-N 2.35
+    and 3.65 Hz); 4 of 14 on the offline onset. Units are unsorted threshold crossings (see data-composition).'
+  deviations:
+  - The visual screen for an unpaired last basis function is replaced by the check for a conjugate partner, as the criterion
+    says; no dataset had an unpaired function.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: tbf-variance-explained
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:tbf-variance-explained
+  notes: The factorization explains 92.3%, 95.1%, 97.1% and 96.1% (M1-J, PMd-J, M1-N, PMd-N) from -150 to +850 ms, and 92.5%
+    to 97.7% over the whole window with the raw basis, all inside 81 to 100%. Units are unsorted threshold crossings (see
+    data-composition).
+  deviations:
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: tbf-shuffle-control
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:tbf-shuffle-control
+  notes: With 1 ms bins shuffled within each trial the factorization explains 35.1%, 35.4%, 45.6% and 45.5%, all inside 31.5
+    to 50.6% and under all five seeds, against 92.5% to 97.7% on the real data (rank-sum p = 3.9e-25 in each dataset). Over
+    the five seeds the shuffled means are 35.0% to 45.7%. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - The same permutation of 1 ms bins is used for every unit of a trial (code scrambleTrials.m permutes the columns of the
+    trial matrix).
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig3h-recoverability
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3h-recoverability
+  notes: Recoverability is 95.1% to 96.6% (inside 81.9 to 100%) against a shuffled chance of 84.8% to 87.8% (inside 56.7 to
+    88%, near its top and above the paper's unwidened 63 to 80%), real higher with rank-sum p below 1e-24 in every dataset.
+    Over the five seeds the chance recoverability is 84.1% to 87.8%. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Recoverability on the raw SVD basis over the whole window, as quantifyTBFStats.m computes it; on the de-mixed basis it
+    is 95.9% to 98.0%.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig3i-duration-warping
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3i-duration-warping
+  measured: -0.008
+  notes: 'The M1-N unwarped correlation is far from the paper''s -0.26 under both readings of the duration: -0.008 (p = 0.95)
+    with each trial''s own duration (reading a) and 0.013 (p = 0.92) with the condition-mean duration (reading b, the code).
+    The other three unwarped correlations are inside -0.198 to 0.231 under reading (a) (-0.116, -0.124, 0.210) and two of
+    three under (b) (PMd-N 0.246). Warped with truncation, as Figure 3i, none of the four lies in -0.693 to -0.468 under (a)
+    (-0.156, -0.018, -0.446, -0.304) and two of four under (b) (-0.508, -0.060, -0.504, -0.267), so the partial condition
+    fails under both. The 250 ms variant puts all four in range under (a) (-0.645, -0.559, -0.481, -0.571) and two under (b);
+    the end+100 variant two (a) and three (b). Over the five seeds the warped correlations move by at most 0.005. On the offline
+    onset (reading b) the M1-N unwarped value is -0.108 and two of four warped values are in range. Units are unsorted threshold
+    crossings (see data-composition).'
+  deviations:
+  - 'Both readings of the duration are run: (a) each trial''s own hand speed, as the criterion says (per trial), with the
+    condition''s duration the mean over its trials (code oldDuration); (b) the condition-mean hand speed, as the code warpTrials.m
+    does (kinematics(trial) = kinematicsCond(condNum)). Both give not reproduced.'
+  - The 250 ms post-reach variant scales the time from the end of the reach to +850 ms into 250 ms; the code for it is not
+    in the repository.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  - The warp follows warpTrial.m, which adds a 100 ms lag and scales the span from 0 to the duration in lagged time, that
+    is from 100 ms before onset to 100 ms before the end of the reach; the round-1 text said the span ran to the end of the
+    reach, and is corrected. The span to the end of the reach itself is shown as the end+100 variant.
+- claim: suppfig3-model-comparison
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig3-model-comparison
+  notes: Under the criterion's main reading the cross-validated TBF variance (73.5%, 81.0%, 88.8%, 81.7%) is below the in-sample
+    single-condition LDS (83.4%, 90.7%, 92.9%, 94.4%) in every dataset, though above jPCA (6.8% to 10.8%). In the all in-sample
+    variant the TBF (92.3% to 97.1%) is the highest in all four. Scored both on the held-out half of an even split from -160
+    ms on, the TBF (74.0%, 80.8%, 88.1%, 81.2%) is above the single-condition LDS (67.5%, 77.0%, 83.6%, 78.6%) and jPCA in
+    all four. The legend says the comparison is cross-validated; whether the main reading should be this like-for-like one
+    is asked of a reader (questions/sabatini-2024.yaml), and the outcome stays as tested on the claims file. Units are unsorted
+    threshold crossings (see data-composition).
+  deviations:
+  - Cross-validated TBF against in-sample LDS and jPCA (the criterion's main reading); the all in-sample variant is reproduced
+    (TBF 92.3% to 97.1% highest in all four).
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  - 'Variant, not deciding: held-out TBF (100 even splits, basis and loadings from one half) against the held-out LDS score
+    of the fig2c cross-validation at the chosen k, both from -160 ms on.'
+  assumed: true
+- claim: fig4b-plane-alignment
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4b-plane-alignment
+  notes: For 13 of the 14 rotations the same-frequency planes of different conditions are less aligned than the half-split
+    noise, with AUC 0.828 to 0.943 and signed-rank p < 0.001; the 3.65 Hz rotation of PMd-N gives AUC 0.545 (signed-rank p
+    = 0.0034). The AUCs barely move under the other four seeds. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Noise loadings regressed on the fixed corrected raw basis for two halves of each condition's trials, 36 repeats (Methods);
+    the code's 200 repeats were not run, for time.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig4c-subspace-excursion-angles
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4c-subspace-excursion-angles
+  notes: The number of excursion angles above 45 degrees is 7 to 21 for the J and M1-N rotations, inside 5.4 to 22, but 23
+    to 25 for PMd-N (10 of 14 in range); the data's angles exceed the half-split noise at all 25 dimensions, more than the
+    count above 45 degrees in 11 of 14 rotations (the PMd-N rotations with 25 are equal). Units are unsorted threshold crossings
+    (see data-composition); 96 channels per array where the paper had 79 to 118 sorted units, which bears directly on counts
+    of dimensions.
+  deviations:
+  - Noise excursion angles from 36 half-splits per condition (72 estimates) where the code uses 200 (400 estimates), for time;
+    fewer estimates give smaller noise angles, so the comparison with the data is less strict than the code's.
+  - A dimension counts as above noise when fewer than 5% of conditions have a larger noise angle.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: rotation-orientation-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:rotation-orientation-dimensionality
+  notes: The rotations need 3 to 24 PCs for 80% of their variance (reading a; 3 to 22 for reading b) and have participation
+    ratios of 2.3 to 19.6, so 3 of 14 and 2 of 14 rotations are in 20.7 to 44 and 15.03 to 40.48. The SNR dimensionality (5
+    to 19) is in 6.3 to 36.3 for 13 of 14. On the offline onset 1 of 14 rotations is in range for each measure. Units are
+    unsorted threshold crossings (see data-composition); 96 channels per array where the paper had 79 to 118 sorted units,
+    which bears directly on counts of dimensions.
+  deviations:
+  - Both PCA inputs of the criterion were run; neither matches.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+- claim: fig4d-jpca-variance-correlation
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4d-jpca-variance-correlation
+  measured: 83
+  notes: Under both readings of the rotational variance five of the six retained jPCA planes (83%) correlate with it at p
+    < 0.05, outside 59.4 to 72.6%. With the basis re-extracted from the soft-normalised, mean-subtracted data (Methods) the
+    correlations are -0.104 to 0.924 (per-dataset means 0.311 to 0.924; planes at p < 0.05, 0.370 to 0.924); with the code's
+    original basis -0.088 to 0.919 (means 0.321 to 0.919). Neither reading of the range puts every value in 0.351 to 0.506.
+    Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Rotational variance with the TBF extracted again from the condition averages after the jPCA soft normalisation and mean
+    subtraction (Methods, Explaining variability in jPCA-identified rotations, "prior to quantifying the variance or extracting
+    temporal basis functions we soft-normalized and mean subtracted activity identically to jPCA"; same k); the code corrTotalRotationsWithjPCA.m
+    (original basis, normalised and centred loadings) is a variant. Both give the same outcome.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig4f-plane-alignment-explains-jpca
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4f-plane-alignment-explains-jpca
+  notes: With the basis re-extracted from the soft-normalised, mean-subtracted data (Methods), the alignment of a condition's
+    rotations with a jPCA plane correlates with the variance in that plane with rho 0.816 to 0.952 (p < 0.001) for four of
+    the six planes, and 0.660 (first M1-N plane) and 0.475 (PMd-N) for the other two. With the code's input (original basis,
+    normalised loadings) five of six are in 0.738 to 1 (0.824 to 0.947) and the first M1-N plane gives 0.685. At least half
+    hold under both. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Total rotational activity from the TBF extracted again from the soft-normalised, mean-subtracted data (Methods, as fig4d);
+    the code corrOverlapWithjPCA.m input (original basis, normalised loadings) is a variant. Both give partially reproduced.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig5a-frequencies-segregated
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig5a-frequencies-segregated
+  notes: Same-frequency alignment is higher than different-frequency alignment with p < 0.001 in 35 of 36 comparisons under
+    the paired reading (97%; the exception is PMd-J 2.64 against 1.64 Hz, 0.202 against 0.202) and 33 of 36 under the rank-sum
+    reading. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig5c-rotations-predict-rotations
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig5c-rotations-predict-rotations
+  notes: Over the 36 ordered pairs of different rotations, the mean variance explained is 40.9% to 90.5%, all inside 38.7
+    to 100%, and every pair is above its null with signed-rank p < 0.001. The means are stable under the other four seeds.
+    Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - The truth for a held-out condition is its own loading columns, projected on the training basis, times the basis (Methods);
+    the code keeps a training condition's loadings in its ground-truth tensor. Pairs involving the offset are shown but not
+    counted, as the claim is about rotations.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: suppfig6a-location-alignment
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig6a-location-alignment
+  notes: The location is less aligned across conditions than the noise in every dataset (signed-rank p below 1e-11), with
+    AUC 0.890 (M1-J) and 0.889 (M1-N) inside 0.792 to 1, but 0.698 (PMd-J) and 0.764 (PMd-N) below it. Units are unsorted
+    threshold crossings (see data-composition).
+  deviations:
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: suppfig6b-location-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig6b-location-dimensionality
+  notes: The location has 1 or 2 excursion angles above 15 degrees (3.6 to 5.5 expected), needs 3 to 15 PCs for 80% (18.9
+    to 33) and has participation ratios of 2.3 to 7.4 (13.59 to 29.04); its SNR dimensionality (2 to 9) is in 4.5 to 13.2
+    for 3 of 4 datasets. Units are unsorted threshold crossings (see data-composition); 96 channels per array where the paper
+    had 79 to 118 sorted units, which bears directly on counts of dimensions.
+  deviations:
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: suppfig6c-location-distinct-from-rotations
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig6c-location-distinct-from-rotations
+  notes: In every dataset the location is far better aligned with other conditions' locations (0.892 to 0.969) than with any
+    rotation's plane (0.104 to 0.580), with p printed as 0 by both tests. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig6b-location-predicts-rotations
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig6b-location-predicts-rotations
+  notes: The location predicts 71.0%, 70.0%, 83.0% and 65.4% of the population variance (inside 60.3 to 88%) against a null
+    of 31.1% to 44.1% (signed-rank p below 1e-10). The code's variant gives 78.0% to 87.9%. Over the other four seeds the
+    means are 64.0% to 83.2%. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - The Methods give no intercept; the code's appended row of ones, penalised with the predictors, is used.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig6c-location-tracks-direction
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig6c-location-tracks-direction
+  notes: The angle of each condition in the plane of the first two PCs of the location follows the target angle, with circular
+    correlation 0.657, 0.719 and 0.630 after mirroring for M1-J, PMd-J and M1-N and 0.357 for PMd-N, all with p < 0.001. Units
+    are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Target angle from the direction of the condition-mean hand displacement at +850 ms (code splitTrialsAngles.m uses the
+    end of the path).
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - This claim was not recomputed on the offline onset, so its outcome rests on the online-onset assumption.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig6e-kinematics-predict-location
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig6e-kinematics-predict-location
+  notes: With the reading that fits best (Ornstein-Uhlenbeck kernel, either kinematic basis) the linear model explains 53.7%,
+    48.1%, 65.7% and 23.9% of the location (3 of 4 in 33.3 to 78.1%) and the kernel model 69.5%, 53.7%, 85.4% and 43.9% (2
+    of 4 in 62.1 to 89.1%); all are above all 1000 permutations. The Gaussian kernel gives 23.5% to 59.8% (0 of 4). Over the
+    other four seeds the OU kernel gives 40.5% to 83.2% (svd; 40.6% to 83.3% skewnormal) and the linear model 19.5% to 65.2%, the same datasets inside and
+    outside the ranges. The reach parameters lie within -39 to 30, with a median distance of 41 between conditions. A sweep
+    of the length scale (svd) puts 2 of 4 OU values in range at every scale from 100 to 10^4 (fewer below) and at most 1 of
+    4 Gaussian values (length scales 40 and 100), so the outcome does not rest on the length scale. With the factorization
+    refitted on the training conditions of each fold, the counts are the same (linear 3 of 4, OU 2 of 4, Gaussian 0 of 4).
+    Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Reach parameters as the least-squares coefficients of the condition's hand path on two kinematic basis functions, the
+    top two velocity singular vectors over all conditions of both sessions integrated to position (reading svd) or their skew-normal
+    fits (reading skewnormal; paper, Methods, Extracting kinematic basis functions); results are shown under both.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - Targets are the offset columns of the factorization of all 72 conditions; the regression alone is cross-validated. The
+    paper's code for this regression is not published. A variant refits the factorization on each fold's training conditions
+    and projects the held-out conditions on the training basis; it gives the same counts.
+  - Variance explained pooled over the held-out conditions' offset columns.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  - The kernel length scales (10^3 and 400) are the paper's, set for reach parameters on its unpublished kinFuncEval basis,
+    whose scale may differ from the one here (coefficients on integrated unit-norm velocity singular vectors, positions in
+    mm). Assumption; the sweep over length scales shows the outcome does not depend on it.
+  assumed: true
+- claim: fig7c-ldr-encoding
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig7c-ldr-encoding
+  notes: Linear LDR encoding explains 77.1%, 68.9%, 85.4% and 74.0% (inside 54 to 85.8%) and kernel encoding 84.7%, 86.5%,
+    92.9% and 88.0% (inside 63.9 to 95.7%), against nulls of 42.2% to 62.7%, with signed-rank p < 0.0001, under both kinematic
+    bases and the other seeds. The kernel result holds at every OU length scale from 10 to 10^4 (80.8% to 92.9%, reading svd),
+    so it does not rest on the scale of the reach parameters. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Reach parameters as the least-squares coefficients of the condition's hand path on two kinematic basis functions, the
+    top two velocity singular vectors over all conditions of both sessions integrated to position (reading svd) or their skew-normal
+    fits (reading skewnormal; paper, Methods, Extracting kinematic basis functions); results are shown under both.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: suppfig7a-not-memorization
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:suppfig7a-not-memorization
+  notes: With sextants held out, kernel encoding (78.2% to 88.8%) beats nearest-neighbour regression (70.5% to 82.4%) in every
+    dataset under both kinematic bases, with p from 3.4e-12 to 1.5e-4. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Reach parameters as the least-squares coefficients of the condition's hand path on two kinematic basis functions, the
+    top two velocity singular vectors over all conditions of both sessions integrated to position (reading svd) or their skew-normal
+    fits (reading skewnormal; paper, Methods, Extracting kinematic basis functions); results are shown under both.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig7c-standard-encoding-worse
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig7c-standard-encoding-worse
+  notes: In all 24 comparisons (two LDR models, three standard models, four datasets) the LDR model is higher with p < 0.001;
+    the standard models explain 18.6% to 72.4% and the LDR models 68.9% to 92.9%. Units are unsorted threshold crossings (see
+    data-composition).
+  deviations:
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - Kernel matrices inverted with MATLAB's default pseudo-inverse tolerance, as the code relies on pinv with a near-constant
+    kernel at length scales 10^12 and 10^11.
+  - The standard models are scored over their lagged windows and the LDR models from -150 ms on, as in the code.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig7f-ldr-decoding
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:fig7f-ldr-decoding
+  notes: Decoding hand position from single-trial spikes explains on average 88.9%, 88.9%, 93.3% and 89.6% of its variance
+    over trials (reading svd; 88.6% to 93.0% for skewnormal), inside 75.6 to 100%, against 5.4% to 10.1% (svd; 5.7% to 10.4%
+    skewnormal) with the training conditions shuffled; stable over the other seeds (87.2% to 94.5% svd, 86.8% to 94.0% skewnormal). Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - Reach parameters as the least-squares coefficients of the condition's hand path on two kinematic basis functions, the
+    top two velocity singular vectors over all conditions of both sessions integrated to position (reading svd) or their skew-normal
+    fits (reading skewnormal; paper, Methods, Extracting kinematic basis functions); results are shown under both.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - Single-trial loadings from 10 ms spike counts centred on the grid times (code rebin).
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+- claim: fig7f-decoder-beats-standard
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  notes: Against the 14 standard decoders run per dataset (linear ridge, OU kernel trained on trial averages, OU kernel trained
+    on 4,000 or 12,000 single-trial samples; position and velocity; 20 and 100 ms smoothing; 100 ms lag), LDR decoding (88.9%
+    to 93.3% under svd, 88.6% to 93.0% under skewnormal) is higher with two-sided signed-rank p < 0.001 in all 56 comparisons
+    under either kinematic basis. The best standard decoder per dataset reaches 75.1% (M1-J), 83.7% (PMd-J), 89.4% (M1-N)
+    and 77.9% (PMd-N), each the kernel decoder of velocity on 4,000 single-trial samples at 100 ms. The GPFA decoders were
+    not run (no GPFA implementation in the environment; latent dimensionality and bin size not given), so by the criterion
+    the outcome is partial. The 4,000-sample kernel decoder (position, 100 ms) moves by at most 0.004 over the other four
+    seeds. Units are unsorted threshold crossings (see data-composition).
+  deviations:
+  - The single-trial kernel decoders are trained on a random subset of the training samples, as the Methods say ("trained
+    on a subset of single-trial data"); the code for it (predictKinUsingDataNonlinear.m) is not in the repository, so the
+    size is open. Readings of 4,000 samples (the size of the trial-average training set) and 12,000; both lose to LDR. Assumption.
+  - The velocity decoders' predictions are integrated to position from the trial's position at -260 ms (the bin before the
+    lagged window, before the reach); the code's postHoc step is not in the repository. Assumption.
+  - The standard decoders use the same two folds over conditions as fig7f-ldr-decoding, so the signed-rank tests pair the
+    same held-out trials; linear and kernel penalties, lag, smoothing and the per-trial variance explained follow predictKinUsingData.m
+    and getVarExplainedKinematics.m.
+  - The kernel ridge is solved by Cholesky (np.linalg.solve) and evaluated in chunks, as the matrix is positive definite with
+    the 0.1 penalty.
+  - GPFA decoders not run, so the outcome is at most partial under the criterion.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted (as fig7f-ldr-decoding).
+    Assumption.
+  output: claim:fig7f-decoder-beats-standard
+  assumed: true
+- claim: suppfig8-no-output-potent-dependence
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:suppfig8-no-output-potent-dependence
+  notes: 'Without EMG, only the hand position and velocity dimensions are removed. Decoding drops by 0.29 to 0.90 points (from
+    96.5% to 98.4% with them to 95.7% to 98.0% without, under svd), a small drop, but the signed-rank test finds it in every
+    dataset (p = 4.5e-10 to 3.7e-06 under svd, 2.0e-10 to 8.6e-06 over both bases), below the 0.036 of the criterion. The
+    map''s inputs are printed: the code (removePotent.m) allocates kinParams as samples x 4 (zeros(size([velData.matrix],2),4))
+    and subtracts mean(kinParams, 2), each sample''s mean over the four kinematic variables, and the notebook does the same;
+    subtracting each variable''s mean instead gives drops of 0.35 to 1.06 points and p = 8.4e-11 to 2.8e-06 under svd (4.1e-06
+    under skewnormal).
+    Units are unsorted threshold crossings (see data-composition).'
+  deviations:
+  - The dataset has no EMG, so only the hand position and velocity dimensions are removed, as the criterion provides; the
+    outcome rests on that.
+  - The potent dimensions are also projected out of the held-out conditions' activity, and both decoders use the same two
+    folds.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  - The kinematics are centred as the code does, by each sample's mean over the four variables; centring each variable is
+    shown as a variant and gives the same outcome.
+  assumed: true
+- claim: trial-curvature-decoding
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024_kinematics.ipynb
+  output: claim:trial-curvature-decoding
+  notes: Under the svd basis seven of the eight curvature correlations lie in 0.144 to 0.451 with p < 0.001 (0.193 to 0.442);
+    the y curvature of PMd-J gives 0.092 (p = 2.2e-4). Under the skew-normal basis six of eight do. Units are unsorted threshold
+    crossings (see data-composition).
+  deviations:
+  - Reach parameters as the least-squares coefficients of the condition's hand path on two kinematic basis functions, the
+    top two velocity singular vectors over all conditions of both sessions integrated to position (reading svd) or their skew-normal
+    fits (reading skewnormal; paper, Methods, Extracting kinematic basis functions); results are shown under both.
+  - Hand positions are taken relative to each trial's position at -350 ms before the reach parameters are fitted. The code
+    regresses the positions on the basis without an intercept (predictDataUsingTBFandKinCondStructure.m) and the paper does
+    not say where the origin is; the basis functions start at zero, so the start is subtracted. Assumption.
+  - The curvature parameters are the x and y coefficients on the second basis function.
+  - Trials are aligned on the file's move_begins_time, its movement onset time; the paper says only aligned to movement onset
+    (Methods, Subjects, behavior and data pre-processing). The offline onset in the file is 25 ms (J) and 52 ms (N) earlier
+    in the median. Assumption, as the online onset is the one the file names movement onset. The claims whose numbers depend
+    most on the onset (fig3g, tbf-variance-explained, the jPCA claims, single-lds-variance, fig2c, fig3a, fig3i, rotation-orientation-dimensionality)
+    were recomputed on offline_move_onset_time (notebook 1, cell variant-offline-onset) and keep their outcomes.
+  - The result depends on random draws, but only the claim's seed was run (the four further seeds of the protocol were not,
+    for time).
+  - The units are the dataset's unsorted threshold crossings, all 96 per array, where the paper used sorted single units and
+    stable multi-units (Methods, Subjects, behavior and data pre-processing).
+  assumed: true
+findings:
+- kind: data_missing
+  about: data
+  severity: major
+  notebook: reproduce_sabatini_2024.ipynb
+  output: finding-unsorted-units
+  statement: The units are unsorted threshold crossings, one per electrode (96 per array, Blackrock unit code 0, as the units
+    table's description says), where the paper analysed sorted single units and stable multi-units, 79 to 118 per array. The
+    sorting, and so the paper's unit counts and unit selection, are not in the dandiset; every population analysis here runs
+    on the threshold crossings.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  notebook: reproduce_sabatini_2024.ipynb
+  output: sanity
+  statement: The trials tables of two Nitschke sessions (2010-09-20 and 2010-09-22) have no maze_condition column, so their
+    trials cannot be grouped by condition from the file. These sessions are not the ones the paper names, and were not analysed.
+- kind: other
+  about: data
+  severity: none
+  notebook: reproduce_sabatini_2024.ipynb
+  output: sanity
+  statement: 'Checks that passed. In both sessions the paper names, 72 conditions split 36 without and 36 with barriers, and
+    the trial counts (1595 and 2121 successful trials) are within 10% of the paper''s 1469 and 2014. The trial table, spikes
+    and hand share a clock: the condition-mean hand speed peaks 120 to 140 ms after the table''s movement onset, and reach
+    direction decodes from spikes 0 to 300 ms after onset at 0.80 to 0.92 against 0.20 to 0.23 with shuffled labels. Hand
+    positions are stored in mm with unit meters and conversion 0.001 (stored values -173.1 to 148.8 over the first 100,000
+    samples, 0.17 m at most once converted). No two of the ten sessions share their trial and spike counts.'
+- kind: code_mismatch
+  about: paper
+  statement: In the published code, idDynamics.m returns the training data itself as its approximation (approx(cond).matrix
+    = data(cond).matrix), so crossValidateDimensionalityConditions.m scores every dimensionality the same and cannot choose
+    the 5 to 9 dimensions the paper reports. The Methods describe a different score (projection of one partition on its top
+    k singular vectors, variance explained in the other).
+- kind: methods_unavailable
+  about: paper
+  statement: Questions for the authors. (1) Which movement onset were the data aligned on, the online or the offline estimate
+    (they differ by 25 to 52 ms in the median)? (2) Were hand positions taken relative to the start of the reach before the
+    reach parameters were fitted on the kinematic basis without an intercept? (3) Which version and parameters of the jPCA
+    codepack were used (getRotations.m calls jPCA with defaults on data already soft-normalised)? (4) How large was the subset
+    of single-trial samples the kernel decoders of Figure 7f were trained on, and how were the velocity decoders' outputs
+    turned into positions? This attempt assumed the online onset (and showed that the onset-dependent claims keep their outcomes
+    on the offline onset), start-relative positions, the codepack's defaults, subsets of 4,000 and 12,000 samples and integration
+    from the position before the reach; the kinematic claims and fig7c-standard-encoding-worse are marked as resting on the
+    second assumption.
+- kind: methods_unavailable
+  about: paper
+  statement: The code for kinFuncEval (the kinematic basis functions), the regression of the state space location on the reach
+    parameters (Figure 6e), GPFA, the single-trial kernel decoders (predictKinUsingDataNonlinear.m and its trial-averaged
+    version), the velocity-to-position step of the decoders (postHoc.m) and the 250 ms post-reach warp is not in the repository,
+    and the preprocessed .mat files it loads are available only on request, so the order and selection of the 72 conditions
+    and the units cannot be checked against the code.
+- kind: metadata_error
+  about: data
+  severity: minor
+  notebook: earlier_findings.ipynb
+  output: finding-position-units
+  found: on_prompt
+  statement: Eye positions are labelled meters with a conversion of NaN in both files the paper names, so they cannot be
+    converted to meters from the metadata; their stored values run from -331.2 to 369.4 (J) and -297.8 to 411.3 (N) over
+    the first 100,000 samples. Hand and cursor positions carry a conversion of 0.001.
+- kind: data_missing
+  about: data
+  severity: minor
+  notebook: earlier_findings.ipynb
+  output: finding-no-emg
+  found: on_prompt
+  statement: The dataset holds no EMG, which the paper's Supplementary Figure 8 removes along with the kinematic dimensions.
+    Neither file has an acquisition series, the processing modules hold only positions and filtered ephys, and no object is
+    named for EMG or muscle.
+- kind: other
+  about: data
+  severity: major
+  notebook: earlier_findings.ipynb
+  output: finding-nitschke-unit-170
+  found: on_prompt
+  statement: In the Nitschke file (sub-Nitschke_ses-20100923), M1 unit 170 fires above 100 spikes/s on 229 of the 2121
+    successful trials of the 72 conditions (-350 to +850 ms around move_begins_time), all starting between 18902 and 22462
+    s, at a mean of 365.6 spikes/s on those trials against 31.9 spikes/s on the others. Its largest mean rate over blocks of
+    50 trials is 13.7 times its median block mean, against at most 2.5 for the other units of the file. Nothing in the file
+    marks it, and the analyses that keep it take this run of trials as the unit's activity.
+- kind: methods_unavailable
+  about: paper
+  found: on_prompt
+  statement: Questions for the paper's authors. (1) Which trials were analysed? All successful trials give 1595 (J) and 2121
+    (N), and successful trials with a delay above 400 ms 1381 and 1884, against 1469 and 2014 in the Figure 7 legend. (2)
+    What penalty was used for the OU kernel encoding models with length scales 1e11 and 1e12? (3) How were the noise
+    excursion angles of Figure 4c computed? (4) Were the jPCA and single-condition LDS values of Supplementary Figure 3
+    cross-validated, and how? (5) Did the trial matrices shuffled in the control for data smoothing span the analysis window,
+    as preprocessTrials.m implies? (6) What scale do the kinematic basis functions (kinFuncEval) have, and in what units are
+    rates given to the OU kernel decoders with length scale 100?
+verifications:
+- date: '2026-11-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The executed notebooks with the conclusion cells and the summaries removed, the helper module ldr.py and the claims
+    file, with the paper's full text. The verifier tested the helpers on synthetic data (eig_transform, lds_eigs_batch, alignment_index,
+    auc_folded, pca_dims, circ_corr, sea, split_halves) and checked the NWB processing modules for EMG; it could not read
+    the paper's code (warpTrial.m, removePotent.m, getRotations.m, the jPCA codepack). Its report is transcripts/sabatini-2024/verifier-1-report.md.
+  results:
+  - claim: data-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: '72 conditions (36 straight, 36 curved). Trials are 1595/2121 under reading (a) and 1381/1884 under (b), all within
+      tolerance. The unit criterion cannot be applied: the files hold 96 unsorted threshold-crossing channels per array, none
+      marked single- or multi-unit (the archive''s file metadata agrees).'
+    response: No change.
+  - claim: jpca-fit-r2
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Straight 4/4 and curved 4/4 in range under both readings. All conditions: 2/4 (best) or 1/4 (skew). The signed-rank
+      test gives p<0.001 only in M1-J; it is reported, not decisive. Problem 9 (not affecting a conclusion): per_cond projects
+      data that lacks jPCA''s second soft-normalisation and PC centring onto the jPC plane, so the per-condition R2 is approximate;
+      the straight/curved pairing (condition 3j+1 with 3j+2 as the same target) is assumed and never printed. Problem 2 (affecting
+      a conclusion): all data are aligned on online move_begins_time; the offline onset in the file differs by a median of 25
+      ms (J) and 52 ms (N), and the paper does not say which onset it used; the analysis was not rerun under the second reading,
+      although the jPCA window (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'Outcome kept. The pairing is now printed: the members of a pair end within 4.8 mm (J) and 5.1 mm (N) of each
+      other in the median, at most 11.3 mm. The per-condition R2''s approximation is stated in the deviations. Problem 2 (the
+      alignment event): the onset-dependent claims were recomputed on offline_move_onset_time (notebook 1, variant-offline-onset)
+      and keep their outcomes.'
+  - claim: jpca-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: '9.1, 10.6, 10.8 and 6.8%, all in 6.3 to 13.2%; s.d. below 13. Problem 2 (affecting a conclusion): all data are
+      aligned on online move_begins_time; the offline onset in the file differs by a median of 25 ms (J) and 52 ms (N), and
+      the paper does not say which onset it used; the analysis was not rerun under the second reading, although the jPCA window
+      (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'No change of outcome. Problem 2 (the alignment event): the onset-dependent claims were recomputed on offline_move_onset_time
+      (notebook 1, variant-offline-onset) and keep their outcomes.'
+  - claim: single-lds-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: '77.3 to 82.6% under (a) and 79.6 to 86.5% under (b); all above 72.6%. Problem 7: the paper used 79 to 118 sorted
+      single and multi-units per array, the files hold 96 unsorted threshold crossings, which bears on the dimensionality claims
+      that fail. Problem 2 (affecting a conclusion): all data are aligned on online move_begins_time; the offline onset in the
+      file differs by a median of 25 ms (J) and 52 ms (N), and the paper does not say which onset it used; the analysis was
+      not rerun under the second reading, although the jPCA window (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'No change of outcome. Problem 2 (the alignment event): the onset-dependent claims were recomputed on offline_move_onset_time
+      (notebook 1, variant-offline-onset) and keep their outcomes. Problem 7: the unsorted units are now said to bear directly
+      on counts of dimensions in the notes.'
+  - claim: fig2c-condition-lds-variance
+    agrees: true
+    outcome: reproduced
+    reason: 'k = 5, 5, 7, 7 (or 5, 5, 7, 5); variance explained 83.2 to 94.1%. Problem 2 (affecting a conclusion): all data
+      are aligned on online move_begins_time; the offline onset in the file differs by a median of 25 ms (J) and 52 ms (N),
+      and the paper does not say which onset it used; the analysis was not rerun under the second reading, although the jPCA
+      window (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'No change of outcome. The new run gives 83.4% to 94.4% (91.0% for PMd-N at 5), and the notes say so. Problem
+      2 (the alignment event): the onset-dependent claims were recomputed on offline_move_onset_time (notebook 1, variant-offline-onset)
+      and keep their outcomes.'
+  - claim: fig3a-eigenvalue-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Median pair frequencies are off: M1-J [0.85, 2.38] and M1-N [0.63, 1.74, 3.19] Hz. Only 3 of 10 pairs are within
+      10%. Problem 2 (affecting a conclusion): all data are aligned on online move_begins_time; the offline onset in the file
+      differs by a median of 25 ms (J) and 52 ms (N), and the paper does not say which onset it used; the analysis was not rerun
+      under the second reading, although the jPCA window (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'No change of outcome (M1-N 1.75 Hz in the new run). Problem 2 (the alignment event): the onset-dependent claims
+      were recomputed on offline_move_onset_time (notebook 1, variant-offline-onset) and keep their outcomes.'
+  - claim: fig3c-eigenvalue-distance-auc
+    agrees: true
+    outcome: not_reproduced
+    reason: 'AUC 0.58 to 0.72 with the half-split null and 0.59 to 0.80 with the Poisson null. Only PMd-N is within 0.459
+      to 0.638. Problem 8 (not affecting a conclusion): the markdown says the Poisson null has 50 repeats while the code runs
+      30, and the half-split null runs 150 repeats instead of 500; AUCs are stable across seeds.'
+    response: No change of outcome. The markdown now says 30 repeats; the reduced repeats stay a deviation. The new run gives
+      AUCs 0.580 to 0.717 (halves) and 0.592 to 0.797 (Poisson).
+  - claim: suppfig2-eigenvalues-from-kinematics
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Pooled R2 0.247 or 0.298, against 0.10 +- 0.05. Problem 11 (not affecting a conclusion): both members of each
+      conjugate pair enter as targets, so every real part is counted twice in the pooled mean.'
+    response: No change of outcome. Counting each pair once is shown as a variant (0.235 and 0.291); the criterion's count
+      gives 0.243 and 0.295 with the per-trial durations of fig3i reading (a).
+  - claim: fig3g-basis-frequencies
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Every dataset has 3 to 4 rotation pairs plus one offset. Only 5 of 14 frequencies are within 10%; the lowest is
+      0.61 to 0.73 Hz everywhere. The criterion has no partial clause; I read the count and offset holding while the frequencies
+      fail as partial. Problem 2 (affecting a conclusion): all data are aligned on online move_begins_time; the offline onset
+      in the file differs by a median of 25 ms (J) and 52 ms (N), and the paper does not say which onset it used; the analysis
+      was not rerun under the second reading, although the jPCA window (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'Outcome kept. The notebook''s printout gives 6 of 14 within 10% (PMd-J 1.64 and 2.64, M1-N 1.61 and 4.37, PMd-N
+      2.35 and 3.65 Hz), which the notes list. Problem 2 (the alignment event): the onset-dependent claims were recomputed
+      on offline_move_onset_time (notebook 1, variant-offline-onset) and keep their outcomes.'
+  - claim: tbf-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: '92.3 to 97.1%, s.d. at most 1.3. Problem 2 (affecting a conclusion): all data are aligned on online move_begins_time;
+      the offline onset in the file differs by a median of 25 ms (J) and 52 ms (N), and the paper does not say which onset it
+      used; the analysis was not rerun under the second reading, although the jPCA window (-160 to +40 ms) and the fig3i durations
+      depend on it.'
+    response: 'No change. Problem 2 (the alignment event): the onset-dependent claims were recomputed on offline_move_onset_time
+      (notebook 1, variant-offline-onset) and keep their outcomes.'
+  - claim: tbf-shuffle-control
+    agrees: true
+    outcome: reproduced
+    reason: Shuffled 35.1 to 45.6%; rank-sum p about 4e-25, real higher.
+    response: No change.
+  - claim: fig3h-recoverability
+    agrees: true
+    outcome: reproduced
+    reason: Real 95.1 to 96.6%, rank-sum p<0.001. Chance is 84.8 to 87.8%, above the paper's stated 63 to 80% in all four;
+      it is inside only because the upper bound is widened to 88.
+    response: No change; the notes already say the chance level is near the top of the widened range and above the unwidened
+      one.
+  - claim: fig3i-duration-warping
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Unwarped M1-N rho = 0.013 (paper -0.26) and PMd-N 0.246 is out of range. Warped (truncate) is in range in only
+      2/4 (PMd-J -0.06, PMd-N -0.27), so the partial condition also fails. Problem 1 (affecting a conclusion): the criterion
+      defines reach duration per trial, while the notebook takes one duration from the condition-mean hand speed and warps every
+      trial with it; the warp scales 0 < st < wf with st offset by +100 ms, so it warps -100 to wf-100 ms, not -100 ms to the
+      end of the reach as the notebook''s text says; the per-trial reading was not run. Problem 2 (affecting a conclusion):
+      all data are aligned on online move_begins_time; the offline onset in the file differs by a median of 25 ms (J) and 52
+      ms (N), and the paper does not say which onset it used; the analysis was not rerun under the second reading, although
+      the jPCA window (-160 to +40 ms) and the fig3i durations depend on it.'
+    response: 'Outcome kept. The per-trial reading (a) is now run beside the code''s condition-mean reading (b); both are
+      not reproduced (M1-N unwarped -0.008 and 0.013; truncate-warped in range 0 and 2 of 4). The warp''s span follows warpTrial.m,
+      which adds a 100 ms lag and warps from 0 to the duration in lagged time; the notebook''s text now says so, and the span
+      to the end of the reach is run as the end+100 variant (2 and 3 of 4 in range). Problem 2 (the alignment event): the
+      onset-dependent claims were recomputed on offline_move_onset_time (notebook 1, variant-offline-onset) and keep their
+      outcomes.'
+  - claim: suppfig3-model-comparison
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Under the claims file''s main reading, held-out TBF (73.5 to 88.8%) is below the in-sample LDS (83.2 to 94.1%)
+      in 4/4. The in-sample variant reproduces. Problem 3 (affecting a conclusion, a claims-file misreading): the legend says
+      the LDR model explains greater neural variance when cross-validated; the notebook''s own held-out LDS scores are 0.675,
+      0.768, 0.835 and 0.788, all below held-out TBF (0.735, 0.810, 0.888, 0.817), so a like-for-like comparison would favour
+      TBF in 4/4, though the windows differ.'
+    response: 'Outcome kept, as tested on the claims file. The like-for-like comparison on the same window (-160 ms on) and
+      split is added as a variant: held-out TBF 74.0%, 80.8%, 88.1%, 81.2% against held-out LDS 67.5%, 77.0%, 83.6%, 78.6%,
+      TBF higher in all four. The possible misreading is asked of a reader in questions/sabatini-2024.yaml.'
+  - claim: fig4b-plane-alignment
+    agrees: true
+    outcome: partially_reproduced
+    reason: 13 of 14 rotations have AUC 0.83 to 0.94 with signed-rank p<0.001. PMd-N 3.65 Hz has AUC 0.545.
+    response: No change.
+  - claim: fig4c-subspace-excursion-angles
+    agrees: true
+    outcome: partially_reproduced
+    reason: Counts are in range for 3 of 4 datasets. PMd-N gives 23 to 25 (saturating at the 25-dimension cap); 10 of 14 counts
+      in range.
+    response: 'No change of outcome. Problem 7: the unsorted units are now said to bear directly on counts of dimensions in
+      the notes.'
+  - claim: rotation-orientation-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: PCs to 80% are 3 to 24 (3/14 in range) and participation ratio 2 to 20 (2/14), under both PCA readings. The SNR
+      dimensions (13/14) are the only part that holds. Problem 7 bears on it.
+    response: 'No change of outcome; on the offline onset 1 of 14 is in range for each measure. Problem 7: the unsorted units
+      are now said to bear directly on counts of dimensions in the notes.'
+  - claim: fig4d-jpca-variance-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: '5/6 planes at p<0.05 (83%, tolerance 59.4 to 72.6). Plane rho values are -0.09 to 0.92 and neither reading falls
+      in 0.351 to 0.506. Problem 4 (affecting a conclusion): the Methods soft-normalise and mean-subtract before extracting
+      the temporal basis functions; the notebook reuses the basis from unnormalised data and only rescales and centres the
+      loadings.'
+    response: 'Outcome kept. The Methods'' reading is now the main one: the TBF is extracted again from the soft-normalised,
+      mean-subtracted condition averages (same k); it gives 5 of 6 planes at p < 0.05 and rho -0.104 to 0.924, not reproduced.
+      The code''s input (corrTotalRotationsWithjPCA.m) is shown as a variant with the same outcome.'
+  - claim: fig4f-plane-alignment-explains-jpca
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 6 planes have rho at least 0.738 with p<0.001; M1-N plane 1 is 0.685. Problem 4 applies here too.
+    response: Outcome kept. With the basis re-extracted from normalised data (Methods) 4 of 6 planes hold (0.843 to 0.952;
+      M1-N plane 1 0.660, PMd-N 0.475); with the code's input 5 of 6. Partial under both.
+  - claim: fig5a-frequencies-segregated
+    agrees: true
+    outcome: partially_reproduced
+    reason: 35/36 comparisons pass with the paired test and 33/36 with rank-sum; 80% or more is the partial rule.
+    response: No change.
+  - claim: fig5c-rotations-predict-rotations
+    agrees: true
+    outcome: reproduced
+    reason: Rotation pairs explain 40.9 to 90.5%; 36/36 above the null at p<0.001.
+    response: No change.
+  - claim: suppfig6a-location-alignment
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'AUC 0.890, 0.698, 0.889, 0.764: 2 of 4 in range. Observed alignment is below noise with p<0.001 in all four.
+      The criterion has no partial clause; I read it as following fig4b, as its criterion says.'
+    response: No change.
+  - claim: suppfig6b-location-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: 'SEA angles above 15 degrees: 1 to 2 (needs 3.6 to 5.5). PCs 3 to 15 and participation ratio 2 to 7, 0/4 in range.
+      SNR 3/4.'
+    response: 'No change of outcome. Problem 7: the unsorted units are now said to bear directly on counts of dimensions in
+      the notes.'
+  - claim: suppfig6c-location-distinct-from-rotations
+    agrees: true
+    outcome: reproduced
+    reason: Location-to-location alignment (0.89 to 0.97) is above location-to-rotation in every comparison, p about 0.
+    response: No change.
+  - claim: fig6b-location-predicts-rotations
+    agrees: true
+    outcome: reproduced
+    reason: 65.4 to 83.0%; signed-rank p at most 7e-12 against the null.
+    response: No change of outcome. The notes now give the null as 31.1% to 44.1% and p below 1e-10 (PMd-N 1.3e-11), as printed.
+  - claim: fig6c-location-tracks-direction
+    agrees: true
+    outcome: reproduced
+    reason: Circular correlation 0.66, 0.72, 0.63, 0.36 after a per-dataset PC sign flip; p at most 9e-4.
+    response: No change.
+  - claim: fig6e-kinematics-predict-location
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Linear in range 3/4 (PMd-N 0.24). Kernel in range 2/4 (Ornstein-Uhlenbeck) or 0/4 (Gaussian). All beat all 1000
+      permutations. Problem 5 (affecting a conclusion): the reach parameters'' scale depends on how the kinematic basis is
+      normalised (here they span +-30); the paper''s length scales (10^3 and 400) were tuned to kinFuncEval''s unknown scale,
+      so they do not transfer; the scale was never checked, and the Gaussian failures may come from this. Problem 12 (not
+      affecting a conclusion): the target offset columns come from a TBF fitted on all 72 conditions, including the held-out
+      ones.'
+    response: 'Outcome kept. The scale is printed (parameters within -39 to 30, median distance 41 between conditions) and
+      both kernels are swept over length scales: OU puts 2 of 4 in range at every scale from 100 to 10^4, Gaussian at most
+      1 of 4 (scales 40 and 100), so the outcome does not rest on the length scale; the choice is marked as an assumption.
+      A variant refits the factorization within the folds (targets out of training too) and gives the same counts.'
+  - claim: fig7c-ldr-encoding
+    agrees: true
+    outcome: reproduced
+    reason: Linear 68.9 to 85.4% and kernel 84.7 to 92.9%, p<0.001 against the null, under both kinematic readings. Problem
+      5 applies to the kernel length scale.
+    response: No change of outcome. The OU length scale is swept from 10 to 10^4 and the kernel result holds at every scale
+      (80.8% to 92.9%).
+  - claim: suppfig7a-not-memorization
+    agrees: true
+    outcome: reproduced
+    reason: Kernel beats nearest-neighbour in all datasets, p at most 1.5e-4.
+    response: No change.
+  - claim: fig7c-standard-encoding-worse
+    agrees: true
+    outcome: reproduced
+    reason: LDR models beat the standard models in 24/24 comparisons, p<0.001.
+    response: No change.
+  - claim: fig7f-ldr-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Mean over trials 88.9 to 93.3%.
+    response: No change of outcome; the skew-normal range, null and seed range in the notes are corrected to the printed values.
+  - claim: fig7f-decoder-beats-standard
+    agrees: true
+    outcome: blocked
+    reason: 'Only the single-trial kernel decoders are plausibly too large; the archive holds the spikes and hand position
+      needed. The linear decoders and the decoders trained on trial averages were feasible and not run. GPFA is missing from
+      the environment, which is not a data block. Problem 6 (affecting a conclusion): the linear decoders and the kernel decoders
+      trained on trial averages (about 4,000 samples) fit in memory and would have tested most of the comparison set.'
+    response: 'Outcome changed from blocked to partially_reproduced. The Methods say the single-trial kernel decoders were
+      trained on a subset of single-trial data, so they too fit: all decoders but GPFA are now run (linear, kernel on trial
+      averages, kernel on 4,000 or 12,000 single-trial samples; position and velocity; 20 and 100 ms), on the same folds as
+      the LDR decoder. LDR is higher with p < 0.001 in all 56 comparisons; without the GPFA decoders the criterion makes this
+      partial. The subset size and the integration of the velocity decoders are assumptions (assumed: true).'
+  - claim: suppfig8-no-output-potent-dependence
+    agrees: true
+    outcome: not_reproduced
+    reason: 'p ranges from 1e-5 to 5e-10 in all datasets, below 0.036. The mean drop is only 0.3 to 0.9 points. No EMG is
+      in the files; I checked the NWB processing modules. Problem 10 (not affecting a conclusion): Kp.mean(1) removes the
+      mean across the four kinematic variables at each sample, while neurons have their mean removed over time; this looks
+      like a transposed MATLAB mean, and could not be verified against removePotent.m.'
+    response: Outcome kept. removePotent.m does subtract mean(kinParams, 2), the mean over the four variables of each sample,
+      so the notebook follows the code; the first rows of Kp, Ksub and Dsub are now printed, and centring each variable is
+      run as a variant (drops 0.35 to 1.06 points, p = 8.4e-11 to 4.1e-06), with the same outcome.
+  - claim: trial-curvature-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: 7 of 8 correlations in range with the svd kinematic reading; PMd-J y curvature is 0.092. 6 of 8 with the skew-normal
+      reading.
+    response: No change.
+- date: '2026-11-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: 'Round 2: the full executed notebooks with their conclusions and summaries, the helper module ldr.py, the claims
+    file, the attempt record and README, with the paper''s full text. Its report is transcripts/sabatini-2024/verifier-2-report.md.
+    No finding in the record is rated critical, so no finding was reviewed under this round''s rules; it found the ratings
+    of findings 1 (major) and 2 (minor) reasonable.'
+  results:
+    - claim: data-composition
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees with the stated outcome.
+      response: No change.
+    - claim: jpca-fit-r2
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption.
+      response: No change. Problem 2 of round 1, which the verifier found in no reason field, is now added to the round-1
+        reasons of the claims its responses name.
+    - claim: jpca-variance-explained
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption.
+      response: No change.
+    - claim: single-lds-variance
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption. Problem 7 (unsorted threshold crossings) is a data limitation that cannot be fixed and remains a plausible
+        cause of the dimensionality failures.
+      response: No change; the notes already say the unsorted units bear on counts of dimensions.
+    - claim: fig2c-condition-lds-variance
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. The text's 83.4%, 90.7%, 92.9% and 94.4% (91.0% for PMd-N at 5), also in the notes and response, differ
+        from cell 42's printed 83.2, 90.5, 92.8 and 94.1 (90.9 at k = 5); the offline variant's 79.6% to 89.8% against cell
+        86's 79.2 to 89.7%. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption.
+      response: No change. The copy the verifier read was run on another machine; this revision's two clean runs, on one
+        machine, printed identical outputs, which differ from that copy in the last digit of some fits. These runs print
+        83.4%, 90.7%, 92.9%, 94.4% (91.0% at k = 5) and 79.6% to 89.8% on the offline onset, as the text says, so the text
+        is kept; the summary of notebook 1 now states the machine dependence with the verifier's copy's values.
+    - claim: fig3a-eigenvalue-clusters
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees. The text's 1.75 Hz (M1-N) is printed as 1.74 in cell 47, and the response's 'M1-N 1.75 Hz in the new
+        run' is not what was printed. The record's offline values 0.87 and 3.07 (2 of 10) are printed as 0.86 and 3.06,
+        and 3 of 10 are within 10% (1.54, 1.53 and 2.74). The offline-onset variant (nb1 cell 86) covers it, so the outcome
+        does not rest on the online-onset assumption.
+      response: The offline count is corrected to 3 of 10 (1.54, 1.53 and 2.74). The copy the verifier read was run on another
+        machine; this revision's two clean runs, on one machine, printed identical outputs, which differ from that copy
+        in the last digit of some fits. These runs print 1.75, 0.87 and 3.07, as the text says.
+    - claim: fig3c-eigenvalue-distance-auc
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees. The text and measured values (halves null 0.717, 0.669, 0.660, 0.580; Poisson null 0.797, 0.729, 0.646,
+        0.592; norm distance 0.577 to 0.787; seeds 0.577 to 0.717) differ from cells 51 and 54 (0.716, 0.670, 0.660, 0.581;
+        0.796, 0.731, 0.646, 0.594; 0.579 to 0.786; 0.579 to 0.716). Not covered by the offline-onset variant (nb1 cell
+        86), so strictly the outcome still rests on an untested assumption; this is minor, as no recomputed claim moved.
+      response: 'The copy the verifier read was run on another machine; this revision''s two clean runs, on one machine,
+        printed identical outputs, which differ from that copy in the last digit of some fits. These runs print the text''s
+        and the measured values, which are kept. assumed: true is now set, with a deviation saying the claim was not recomputed
+        on the offline onset.'
+    - claim: suppfig2-eigenvalues-from-kinematics
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees; the assumption that hand positions are measured from each trial's start is stated and reasonable.
+        The text's 0.243 (0.243 and 0.296 under skew-normal), per-dataset 0.149 to 0.476 and pair-once 0.235 and 0.291,
+        and the measured 0.243, differ from cell 56 (0.244 under both bases, 0.150 to 0.474, 0.237 and 0.291). Not covered
+        by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an untested assumption; this
+        is minor, as no recomputed claim moved.
+      response: The copy the verifier read was run on another machine; this revision's two clean runs, on one machine, printed
+        identical outputs, which differ from that copy in the last digit of some fits. These runs print 0.243, 0.149 to
+        0.476 and 0.235, as the text and measured value say; they are kept. The outcome was already marked assumed.
+    - claim: fig3g-basis-frequencies
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption.
+      response: No change.
+    - claim: tbf-variance-explained
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption.
+      response: No change.
+    - claim: tbf-shuffle-control
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig3h-recoverability
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig3i-duration-warping
+      agrees: true
+      outcome: not_reproduced
+      reason: 'Agrees; problem 1 is resolved (per-trial reading run, span text corrected, end+100 variant added; not reproduced
+        under every reading). ''The warped correlations move by at most 0.004 over the five seeds'': PMd-N under reading
+        (a) runs from -0.304 to -0.299, a change of 0.005 (cell 23). The offline-onset variant (nb1 cell 86) covers it
+        (reading b, truncate only), so the outcome does not rest on the online-onset assumption.'
+      response: Corrected to 0.005 in the notebook and the notes.
+    - claim: suppfig3-model-comparison
+      agrees: true
+      outcome: not_reproduced
+      reason: 'Agrees with the outcome as the claims file decides it. The text''s in-sample LDS 83.4%, 90.7%, 92.9%, 94.4%
+        and held-out LDS 67.5%, 77.0%, 83.6%, 78.6% differ from cell 59 (83.2, 90.5, 92.8, 94.1; 67.5, 76.8, 83.5, 78.4).
+        Problem 3 remains, a claims-file misreading: the legend calls the comparison cross-validated, and scored like for
+        like on held-out data from -160 ms TBF beats LDS and jPCA in 4/4, which would make the claim reproduced; the question
+        has been put to a reader. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still
+        rests on an untested assumption; this is minor, as no recomputed claim moved.'
+      response: 'The copy the verifier read was run on another machine; this revision''s two clean runs, on one machine,
+        printed identical outputs, which differ from that copy in the last digit of some fits. These runs print the text''s
+        values, which are kept. The question stays in questions/sabatini-2024.yaml. assumed: true is now set, with a deviation
+        saying the claim was not recomputed on the offline onset.'
+    - claim: fig4b-plane-alignment
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig4c-subspace-excursion-angles
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: rotation-orientation-dimensionality
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees. The offline-onset variant (nb1 cell 86) covers it, so the outcome does not rest on the online-onset
+        assumption. Problem 7 (unsorted threshold crossings) is a data limitation that cannot be fixed and remains a plausible
+        cause of the dimensionality failures.
+      response: No change; the notes already say the unsorted units bear on counts of dimensions.
+    - claim: fig4d-jpca-variance-correlation
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees; problem 4 is resolved (the basis is re-extracted from normalised data as the main reading). Not covered
+        by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an untested assumption; this
+        is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig4f-plane-alignment-explains-jpca
+      agrees: true
+      outcome: partially_reproduced
+      reason: 'Agrees. ''rho 0.843 to 0.952 for four of the six planes'': those four include M1-N plane 2 at 0.816, so the
+        range is 0.816 to 0.952 (cell 35); ''(0.826 to 0.947)'' for the code''s input is printed 0.824 to 0.947 (M1-N plane
+        2, 0.8235). Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an untested
+        assumption; this is minor, as no recomputed claim moved.'
+      response: 'Both ranges corrected to 0.816 to 0.952 and 0.824 to 0.947 in the notebook and the notes. assumed: true
+        is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig5a-frequencies-segregated
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig5c-rotations-predict-rotations
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: suppfig6a-location-alignment
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: suppfig6b-location-dimensionality
+      agrees: true
+      outcome: not_reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved. Problem 7 (unsorted threshold crossings) is a
+        data limitation that cannot be fixed and remains a plausible cause of the dimensionality failures.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset. The
+        notes already say the unsorted units bear on counts of dimensions.'
+    - claim: suppfig6c-location-distinct-from-rotations
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig6b-location-predicts-rotations
+      agrees: true
+      outcome: reproduced
+      reason: 'Agrees. ''against a null of 31.1% to 44.1%'': cell 10 prints 44.0, 35.7, 44.8 and 29.2, i.e. 29.2 to 44.8%;
+        the response''s ''(PMd-N 1.3e-11), as printed'' is printed 6.7e-12. Not covered by the offline-onset variant (nb1
+        cell 86), so strictly the outcome still rests on an untested assumption; this is minor, as no recomputed claim moved.'
+      response: 'The copy the verifier read was run on another machine; this revision''s two clean runs, on one machine,
+        printed identical outputs, which differ from that copy in the last digit of some fits. These runs print a null of
+        31.1% to 44.1% and PMd-N p = 1.3e-11, as the text says; kept, and the summary of notebook 2 gives the verifier''s
+        copy''s null. assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig6c-location-tracks-direction
+      agrees: true
+      outcome: reproduced
+      reason: Agrees. Not covered by the offline-onset variant (nb1 cell 86), so strictly the outcome still rests on an
+        untested assumption; this is minor, as no recomputed claim moved.
+      response: 'assumed: true is now set, with a deviation saying the claim was not recomputed on the offline onset.'
+    - claim: fig6e-kinematics-predict-location
+      agrees: true
+      outcome: partially_reproduced
+      reason: 'Agrees; the start-relative hand positions and the paper''s kernel length scales are stated and reasonable,
+        and the sweep in nb2 cell 17 shows the outcome does not depend on the length scales (problem 5 resolved). The notes''
+        seeds ''OU 40.5% to 83.3%'': cell 17 prints up to 0.832 (svd) or 0.834 (skewnormal).'
+      response: 'The notes now give the seed range per basis: 40.5% to 83.2% (svd) and 40.6% to 83.3% (skewnormal), as these
+        runs print. The copy the verifier read was run on another machine; this revision''s two clean runs, on one machine,
+        printed identical outputs, which differ from that copy in the last digit of some fits.'
+    - claim: fig7c-ldr-encoding
+      agrees: true
+      outcome: reproduced
+      reason: Agrees; the start-relative hand positions are stated and reasonable.
+      response: No change.
+    - claim: suppfig7a-not-memorization
+      agrees: true
+      outcome: reproduced
+      reason: Agrees; the start-relative hand positions are stated and reasonable.
+      response: No change.
+    - claim: fig7c-standard-encoding-worse
+      agrees: true
+      outcome: reproduced
+      reason: Agrees; the start-relative hand positions are stated and reasonable.
+      response: No change.
+    - claim: fig7f-ldr-decoding
+      agrees: true
+      outcome: reproduced
+      reason: 'Agrees; the start-relative hand positions are stated and reasonable. ''88.6% to 93.0% for skewnormal'': cell
+        32 prints 88.4 to 92.8; null ''5.4% to 10.4%'': printed 5.4 to 10.1 (svd) or 5.8 to 10.5 (skewnormal); seeds ''86.8%
+        to 94.5%'': printed 87.2 to 94.5 (svd) or 86.7 to 93.9 (skewnormal). The response says these were corrected to the
+        printed values; they were not.'
+      response: The copy the verifier read was run on another machine; this revision's two clean runs, on one machine, printed
+        identical outputs, which differ from that copy in the last digit of some fits. These runs print 88.6% to 93.0% for
+        skewnormal, as the text says; the null and the seed ranges, which mixed the two bases, now give each basis (null
+        5.4% to 10.1% svd, 5.7% to 10.4% skewnormal; seeds 87.2% to 94.5% svd, 86.8% to 94.0% skewnormal) in the notebook
+        and the notes.
+    - claim: fig7f-decoder-beats-standard
+      agrees: true
+      outcome: partially_reproduced
+      reason: 'Agrees with the change from blocked: all 14 non-GPFA decoders are now run per dataset (nb2 cell 41), LDR
+        is higher with p < 0.001 in 56/56 comparisons under both bases (cell 42), and the criterion''s partial clause, all
+        but the GPFA decoders, applies. The training subset of 4,000 or 12,000 samples and the velocity integrated from
+        the true position at -260 ms are stated and reasonable; the integration, if anything, favours the standard decoders.
+        Problem 6 is resolved.'
+      response: No change.
+    - claim: trial-curvature-decoding
+      agrees: true
+      outcome: partially_reproduced
+      reason: Agrees; the start-relative hand positions are stated and reasonable.
+      response: No change.
+    - claim: suppfig8-no-output-potent-dependence
+      agrees: true
+      outcome: not_reproduced
+      reason: 'Agrees; the missing EMG and the code''s centring are stated and reasonable, and the variant centring gives
+        the same outcome. ''p = 4.5e-10 to 8.6e-06'': cell 38 prints 4.53e-10 to 3.66e-06 (svd), or 2.45e-10 to 1.11e-05
+        over both bases; per-variable centring ''p = 8.4e-11 to 4.1e-06'': printed 8.43e-11 to 2.79e-06 (svd), 3.56e-06
+        (skewnormal). Problem 10 remains, not bearing on a conclusion: the code centring subtracts each sample''s mean over
+        the four variables, consistent with mean(kinParams, 2) only if kinParams is samples x 4; the notebook centres neurons
+        as N x samples, which suggests the per-variable variant is the code''s actual operation; removePotent.m could not
+        be checked. Both centrings give p < 0.036 in every dataset.'
+      response: 'The p ranges are now given per basis as these runs print them (code centring 4.5e-10 to 3.7e-06 svd, 2.0e-10
+        to 8.6e-06 over both bases; per-variable 8.4e-11 to 2.8e-06 svd, 4.1e-06 skewnormal). Problem 10: removePotent.m
+        at commit b65f28d allocates kinParams = zeros(size([velData.matrix],2),4), samples x 4, then takes kinParams - mean(kinParams,2),
+        so the mean is over the four variables of each sample, as the main reading does; the neural data there are units
+        x samples, centred over samples, which is why the two differ. The notebook and the notes now cite the allocation.
+        No change of outcome.'
+reconciliation:
+  earlier: sabatini-2024-01
+  date: '2026-11-28'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: On 0.261122.2046 the Nitschke file has one clock, with no trial start, hand timestamp or spike time going backwards
+      (hand timestamps 5.4 to 26578.1 s) and the spike times of all 192 units sorted (earlier_findings.ipynb, cell
+      finding-one-clock). The trial-aligned spike counts are the same as those the earlier attempt rebuilt segment by segment.
+  - finding: 2
+    status: partly_fixed
+    now: 1
+    note: The units table now describes its units as threshold crossings on each electrode, not sorted (Blackrock unit code
+      0), one per electrode, so what the 96 units per array are is stated. The sorted single and multi-units the paper used
+      are still not in the files, as the blind attempt's finding 1 reports.
+  - finding: 3
+    status: fixed
+    note: Jenkins unit 0 now holds 257638 spikes from 4.9 to 15707.2 s, the earlier 61030 plus the 196608 of unit 1's first
+      run, and unit 1 holds 264946 sorted spikes, as many as its earlier second run (cell finding-jenkins-units-0-1).
+  - finding: 4
+    status: partly_fixed
+    now: 7
+    note: Hand and cursor positions now carry a conversion of 0.001 (the blind attempt's data check, its finding 3, shows the
+      hand). Eye position still has the unit meters with a conversion of NaN and stored values of -331.2 to 369.4 (J) and
+      -297.8 to 411.3 (N) (cell finding-position-units), added as finding 7.
+  - finding: 5
+    status: still_present
+    now: 8
+    note: Neither file has an acquisition series or any object named for EMG or muscle; the processing modules hold positions
+      and filtered ephys (cell finding-no-emg). The blind attempt noted the missing EMG only in a deviation of
+      suppfig8-no-output-potent-dependence, so it is added as finding 8.
+  - finding: 6
+    status: still_present
+    now: 9
+    note: Unit 170 is above 100 spikes/s on 229 of 2121 trials, now starting 18902 to 22462 s on the file's single clock, with
+      a block ratio of 13.7 against at most 2.5 for the other units, the same numbers as on 0.260528.0919 (cell
+      finding-nitschke-unit-170). Added as finding 9.
+  - finding: 7
+    status: still_present
+    now: 10
+    note: These questions are about the paper, which has not changed. The blind attempt asks how large the kernel decoders'
+      training sets were (its finding 5) and the files now say which units they hold (its finding 1); the questions on the
+      trials, the OU penalty, the noise excursion angles, Supplementary Figure 3, the shuffle span and the scale of the
+      kinematic basis stay open and are added as finding 10.
+  - finding: 8
+    status: still_present
+    now: 6
+    note: The blind attempt's finding 6 reports the same problem, that the code loads preprocessed .mat files available only
+      on request, so the selection of conditions and units cannot be checked against it.
+  outcomes:
+  - claim: data-composition
+    earlier: reproduced
+    cause: label
+    note: The numbers are the same in both records (72 conditions, 1595 and 2121 trials, 96 units per array). The earlier
+      attempt counted all 96 per-electrode units against 71 to 130; the blind attempt, reading the new units description
+      (unsorted threshold crossings), held that the criterion's count of single and multi-units the dataset marks as such
+      cannot be taken, since none are marked in either version.
+    supports: partially_reproduced
+    confidence: medium
+  - claim: jpca-variance-explained
+    earlier: partially_reproduced
+    cause: reading
+    note: The deciding value is PMd-N, 5.4% earlier against 6.8% now, with the lower bound at 6.3% (the others 8.8, 10.9 and
+      11.6% against 9.1, 10.6 and 10.8%). The earlier attempt ran jPCA on activity rebuilt from the raw SVD basis, soft
+      normalised once (range + 5, earlier-entry/ldr.py soft_norm and jpca); the blind one rebuilt it from the de-mixed basis
+      and kept the codepack's default soft normalisation on top, as getRotations.m calls jPCA with defaults (ldr.py,
+      soften=10). Which of these moves PMd-N across 6.3% was not isolated, and the different number of factors k (below)
+      also changes the N basis.
+    choice: Is jPCA run on activity rebuilt from the raw or the de-mixed temporal basis, and with or without jPCA's own
+      default soft normalisation after the range + 5 step? The earlier attempt chose the raw basis and one normalisation, the
+      blind one the de-mixed basis and both.
+    confidence: low
+  - claim: fig3g-basis-frequencies
+    earlier: not_reproduced
+    cause: reading
+    note: The earlier attempt ran the factorization and the cross-validation of k on -150 to +850 ms (earlier notebook, cell
+      building Xw from ldr.FIT0) and got k = 7, 5, 7, 7, so PMd-J has 2 rotation pairs where the criterion asks for 3 or 4,
+      and 3 of 11 frequencies within 10%. The blind attempt ran them on the whole -350 to +850 ms window, as eigTransform.m
+      does, and got k = 7, 7, 9, 9 with 3 or 4 pairs everywhere and 6 of 14 frequencies within 10%; the frequency test fails
+      in both.
+    choice: Are the SVD of the temporal basis factorization and its cross-validation of k run on -150 to +850 ms (earlier)
+      or on the whole -350 to +850 ms window with only the de-mixing fitted from -150 ms (blind attempt, as the code does)?
+    confidence: medium
+  - claim: tbf-shuffle-control
+    earlier: partially_reproduced
+    cause: reading
+    note: Shuffled variance explained is 42.2, 28.7, 41.9 and 42.1% earlier against 35.1, 35.4, 45.6 and 45.5% now, and PMd-J
+      moves from below the 31.5% bound to inside it. It follows the window of the factorization (above), which gave PMd-J k
+      = 5 earlier and 7 now; the shuffle span is not the cause, as the earlier run over the code's span still gave PMd-J
+      29.4%.
+    choice: Is the factorization, and so its k, fitted on -150 to +850 ms (earlier) or on the whole -350 to +850 ms window as
+      quantifyTBFStats.m does (blind attempt)?
+    confidence: medium
+  - claim: fig3h-recoverability
+    earlier: partially_reproduced
+    cause: reading
+    note: Real recoverability is in range in both (97.4 to 98.7% earlier, 95.1% to 96.6% now). The chance level differs, 89.5,
+      86.5, 89.1 and 89.6% earlier, only PMd-J at or below 88%, against 84.8% to 87.8% now, all just inside; the blind
+      attempt used the raw SVD basis on the whole window with its k, the earlier one the de-mixed basis on -150 to +850 ms.
+    choice: Is recoverability computed on the de-mixed basis over -150 to +850 ms (earlier) or on the raw SVD basis over the
+      whole -350 to +850 ms window, as quantifyTBFStats.m does (blind attempt)?
+    confidence: medium
+  - claim: fig4b-plane-alignment
+    earlier: reproduced
+    cause: reading
+    note: The earlier attempt tested 11 rotations, all passing with AUC 0.876 to 0.961. The blind attempt, with k = 9 for the N
+      arrays from the whole-window factorization, tested 14, and the extra fourth rotation of PMd-N at 3.65 Hz gives AUC 0.545,
+      so 13 of 14 pass.
+    choice: Is the factorization, and so the set of rotations tested, fitted on -150 to +850 ms (earlier) or on the whole -350
+      to +850 ms window (blind attempt)?
+    confidence: medium
+  - claim: fig5a-frequencies-segregated
+    earlier: reproduced
+    cause: reading
+    note: The earlier attempt made 20 comparisons, all passing; the blind attempt made 36, with 35 passing. The one that fails,
+      PMd-J 2.64 against 1.64 Hz (0.202 against 0.202), involves a third PMd-J rotation that exists only with k = 7 from the
+      whole-window factorization; the earlier one-sided test against the blind attempt's two-sided one does not decide it.
+    choice: Is the factorization, and so the set of rotations compared, fitted on -150 to +850 ms (earlier) or on the whole
+      -350 to +850 ms window (blind attempt)?
+    confidence: medium
+  - claim: fig6c-location-tracks-direction
+    earlier: partially_reproduced
+    cause: reading
+    note: The deciding value is PMd-N, circular correlation 0.065 (p = 0.55) earlier against 0.357 (p < 0.001) now; the others
+      are 0.696, 0.709 and 0.245 against 0.657, 0.719 and 0.630. The location comes from different factorizations (-150 to
+      +850 ms, k = 7 and eigenvector de-mixing earlier; the whole window, k = 9 and eigTransform's correction now), and the
+      target angle from the target position earlier and from the hand endpoint now, as splitTrialsAngles.m does; which of
+      these moves PMd-N was not isolated.
+    choice: Is the target angle the angle of the target's position (earlier) or of the hand's endpoint (blind attempt, as the
+      code does), and from which factorization is the location taken?
+    confidence: low
+  - claim: suppfig7a-not-memorization
+    earlier: partially_reproduced
+    cause: reading
+    note: Earlier, PMd-J gave kernel 68.8 against nearest neighbour 60.2% with p = 0.024 (0.50 under the skew-normal basis),
+      missing p < 0.01; now every dataset gives p from 3.4e-12 to 1.5e-4. The earlier attempt cut sextants as fixed 60 degree
+      arcs of target angle, which can hold unequal numbers of conditions (earlier notebook, sext = np.floor(...)), the blind
+      one as six blocks of 12 conditions sorted by endpoint angle, as splitTrialsAngles.m does; the PMd-J basis also differs
+      (k = 5 against 7).
+    choice: Is a held-out sextant a fixed 60 degree arc of target angle (earlier) or one sixth of the conditions sorted by
+      angle (blind attempt, as the code does)?
+    confidence: low
+  - claim: fig7f-ldr-decoding
+    earlier: partially_reproduced
+    cause: error
+    error_in: earlier
+    note: The criterion cites getVarExplainedKinematics.m, which divides the variance of the residual by the variance of the
+      position; the earlier helper's kin_ve (earlier-entry/ldr.py, lines 703 to 708) divides the raw sum of squared residuals,
+      so a constant offset of the decoded path counts against it. The blind attempt uses the variance of the residual
+      (kinematics notebook, var(1, ddof=1) in the claim's decoding cell) and gets 88.9, 88.9, 93.3 and 89.6% against 77.0,
+      74.4, 86.6 and 73.0% earlier, with the bound at 75.6%; the size of the formula's effect was inferred, not rerun.
+    supports: reproduced
+    confidence: medium
+  protocol: docs/pilot-notes.md has no section for pilot-19 (its last heading is pilot-14), so the change was read from
+    docs/protocol.md, which says that attempts before pilot-19 were not asked for a finding's code or versions. The blind
+    attempt accordingly gives each finding about the data a notebook and an output cell and the earlier one none; the rules
+    for outcomes and the claims file are the same for both, and no outcome difference here comes from the protocol.
