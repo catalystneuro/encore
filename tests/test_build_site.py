@@ -848,6 +848,13 @@ def house_style(main: str) -> None:
     assert not re.search(r"\brather\b", plain_text(main), re.I)
 
 
+
+def test_the_method_page_keeps_its_steps_in_one_column():
+    # The audience pages lay a short list of steps out as a three-column grid (.steps). The method page's seven
+    # steps sit in one column beside the diagram, so its own rule has to say so.
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    assert ".about .steps{display:block;" in css
+
 def test_the_institutions_page_is_for_decision_makers_and_gives_the_registrys_numbers(built):
     """The page for institutions is linked where the page for journals is. It is short and has no technical detail:
     the gap, the check in three steps, four benefits, the policy, privacy, limits and the pilot. Its numbers are the
