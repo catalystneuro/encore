@@ -828,13 +828,69 @@ def test_the_journals_page_lists_the_journals_of_the_papers_attempted(built):
     assert page.index('id="terms"') < page.index('id="confidential"') < page.index('id="limits"')
     journals = site.journal_counts(data)
     rows = [p for p in site.rows_cache(data)["papers"] if p["status"] == "attempted"]
-    assert all(name not in ("Preprint", "Other journals") for name, _ in journals)
+    assert all(name not in ("Preprint", "Other journals", "Not recorded") for name, _ in journals)
+    assert f"It holds checks of papers from {len(journals)} journals so far." in plain_text(page)
     assert [n for _, n in journals] == sorted((n for _, n in journals), reverse=True)
     for name, n in journals[:12]:
         assert n == sum(1 for p in rows if p["journal"] == name)
         assert f'journal={urllib.parse.quote(name)}">{html.escape(name)}</a><span class="num">{n:,}</span>' in page
     for path in ("registry/", "journals/", "check/"):
         assert f"<loc>{site.SITE_URL}{path}</loc>" in (out / "sitemap.xml").read_text()
+
+
+def test_the_journals_page_leads_with_the_gap_and_keeps_its_detail_low(built):
+    """The page for journals has the order of the page for institutions: the registry's numbers, the gap, the check
+    in three steps and what the report holds, before the four ways to work with us. Confidentiality and the limits
+    follow, then the example and the journals in the registry, and the pilot says what is available."""
+    data, out = built
+    page = (out / "journals" / "index.html").read_text()
+    main = page[page.index("<header"):page.index("<footer>")]
+    text = plain_text(main)
+    # The numbers at the top are the sentence the page for institutions gives, so the two pages agree.
+    evidence, shown = site.institutions_evidence(data)
+    assert evidence and f'<p class="lede">{evidence} A check finds this while the authors can still fix it.</p>' in main
+    assert f'<p class="lede">{evidence}</p>' in (out / "institutions" / "index.html").read_text()
+    assert main.count(f'<a class="button" href="{site.CONTACT_URL}">Request a pilot</a>') == 2
+    if shown:
+        assert f'<a class="button secondary" href="../papers/{shown[1]["key"]}/">See an example record</a>' in main
+        assert main.index('id="example"') < main.index(f'<p class="shot-title"><a href="../papers/{shown[1]["key"]}/">')
+
+    order = ["gap", "check", "report", "offers", "terms", "confidential", "limits", "example", "your-journal", "contact"]
+    assert [main.index(f'id="{i}"') for i in order] == sorted(main.index(f'id="{i}"') for i in order)
+    assert re.findall(r"<h2[^>]*>(?:<span[^>]*>\d</span>)?([^<]+)</h2>", main) == [
+        "The gap", "The check", "The report", "Four ways to work with us", "A pilot on your own papers",
+        "Checks during review", "A public record for published papers", "Run it yourselves", "Confidentiality",
+        "Limits", "An example record", "Journals in the registry", "Pilot"]
+    checks = main[main.index('<table class="checks">'):main.index("</table>")]
+    assert "<caption>Checks during review</caption>" in checks
+    assert re.findall(r'<th scope="row">([^<]+)</th><td>([^<]+)</td>', checks) == [
+        ("Text", "Plagiarism checkers"), ("Images", "Image-integrity checkers"), ("Data and code", "Encore")]
+    steps = main[main.index('<ol class="steps">'):main.index("</ol>")]
+    assert re.findall(r'<span class="offer-n">(\d)</span>', steps) == ["1", "2", "3"]
+    report = main[main.index('id="report"'):main.index('id="offers"')]
+    assert re.findall(r"<h3>([^<]+)</h3>", report) == [
+        "An outcome for every claim", "Problems in the data", "Notebooks that run", "Independent verification"]
+
+    # Confidentiality says where the manuscript goes, and the limits say that authors can respond.
+    confidential = plain_text(main[main.index('id="confidential"'):main.index('id="limits"')])
+    assert "A manuscript under review does not go through the public registry." in confidential
+    assert "sent to Anthropic's models under its commercial terms" in confidential and "30 days" in confidential
+    assert "your team can run the same check itself" in confidential
+    limits = plain_text(main[main.index('id="limits"'):main.index('id="example"' if shown else 'id="your-journal"')])
+    assert site.CAUTION in limits and "the agents that make it can be mistaken" in limits
+    assert "Authors can respond to an attempt , to clarify a point or to correct the agent" in limits
+    assert "The next attempt takes their response into account." in limits
+    assert "Most checks so far are of neuroscience papers" in limits
+    # The technical detail of a run is on the page of the command, one link away.
+    assert "sandbox" not in text and "sandbox" in (out / "check" / "index.html").read_text()
+    assert '<a href="../check/"><code>encore</code> command</a>' in main and '<a href="../method/">the method</a>' in main
+
+    # The pilot says what is available and promises nothing that is not built.
+    pilot = plain_text(main[main.index('id="contact"'):])
+    assert "The checking tool and the public registry are available today." in pilot
+    assert not re.search(r"\bportal|\bledger|\bdashboard|\bintegrat", text, re.I)
+    assert not re.search(r"[$€£]|\bUSD\b|\bper (year|seat|paper|run|check|manuscript)\b|\bpric", text, re.I)
+    house_style(main)
 
 
 def plain_text(markup: str) -> str:
