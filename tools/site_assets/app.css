@@ -75,13 +75,14 @@ button.theme{align-self:center;margin-left:10px;display:inline-flex;align-items:
 color:var(--text2);background:none;border:1px solid var(--line);border-radius:7px;padding:5px 9px;cursor:pointer;white-space:nowrap}
 button.theme:hover{background:var(--hover);color:var(--text)}
 /* In the bar the theme button is its mark alone (its state is in its title); the menu on a small screen has room
-   for the word. Under 1080px the bar drops "by CatalystNeuro", and under 860px it becomes the menu. */
+   for the word. Under 1120px the bar drops "by CatalystNeuro", and under 1000px it becomes the menu: its four
+   tabs, the three links after them and the theme button need that much room. */
 button.theme .t{display:none}
-@media (max-width:1080px){nav.top .by{display:none}nav.top .brand{margin-right:16px}}
+@media (max-width:1120px){nav.top .by{display:none}nav.top .brand{margin-right:16px}}
 /* On a phone the bar is one line (the name and a menu button), and the button opens the tabs and the theme button
    as a list under it (THEME_JS sets nav.top.open). */
 button.navtoggle{display:none}
-@media (max-width:860px){
+@media (max-width:1000px){
 nav.top .by{display:inline;margin-right:auto}
 button.theme .t{display:inline}
 nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 8px;align-items:center;padding-top:10px;padding-bottom:10px}
@@ -729,11 +730,12 @@ font-size:.94rem;color:var(--text2)}
 .journals-list li{break-inside:avoid}.journals-list li:first-child{border-top:0}
 .journals-list+p{margin:14px 0 0}
 @media (max-width:640px){.journals-list{columns:1}}
-.audiences{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin:32px 0 0}
+.audiences{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px;margin:32px 0 0}
 .audience{border-top:2px solid var(--text);padding-top:16px}
 .audience h3{font-size:1.12rem}
 .audience p{font-size:.95rem;margin:0 0 12px}
 .audience p:last-child{margin:0;font-weight:600}
+@media (max-width:1040px){.audiences{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:820px){.audiences{grid-template-columns:minmax(0,1fr)}}
 .behind{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px}
 .behind h2{font-size:1.5rem}
@@ -758,6 +760,28 @@ font-size:.94rem;color:var(--text2)}
 .offer-n{display:inline-grid;place-items:center;width:1.5em;height:1.5em;margin-right:10px;border-radius:50%;background:var(--text);color:var(--surface);
 font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;vertical-align:.1em}
 header.page .lede+.lede{margin-top:10px}
+/* The page for institutions: the three kinds of run as a table, which a narrow screen shows as one block for each run */
+.institutions>.grid2:first-child{margin-top:16px}
+.institutions .stack{display:flex;flex-direction:column;gap:16px}
+.institutions .stack .panel{flex:1}
+table.runs{border-collapse:collapse;width:100%;margin-top:14px;color:var(--text2);font-size:.95rem}
+table.runs th,table.runs td{text-align:left;vertical-align:top;padding:12px 20px 12px 0;border-top:1px solid var(--line)}
+table.runs thead th{border-top:0;padding-top:0;padding-bottom:8px;font-size:.8rem;font-weight:600;color:var(--muted)}
+table.runs tbody th{color:var(--text);font-weight:600;white-space:nowrap}
+table.runs th:last-child,table.runs td:last-child{padding-right:0}
+table.runs .tag{white-space:nowrap}
+.institutions .status{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 40px}
+.institutions .status h3{font-size:.95rem;margin:4px 0 0}
+@media (max-width:720px){
+table.runs thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+table.runs,table.runs tbody,table.runs tr,table.runs th,table.runs td{display:block}
+table.runs tr{padding:14px 0;border-top:1px solid var(--line)}
+table.runs tbody th,table.runs td{border:0;padding:0}
+table.runs tbody th{font-size:1rem;margin-bottom:6px}
+table.runs td{position:relative;padding:3px 0 3px 7em}
+table.runs td::before{content:attr(data-label);position:absolute;left:0;top:4px;color:var(--muted);font-size:.85rem}
+table.runs .tag{white-space:normal}
+.institutions .status{grid-template-columns:minmax(0,1fr)}}
 .contact-panel .hero-actions{margin-top:14px}
 
 /* The foot of every page: the site's places in columns, then how to read an outcome and the licences. */
