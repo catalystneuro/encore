@@ -1121,7 +1121,7 @@ def test_the_funders_page_has_the_shape_of_the_institutions_page_and_names_no_fu
     assert "the notebooks that tested the paper's claims" in plain_text(benefits) and "reproduce" not in benefits
     policy = plain_text(main[main.index('id="policy"'):main.index('id="published"')])
     assert ("The policy we suggest is “before submitting a manuscript to a journal, run the check and respond to "
-            "every finding”.") in policy
+            "every finding.” A lab responds") in policy
     privacy = plain_text(main[main.index('id="privacy"'):main.index('id="limits"')])
     assert "A lab's results before publication are private." in privacy
     assert "no agreement with a funder changes a public record" in privacy

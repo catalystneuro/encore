@@ -3199,7 +3199,7 @@ def page_funders(data: dict) -> str:
   <div class="grid2">
     <div class="panel" id="policy"><h2>Policy</h2>
       <p>The policy we suggest is &ldquo;before submitting a manuscript to a journal, run the check and respond to
-      every finding&rdquo;. A lab responds by fixing the data, by correcting the paper, or by explaining why the
+      every finding.&rdquo; A lab responds by fixing the data, by correcting the paper, or by explaining why the
       finding is wrong.</p></div>
     <div class="panel" id="published"><h2>Published papers</h2>
       <p>The public registry already tests published papers with deposited data, whoever funded them. A pilot can
