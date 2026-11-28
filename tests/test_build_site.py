@@ -86,7 +86,7 @@ def built(tmp_path_factory):
 def test_every_page_is_built(built):
     data, out = built
     for page in ("index.html", "registry/index.html", "journals/index.html", "institutions/index.html",
-                 "datasets/index.html",
+                 "institutions/details/index.html", "datasets/index.html",
                  "assets/app.css", "assets/list.js", "assets/favicon.svg", "assets/favicon-32.png",
                  "assets/favicon-180.png", "registry.json"):
         assert (out / page).is_file(), page
@@ -837,9 +837,21 @@ def test_the_journals_page_lists_the_journals_of_the_papers_attempted(built):
         assert f"<loc>{site.SITE_URL}{path}</loc>" in (out / "sitemap.xml").read_text()
 
 
-def test_the_institutions_page_gives_the_registrys_numbers_and_says_what_is_not_built(built):
-    """The page for institutions is linked where the page for journals is. Its numbers are the registry's, its
-    example is the one the journals page shows, and it says which of the things it describes are still being built."""
+def plain_text(markup: str) -> str:
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", " ", markup)).split())
+
+
+def house_style(main: str) -> None:
+    """Headings are plain nouns, never questions, and the text never says "rather"."""
+    heads = re.findall(r"<h[23][^>]*>(.*?)</h[23]>", main)
+    assert not any(h.endswith("?") or re.match(r"(What|How|Why|Who|When|Where)\b", h) for h in heads), heads
+    assert not re.search(r"\brather\b", plain_text(main), re.I)
+
+
+def test_the_institutions_page_is_for_decision_makers_and_gives_the_registrys_numbers(built):
+    """The page for institutions is linked where the page for journals is. It is short and has no technical detail:
+    the gap, the check in three steps, four benefits, the policy, privacy, limits and the pilot. Its numbers are the
+    registry's, and it says what is built."""
     data, out = built
     page = (out / "institutions" / "index.html").read_text()
     main = page[page.index("<header"):page.index("<footer>")]
@@ -853,55 +865,103 @@ def test_the_institutions_page_gives_the_registrys_numbers_and_says_what_is_not_
     footer = home[home.index("<footer>"):home.index("</footer>")]
     assert footer.index('href="journals/">For journals</a>') < footer.index('href="institutions/">For institutions</a>')
 
-    # The numbers at the top are the registry's: the share of claims blocked, why most often, and the papers whose
-    # published code disagrees with the paper.
+    # The numbers at the top are the registry's: the share of claims blocked, why most often, and the share of
+    # papers whose published code disagrees with the paper.
     attempts = [a for atts in site.current_attempts(data).values() for a in atts]
     counts = site.outcome_counts(attempts)
     papers = [q for q in site.papers_of(data) if q["attempts"]]
     reasons = site.blocked_reasons(attempts)
     assert sum(reasons.values()) == counts["blocked"] and list(reasons.values()) == sorted(reasons.values(), reverse=True)
-    lede = main[main.index("In the public registry of"):main.index('<p class="hero-actions">')]
-    assert f'registry of {len(papers):,} papers, {site.shares(counts)["blocked"]}% of' in lede
-    assert ("most often because data" in lede) == (next(iter(reasons)) == "data_missing")
+    text = plain_text(main)
+    assert f'In our public registry of {len(papers):,} papers, {site.shares(counts)["blocked"]}% of the papers\' claims' in text
+    assert ("most often because data were missing" in text) == (next(iter(reasons)) == "data_missing")
     n_code = site.code_mismatch_papers(data)
     assert n_code == sum(1 for q in papers if any(f["kind"] == "code_mismatch" for a in q["live"] for f in a["paper_notes"]))
     assert 0 < n_code < len(papers)
-    assert f"In {n_code:,} of those papers ({round(100 * n_code / len(papers))}%), the agents found" in lede
+    assert f"In {round(100 * n_code / len(papers))}% of the papers, the published code disagreed with the paper." in text
 
-    # The three kinds of run, in order, each with whether it exists; then privacy and separation before the limits.
+    # The sections, in order: three numbered steps and four benefits between the gap and the policy.
+    order = ["gap", "check", "benefits", "policy", "privacy", "limits", "contact"]
+    assert [main.index(f'id="{i}"') for i in order] == sorted(main.index(f'id="{i}"') for i in order)
+    checks = main[main.index('<table class="checks">'):main.index("</table>")]
+    assert "<caption>Checks before submission</caption>" in checks
+    assert re.findall(r'<th scope="row">([^<]+)</th><td>([^<]+)</td>', checks) == [
+        ("Text", "Plagiarism checkers"), ("Images", "Image-integrity checkers"), ("Data and code", "Encore")]
+    steps = main[main.index('<ol class="steps">'):main.index("</ol>")]
+    assert re.findall(r'<span class="offer-n">(\d)</span>', steps) == ["1", "2", "3"]
+    benefits = main[main.index('<div class="benefits">'):main.index('id="policy"')]
+    assert re.findall(r"<h3>([^<]+)</h3>", benefits) == [
+        "Compliance you can show", "Problems found early", "A standard for policy", "Better shared data"]
+    assert "run the check and respond to every finding" in main[main.index('id="policy"'):main.index('id="privacy"')]
+
+    # It is honest about what is built, asks for a pilot twice, shows the example the journals page shows, and
+    # gives no prices.
+    pilot = plain_text(main[main.index('id="contact"'):])
+    assert "The checking tool and the public registry are available today." in pilot
+    assert "are being built with our first pilot institutions" in pilot
+    assert main.count(f'<a class="button" href="{site.CONTACT_URL}">Request a pilot</a>') == 2
+    shown = site.home_example(data, attempts, {q["doi"]: q for q in papers})
+    if shown:
+        assert f'<a class="button secondary" href="../papers/{shown[1]["key"]}/">See an example record</a>' in main
+        assert f'href="../papers/{shown[1]["key"]}/"' in (out / "journals" / "index.html").read_text()
+    assert not re.search(r"[$€£]|\bUSD\b|\bper (year|seat|lab|run|check)\b|\bpric", text, re.I)
+    # No technical detail: no code, file names or hashes, and none of the words of the design. It is short, and
+    # the detail is one link away.
+    assert "<code" not in main and "<pre" not in main
+    assert not re.search(r"\.json\b|\bhash|SHA-?\d|\bprotocol|\bledger|\bsandbox|\bAPI\b", text, re.I)
+    assert len(text.split()) < 500           # two minutes of reading
+    assert 'For research computing and IT: <a href="details/">technical details</a>.' in main
+    house_style(main)
+
+
+def test_the_technical_details_for_institutions_say_what_is_not_built(built):
+    """The technical page is under the page for institutions and not in the bar. It has the tool, the record, the
+    three kinds of run, privacy, separation, the limits with the replicate numbers, and the status of each part."""
+    data, out = built
+    page = (out / "institutions" / "details" / "index.html").read_text()
+    main = page[page.index("<header"):page.index("<footer>")]
+    assert "<h1>Technical details for institutions</h1>" in main
+    assert '<p class="crumbs"><a href="../">Encore for institutions</a> / Technical details</p>' in main
+    assert f"<loc>{site.SITE_URL}institutions/details/</loc>" in (out / "sitemap.xml").read_text()
+    # The bar has no tab for it: the tab of the page above it is lit, and is not marked as this page.
+    bar = page[page.index('<nav class="top"'):page.index("</nav>")]
+    assert [h for h in re.findall(r'<a class="tab" href="([^"]*)"', bar)] == [
+        "../../registry/", "../../method/", "../../journals/", "../../institutions/"]
+    assert '<a class="tab" href="../../institutions/" aria-current="true">For institutions</a>' in bar
+    assert bar.count("aria-current") == 1 and 'class="regnav"' not in page
+    home = (out / "index.html").read_text()
+    assert "institutions/details/" not in home
+
+    order = ["tool", "record", "runs", "registration", "public-record", "privacy", "separation", "limits", "status"]
+    assert [main.index(f'id="{i}"') for i in order] == sorted(main.index(f'id="{i}"') for i in order)
+    tool = plain_text(main[main.index('id="tool"'):main.index('id="record"')])
+    assert "the model's provider receives what the agents read of the paper and the data" in tool
+    assert "API key" in tool and "sandbox" in tool
+    record = main[main.index('id="record"'):main.index('id="runs"')]
+    assert "<code>record.json</code>" in record and f'href="{site.RECORD_SCHEMA_URL}"' in record and "SHA-256" in record
+    # The three kinds of run, in order, each with whether it exists.
     runs = main[main.index('<table class="runs">'):main.index("</table>")]
     assert re.findall(r'<th scope="row">([^<]+)</th>', runs) == ["Personal", "Registered", "Public registry"]
     assert re.findall(r'<span class="tag[^"]*">([^<]+)</span>', runs) == [
         "Available today", "Being built with pilot institutions", "Available today"]
-    assert main.index('id="runs"') < main.index('id="registration"') < main.index('id="public-record"') \
-        < main.index('id="privacy"') < main.index('id="separation"') < main.index('id="limits"') < main.index('id="status"')
     assert "No payment changes, delays or" in main and site.CAUTION in main
     rep = site.REPLICATES
-    limits = main[main.index('id="limits"'):main.index('id="status"')]
-    assert f'{rep["unanimous"]} of {rep["claims"]}' in " ".join(limits.split()) and rep["unanimous"] < rep["claims"]
-    assert f'on {rep["papers"]} papers' in " ".join(limits.split())
+    limits = plain_text(main[main.index('id="limits"'):main.index('id="status"')])
+    assert f'{rep["unanimous"]} of {rep["claims"]}' in limits and rep["unanimous"] < rep["claims"]
+    assert f'on {rep["papers"]} papers' in limits
     # What is not built is said to be so: in the status panel, and wherever the ledger and the portal are described.
-    status = main[main.index('id="status"'):main.index('id="contact"')]
+    status = main[main.index('id="status"'):]
     available, building = status.split("<h3>Being built with pilot institutions</h3>")
     assert "<h3>Available today</h3>" in available and "record.json" in available
     assert "ledger" not in available and "portal" not in available
     assert "Registered runs" in building and "ledger" in building and "portal" in building
     privacy = main[main.index('id="privacy"'):main.index('id="separation"')]
     assert "are being built with pilot institutions" in privacy and "will hold" in privacy and "will have" in privacy
-    # The example is the journals page's, the button asks for a pilot, and the page gives no prices.
-    shown = site.home_example(data, attempts, {q["doi"]: q for q in papers})
-    if shown:
-        journals = (out / "journals" / "index.html").read_text()
-        card = main[main.index('<figure class="shot">'):main.index("</figure>")]
-        assert card == journals[journals.index('<figure class="shot">'):journals.index("</figure>")]
-        assert f'href="../papers/{shown[1]["key"]}/"' in card
-    assert main.count(f'<a class="button" href="{site.CONTACT_URL}">Request a pilot</a>') == 2
-    text = html.unescape(re.sub(r"<[^>]+>", " ", main))
-    assert not re.search(r"[$€£]|\bUSD\b|\bper (year|seat|lab|run|check)\b|\bpric", text, re.I)
-    # Headings are plain nouns, and the page keeps to the house style.
-    heads = re.findall(r"<h[23][^>]*>(.*?)</h[23]>", main)
-    assert not any(h.endswith("?") or re.match(r"(What|How|Why|Who|When|Where)\b", h) for h in heads), heads
-    assert not re.search(r"\brather\b", text, re.I)
+    assert not re.search(r"[$€£]|\bUSD\b|\bper (year|seat|lab|run|check)\b|\bpric", plain_text(main), re.I)
+    house_style(main)
+    # The three kinds of run are on this page alone.
+    for other in ("journals/index.html", "institutions/index.html", "index.html"):
+        assert 'class="runs"' not in (out / other).read_text()
 
 
 def test_a_claim_shows_the_papers_own_words_when_quoted():
