@@ -1,194 +1,272 @@
-# sabatini-2024 · verifier-1 · run 44747478463
+# sabatini-2024 · verifier-1 · run 46096974559
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls paper docs 2>/dev/null; wc -c *
+cd  ls -la; ls paper docs 2>/dev/null; cat *.y*ml *.json 2>/dev/null | head -300
 ```
 
 ```
-Exit code 1
-total 664
-drwxr-xr-x 6 runner runner    4096 Nov 20 14:18 .
-drwxr-xr-x 8 runner runner    4096 Nov 20 14:18 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 20 13:45 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 20 13:45 .bashrc
-drwxr-xr-x 5 runner runner    4096 Nov 20 14:18 .claude
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.development
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.development.local
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.local
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.production
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.production.local
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.test
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .env.test.local
-drwx------ 2 runner runner    4096 Nov 20 14:18 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 20 13:45 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 20 13:45 .github
--rw-r--r-- 1 runner runner       0 Nov 20 14:18 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 20 13:45 .idea
-[... 37 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "sabatini-2024.yaml"
-}
-```
-
-```
-1	# Claims for Sabatini & Kaufman (2024), Nat. Commun. 15:7007, "Reach-dependent reorientation of
-2	# rotational dynamics in motor cortex", tested on dandiset 000070 (relation reuses).
-3	# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-20,
-4	# protocol pilot-18 as stated in docs/protocol.md. The writer did not look at the dandiset's data
-5	# or files.
-6	#
-7	# Text read: the version of record (open access, CC BY-NC-ND), full text from PubMed Central
-8	# (PMC11325044) with Methods, figure legends and Data and Code availability, and its one
-9	# supplement, 41467_2024_51308_MOESM1_ESM.pdf (Supplementary Figures 1 to 8 with legends and the
-10	# derivation of the basis function representation of a linear dynamical system). The Peer Review
-11	# File and Reporting Summary were not read; no result rests on them. The supplement PDF was not
-12	# opened beyond its extracted text.
-13	#
-14	# Code read: github.com/kaufmanlab/LDR-public at commit b65f28d (2024-08-02), the MATLAB code the
-15	# Code availability statement links. It holds the analysis functions (TBF, single-condition LDS,
-16	# alignment index, subspace excursion angles, rotation and location prediction, LDR encoding and
-17	# decoding, jPCA reconciliation). It loads preprocessed .mat files that are not in the repository
-18	# (ShenoyMonkeyData, ShenoyMonkeyDataSingleTrial, basisFxnNum, TBFResults and others; the paper
-19	# says "Code-compatible data are available upon request"), and lacks kinFuncEval (the kinematic
-20	# basis functions), the jPCA codepack, GPFA, and code for the location-from-kinematics regression
-[... 755 more lines not kept]
+total 592
+drwxr-xr-x 6 runner runner    4096 Nov 28 03:07 .
+drwxr-xr-x 8 runner runner    4096 Nov 28 03:07 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 28 02:13 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 28 02:13 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 28 03:07 .claude
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .env.test.local
+drwx------ 2 runner runner    4096 Nov 28 03:07 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 28 02:13 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 28 02:13 .github
+-rw-r--r-- 1 runner runner       0 Nov 28 03:07 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 28 02:13 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 28 02:13 .mcp.json
+[... 323 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -c "^- id:" sabatini-2024.yaml; python3 -c "
+cd  sed -n 300,2000p sabatini-2024.yaml
+```
+
+```
+<persisted-output>
+Output too large (31.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/c9648919-9388-4ee5-bb63-ec4a23e33922/tool-results/bzbex5o8s.txt
+
+Preview (first 2KB):
+  source: Results, Identifying rotations with varying planes, paragraph 6; Figure 3i; Methods,
+    Control for stereotyped time course of behavior
+  quote: 'Prior to warping, the frequencies of the rotations were unrelated or weakly related to
+    reach duration (M1-N, Pearson''s Rho = −0.26, p = 0.023; other datasets, Pearson''s Rho =
+    −0.18–0.21, p > 0.067). Warping to equalize reach duration induced a negative correlation'
+  statistics:
+  - about: M1-N, unwarped
+    test: Pearson correlation
+    statistic: rho = -0.26
+    p: 0.023
+  - about: other datasets, unwarped
+    test: Pearson correlation
+    p: 0.067
+    p_relation: ">"
+  - about: warped data
+    test: Pearson correlation
+[... 21 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/c9648919-9388-4ee5-bb63-ec4a23e33922/tool-results/bzbex5o8s.txt"
+}
+```
+
+```
+1	  source: Results, Identifying rotations with varying planes, paragraph 6; Figure 3i; Methods,
+2	    Control for stereotyped time course of behavior
+3	  quote: 'Prior to warping, the frequencies of the rotations were unrelated or weakly related to
+4	    reach duration (M1-N, Pearson''s Rho = −0.26, p = 0.023; other datasets, Pearson''s Rho =
+5	    −0.18–0.21, p > 0.067). Warping to equalize reach duration induced a negative correlation'
+6	  statistics:
+7	  - about: M1-N, unwarped
+8	    test: Pearson correlation
+9	    statistic: rho = -0.26
+10	    p: 0.023
+11	  - about: other datasets, unwarped
+12	    test: Pearson correlation
+13	    p: 0.067
+14	    p_relation: ">"
+15	  - about: warped data
+16	    test: Pearson correlation
+17	    p: 0.001
+18	    p_relation: "<"
+19	  expected:
+20	    quantity: M1-N unwarped correlation
+[... 456 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "^- id:" sabatini-2024.yaml; grep "^- id:" sabatini-2024.yaml; python3 - <<'E'
 import json
-nb=json.load(open('reproduce_sabatini_2024.ipynb'))
-print(len(nb['cells']))
-for i,c in enumerate(nb['cells']):
-    src=''.join(c['source'])
-    print(f'=== [{i}] {c[\"cell_type\"]}')
-    print(src)
-    if c['cell_type']=='code':
-        for o in c.get('outputs',[]):
-            if 'text' in o: print('--> OUT:\n'+''.join(o['text'])[:6000])
-            elif 'data' in o:
-                d=o['data']
-                if 'text/plain' in d: print('--> DATA:\n'+''.join(d['text/plain'])[:4000])
-                if 'image/png' in d: print('--> [image]')
-            elif o.get('output_type')=='error': print('--> ERROR', o['ename'], o['evalue'])
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
+for f in ['reproduce_sabatini_2024.ipynb','reproduce_sabatini_2024_kinematics.ipynb']:
+    nb=json.load(open(f))
+    print('=====',f,len(nb['cells']))
+    for i,c in enumerate(nb['cells']):
+        print(f'--- [{i}] {c["cell_type"]}')
+        print(''.join(c['source'])[:300].replace('\n','\n  '))
+E
 ```
 
 ```
+<persisted-output>
+Output too large (29.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/c9648919-9388-4ee5-bb63-ec4a23e33922/tool-results/b3i5nc9oy.txt
+
+Preview (first 2KB):
 34
-1968 /tmp/claude-1001/nb.txt
+- id: data-composition
+- id: jpca-fit-r2
+- id: jpca-variance-explained
+- id: single-lds-variance
+- id: fig2c-condition-lds-variance
+- id: fig3a-eigenvalue-clusters
+- id: fig3c-eigenvalue-distance-auc
+- id: suppfig2-eigenvalues-from-kinematics
+- id: fig3g-basis-frequencies
+- id: tbf-variance-explained
+- id: tbf-shuffle-control
+- id: fig3h-recoverability
+- id: fig3i-duration-warping
+- id: suppfig3-model-comparison
+- id: fig4b-plane-alignment
+[... 44 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+import json
+for f in ['reproduce_sabatini_2024.ipynb','reproduce_sabatini_2024_kinematics.ipynb']:
+    nb=json.load(open(f))
+    out=open(f'{f}.txt'.replace('.ipynb',''),'w') if False else open('/tmp/claude/'+f+'.txt','w') 
+E
+mkdir -p $TMPDIR/nb; python3 - <<'E'
+import json,os
+T=os.environ['TMPDIR']+'/nb/'
+for f in ['reproduce_sabatini_2024.ipynb','reproduce_sabatini_2024_kinematics.ipynb']:
+    nb=json.load(open(f))
+    with open(T+f+'.txt','w') as out:
+        for i,c in enumerate(nb['cells']):
+            out.write(f'\n######## [{i}] {c["cell_type"]}\n')
+            out.write(''.join(c['source'])+'\n')
+            for o in c.get('outputs',[]):
+                if 'text' in o: out.write('>>> '+''.join(o['text'])+'\n')
+                elif 'data' in o:
+                    d=o['data']
+                    if 'text/plain' in d: out.write('>>> '+''.join(d['text/plain'])+'\n')
+                    if 'image/png' in d: out.write('>>> [image]\n')
+                elif o.get('output_type')=='error': out.write('>>> ERROR '+o['ename']+' '+o['evalue']+'\n')
+E
+wc -l $TMPDIR/nb/*; echo $TMPDIR
+```
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude/reproduce_sabatini_2024.ipynb.txt'
+  1359 /tmp/claude-1001/nb/reproduce_sabatini_2024.ipynb.txt
+   803 /tmp/claude-1001/nb/reproduce_sabatini_2024_kinematics.ipynb.txt
+  2162 total
+/tmp/claude-1001
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt"
+ "file_path": "/tmp/claude-1001/nb/reproduce_sabatini_2024.ipynb.txt"
 }
 ```
 
 ```
-1	90
-2	=== [0] markdown
-3	# Reproducing Sabatini & Kaufman (2024) on DANDI:000070
+1	
+2	######## [0] markdown
+3	# Sabatini & Kaufman (2024) on DANDI:000070: dynamics (notebook 1 of 2)
 4	
-5	**Paper.** Sabatini, D. A. & Kaufman, M. T. (2024). Reach-dependent reorientation of rotational dynamics
-6	in motor cortex. *Nature Communications* 15, 7007. doi:10.1038/s41467-024-51308-7. The claims file
-7	(`claims/sabatini-2024.yaml`) was written from the version of record (PMC11325044) with its Methods and
-8	its supplement, and from the paper's code (github.com/kaufmanlab/LDR-public at commit b65f28d).
+5	Paper: D. A. Sabatini and M. T. Kaufman, "Reach-dependent reorientation of rotational dynamics in
+6	motor cortex", Nat. Commun. 15:7007 (2024), doi:10.1038/s41467-024-51308-7. The claims file
+7	(`claims/sabatini-2024.yaml`) was written from the version of record (PMC11325044) and its
+8	supplement.
 9	
-10	**Dataset.** DANDI:000070 ("Neural population dynamics during reaching"), version **0.260528.0919**,
-11	streamed. The paper cites the dandiset without a version. Of its three versions (0.251218.1714,
-12	0.260528.0919 and the draft), the two published ones list the same ten assets with the same asset ids,
-13	sizes and modification times, so they hold the same files; the most recent published one is pinned, as
-14	the protocol asks when no version is cited. The two files the paper's Data availability statement
-15	names are read: `sub-Jenkins_ses-20090918` (monkey J) and `sub-Nitschke_ses-20100923` (monkey N).
+10	Dataset: DANDI:000070, "Neural population dynamics during reaching", version **0.261122.2046**
+11	(doi:10.48324/dandi.000070/0.261122.2046). The paper cites the dandiset without a version (it was
+12	published in August 2024, before the first published version of December 2025), so the most recent
+13	published version is pinned. The two sessions the paper's Data availability statement names are read:
+14	`sub-Jenkins_ses-20090918` and `sub-Nitschke_ses-20100923`. The file names of this version match the
+15	paper's (the Nitschke date is 2010 in both).
 16	
-17	**What is tested.** The four datasets of the paper (M1-J, PMd-J, M1-N, PMd-N) are rebuilt from the
-18	units, trials and hand position in the two files. The dataset holds no EMG.
-19	
-20	| Claim | Tested here |
-[... 629 more lines not kept]
+17	This notebook tests the claims on the temporal basis factorization (TBF), single-condition dynamics,
+18	jPCA and the geometry of the rotations. Notebook 2 (`reproduce_sabatini_2024_kinematics.ipynb`) tests
+19	the claims on prediction, encoding and decoding.
+20	
+[... 698 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 650,
- "limit": 660
+ "file_path": "/tmp/claude-1001/nb/reproduce_sabatini_2024.ipynb.txt",
+ "offset": 719,
+ "limit": 650
 }
 ```
 
 ```
-650	--> OUT:
-651	M1-J: recoverability mean 0.973 s.d. 0.009; chance (shuffled data) mean 0.896; rank-sum p 3.91e-25; real higher on 72/72
-652	   chance mean under the five seeds: [np.float64(0.8963), np.float64(0.895), np.float64(0.8916), np.float64(0.894), np.float64(0.8935)]
-653	PMd-J: recoverability mean 0.979 s.d. 0.007; chance (shuffled data) mean 0.860; rank-sum p 3.91e-25; real higher on 72/72
-654	   chance mean under the five seeds: [np.float64(0.8601), np.float64(0.872), np.float64(0.8636), np.float64(0.8625), np.float64(0.8643)]
-655	M1-N: recoverability mean 0.986 s.d. 0.005; chance (shuffled data) mean 0.890; rank-sum p 3.91e-25; real higher on 72/72
-656	   chance mean under the five seeds: [np.float64(0.8904), np.float64(0.8932), np.float64(0.8911), np.float64(0.8873), np.float64(0.8928)]
-657	PMd-N: recoverability mean 0.986 s.d. 0.004; chance (shuffled data) mean 0.896; rank-sum p 3.91e-25; real higher on 72/72
-658	   chance mean under the five seeds: [np.float64(0.8963), np.float64(0.8928), np.float64(0.8957), np.float64(0.8983), np.float64(0.8972)]
-659	
-660	=== [29] markdown
-661	## fig3i-duration-warping
-662	
-663	Reach duration per trial: movement onset to the last 1 ms sample at which hand speed is at least a tenth
-664	of its peak, within 850 ms (claims; code warpTrials.m). Per condition, the mean over its trials;
-665	correlation of |duration - mean over conditions| with recoverability, before and after warping.
-666	=== [30] code
-667	for ds in DATASETS:
-668	    m = ds[0]
-669	    dur = SESS[m]["trials"]["duration_ms"]
-[... 640 more lines not kept]
+719	     k=7: mean VE 92.8% (s.d. 3.8)
+720	     k=9: mean VE 93.0% (s.d. 6.2)
+721	PMd-N: split 0.5: projection k=7 (curve [0.467 0.754 0.805 0.806 0.796 0.787]), LDS k=5 (curve [0.423 0.726 0.788 0.784 0.757 0.748]); split 0.75: projection k=7 (curve [0.419 0.68  0.73  0.736 0.731 0.726]), LDS k=7 (curve [0.379 0.654 0.714 0.722 0.7   0.691])
+722	
+723	>>>      k=5: mean VE 90.9% (s.d. 3.8)
+724	     k=7: mean VE 94.1% (s.d. 2.4)
+725	     k=9: mean VE 91.9% (s.d. 9.0)
+726	M1-J reading proj: k=5 in 5..9: True; VE 83.2% in 63.9..100: True
+727	M1-J reading sim: k=5 in 5..9: True; VE 83.2% in 63.9..100: True
+728	PMd-J reading proj: k=5 in 5..9: True; VE 90.5% in 63.9..100: True
+729	PMd-J reading sim: k=5 in 5..9: True; VE 90.5% in 63.9..100: True
+730	M1-N reading proj: k=7 in 5..9: True; VE 92.8% in 63.9..100: True
+731	M1-N reading sim: k=7 in 5..9: True; VE 92.8% in 63.9..100: True
+732	PMd-N reading proj: k=7 in 5..9: True; VE 94.1% in 63.9..100: True
+733	PMd-N reading sim: k=5 in 5..9: True; VE 90.9% in 63.9..100: True
+734	
+735	
+736	######## [32] markdown
+737	The code's 3/4 split above runs 20 folds, for time. Seed check: the chosen k under the other four seeds,
+738	with 10 folds each, for time (the claim's own seed above uses the full 100).
+[... 622 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1310,
- "limit": 660
+ "file_path": "/tmp/claude-1001/nb/reproduce_sabatini_2024_kinematics.ipynb.txt"
 }
 ```
 
 ```
-1310	M1-N: (a) skew R2 all 0.623, straight 0.763, curved 0.660 | (b) unconstrained R2 all 0.685, straight 0.811, curved 0.747
-1311	   per-condition R2 (first plane): straight median 0.566, curved median 0.405; signed-rank over 36 maze pairs p 5.14e-05
-1312	PMd-N: (a) skew R2 all 0.452, straight 0.781, curved 0.562 | (b) unconstrained R2 all 0.466, straight 0.868, curved 0.613
-1313	   per-condition R2 (first plane): straight median 0.001, curved median 0.024; signed-rank over 36 maze pairs p 5.29e-01
-1314	
-1315	=== [60] markdown
-1316	## jpca-variance-explained
-1317	
-1318	> Activity within the jPCA rotational planes explained only 7 to 12% of the population variance in
-1319	> peri-movement firing rates.
-1320	
-1321	Per condition: the soft-normalised, mean-subtracted activity reconstructed in the retained planes,
-1322	un-normalised, its summed variance over -150 to +850 ms as a fraction of the summed variance of the
-1323	condition's activity (not mean-subtracted).
-1324	=== [61] code
-1325	for ds in DATASETS:
-1326	    W = np.column_stack(JP[ds]["W"])
-1327	    Q = ldr.orth(W)
-1328	    ve = []
-1329	    for c in range(72):
-[... 640 more lines not kept]
+1	
+2	######## [0] markdown
+3	# Sabatini & Kaufman (2024) on DANDI:000070: prediction, encoding and decoding (notebook 2 of 2)
+4	
+5	Paper: doi:10.1038/s41467-024-51308-7; dataset DANDI:000070 version 0.261122.2046 (the most recent
+6	published version; the paper cites none), sessions `sub-Jenkins_ses-20090918` and
+7	`sub-Nitschke_ses-20100923` as named in the paper's Data availability statement. The claims file was written
+8	from the version of record and its supplement. Notebook 1 holds the data check and the claims on the
+9	factorization and dynamics; this one recomputes the factorization (the same cross-validation, seed and k)
+10	and tests:
+11	
+12	| claim | here |
+13	|---|---|
+14	| fig5c-rotations-predict-rotations, fig6b-location-predicts-rotations, fig6c-location-tracks-direction, fig6e-kinematics-predict-location, fig7c-ldr-encoding, suppfig7a-not-memorization, fig7c-standard-encoding-worse, fig7f-ldr-decoding, trial-curvature-decoding, suppfig8-no-output-potent-dependence | tested |
+15	| fig7f-decoder-beats-standard | blocked, too large (see its section) |
+16	
+17	######## [1] code
+18	import time, resource, warnings
+19	import numpy as np
+20	import pandas as pd
+[... 784 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -202,359 +280,503 @@ for i,c in enumerate(nb['cells']):
 ```
 1	"""Loading and measures for testing Sabatini & Kaufman (2024) on DANDI:000070.
 2	
-3	Where each parameter comes from is said beside it:
-4	- "claims": the claim's criterion in claims/sabatini-2024.yaml (which cites the paper or its code);
-5	- "Methods, <section>": a passage of the paper taken by the author (protocol, author step 1.6);
-6	- "assumption": a choice the paper leaves open, recorded as a deviation in the attempt;
-7	- "standard": a choice that cannot change a result (a padding margin, a plotting detail).
-8	
-9	The dandiset is read by streaming (remfile + h5py); nothing is written to disk.
-10	"""
-11	
-12	from __future__ import annotations
-13	
-14	import numpy as np
-15	import h5py
-16	import remfile
-17	import requests
-18	from scipy.ndimage import gaussian_filter1d
-19	
-20	DANDISET = "000070"
-[... 663 more lines not kept]
+3	The paper reanalyses the maze-task sessions of Churchland et al. (2010, 2012):
+4	two monkeys (J, N), one PMd and one M1 Utah array each, analysed as four
+5	datasets (M1-J, PMd-J, M1-N, PMd-N). Its Data availability statement names the
+6	two sessions read here (SESSIONS).
+7	
+8	Where each parameter comes from is said beside it:
+9	- "claims": the claims file's criterion or shared method (claims/sabatini-2024.yaml),
+10	  which cites the paper or its code (github.com/kaufmanlab/LDR-public at b65f28d).
+11	- "paper": a passage of the paper (author, step 1.6), cited.
+12	- "code": the paper's code at b65f28d, where the claims file defers to it.
+13	- "assumption": a choice the paper leaves open, with the reason.
+14	- "standard": a detail that cannot change a result.
+15	"""
+16	import zlib
+17	import numpy as np
+18	import requests
+19	import h5py
+20	import remfile
+[... 667 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd paper; wc -c *.txt; grep -n -i -E "jPCA|soft|trial|delay|1469|kernel|Ornstein|length scale|GPFA|subset|nearest|sextant|lag|output-potent|EMG|SNR|participation|signal-to-noise|half|recover|shuffl|warp|positions|curvature|basis function|cross-valid|fold" 10.1038-s41467-024-51308-7.txt | head -300
+cd  ls .claude; ls docs 2>&1; ls /home/runner/work/_temp/ 2>&1
+```
+
+```
+agents
+commands
+ls: cannot access 'docs': No such file or directory
+062c9122-6ff7-45e7-91e8-256795caa049.sh
+15726fe3-4085-47d8-a7f0-5eb41f53621e.sh
+22cedbc2-b10d-4123-97a3-6dc50fbd8665.sh
+247a8e0d-d890-45ec-850f-49efeabf67cc.sh
+322ab5cb-8e9d-4c6a-8288-00d1efabed9a.sh
+3b006579-4f85-4177-aabc-5eab86495eb7.sh
+4d4fedca-706d-4192-b60f-b50450bf8471.sh
+5ffc5c5d-43c6-4691-bbca-70a0bb34784c.sh
+6eea3da7-a8fa-45c5-aa57-135a8f512ee9.sh
+7d6e9c3c-9168-47e1-92d3-56ce78811002.sh
+989d13f5-ee43-4646-8487-a175224d8407.sh
+_github_workflow
+_runner_file_commands
+blind.sh
+bunfig.toml
+d03a36e6-b46b-4a79-b1a0-90507e73af93.sh
+e6d6bb72-a9e7-4bca-a1a7-c6ca87bbfb7b.sh
+[... 19 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; wc -c *.txt; grep -n -i -E "movement onset|soft.?normali|participation|warp|Supplementary Fig(ure)?\.? 3|cross-validated variance|threshold|sorted" 10.1038-s41467-024-51308-7.txt | head -60
 ```
 
 ```
 <persisted-output>
-Output too large (105.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/d5d4fdab-953c-4c0c-9654-e8ef1a929708/tool-results/b8h0tpowy.txt
+Output too large (99.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/c9648919-9388-4ee5-bb63-ec4a23e33922/tool-results/bsae08nce.txt
 
 Preview (first 2KB):
 131342 10.1038-s41467-024-51308-7.txt
-7:pmc Nat Commun Nat Commun Nature Communications 2041-1723 Nature Publishing Group UK London 11325044 39143078 51308 10.1038/s41467-024-51308-7 Article Reach-dependent reorientation of rotational dynamics in motor cortex Sabatini David A. 1 2 http://orcid.org/0000-0002-8072-023X Kaufman Matthew T. [removed: an e-mail address] 1 2 1 https://ror.org/024mw5h28 grid.170205.1 0000 0004 1936 7822 Department of Organismal Biology and Anatomy, The University of Chicago, Chicago, IL 60637 USA 2 grid.170205.1 0000 0004 1936 7822 Neuroscience Institute, The University of Chicago, Chicago, IL 60637 USA 15 8 2024 15 8 2024 2024 15 7007 2 9 2023 5 8 2024 © The Author(s) 2024 2024 https://creativecommons.org/licenses/by-nc-nd/4.0/ Open Access This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ . D
+7:pmc Nat Commun Nat Commun Nature Communications 2041-1723 Nature Publishing Group UK London 11325044 39143078 51308 10.1038/s41467-024-51308-7 Article Reach-dependent reorientation of rotational dynamics in motor cortex Sabatini David A. 1 2 http://orcid.org/0000-0002-8072-023X Kaufman Matthew T. [removed: an e-mail address] 1 2 1 https://ror.org/024mw5h28 grid.170205.1 0000 0004 1936 7822 Department of Organismal Biology and Anatomy, The University of Chicago, Chicago, IL 60637 USA 2 grid.170205.1 0000 0004 1936 7822 Neuroscience Institute, The University of Chicago, Chicago, IL 60637 USA 15 8 2024 15 8 2024 2024 15 7007 2 9 2023 5 8 2024 © The Author(s) 2024 2024 https://creativecommons.org/licenses/by-nc-nd/4.0/ Open Access This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ . Du
 [... 2 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd paper; python3 - <<'EOF' > $TMPDIR/sent.txt
-import re
-t=open('10.1038-s41467-024-51308-7.txt').read()
-s=re.split(r'(?<=[.;])\s+(?=[A-Z(])',t)
-for i,x in enumerate(s): print(i, x.strip())
-EOF
-wc -l $TMPDIR/sent.txt; grep -n -i -E "kernel|Ornstein|subset of|length scale|time lag|100 ms|instantaneous" $TMPDIR/sent.txt | cut -c1-600
+cd paper; f=10.1038-s41467-024-51308-7.txt; for p in "movement onset" "participation ratio" "warp" "Supplementary Fig. 3" "orientations" "normaliz" "Estimating the dimensionality"; do echo "=== $p"; grep -o -i -E ".{0,300}$p.{0,400}" $f | head -6; done
 ```
 
 ```
-1938 /tmp/claude-1001/sent.txt
-48:41 After aligning neural activity to movement onset, we trial-averaged and smoothed activity with a Gaussian kernel (s.d. = 20 ms) to estimate firing rates (Fig. 1c ).
-195:188 Allowing nonlinearities via kernel regression raised the variance explained to 69–81% of the variance in state space (6-fold cross-validation; shuffle, p < 0.001).
-199:192 Most previous attempts to relate neural activity to movement have used moment-by-moment correlations between kinematic parameters and firing rates to fit an instantaneous encoding model.
-209:202 Hand position over time ( d ) and hand velocity over time ( e ) along with reconstruction by LDR-based decoding and kernel regression on smoothed spiking (100 ms Gaussian filter). f Median, IQR, and 1.5x IQR of variance in hand position explained by LDR-based decoding, along with variance explained by standard techniques employing a denoising step and then fitting an instantaneous activity-based decoder of reach kinematics.
-213:206 To determine whether including a nonlinearity could further boost performance, we also tested kernel regression.
-218:211 To reiterate, LDR encoding models do not fit an instantaneous relationship between neural activity and kinematics as in standard models.
-223:216 Importantly, though, this model is compatible with motor cortex having a subset of dimensions that relate instantaneously to muscle activity or kinematics (see “Discussion”).
-299:292 Spiking activity was binned at 1 millisecond, smoothed with a 20 ms Gaussian kernel, trial-averaged, and down-sampled to 10 millisecond resolution.
-469:408 We similarly fit a nonlinear version of this model using kernel ridge regression 65 (lambda = 0.1, Gaussian Kernel, length-scale = 400).
-470:409 Parameters for this and all other kernel regressions were optimized by grid search.
-475:414 We similarly fit a nonlinear version of this model using kernel ridge regression (lambda = 0.1, Gaussian Kernel, length-scale = 400).
-485:424 We 
-[... 14 more lines not kept]
+=== movement onset
+nditions”. Simultaneous single- and multi-unit electrophysiological recordings were made with a pair of 96-electrode Utah arrays in each monkey, implanted in PMd and in M1, yielding 79–118 units per array. We analyzed activity from each array and monkey separately. After aligning neural activity to movement onset, we trial-averaged and smoothed activity with a Gaussian kernel (s.d. = 20 ms) to estimate firing rates (Fig. 1c ). Consistent with previous literature, many units displayed multiphasic activity beginning ~150 ms prior to movement onset (Fig. 1d ). Fig. 1 Units in motor cortex display complex activity during reaching. a Illustration of task. b Straight and curved reaches performed by monkey J (le
+ft) and N (right). c Spiking activity and PSTH for unit 61, M1-N, for five example conditions. Lines, mean firing rates; shaded area, SEM. In PSTHs, tall vertical line indicates movement onset, and scale bars indicate 250 ms and 40 spikes/s, respectively. d PSTHs for example motor cortex units, where each trace is a single condition (all conditions plotted). In ( b – d ), colors assigned according to target angle. Rotational dynamics incompletely describe motor cortex activity Previous studies have described motor cortex activity as “rotational”: containing coordinated oscillations at 
+utputs than rotational dynamics. This figure is entirely schematics of hypotheses. a Illustration of proposed model. Preparatory activity moves the population state to the necessary state space location, where local rotational dynamics cause the population state to rotate in the correct planes upon movement onset. b In a dynamical system, output-null dimensions act as supporting dynamics for producing activity along output-potent dimensions. This means activity in output-null dimensions, though not directly “read out” by the nervous system in driving behavior, is informative of behavior. c Standard decoders attempt to estimate output-potent dimensions, but in the p
+[... 27 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n '290,560p' $TMPDIR/sent.txt | cut -c1-900
+cd paper; pdftotext -layout 10.1038-s41467-024-51308-7.supp-41467_2024_51308_MOESM1_ESM.pdf $TMPDIR/supp.txt 2>&1 | head; grep -n -i -A12 "Supplementary Figure 3" $TMPDIR/supp.txt | head -40; grep -n -i -B2 -A10 "Supplementary Figure 2" $TMPDIR/supp.txt | head -40
 ```
 
 ```
-<persisted-output>
-Output too large (35.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/d5d4fdab-953c-4c0c-9654-e8ef1a929708/tool-results/b723g762i.txt
-
-Preview (first 2KB):
-283 Alternatively, the location and orientation of the dynamics themselves might be used directly for decoding.
-284 Methods Subjects, behavior and data pre-processing All data used here have been analyzed in previous studies.
-285 Animal protocols were approved by the Stanford University Animal Care and Use Committee.
-286 Two adult male rhesus macaque monkeys ( Macaca mulatta ), J and N, performed the “maze” center-out delayed-reaching task for juice reward 19 .
-287 Briefly, the monkey initially fixated a central point on a vertical screen with the eye and a cursor floating slightly above the fingertips, then a slightly jittering target was shown.
-288 After a brief delay (0–1000 ms), a Go cue was presented (cessation of target jitter, filling in of target, and disappearance of fixation point), and the monkey was required to make a fast, accurate reach to the target.
-289 On some trials, the monkey was required to avoid virtual barriers presented at the same time as the target, eliciting curved reaches to produce 72 different reaching “conditions” (36 straight, 36 curved).
-290 For both monkeys, data were collected using two 96-electrode “Utah” arrays (Blackrock Microsystems, Salt Lake City, UT), one implanted in PMd and one in M1.
-291 Both single-units and stable multi-units were included for analysis.
-292 Spiking activity was binned at 1 millisecond, smoothed with a 20 ms Gaussian kernel, trial-averaged, and down-sampled to 10 millisecond resolution.
-293 Except where noted, all analyses were performed on each dataset (monkey and array) independently.
-294 Fitting dynamics to single conditions Condition-specific dynamics were examined by fitting, for each condition independently, a discrete-time linear dynamical system to population activity from 150 ms prior t
-[... 3 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/d5d4fdab-953c-4c0c-9654-e8ef1a929708/tool-results/b723g762i.txt"
-}
-```
-
-```
-1	283 Alternatively, the location and orientation of the dynamics themselves might be used directly for decoding.
-2	284 Methods Subjects, behavior and data pre-processing All data used here have been analyzed in previous studies.
-3	285 Animal protocols were approved by the Stanford University Animal Care and Use Committee.
-4	286 Two adult male rhesus macaque monkeys ( Macaca mulatta ), J and N, performed the “maze” center-out delayed-reaching task for juice reward 19 .
-5	287 Briefly, the monkey initially fixated a central point on a vertical screen with the eye and a cursor floating slightly above the fingertips, then a slightly jittering target was shown.
-6	288 After a brief delay (0–1000 ms), a Go cue was presented (cessation of target jitter, filling in of target, and disappearance of fixation point), and the monkey was required to make a fast, accurate reach to the target.
-7	289 On some trials, the monkey was required to avoid virtual barriers presented at the same time as the target, eliciting curved reaches to produce 72 different reaching “conditions” (36 straight, 36 curved).
-8	290 For both monkeys, data were collected using two 96-electrode “Utah” arrays (Blackrock Microsystems, Salt Lake City, UT), one implanted in PMd and one in M1.
-9	291 Both single-units and stable multi-units were included for analysis.
-10	292 Spiking activity was binned at 1 millisecond, smoothed with a 20 ms Gaussian kernel, trial-averaged, and down-sampled to 10 millisecond resolution.
-11	293 Except where noted, all analyses were performed on each dataset (monkey and array) independently.
-12	294 Fitting dynamics to single conditions Condition-specific dynamics were examined by fitting, for each condition independently, a discrete-time linear dynamical system to population activity from 150 ms prior to movement onset to 850 ms after movement onset.
-13	295 If an eigenvalue in a fit LDS had a half-life >10 s, it was reduced to 10 s.
-14	296 We fit the LDS using reduced-rank regression t
-[... 258 more lines not kept]
+/bin/bash: line 1: pdftotext: command not found
+grep: /tmp/claude-1001/supp.txt: No such file or directory
+grep: /tmp/claude-1001/supp.txt: No such file or directory
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF'
-import numpy as np, ldr
-rng=np.random.default_rng(0)
-# 1) OU kernel, ell=1e12, lam 0.1 vs ~0 on a nonlinear target with feature scale ~100
-X=rng.uniform(-150,150,(2000,2)); Y=np.c_[np.sin(X[:,0]/50)+X[:,1]/100, np.cos(X[:,1]/40)]
-Xt=rng.uniform(-150,150,(500,2)); Yt=np.c_[np.sin(Xt[:,0]/50)+Xt[:,1]/100, np.cos(Xt[:,1]/40)]
-for lam in (0.1,1e-8):
-    f=ldr.kernel_fit(X,Y,'ou',1e12,lam); P=f(Xt)
-    print('lam',lam,'R2',1-((Yt-P)**2).sum()/((Yt-Yt.mean(0))**2).sum(), 'pred sd',P.std(0))
-# 2) SNR bottleneck: components sharing a large common direction across conditions, pure noise elsewhere
-N,C=96,72
-mean_dir=rng.normal(size=N); 
-sig=np.outer(np.ones(C),mean_dir)*5 + rng.normal(size=(C,N))@np.diag(np.r_[np.ones(3)*3,np.zeros(N-3)])  # 1 shared + 3 varying dims
-A1=sig+rng.normal(size=(C,N))*0.5; A2=sig+rng.normal(size=(C,N))*0.5
-Z=A1-A1.mean(0); V=np.linalg.svd(Z,full_matrices=False)[2]
-ai=[]
-for d in range(1,len(V)+1):
-    A1d=(A1@V[:d].T)@V[:d]
-    ai.append(np.mean([(A1d[c]@A2[c])**2/(A1d[c]@A1d[c])/(A2[c]@A2[c]) for c in range(C)]))
-print('argmax d (centred PCA, uncentred bottleneck):',int(np.argmax(ai))+1,'of',len(V), np.round(ai[:6],3), np.round(ai[-3:],3))
-Vu=np.linalg.svd(A1,full_matrices=False)[2]
-ai2=[np.mean([(((A1@Vu[:d].T)@Vu[:d])[c]@A2[c])**2/((((A1@Vu[:d].T)@Vu[:d])[c])@(((A1@Vu[:d].T)@Vu[:d])[c]))/(A2[c]@A2[c]) for c in range(C)]) for d in range(1,len(Vu)+1)]
-print('argmax d (uncentred PCA):',int(np.argmax(ai2))+1)
-# 3) tbf/demix sanity: synthetic rotations at 0.5,1.5,2.5 Hz + offset with condition-specific loadings
-t=np.arange(101)*0.01
-Bt=np.vstack([np.ones_like(t)]+[f(2*np.pi*fr*t)*np.exp(-t*0.3) for fr in (0.5,1.5,2.5) for f in (np.cos,np.sin)])
-L=rng.normal(size=(20,30,7)); Xs=L@Bt
-B,Lr=ldr.tbf(Xs,7); out=ldr.demix(B,Lr); print('demix freqs',np.round(out[4],3),'groups',out[3])
-EOF
+cd paper; python3 -c "
+import pypdf,os
+r=pypdf.PdfReader('10.1038-s41467-024-51308-7.supp-41467_2024_51308_MOESM1_ESM.pdf')
+t='\n'.join(p.extract_text() for p in r.pages)
+open(os.environ['TMPDIR']+'/supp.txt','w').write(t)
+" 2>&1 | tail -2; grep -n -i -A10 "Figure 3[^0-9]" $TMPDIR/supp.txt | head -30; grep -n -i -A12 "Figure 2[^0-9]" $TMPDIR/supp.txt | head -30
+```
+
+```
+import pypdf,os
+ModuleNotFoundError: No module named 'pypdf'
+grep: /tmp/claude-1001/supp.txt: No such file or directory
+grep: /tmp/claude-1001/supp.txt: No such file or directory
+```
+
+**Agent calls Bash**
+
+```bash
+python3 -c "import fitz" 2>&1; python3 -c "import PyPDF2" 2>&1; python3 -c "import pdfminer" 2>&1; python3 -c "import numpy,scipy,h5py,remfile,requests;print('ok')"
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
+  File "<string>", line 1, in <module>
+    import fitz
+ModuleNotFoundError: No module named 'fitz'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import PyPDF2
+ModuleNotFoundError: No module named 'PyPDF2'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import pdfminer
+ModuleNotFoundError: No module named 'pdfminer'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import numpy,scipy,h5py,remfile,requests;print('ok')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls /usr/bin/python3* ~/.local/bin 2>/dev/null; which -a python python3 uv pip 2>/dev/null; ls /opt /home/runner/work/_temp 2>/dev/null | head
+ls .claude/*; which -a python3 python uv pip pip3 conda 2>&1; ls /opt /usr/local/bin 2>&1 | head -40
 ```
 
 ```
+.claude/agents:
+
+.claude/commands:
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
 /usr/bin/python3
-/usr/bin/python3-config
-/usr/bin/python3.14
-/usr/bin/python3.14-config
-
-/home/runner/.local/bin:
+/bin/python3
 /opt/hostedtoolcache/Python/3.13.18/x64/bin/python
 /opt/hostedtoolcache/Python/3.13.18/x64/python
 /usr/bin/python
 /bin/python
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
-/usr/bin/python3
-/bin/python3
 /opt/hostedtoolcache/Python/3.13.18/x64/bin/uv
 /opt/hostedtoolcache/Python/3.13.18/x64/bin/pip
 /usr/bin/pip
 /bin/pip
-/home/runner/work/_temp:
-0940d000-fa98-4c13-9c1d-c50668c44fd3.sh
-35684a9e-c7bc-4e2c-bed2-dfe658186a87.sh
-[... 7 more lines not kept]
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/pip3
+/usr/bin/pip3
+/bin/pip3
+/opt:
+actionarchivecache
+az
+[... 37 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/python -c "import numpy, scipy, h5py; print(numpy.__version__)" 2>&1 | tail -1
+/usr/bin/python3 -c "import numpy,scipy;print(numpy.__version__, scipy.__version__)" 2>&1; cd $TMPDIR && timeout 300 uv venv -q v 2>&1 | tail -2 && timeout 600 uv pip install -q -p v/bin/python numpy scipy pandas h5py remfile requests pypdf 2>&1 | tail -3; ls v/bin | head
 ```
 
 ```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import numpy,scipy;print(numpy.__version__, scipy.__version__)
+    ^^^^^^^^^^^^^^^^^^
 ModuleNotFoundError: No module named 'numpy'
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q v 2>&1 | tail -2; uv pip install -q --python v/bin/python numpy scipy h5py remfile requests 2>&1 | tail -2; v/bin/python -c "import numpy; print(numpy.__version__)"
-```
-
-```
-2.5.5
+activate
+activate.bat
+activate.csh
+activate.fish
+activate.nu
+activate.ps1
+activate.xsh
+activate_this.py
+deactivate.bat
+f2py
 Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd  $TMPDIR/v/bin/python - <<'EOF'
-import numpy as np, ldr
-rng=np.random.default_rng(0)
-X=rng.uniform(-150,150,(1500,2)); f_=lambda X: np.c_[np.sin(X[:,0]/50)+X[:,1]/100, np.cos(X[:,1]/40)]
-Y=f_(X); Xt=rng.uniform(-150,150,(500,2)); Yt=f_(Xt)
-for lam in (0.1,1e-8):
-    f=ldr.kernel_fit(X,Y,'ou',1e12,lam); P=f(Xt)
-    print('OU 1e12 lam',lam,'R2',round(1-((Yt-P)**2).sum()/((Yt-Yt.mean(0))**2).sum(),3), 'pred sd',P.std(0))
-N,C=96,72
-mean_dir=rng.normal(size=N)
-sig=np.outer(np.ones(C),mean_dir)*5 + rng.normal(size=(C,3))@rng.normal(size=(3,N))
-A1=sig+rng.normal(size=(C,N))*0.5; A2=sig+rng.normal(size=(C,N))*0.5
-def curve(V):
-    out=[]
-    for d in range(1,len(V)+1):
-        A1d=(A1@V[:d].T)@V[:d]
-        out.append(np.mean([(A1d[c]@A2[c])**2/(A1d[c]@A1d[c])/(A2[c]@A2[c]) for c in range(C)]))
-    return np.array(out)
-a=curve(np.linalg.svd(A1-A1.mean(0),full_matrices=False)[2]); b=curve(np.linalg.svd(A1,full_matrices=False)[2])
-print('true signal dims 4; argmax d centred-PCA/uncentred-bottleneck:',a.argmax()+1,'of',len(a),'| uncentred PCA:',b.argmax()+1)
-t=np.arange(101)*0.01
-Bt=np.vstack([np.ones_like(t)]+[g(2*np.pi*fr*t)*np.exp(-t*0.3) for fr in (0.5,1.5,2.5) for g in (np.cos,np.sin)])
-L=rng.normal(size=(20,30,7)); B,Lr=ldr.tbf(L@Bt,7); o=ldr.demix(B,Lr); print('demix freqs',np.round(o[4],3),o[3])
-print('pop_ve recon', ldr.pop_ve((L@Bt)[0], o[1][0]@o[0]))
-EOF
-```
-
-```
-OU 1e12 lam 0.1 R2 -0.001 pred sd [6.63885816e-07 8.05819053e-08]
-OU 1e12 lam 1e-08 R2 0.864 pred sd [0.90936537 0.3680435 ]
-true signal dims 4; argmax d centred-PCA/uncentred-bottleneck: 72 of 72 | uncentred PCA: 4
-demix freqs [0.  0.5 0.5 1.5 1.5 2.5 2.5] [-1  0  0  1  1  2  2]
-pop_ve recon 1.0
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; v/bin/python - <<'EOF'
-import requests, json
-A="https://api.dandiarchive.org/api/dandisets/000070/versions/0.260528.0919"
-r=requests.get(A+"/assets/",params={"page_size":100}).json()
-for a in r["results"]: print(a["path"], a["size"], a["asset_id"])
-for p in ("sub-Jenkins/sub-Jenkins_ses-20090918_behavior+ecephys.nwb","sub-Nitschke/sub-Nitschke_ses-20100923_behavior+ecephys.nwb"):
-    aid=[a for a in r["results"] if a["path"]==p][0]["asset_id"]
-    m=requests.get(f"https://api.dandiarchive.org/api/assets/{aid}/").json()
-    print(p, [v.get("value") for v in m.get("variableMeasured",[])], m.get("measurementTechnique") and [x.get("name") for x in m["measurementTechnique"]])
-v=requests.get(A+"/").json()
-print(v.get("description","")[:1500]); print(v.get("assetsSummary"))
-EOF
-```
-
-```
-sub-Jenkins/sub-Jenkins_ses-20090912_behavior+ecephys.nwb 2708844176 7b95fe3a-c859-4406-b80d-e50bad775d01
-sub-Jenkins/sub-Jenkins_ses-20090923_behavior+ecephys.nwb 3773669430 9d89e774-1506-470a-8d4c-d4bdf1261c0f
-sub-Nitschke/sub-Nitschke_ses-20090819_behavior+ecephys.nwb 6554321924 b2926f43-bcea-4984-a364-5fdb6aab7ed6
-sub-Nitschke/sub-Nitschke_ses-20090812_behavior+ecephys.nwb 7375599469 d188f92d-f9ef-4942-a695-bbee60b2bb38
-sub-Jenkins/sub-Jenkins_ses-20090916_behavior+ecephys.nwb 3965773882 9a3225ad-4925-4174-918b-973c057d71b8
-sub-Nitschke/sub-Nitschke_ses-20090910_behavior+ecephys.nwb 6603818681 66b73d1d-cf4d-4b0c-a01b-8a1de1f50bbc
-sub-Jenkins/sub-Jenkins_ses-20090918_behavior+ecephys.nwb 4488374539 033a04c0-9ce7-45c5-8012-c571a7b9bf12
-sub-Nitschke/sub-Nitschke_ses-20090922_behavior+ecephys.nwb 4449864980 f8c77cfb-1ac5-42f8-b264-18a154ee1f5c
-sub-Nitschke/sub-Nitschke_ses-20090920_behavior+ecephys.nwb 5989441241 c97b6977-2656-45fb-be2e-b8debe35912b
-sub-Nitschke/sub-Nitschke_ses-20100923_behavior+ecephys.nwb 7430448335 02c2c5b7-0848-46f1-9ca6-1e657fd10eb5
-sub-Jenkins/sub-Jenkins_ses-20090918_behavior+ecephys.nwb ['Position', 'Units'] ['spike sorting technique', 'behavioral technique']
-sub-Nitschke/sub-Nitschke_ses-20100923_behavior+ecephys.nwb ['ElectricalSeries', 'Position', 'Units', 'ElectrodeGroup', 'ProcessingModule', 'SpatialSeries'] ['multi electrode extracellular electrophysiology recording technique', 'spike sorting technique', 'analytical technique', 'behavioral technique', 'surgical technique']
-Monkeys recordings of Motor Cortex (M1) and dorsal Premotor Cortex (PMd) using two 96 channel high density Utah Arrays (Blackrock Microsystems) while performing reaching tasks with right hand.
-{'species': [{'name': 'Rhesus monkey', 'schemaKey': 'SpeciesType', 'identifier': 'http://purl.obolibrary.org/obo/NCBITaxon_9544'}, {'name': 'Macaca mulatta - Rhesus monkey', 'schemaKey': 'SpeciesType', 'identifier': 'http://purl.obolibrary.org/obo/NCBITaxon_9544'}], 'approach'
-[... 1 more lines not kept]
 ```
 
 **Agent**
 
-**A. Outcomes**
+Installed numpy/scipy in a scratch venv. Now the supplement legends and synthetic tests of helpers.
 
-The claims file has 34 claims and the notebook tests all of them. My outcomes: 10 reproduced, 13 partially reproduced, 11 not reproduced, none blocked.
+**Agent calls Bash**
 
-| Claim | Outcome | Reason |
+```bash
+cd  P=$TMPDIR/v/bin/python; $P -c "
+import pypdf,os
+r=pypdf.PdfReader('paper/10.1038-s41467-024-51308-7.supp-41467_2024_51308_MOESM1_ESM.pdf')
+t='\n'.join(p.extract_text() for p in r.pages)
+open(os.environ['TMPDIR']+'/supp.txt','w').write(t)
+"; grep -n -i -E "Supplementary Figure [0-9]" $TMPDIR/supp.txt | head -20
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,100p $TMPDIR/supp.txt; sed -n 292,320p $TMPDIR/supp.txt
+```
+
+```
+1 
+ 
+Supplementary Figure 1: jPCA rotations incompletely describe motor cortex activity. a, 
+Rotations uncovered by jPCA across datasets. jPCA identified two rotational planes in M1 activity, 
+and one rotational plane in PMd. b, The fit of rotational dynamics identified by jPCA depended 
+heavily on reach complexity. jPCA fit motor cortex activity on straight reaches substantially better 
+than curved reaches (p < 0.001, Wilcoxon Signed Rank test). c, Multi-unit PSTHs and 
+reconstruction by jPCA rotations and mean activity across conditions. Rotations captured little of 
+the multi-phasic modulation of neural activity during reaching. Traces colored by target angle.  
+  
+M1-N
+unit 61
+unit 63
+unit 63
+unit 61
+unit 44
+unit 44
+PMd-N
+unit 35
+unit 10
+[... 109 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  $TMPDIR/v/bin/python - <<'E'
+import numpy as np, ldr
+g=np.random.default_rng(0)
+T=ldr.NT; t=np.arange(T)
+# synthetic TBF: offset + rotations at 0.5,1.5,2.5 Hz, half-life 0.3 s, starting at bin T0
+fr=[0.5,1.5,2.5]; hl=0.3
+cols=[np.exp(-np.log(2)/(hl*100)*0*t)+0*t]
+for f in fr:
+    tau=np.log(2)/(hl*100)
+    for ph in (0,-np.pi/2):
+        cols.append(np.exp(-tau*t)*np.cos(2*np.pi*f/100*t+ph))
+B=np.array(cols).T  # T x 7
+C,N=72,96
+L=g.normal(size=(C,N,7))
+X=L@B.T + 0.01*g.normal(size=(C,N,T))
+tb=ldr.eig_transform(X,7)
+print("TBF freq", np.round(tb['freq'],3), "halflife", np.round(tb['halflife'],3))
+print("groups", [(round(f,3),list(i)) for f,i in ldr.groups(tb)])
+ve=ldr.var_explained(X, tb['L']@tb['B'].T); print("VE",ve.mean())
+# LDS freq on single condition
+E=ldr.lds_eigs_batch(X,7); print("LDS freqs cond0", np.round(ldr.freq_hz(E[0]),3))
+# alignment index
+S=g.normal(size=(N,2)); D=S@g.normal(size=(2,T)); print("AI same",ldr.alignment_index(D,S), "AI rand", ldr.alignment_index(D,g.normal(size=(N,2))))
+# auc
+a=g.normal(1,1,2000); b=g.normal(0,1,2000); print("auc", ldr.auc_folded(a,b), "exp", 0.76)
+# pca_dims isotropic in 20 dims
+Z=g.normal(size=(5000,20)); print("pca_dims iso20", ldr.pca_dims(Z))
+# circ corr
+th=g.uniform(-np.pi,np.pi,72); print("circ", ldr.circ_corr(th, th+0.1*g.normal(size=72)), ldr.circ_corr(th, g.uniform(-np.pi,np.pi,72)))
+# sea: identical subspaces -> ~0 angles; random 2D subspaces in 96D -> large
+same=np.repeat(g.normal(size=(1,N,2)),10,0)+1e-9*g.normal(size=(10,N,2)); print("sea same", np.round(ldr.sea(same,5),2))
+print("sea rand", np.round(ldr.sea(g.normal(size=(72,N,2)),25),1))
+# split halves balance
+cond=np.repeat(np.arange(3),[5,6,7]); a=ldr.split_halves(cond,g); print("split", [a[cond==c].sum() for c in range(3)])
+E
+```
+
+```
+TBF freq [0.  0.5 0.5 1.5 1.5 2.5 2.5] halflife [9.899 0.301 0.301 0.299 0.299 0.3   0.3  ]
+groups [(0.0, [np.int64(0)]), (0.5, [np.int64(1), np.int64(2)]), (1.5, [np.int64(3), np.int64(4)]), (2.5, [np.int64(5), np.int64(6)])]
+VE 0.9995881246923418
+LDS freqs cond0 [0.    0.493 0.493 1.509 1.509 2.504 2.504]
+AI same 1.0 AI rand 0.02859264718891974
+auc (np.float64(0.75962825), np.float64(0.75962825)) exp 0.76
+pca_dims iso20 (16, 19.913705446323693)
+circ (np.float64(0.993195073223787), np.float64(6.578827835948603e-12)) (np.float64(0.05253090977739361), np.float64(0.636418507419534))
+sea same [0. 0. 0. 0. 0.]
+sea rand [90.  88.7 87.8 87.7 85.9 84.3 82.5 81.6 81.  80.2 80.  78.5 76.8 76.3
+ 76.2 75.3 72.8 72.5 72.5 71.7 69.2 67.9 67.3 67.  66.7]
+split [np.int64(3), np.int64(3), np.int64(4)]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; P=v/bin/python; $P - <<'E'
+import requests, json
+API="https://api.dandiarchive.org/api"
+v=requests.get(f"{API}/dandisets/000070/versions/0.261122.2046/",timeout=60).json()
+print(v.get('name')); print(v.get('description','')[:1500])
+print('variableMeasured', [x.get('value') for x in v.get('assetsSummary',{}).get('variableMeasured',[])])
+print('approach', v.get('assetsSummary',{}).get('approach'))
+r=requests.get(f"{API}/dandisets/000070/versions/0.261122.2046/assets/",params={"page_size":100},timeout=60).json()
+for a in r['results']: print(a['path'], round(a['size']/1e9,2),'GB', a['asset_id'])
+E
+```
+
+```
+Exit code 1
+Neural population dynamics during reaching
+Monkeys recordings of Motor Cortex (M1) and dorsal Premotor Cortex (PMd) using two 96 channel high density Utah Arrays (Blackrock Microsystems) while performing reaching tasks with right hand.
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+AttributeError: 'str' object has no attribute 'get'
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; P=v/bin/python; $P - <<'E'
+import requests, json
+API="https://api.dandiarchive.org/api"
+v=requests.get(f"{API}/dandisets/000070/versions/0.261122.2046/",timeout=60).json()
+print(json.dumps(v.get('assetsSummary'),indent=0)[:1500])
+r=requests.get(f"{API}/dandisets/000070/versions/0.261122.2046/assets/",params={"page_size":100},timeout=60).json()
+for a in r['results']: print(a['path'], round(a['size']/1e9,2),'GB', a['asset_id'])
+aid=[a for a in r['results'] if '20090918' in a['path']][0]['asset_id']
+m=requests.get(f"{API}/dandisets/000070/versions/0.261122.2046/assets/{aid}/",timeout=60).json()
+print(json.dumps({k:m.get(k) for k in ('variableMeasured','measurementTechnique','wasGeneratedBy')},indent=0)[:2500])
+E
+```
+
+```
+{
+"species": [
+{
+"name": "Macaca mulatta - Rhesus monkey",
+"schemaKey": "SpeciesType",
+"identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9544"
+}
+],
+"approach": [
+{
+"name": "electrophysiological approach",
+"schemaKey": "ApproachType"
+},
+{
+"name": "behavioral approach",
+"schemaKey": "ApproachType"
+}
+],
+"schemaKey": "AssetsSummary",
+"dataStandard": [
+[... 128 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  timeout 600 $TMPDIR/v/bin/python - <<'E'
+import h5py, remfile
+url="https://api.dandiarchive.org/api/assets/75013796-4a2d-41dc-9eb6-db9d365b28b4/download/"
+h=h5py.File(remfile.File(url),"r")
+def walk(g,p="",d=0):
+    for k in g.keys():
+        o=g[k]
+        if isinstance(o,h5py.Group):
+            if d<3: 
+                print("  "*d+p+k+"/", dict((a,str(o.attrs[a])[:120]) for a in o.attrs if a in("description","neurodata_type","unit")))
+                walk(o,"",d+1)
+        else:
+            if d<3 and k in("data","timestamps"): print("  "*d+k, o.shape, o.dtype, {a:str(o.attrs[a])[:60] for a in o.attrs if a in ("unit","conversion")})
+for k in ("acquisition","processing","units","analysis"):
+    if k in h: print("==",k); walk(h[k],"",1)
+E
+```
+
+```
+== acquisition
+== processing
+  behavior/ {'description': 'contains monkey movement data', 'neurodata_type': 'ProcessingModule'}
+    Position/ {'neurodata_type': 'Position'}
+  ecephys/ {'description': 'Intermediate data from extracellular electrophysiology recordings, e.g., LFP.', 'neurodata_type': 'ProcessingModule'}
+    Processed/ {'neurodata_type': 'FilteredEphys'}
+== units
+== analysis
+```
+
+**Agent calls Bash**
+
+```bash
+cd  timeout 600 $TMPDIR/v/bin/python - <<'E'
+import h5py, remfile
+url="https://api.dandiarchive.org/api/assets/75013796-4a2d-41dc-9eb6-db9d365b28b4/download/"
+h=h5py.File(remfile.File(url),"r")
+for p in ("processing/behavior/Position","processing/ecephys/Processed"):
+    g=h[p]
+    for k in g: 
+        o=g[k]; print(p,k, dict(o.attrs).get('description'), {kk:(o[kk].shape, {a:str(o[kk].attrs[a]) for a in o[kk].attrs if a in('unit','conversion')}) for kk in o if isinstance(o[kk],h5py.Dataset)})
+print(list(h['intervals/trials'].keys()))
+E
+```
+
+```
+processing/behavior/Position Cursor x,y position of the cursor on the screen in mm, after the rig's filtering and inertial prediction. Use the hand position for analysis. {'data': ((8005321, 2), {'conversion': '0.001', 'unit': 'meters'}), 'reference_frame': ((), {}), 'timestamps': ((8005321,), {'unit': 'seconds'})}
+processing/behavior/Position Eye x,y position of the eye {'data': ((8005321, 2), {'conversion': 'nan', 'unit': 'meters'}), 'reference_frame': ((), {}), 'timestamps': ((8005321,), {'unit': 'seconds'})}
+processing/behavior/Position Hand x,y position of the hand in mm. 8 mm has been subtracted from y to correct a bug in the rig's save code for this monkey. The cursor was displayed offset from the hand by the trials' cursor_offset. {'data': ((8005321, 2), {'conversion': '0.001', 'unit': 'meters'}), 'reference_frame': ((), {}), 'timestamps': ((8005321,), {'unit': 'seconds'})}
+processing/ecephys/Processed A001 LFP signal for array A, segment 1. Array A shares a clock with the trials and spikes, and is placed at the offset applied to this segment's trials. Array B was recorded by a second system whose clock runs slightly slower; its timestamps map it onto array A's clock using the trial start times recorded by both systems. {'data': ((7689465, 96), {'conversion': '1e-06', 'unit': 'volts'}), 'electrodes': ((96,), {}), 'starting_time': ((), {'unit': 'seconds'})}
+processing/ecephys/Processed A002 LFP signal for array A, segment 2. Array A shares a clock with the trials and spikes, and is placed at the offset applied to this segment's trials. Array B was recorded by a second system whose clock runs slightly slower; its timestamps map it onto array A's clock using the trial start times recorded by both systems. {'data': ((8043839, 96), {'conversion': '1e-06', 'unit': 'volts'}), 'electrodes': ((96,), {}), 'starting_time': ((), {'unit': 'seconds'})}
+processing/ecephys/Processed B001 LFP signal for array B, segment 1. Array A shares a clock with the trials and spikes, a
+[... 2 more lines not kept]
+```
+
+**Agent**
+
+**Verifier report, round 1: Sabatini & Kaufman 2024 on DANDI:000070 (two notebooks, 34 claims in the claims file)**
+
+Overall: 13 reproduced, 10 partially reproduced, 10 not reproduced, 1 blocked.
+
+### A. Outcomes
+
+| claim | outcome | reason |
 |---|---|---|
-| data-composition | reproduced | Both monkeys have 72 conditions (36 straight, 36 curved). Trial counts are within tolerance under both readings (J 1595/1381, N 2121/1884), and each array has 96 units, inside 71–130 (cell 13). The units carry no single/multi-unit label, so all units are counted (see B6). |
-| jpca-fit-r2 | partially_reproduced | Under reading (a), straight (0.75–0.84) and curved (0.56–0.71) are all inside their ranges. For all conditions together, PMd-N's 0.452 falls outside 0.576–0.803, so 3 of 4 pass. The per-condition signed-rank test is significant only for M1-N, and it does not decide (cell 59). |
-| jpca-variance-explained | partially_reproduced | Means are 8.9, 11.6, 11.7 and 5.1%; PMd-N falls below 6.3%. The s.d. is ≤11.6%, consistent with the paper's <13% (cell 61). |
-| single-lds-variance | not_reproduced | Means are 0.77–0.82 under reading (a) and 0.79–0.87 under (b). All four are above 0.726 under both readings (cell 32). |
-| fig2c-condition-lds-variance | reproduced | Chosen k is 5, 5, 7, 5 (all in 5–9, the same under all five seeds). Mean variance explained is 0.84–0.94, inside 63.9–100% (cell 15). |
-| fig3a-eigenvalue-clusters | not_reproduced | Median pair frequencies are within 10% of the targets only for PMd-J (0.54, 1.53). M1-J (0.85, 2.35), M1-N (0.68, 1.74, 3.21) and PMd-N (0.73, 1.67) miss (cell 17). |
-| fig3c-eigenvalue-distance-auc | not_reproduced | AUC under the Poisson null: 0.81, 0.71, 0.63, 0.70. Under the half-split null: 0.70, 0.64, 0.66, 0.68. At most one dataset is inside 0.459–0.638 under either null, and the result is stable across seeds (cell 20). |
-| suppfig2-eigenvalues-from-kinematics | not_reproduced | Pooled mean R² is 0.275 under both kinematic readings, against 0.1 ± 0.05 (cell 74). |
-| fig3g-basis-frequencies | not_reproduced | PMd-J has only 2 rotation pairs. The frequencies (0.64–0.74, 1.54–1.82, 2.71–3.23 Hz) sit systematically above 0.5/1.5/2.5 Hz; the 0.5 Hz rotation misses in all four datasets (cell 22). |
-| tbf-variance-explained | reproduced | Means are 0.935, 0.936, 0.966, 0.953 under reading (a) and 0.92–0.96 under (b), all inside 81–100% (cell 24). |
-| tbf-shuffle-control | partially_reproduced | Shuffled means are 42.2, 28.7, 41.8 and 42.1%; PMd-J falls below 31.5%. The rank-sum test gives p = 3.9e-25 with real data higher on 72/72 conditions in every dataset (cell 27). |
-| fig3h-recoverability | partially_reproduced | Real recoverability is 0.973–0.986 with rank-sum p < 0.001. The paper states chance as 63–80%. The notebook's chance is 0.896, 0.860, 0.890, 0.896, so 3 of 4 exceed the widened bound of 88% (cell 28; see B4). |
-| fig3i-duration-warping | not_reproduced | Unwarped M1-N is rho +0.235 (paper −0.26). Under the main (truncating) warp, only M1-J (−0.514) lies in −0.693 to −0.468; under the 250 ms post-reach warp, none do (cell 30). |
-| suppfig3-model-comparison | not_reproduced | Under the main reading, cross-validated TBF (0.71–0.87) is below the in-sample single-condition LDS (0.84–0.94) in every dataset. The all-in-sample variant passes in every dataset (cell 63; see B11). |
-| fig4b-plane-alignment | reproduced | All 11 rotation AUCs are 0.861–0.958 with observed alignment lower. Signed-rank p = 1.7e-13 with observed lower on 72/72 conditions (cell 36). |
-| fig4c-subspace-excursion-angles | partially_reproduced | Counts above 45° are 5, 13, 11, 7, 14, 3, 9, 11, 7, 18, 25; 8 of 11 are inside 5.4–22. The second part (more dimensions above chance than above 45°) fails for most rotations, but it rests on the notebook's own chance definition (B3). |
-| rotation-orientation-dimensionality | not_reproduced | PCs to 80% are 2–23 and participation ratio is 1.7–18.7, against 20.7–44 and 15–40.5; under both PCA inputs only one rotation falls inside each range. The SNR dimensions hit the 96 ceiling for two rotations because of a bug (B2) (cell 44). |
-| fig4d-jpca-variance-correlation | not_reproduced | Per-dataset mean rho is 0.33, 0.93, 0.65, 0.68; the significant planes have 0.63–0.93. Neither reading falls in 0.351–0.506, and 5 of 6 planes (83%) are significant, not 66 ± 6.6% (cell 66). |
-| fig4f-plane-alignment-explains-jpca | partially_reproduced | rho is 0.94, 0.93, 0.83, 0.69, 0.82, 0.82, all with p < 0.001. M1-N plane 1 (0.689) is below 0.738, so 5 of 6 pass (cell 67). |
-| fig5a-frequencies-segregated | reproduced | Under reading (a), all 20 comparisons have p < 0.001 with mean same-minus-different positive. For M1-N rot2 the same-frequency median is lower and fewer than half of the pairs favour same, so "higher" rests on the mean (cell 48; B10). |
-| fig5c-rotations-predict-rotations | reproduced | Pair means are 0.41–0.95, inside 38.7–100%. Every pair beats its null with signed-rank p ≤ 2.4e-12, stable across seeds (cell 52). |
-| suppfig6a-location-alignment | partially_reproduced | AUCs are 0.883, 0.748, 0.870, 0.945; PMd-J falls below 0.792. p < 1e-12 with observed lower (cell 38). |
-| suppfig6b-location-dimensionality | not_reproduced | SEA dimensions above 15° are 0–1 (1–2 counting the seed), against 3.6–5.5. PCs are 2–5 against 18.9–33, and participation ratio is 1.9–4.3 against 13.6–29. SNR is 72 in all four datasets, the ceiling, because of the B2 bug (cell 45). |
-| suppfig6c-location-distinct-from-rotations | reproduced | Location-to-location median is 0.93–0.97 against 0.08–0.67 onto rotations, p ≈ 0 under both readings in every dataset (cell 49). |
-| fig6b-location-predicts-rotations | reproduced | Means are 0.709, 0.723, 0.809, 0.716 (inside 60.3–88%), with signed-rank p < 1e-12 against the null. The code variant also passes (cell 53). |
-| fig6c-location-tracks-direction | partially_reproduced | After flipping PC 2, the circular correlation is 0.61, 0.70 and 0.25 (all p < 0.05) for three datasets. PMd-N has 0.05, p = 0.62 (cell 55). |
-| fig6e-kinematics-predict-location | reproduced | Under kinematic reading (a), linear is 0.53, 0.55, 0.70, 0.41 (inside 33.3–78.1%) and the OU kernel is 0.70, 0.69, 0.89, 0.77 (inside 62.1–89.1%). Both beat all 1000 permutations. The Gaussian kernel reading fails (cell 72). |
-| fig7c-ldr-encoding | reproduced | Linear is 0.68–0.84 (inside 54–85.8%) and kernel 0.84–0.92 (inside 63.9–95.7%), with p ≤ 2.6e-8 against the nulls, under both kinematic readings (cell 77). |
-| suppfig7a-not-memorization | partially_reproduced | Kernel beats nearest neighbour at p < 1e-9 in three datasets. PMd-J has p = 0.019 under reading (a) and 0.89 under (b) (cell 78). |
-| fig7c-standard-encoding-worse | partially_reproduced | Both LDR models beat the linear standard model (0.52–0.53) at p < 1e-9. Both kernel standard models return exactly 0.000 in every dataset, so 16 of the 24 comparisons test nothing (B1) (cell 81). |
-| fig7f-ldr-decoding | partially_reproduced | Mean variance explained is 0.774, 0.747, 0.874, 0.734 under reading (a). PMd-J and PMd-N fall below 0.756, so 2 of 4 pass; reading (b) gives the same pattern (cell 84). |
-| fig7f-decoder-beats-standard | partially_reproduced | LDR wins with p < 1e-180 in 24/24 comparisons against the non-GPFA decoders. The GPFA decoders were not run, which the criterion scores as partial (cell 89; see B7). |
-| suppfig8-no-output-potent-dependence | not_reproduced | Removing the kinematic-potent dimensions drops variance explained by 3.9–6.3 percentage points, with p < 0.001 in all datasets, against the threshold of p ≥ 0.036 (cell 86). Archive metadata for both assets lists Position, Units, ElectricalSeries, with no EMG, so the EMG part cannot be tested. |
-| trial-curvature-decoding | partially_reproduced | Under reading (a), 6 of 8 correlations are inside 0.144–0.451; PMd-J parameter 4 (0.093) and M1-N parameter 4 (0.548) fall outside. All have p < 0.001. Reading (b) gives 5 of 8 (cell 85). |
+| data-composition | partially_reproduced | 72 conditions (36 straight, 36 curved). Trials are 1595/2121 under reading (a) and 1381/1884 under (b), all within tolerance (nb1 cell 7). The unit criterion cannot be applied: the files hold 96 unsorted threshold-crossing channels per array, none marked single- or multi-unit (cell 5; the archive's file metadata agrees). |
+| jpca-fit-r2 | partially_reproduced | Straight 4/4 and curved 4/4 in range under both readings. All conditions: 2/4 (best) or 1/4 (skew) (cell 20). The signed-rank test gives p<0.001 only in M1-J; it is reported, not decisive. |
+| jpca-variance-explained | reproduced | 9.1, 10.6, 10.8 and 6.8%, all in 6.3–13.2%; s.d. below 13 (cell 22). |
+| single-lds-variance | not_reproduced | 77.3–82.6% under (a) and 79.6–86.5% under (b); all above 72.6% (cell 28). |
+| fig2c-condition-lds-variance | reproduced | k = 5, 5, 7, 7 (or 5, 5, 7, 5); variance explained 83.2–94.1% (cell 31). |
+| fig3a-eigenvalue-clusters | not_reproduced | Median pair frequencies are off: M1-J [0.85, 2.38] and M1-N [0.63, 1.74, 3.19] Hz. Only 3 of 10 pairs are within 10% (cell 35). |
+| fig3c-eigenvalue-distance-auc | not_reproduced | AUC 0.58–0.72 with the half-split null and 0.59–0.80 with the Poisson null. Only PMd-N is within 0.459–0.638 (cell 38). |
+| suppfig2-eigenvalues-from-kinematics | not_reproduced | Pooled R² 0.247 or 0.298, against 0.10 ± 0.05 (cell 42). |
+| fig3g-basis-frequencies | partially_reproduced | Every dataset has 3–4 rotation pairs plus one offset. Only 5 of 14 frequencies are within 10%; the lowest is 0.61–0.73 Hz everywhere (cell 9). The criterion has no partial clause; I read the count and offset holding while the frequencies fail as partial. |
+| tbf-variance-explained | reproduced | 92.3–97.1%, s.d. ≤1.3 (cell 11). |
+| tbf-shuffle-control | reproduced | Shuffled 35.1–45.6%; rank-sum p ≈ 4e-25, real higher (cell 14). |
+| fig3h-recoverability | reproduced | Real 95.1–96.6%, rank-sum p<0.001 (cell 15). Chance is 84.8–87.8%, above the paper's stated 63–80% in all four; it is inside only because the upper bound is widened to 88. |
+| fig3i-duration-warping | not_reproduced | Unwarped M1-N rho = 0.013 (paper −0.26) and PMd-N 0.246 is out of range. Warped (truncate) is in range in only 2/4 (PMd-J −0.06, PMd-N −0.27), so the partial condition also fails (cell 18). |
+| suppfig3-model-comparison | not_reproduced | Under the claims file's main reading, held-out TBF (73.5–88.8%) is below the in-sample LDS (83.2–94.1%) in 4/4. The in-sample variant reproduces (cell 44). See problem 3. |
+| fig4b-plane-alignment | partially_reproduced | 13 of 14 rotations have AUC 0.83–0.94 with signed-rank p<0.001. PMd-N 3.65 Hz has AUC 0.545 (cell 48). |
+| fig4c-subspace-excursion-angles | partially_reproduced | Counts are in range for 3 of 4 datasets. PMd-N gives 23–25 (saturating at the 25-dimension cap); 10 of 14 counts in range (cell 57). |
+| rotation-orientation-dimensionality | not_reproduced | PCs to 80% are 3–24 (3/14 in range) and participation ratio 2–20 (2/14), under both PCA readings. The SNR dimensions (13/14) are the only part that holds (cell 60). |
+| fig4d-jpca-variance-correlation | not_reproduced | 5/6 planes at p<0.05 (83%, tolerance 59.4–72.6). Plane rho values are −0.09 to 0.92 and neither reading falls in 0.351–0.506 (cell 24). |
+| fig4f-plane-alignment-explains-jpca | partially_reproduced | 5 of 6 planes have rho ≥0.738 with p<0.001; M1-N plane 1 is 0.685 (cell 26). |
+| fig5a-frequencies-segregated | partially_reproduced | 35/36 comparisons pass with the paired test and 33/36 with rank-sum; 80% or more is the partial rule (cell 53). |
+| fig5c-rotations-predict-rotations | reproduced | Rotation pairs explain 40.9–90.5%; 36/36 above the null at p<0.001 (nb2 cell 6). |
+| suppfig6a-location-alignment | partially_reproduced | AUC 0.890, 0.698, 0.889, 0.764: 2 of 4 in range. Observed alignment is below noise with p<0.001 in all four (cell 50). The criterion has no partial clause; I read it as following fig4b, as its criterion says. |
+| suppfig6b-location-dimensionality | not_reproduced | SEA angles >15°: 1–2 (needs 3.6–5.5). PCs 3–15 and participation ratio 2–7, 0/4 in range. SNR 3/4 (cells 61, 60). |
+| suppfig6c-location-distinct-from-rotations | reproduced | Location-to-location alignment (0.89–0.97) is above location-to-rotation in every comparison, p≈0 (cell 54). |
+| fig6b-location-predicts-rotations | reproduced | 65.4–83.0%; signed-rank p ≤ 7e-12 against the null (nb2 cell 9). |
+| fig6c-location-tracks-direction | reproduced | Circular correlation 0.66, 0.72, 0.63, 0.36 after a per-dataset PC sign flip; p ≤ 9e-4 (cell 11). |
+| fig6e-kinematics-predict-location | partially_reproduced | Linear in range 3/4 (PMd-N 0.24). Kernel in range 2/4 (Ornstein-Uhlenbeck) or 0/4 (Gaussian). All beat all 1000 permutations (cell 14). |
+| fig7c-ldr-encoding | reproduced | Linear 68.9–85.4% and kernel 84.7–92.9%, p<0.001 against the null, under both kinematic readings (cell 17). |
+| suppfig7a-not-memorization | reproduced | Kernel beats nearest-neighbour in all datasets, p ≤ 1.5e-4 (cell 19). |
+| fig7c-standard-encoding-worse | reproduced | LDR models beat the standard models in 24/24 comparisons, p<0.001 (cell 22). |
+| fig7f-ldr-decoding | reproduced | Mean over trials 88.9–93.3% (cell 25). |
+| fig7f-decoder-beats-standard | blocked (too_large) | Only the single-trial kernel decoders are plausibly too large; the archive holds the spikes and hand position needed. The linear decoders and the decoders trained on trial averages were feasible and not run. GPFA is missing from the environment, which is not a data block. |
+| suppfig8-no-output-potent-dependence | not_reproduced | p ranges from 1e-5 to 5e-10 in all datasets, below 0.036. The mean drop is only 0.3–0.9 points (cell 29). No EMG is in the files; I checked the NWB processing modules. |
+| trial-curvature-decoding | partially_reproduced | 7 of 8 correlations in range with the svd kinematic reading; PMd-J y curvature is 0.092. 6 of 8 with the skew-normal reading (cell 27). |
 
-**B. Problems**
+### B. Problems
 
-1. [affects a conclusion] Cell 80, `std_job`, together with `ldr.kernel_fit`. The notebook assumes a kernel penalty of 0.1 for the standard encoders; the Methods give none. With an OU length scale of 10^12 or 10^11, the kernel matrix is all ones to within about 1e-10, so the fit returns the training mean. That is why both kernel encoders score exactly 0.000 everywhere. On a synthetic test with that kernel, a penalty of 0.1 gives R² = −0.001 (prediction s.d. ~1e-7), while a penalty of 1e-8 gives R² = 0.86. The 10^12 scale only makes sense with a near-zero penalty, as for the LDR encoder.
-2. [affects a conclusion] Cell 43, `snr_job`. PCA runs on mean-centred loadings, but the bottleneck is applied to uncentred loadings. The direction shared across conditions is then only restored at full rank, so the alignment index keeps rising to the maximum dimension. On synthetic data with 4 true dimensions, the procedure returns 72 of 72; with uncentred PCA it returns 4. This is why the location SNR is 72 in all datasets and M1-N/PMd-N rot0 reach 96. The outcomes of rotation-orientation-dimensionality and suppfig6b do not change, since PCs and participation ratio already fail, but the SNR values are unusable.
-3. [affects a conclusion] Cells 39–41. The fig4c chance level is the author's own: the 95th percentile of the largest principal angle between half-split planes of a single condition. That is neither the claims file's fraction of noise SEA above the data nor a like-for-like comparison with excursion angles to a growing union. The "more dimensions above chance" part fails only under this definition.
-4. [affects a conclusion] Cells 26 and 28, `recoverability`. Real recoverability uses the de-mixed basis; chance uses the raw SVD basis of the shuffled data. Variance explained in B is not invariant to the non-orthogonal de-mixing transform, so the chance level of 86–90%, compared against the paper's 63–80%, is not measured the same way as the real value.
-5. [affects a conclusion, borderline cases] Cells 6–7. Only trial reading (b) is analysed. The stated reason, that (b) is closer to the paper's counts, is false for monkey N: (a) is +107, (b) is −130. Several outcomes sit at a range edge and were never run under (a): fig7f PMd-J 0.747 against 0.756, PMd-N 0.734, tbf-shuffle PMd-J, and fig3c PMd-J 0.641 against 0.638.
-6. [does not affect a conclusion] Cell 13. The "units per electrode" check is `np.bincount(np.arange(192))`, which always prints [1]; it checks nothing. Each array has exactly 96 units, equal to its electrode count, which suggests channel-level units rather than the paper's 79–118 sorted units. That is never examined, and it may underlie several mismatches in level.
-7. [affects a conclusion, partly] Cell 88. Rates are z-scored before the OU decoder (length scale 100). The paper does not do this, and it changes the effective length scale. The 3000-point training subset is also an assumption. The instantaneous decoders are scored over −250 to +850 ms while LDR is scored over −350 to +850 ms, and only kinematic reading (a) is run. The very low baselines (0.005–0.06 with 20 ms smoothing) are never sanity-checked.
-8. [does not affect a conclusion] Cell 19. The Poisson null simulates from already-smoothed rates at 10 ms and smooths again, which lowers the noise. It uses 100 repeats rather than 500. The half-split null fails as well, so the outcome stands.
-9. [does not affect a conclusion] Cell 59. The straight/curved pairing assumes that maze m+1 is the curved version of straight maze m with the same target. Targets are not compared, and the test is not decisive.
-10. [does not affect a conclusion] Cells 48 and 52. Signed-rank p values are two-sided with no direction printed; for fig5a M1-N rot2, "same higher" rests on the mean difference alone.
-11. [affects a conclusion; claims-file reading, reported only] suppfig3. The main reading compares held-out TBF variance against in-sample LDS and jPCA values, so the outcome flips between readings: not reproduced under the main one, reproduced under the variant.
-12. [does not affect a conclusion] `ldr.load_session`. The time shuffle permutes bins over −500 to +1001 ms, an assumption that sets the shuffled level; PMd-J's 28.7% is near the bound. In `ldr.kin_basis`, `Bp = cumsum(Bv)` fixes the scale of the reach parameters, and with it the effective OU length scale (10^3) in fig6e, fig7c and suppfig7a. This is not stated as an assumption.
+1. **[affects a conclusion] fig3i, `durations` and `warped_average` (nb1 cell 17).**
+   - The criterion defines reach duration per trial and correlates each condition's mean duration. The notebook takes one duration from the condition-mean hand speed and warps every trial with it.
+   - The warp scales `0 < st < wf` with `st` offset by +100 ms. That warps −100 to wf−100 ms, not −100 ms to the end of the reach as the notebook's own text says, so the last 100 ms of each reach falls in the unwarped segment.
+   - The per-trial reading was not run.
+2. **[affects a conclusion] Alignment event, `ldr.load_session`.** All data are aligned on online `move_begins_time`. The offline onset in the file differs by a median of 25 ms (J) and 52 ms (N), and the paper does not say which onset it used. The analysis was not rerun under the second reading, although the jPCA window (−160 to +40 ms) and the fig3i durations depend on it.
+3. **[affects a conclusion] Claims-file misreading, suppfig3.** The Supplementary Figure 3 legend says the LDR model "explains greater neural variance when cross-validated" than the condition-specific LDS. The main reading compares held-out TBF with in-sample LDS. The notebook's own held-out LDS scores (cell 31, split 0.5, chosen k) are 0.675, 0.768, 0.835 and 0.788, all below held-out TBF (0.735, 0.810, 0.888, 0.817). A like-for-like comparison would therefore favour TBF in 4/4, though the windows differ.
+4. **[affects a conclusion] fig4d and fig4f (cells 24, 26).** The Methods soft-normalise and mean-subtract before extracting the temporal basis functions. The notebook reuses the basis from unnormalised data and only rescales and centres the loadings.
+5. **[affects a conclusion] Kernel length scales, fig6e and fig7c (nb2 cells 3, 13).**
+   - The four reach parameters' scale depends on how the kinematic basis is normalised. Here they span ±30, from unit-norm SVD vectors summed cumulatively.
+   - The paper's length scales (10³ and 400) were tuned to `kinFuncEval`'s unknown scale, so they do not transfer.
+   - The scale was never checked. The fig6e kernel failures (Gaussian 0/4) may come from this.
+6. **[affects a conclusion] fig7f-decoder-beats-standard (nb2 cell 30).** The linear decoders and the kernel decoders trained on trial averages (about 4,000 samples) fit in memory and were not run. They would have tested most of the comparison set.
+7. **[affects a conclusion] Data difference, all claims (nb1 cell 5).** The paper used 79–118 sorted single and multi-units per array; the files hold 96 unsorted threshold crossings. The notebook states this, but it bears on the dimensionality claims (PCs, participation ratio, single LDS) that fail.
+8. **[does not affect a conclusion] fig3c (cell 36).** The markdown says the Poisson null has 50 repeats; the code runs 30. The half-split null runs 150 repeats instead of 500. AUCs are stable across seeds (cell 40).
+9. **[does not affect a conclusion] jpca-fit-r2, `per_cond` (cell 20).** It projects data that lacks jPCA's second soft-normalisation and PC centring onto the jPC plane, so the per-condition R² is approximate. It only feeds the non-decisive signed-rank test. The straight/curved pairing (condition 3j+1 with 3j+2 as the same target) is assumed and never printed.
+10. **[does not affect a conclusion] suppfig8 (nb2 cell 29).** `Kp.mean(1)` removes the mean across the four kinematic variables at each sample, while neurons have their mean removed over time. This looks like a transposed MATLAB `mean`, and I could not verify it against `removePotent.m`. The drops are small and consistent, so p would likely stay below 0.036.
+11. **[does not affect a conclusion] suppfig2 (cell 42).** Both members of each conjugate pair enter as targets, so every real part is counted twice in the pooled mean.
+12. **[does not affect a conclusion] fig6e (cell 13).** The target offset columns come from a TBF fitted on all 72 conditions, including the held-out ones. Only the predictors are kept out of training.
 
-**C. What I could not check, and the output that would have let me**
+I tested the helpers on synthetic data and they behave correctly: `eig_transform` recovers 0.5, 1.5 and 2.5 Hz and a 0.3 s half-life exactly; `lds_eigs_batch` returns 0.49, 1.51 and 2.50 Hz. `alignment_index`, `auc_folded`, `pca_dims`, `circ_corr`, `sea` and `split_halves` give the expected values. So the frequency, AUC and dimensionality misses are not helper bugs.
 
-- Whether the units are sorted units or per-channel threshold crossings: the units table's columns, including any quality or sort fields, and the per-unit electrode IDs.
-- Effect of trial reading (a) on the borderline claims: fig7f-ldr-decoding, tbf-shuffle-control, fig3c, jpca-variance-explained and suppfig7a rerun under reading (a).
-- Direction of the signed-rank tests: the median of paired differences, or one-sided p, in cells 48, 52 and 86.
-- Whether the standard decoders are sound: their in-sample variance explained and their variance explained on trials of training conditions (cell 89).
-- Recoverability chance with the de-mixed basis on the shuffled data (cell 28).
-- The fig3g and fig3a frequency shift (0.7/1.8/3.1 Hz against 0.5/1.5/2.5). The de-mixing helper recovers 0.5, 1.5 and 2.5 Hz exactly on synthetic data, so the shift comes from the data or the window, not from de-mixing. Frequencies under a different fitting window, or on reading-(a) trials, would separate those causes.
-- The jPCA port's fidelity to the codepack: R² on the codepack's example data.
-- The GPFA decoders: never run. The spike trains on the archive would allow it, so this is not blocked by the data.
-- None of the claims is blocked. The EMG half of suppfig8 is missing from the data, per the archive metadata.
+### C. What I could not check
+
+- **Code the notebooks cite.** `warpTrial.m`, `removePotent.m`, `getRotations.m` and the jPCA codepack's R² definition were not available to me. These outputs would have settled problems 1, 2, 4, 5 and 10:
+  - fig3i run with per-trial durations, and with the warp ending at st = wf + 100;
+  - the whole pipeline rerun on `offline_move_onset_time`;
+  - fig4d and fig4f with the basis re-extracted from soft-normalised, mean-subtracted data;
+  - a fig6e and fig7c kernel sweep over the reach-parameter scale or length scale;
+  - a print of the first rows of `Kp` and `Dsub` for suppfig8.
+- **suppfig3.** A table of held-out LDS against held-out TBF on the same −160 to +850 ms window and split would show whether problem 3 changes the outcome.
+- **fig7f-decoder-beats-standard.** The linear decoders and the decoders trained on trial averages, run against LDR with signed-rank tests.
+- **Straight/curved pairing.** A print of target positions for conditions 3j+1 and 3j+2.
+- **Plots.** The figures in nb1 cell 9 and nb2 cells 2 and 11 were judged only from the printed statistics.
 
 ## End of run
 
-18 turns, 6 minutes, $2.38 at API prices, result: success.
+25 turns, 13 minutes, $2.57 at API prices, result: success.
