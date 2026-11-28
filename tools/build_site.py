@@ -2663,11 +2663,13 @@ def example_card(data: dict, attempt: dict, paper: dict, root: str) -> str:
 
 
 def journal_counts(data: dict) -> list[tuple[str, int]]:
-    """The journals of the papers attempted, with the number of papers in each, the most first. Preprints and the
-    journals the list groups as "Other journals" are not journals a reader would look for by name."""
+    """The journals of the papers attempted, with the number of papers in each, the most first. Preprints, the
+    journals the list groups as "Other journals" and the papers whose journal is not recorded are not journals a
+    reader would look for by name."""
     counts: dict = {}
     for p in rows_cache(data)["papers"]:
-        if p["status"] == "attempted" and p.get("journal") and p["journal"] not in ("Preprint", "Other journals"):
+        if (p["status"] == "attempted" and p.get("journal")
+                and p["journal"] not in ("Preprint", "Other journals", "Not recorded")):
             counts[p["journal"]] = counts.get(p["journal"], 0) + 1
     return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
 
@@ -2829,99 +2831,116 @@ def page_home(data: dict) -> str:
 
 
 def page_journals(data: dict) -> str:
-    """What Encore offers a journal, said from what the tools do today: the check on a manuscript's data, the public
-    record and badge of a published paper, and the papers of each journal already in the registry."""
+    """What Encore offers a journal, for an editor, in the order of the page for institutions: the gap a data policy
+    leaves, the check in three steps, what the report holds, the four ways to work with us, confidentiality, limits,
+    an example, the journals already in the registry, and the pilot. Its numbers are read from the registry."""
     root = "../"
     names = [ARCHIVES.get(k, {}).get("name", k) for k in attempted_archives(data)]
     archives = (", ".join(names[:-1]) + " and " + names[-1]) if len(names) > 1 else (names[0] if names else "public archives")
-    papers = {q["doi"]: q for q in papers_of(data) if q["attempts"]}
-    attempts = [a for atts in current_attempts(data).values() for a in atts]
-    shown = home_example(data, attempts, papers)
-    example = (f'<div class="panel"><h2>An example record</h2><p class="sub">Each paper in the registry has a page like '
-               f'this one, with every claim, its outcome and the reasoning behind it.</p>'
+    evidence, shown = institutions_evidence(data)
+    evidence = f'<p class="lede">{evidence} A check finds this while the authors can still fix it.</p>' if evidence else ""
+    record = f'{root}papers/{shown[1]["key"]}/' if shown else f"{root}registry/"
+    example = (f'<div class="panel" id="example"><h2>An example record</h2><p class="sub">Each paper in the registry has a '
+               f'page like this one, with every claim, its outcome and the reasoning behind it.</p>'
                f'{example_card(data, *shown, root)}</div>') if shown else ""
     journals = journal_counts(data)
     rows_ = "".join(f'<li><a href="{e(journal_href(root, j))}">{e(j)}</a><span class="num">{n:,}</span></li>'
                     for j, n in journals[:12])
-    in_registry = (f'''<div class="panel" id="your-journal"><h2>Your journal in the registry</h2>
-    <p class="sub">The registry already holds checks of papers from {len(journals)} journals, made on the data their
-    authors deposited in public archives. Each name opens that journal's papers.</p>
+    in_registry = (f'''<div class="panel" id="your-journal"><h2>Journals in the registry</h2>
+    <p class="sub">The public registry tests published papers whatever their journal. It holds checks of papers from
+    {len(journals)} journals so far. Each name opens that journal's papers.</p>
     <ul class="kinds-list journals-list">{rows_}</ul>
     <p class="small"><a href="{root}papers/?status=attempted">All papers, with a filter by journal</a></p></div>'''
                    if journals else "")
-    counts = outcome_counts(attempts)
-    n_blocked = counts["blocked"]
-    missing = sum(1 for c in rows_cache(data)["claims"] if c["outcome"] == "blocked" and c["blocked_by"] == "data_missing")
-    n_papers = len(papers)
-    evidence = (f'''<p class="lede">In the public registry of {n_papers:,} papers, {shares(counts)["blocked"]}% of the
-  claims could not be tested at all, and for {round(100 * missing / n_blocked)}% of those the data the claim rests on
-  were not in the dataset. A check finds this while the authors can still fix it.</p>''' if n_blocked and missing else "")
+    steps = [
+        "Your editorial office sends us a manuscript and the location of its data.",
+        "Encore tests each finding of the manuscript on the data and lists every problem: data that are missing, "
+        "labels that are wrong, code that disagrees with the paper.",
+        "The editor gets a report to share with the reviewers and the authors. The authors fix each problem or "
+        "answer it.",
+    ]
+    report = [
+        ("An outcome for every claim", "Each key finding of the paper is a claim, marked reproduced, partially "
+                                       "reproduced, not reproduced, or blocked."),
+        ("Problems in the data", "Missing data, errors in the metadata, or a selection of units or sessions the paper "
+                                 "does not document."),
+        ("Notebooks that run", "The notebook that ran each test. The authors or a reviewer can run it again."),
+        ("Independent verification", "In a full check, the verdict of an independent verifier on every outcome."),
+    ]
+    steps_html = "".join(f'<li class="panel"><span class="offer-n">{n}</span><p>{e(text)}</p></li>'
+                         for n, text in enumerate(steps, 1))
+    report_html = "".join(f'<div class="benefit"><h3>{e(head)}</h3><p>{e(text)}</p></div>' for head, text in report)
     body = f'''<header class="page">
   <h1>Encore for journals</h1>
   <p class="lede">Your journal asks authors to deposit their data. Encore tells you whether what they deposited is
   enough to support the paper.</p>
   {evidence}
   <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
-  <a class="button secondary" href="{root}method/">The method</a></p>
+  <a class="button secondary" href="{record}">See an example record</a></p>
 </header>
 <main class="journals">
-  <div class="panel" id="report"><h2>The report</h2>
-    <ul class="receives">
-      <li>Each key finding of the paper as a claim, with an outcome: reproduced, partially reproduced, not reproduced,
-      or blocked.</li>
-      <li>Each problem found in the dataset, such as missing data, errors in the metadata, or a selection of units or
-      sessions the paper does not document.</li>
-      <li>The notebook that ran each test, which the authors or a reviewer can run again.</li>
-      <li>For a full check, the verdict of an independent verifier on every outcome.</li>
-    </ul></div>
+  <div class="panel" id="gap"><h2>The gap</h2>
+    <div class="gap">
+      <div><p>Journals check manuscripts for plagiarism and figures for manipulation. The data deposited with a
+        paper are rarely checked.</p>
+        <p>A data policy is met today by a link to a repository. A link does not show that the data are complete,
+        labelled, or enough to support the paper. Gaps are found after publication, when a reader tries to reuse
+        the data.</p></div>
+      <table class="checks"><caption>Checks during review</caption>
+        <tbody>
+          <tr><th scope="row">Text</th><td>Plagiarism checkers</td></tr>
+          <tr><th scope="row">Images</th><td>Image-integrity checkers</td></tr>
+          <tr class="ours"><th scope="row">Data and code</th><td>Encore</td></tr>
+        </tbody></table>
+    </div></div>
+  <h2 class="section-head" id="check">The check</h2>
+  <ol class="steps">{steps_html}</ol>
+  <h2 class="section-head" id="report">The report</h2>
+  <div class="benefits">{report_html}</div>
   <h2 class="section-head" id="offers">Four ways to work with us</h2>
   <div class="grid2">
     <div class="panel"><h2><span class="offer-n">1</span>A pilot on your own papers</h2>
       <p>Send us a few papers with deposited data, published or in review. We run a full check on each and return
-      the reports, so you see what a check finds on your journal's papers before you decide anything.</p></div>
+      the reports. You see what a check finds on your journal's papers before you decide anything.</p></div>
     <div class="panel"><h2><span class="offer-n">2</span>Checks during review</h2>
-      <p>At the stage of review you choose, your editorial office sends us the manuscript and the location of its
-      data. We return the report for the editor to share with the reviewers and the authors. A quick check takes one
-      to three hours of computing. A full check, with two rounds of independent verification, takes several hours
-      more.</p></div>
+      <p>We check each manuscript at the stage of review you choose. A quick check takes one to three hours of
+      computing. A full check adds two rounds of independent verification and takes several hours more.</p></div>
     <div class="panel"><h2><span class="offer-n">3</span>A public record for published papers</h2>
       <p>For accepted papers, we add the check to the public registry. The paper gets a page with every claim, its
       outcome and the code behind it, and a <a href="{REPO_URL}/blob/main/docs/badges.md">badge</a> for the article
-      page that links there. Authors can <a href="{PROTOCOL_BLOB}/docs/author-responses.md">respond</a>, and
-      their response is shown beside the check.</p></div>
+      page that links there. An author's response is shown beside the check.</p></div>
     <div class="panel"><h2><span class="offer-n">4</span>Run it yourselves</h2>
       <p>The <a href="{root}check/"><code>encore</code> command</a> is open source and runs on your own machines,
-      with your own Claude account, on files in a directory, files at a URL, or a draft dataset in an archive. We
-      help your team set it up.</p></div>
+      with your own Claude account. It checks files in a directory, files at a URL, or a draft dataset in an
+      archive. We help your team set it up.</p></div>
   </div>
-  <h2 class="section-head" id="terms">Confidentiality and limits</h2>
-  <div class="grid2">
-    <div class="panel" id="confidential"><h2>Confidential manuscripts</h2>
-      <p>A manuscript under review does not go through the public registry. We run its check with the
-      <code>encore</code> command on our own machines, and the result stays there until we send it to you. The agents'
-      commands run in a sandbox that can write only inside the run's directory and can reach only the archives,
-      Python's package index, GitHub and doi.org.</p>
-      <p>The manuscript and the data are sent to Anthropic's models under its commercial terms. Under those terms
-      Anthropic does not train models on them and keeps them for 30 days
-      (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>). Nothing goes on the public registry unless the
-      journal and the authors ask for it.</p>
+  <div class="grid2" id="terms">
+    <div class="panel" id="confidential"><h2>Confidentiality</h2>
+      <p>A manuscript under review does not go through the public registry. We run its check on our own machines,
+      and the result stays there until we send it to you. Nothing goes on the public registry unless the journal
+      and the authors ask for it.</p>
+      <p>The checks are made by an AI model. The manuscript and the data are sent to Anthropic's models under its
+      commercial terms. Under those terms Anthropic does not train models on them and keeps them for 30 days
+      (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>).</p>
       <p>If the manuscript must stay on your own systems, your team can run the same check itself.</p></div>
-    <div class="panel" id="limits"><h2>Limits of a check</h2>
+    <div class="panel" id="limits"><h2>Limits</h2>
       <p>{CAUTION} A check reports what one attempt could recover from the deposited data, and the agents that make
       it can be mistaken.</p>
       <p>A blocked claim usually points to data the authors still need to deposit. A claim that did not reproduce is
       a question to put to the authors, and the report gives them the notebook that ran the test. The editor and the
       reviewers decide what follows. <a href="{root}registry/#caution">More on reading outcomes</a></p>
-      <p>Most checks so far are of neuroscience papers, on data in {e(archives)}. The registry also holds checks of
-      papers in ecology, microbiology, political science, food safety and planetary science, and we take papers from
+      <p>Authors can <a href="{PROTOCOL_BLOB}/docs/author-responses.md">respond to an attempt</a>, to clarify a point
+      or to correct the agent where it made a mistake. The next attempt takes their response into account.</p>
+      <p>Most checks so far are of neuroscience papers, on data in {e(archives)}. We also take papers from
       <a href="{root}papers/?status=attempted&amp;archive=dryad,figshare">other fields</a>.</p></div>
   </div>
   {example}
   {in_registry}
-  <div class="panel contact-panel" id="contact"><h2>Start with a pilot</h2>
-    <p>Tell us about your journal and the data its papers deposit. We suggest starting with a pilot on a few of your
-    papers, then deciding where in review a check belongs.</p>
+  <div class="panel contact-panel" id="contact"><h2>Pilot</h2>
+    <p>The checking tool and the public registry are available today. A pilot starts with a few of your papers.
+    You then decide where in review a check belongs.</p>
     <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a></p></div>
+  <p class="more-detail">Each step of a check is described in <a href="{root}method/">the method</a>.</p>
 </main>'''
     return shell(data, f"Encore for journals · {SITE_NAME}", root, "journals", body, path="journals/",
                  description="Encore checks the data deposited with a paper against the paper's findings: an outcome "
