@@ -23,7 +23,7 @@ Java to 3e-9 mV over 3 s at 18 C and to 0.06 mV over 3 s at 25 C.
 | Na and Kd drive spikes; H and synaptic currents dominate at the trough | Reproduced |
 | Figure 5: A to KCa trade-off after the PD burst | Reproduced |
 | Figure 6: two models crash with loss of PD activity | Not reproduced |
-| Figure 6, supplement 1: crashes by different mechanisms | Not reproduced; blocked (data missing) proposed, as the missing model could make it partial |
+| Figure 6, supplement 1: crashes by different mechanisms | Blocked: data missing (the missing model could make it partial) |
 | Figure 7: slow time scales at high temperature | Blocked: data missing |
 | Figure 8A: hysteresis of PD quiescence | Reproduced |
 | 34 of 36 models similar on up and down ramps | Blocked: too large |

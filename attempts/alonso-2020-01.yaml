@@ -235,8 +235,8 @@ outcomes:
     reached 30 C (a ramp or a fresh start) is not stated, and the classes rest on the -20 mV spike threshold (assumed).
   - The dominant currents are taken over the last 3 s of the 40 s run that is classified.
 - claim: fig6s1-crash-mechanisms
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_alonso_2020.ipynb
   output: claim:fig6s1-crash-mechanisms
   notes: Seven of the eight models are in the deposit; Q8FBN1 is not. All seven stop being triphasic below 35 C
@@ -246,15 +246,9 @@ outcomes:
     are also 5, with EF84RN in place of SJR46Y. Reproduction needs every pattern distinct, and the partial case
     at least six distinct among eight with every model crashing; with the missing model at most six could be, and
     Q8FBN1 cannot be shown to crash. Reproduced is ruled out; partially reproduced is not, as it would need Q8FBN1
-    to crash with a sixth pattern. The outcome can be at best partially reproduced.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: The seven models present give 5 distinct patterns, and the missing Q8FBN1 could add a sixth, as the notebook
-      now prints (at most 6 distinct among 8; partially reproduced possible, reproduced not). Whether the partial
-      case holds therefore depends on a model the deposit lacks, so the claim cannot be decided between not reproduced
-      and partially reproduced, as for fig7-high-temperature-slow-timescales, which is blocked for the same reason.
-      Raised by the round-2 verifier.
+    to crash with a sixth pattern. Whether the outcome is not reproduced or partially reproduced therefore depends
+    on the missing model, so the claim is blocked (data_missing), as fig7-high-temperature-slow-timescales is; it
+    can be at best partially reproduced. The round-3 verifier agreed with this change.
   deviations:
   - Seven of the eight models; Q8FBN1 is not in the deposit.
   - Crash temperatures come from simulations from the initial conditions at each temperature (40 s, last 30 s);
@@ -834,3 +828,33 @@ verifications:
     outcome: not_reproduced
     reason: 'Cell 68: H gives 30 or 31, against 33. The assumption is stated and reasonable.'
     response: No change.
+- date: '2026-11-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3: the one proposed change of outcome, on fig6s1-crash-mechanisms, with the analysis behind it in
+    cells 52 to 54 of the main notebook, the claims file and this record. Nothing else was reviewed. The verifier found
+    nothing new in the claims file that misreads the paper for this claim, and noted that the criterion spells the model
+    B7SDOL where the deposit has B7SD0L, which cell 52 handles.'
+  results:
+  - claim: fig6s1-crash-mechanisms
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 53. The numbers come from simulations of the 7 deposited models; Q8FBN1 is absent. All 7 stop being
+      triphasic below 35 C, at 26 to 32 C. They form 5 distinct (inward, outward) patterns, because B7SD0L, J9U8SQ and
+      SJR46Y each have H and Syn in all three cells. The 13 s variant also gives 5 distinct patterns, with EF84RN in
+      place of SJR46Y, so the count does not depend on the window. The criterion is applied as written. Reproduced needs
+      no two models to share a pattern, which is already false. Partially reproduced needs every model to crash and at
+      least 6 distinct patterns among the 8, which the 7 present models cannot reach alone. Q8FBN1 could add at most
+      one pattern, so partially reproduced holds only if Q8FBN1 crashes below 35 C with a sixth pattern. The deposit
+      cannot show either of those, and cell 53 prints this ("at most 6 distinct patterns among 8 … partially reproduced
+      … possible: True"). Not reproduced and partially reproduced therefore depend on the missing model. That is a data_missing
+      block, and it is consistent with fig7-high-temperature-slow-timescales, which is blocked because partially reproduced
+      is possible only through missing models. Choices checked: the crash temperatures follow the claims file''s rule
+      (the lowest temperature above 25 C, in 1 C steps up to 35 C, at which the network is not triphasic). The dominant-current
+      window (the last 3 s of the same 40 s run) was set before the result, and the 13 s variant gives the same count,
+      so the window was not chosen to reach it. Cell 54 and the record''s notes say the outcome can be at best partially
+      reproduced, which is correct.'
+    response: The outcome is changed from not reproduced to blocked (data_missing) and the proposal removed. The notes,
+      the conclusion of cell 54, the summary of the main notebook and the README now give the blocked outcome. The
+      assumed flag is dropped, as the schema does not allow it on a blocked outcome; the deviations still state the
+      assumption.
