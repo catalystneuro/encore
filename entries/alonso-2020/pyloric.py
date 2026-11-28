@@ -29,8 +29,10 @@ Where things come from:
   over 1 ms a 60 min ramp moves by less than 1e-5 degrees C).
 - Spike times: the paper and the deposit give no spike detection rule. A spike is an upward
   crossing of SPIKE_THRESHOLD = -20 mV (an assumption, the standard choice for these models,
-  whose spikes peak well above 0 mV and whose slow waves stay below the -50 mV slow-wave threshold
-  of the Methods; a variant at 0 mV is computed where the claims rest on it).
+  whose slow waves stay below the -50 mV slow-wave threshold of the Methods). The main notebook
+  repeats the runs at 10 and 25 C, the graded removals of fig10a-graded-removal and FGFKQS at 30 C
+  with a 0 mV threshold, as a variant; the spikes of some cells peak below 0 mV, which that
+  variant misses.
 - Bursts and the classification scheme: Materials and methods, "Classification scheme": spiking
   when CV of ISI < 0.1 (tonic when the lag d between spike onset and the -50 mV slow-wave crossing
   is under 20 ms, else single-spike bursting); otherwise spikes grouped into bursts with a 200 ms
@@ -522,11 +524,13 @@ def pmap(fn, tasks, procs=4):
 
 
 def run_fixed(task):
-    """task = (key, p, y0, temp, seconds, drop). Simulates at a fixed temperature and returns, for
-    the window after `drop` seconds, the spike times and upward slow-wave crossings of each cell
-    (times from the window start), the four classes, and the final state."""
-    key, p, y0, temp, seconds, drop = task
-    s = simulate(p, temp, seconds, y0)
+    """task = (key, p, y0, temp, seconds, drop[, thr]). Simulates at a fixed temperature and returns,
+    for the window after `drop` seconds, the spike times and upward slow-wave crossings of each cell
+    (times from the window start), the four classes, and the final state. `thr` is the spike
+    threshold (SPIKE_THRESHOLD when not given)."""
+    key, p, y0, temp, seconds, drop = task[:6]
+    thr = task[6] if len(task) > 6 else SPIKE_THRESHOLD
+    s = simulate(p, temp, seconds, y0, thr=thr)
     return dict(key=key, temp=temp, spikes=s.window(drop, seconds),
                 sw_up=[u[u >= drop] - drop for u in s.sw_up], classes=classify(s, drop, seconds),
                 final=s.final, length=seconds - drop)
@@ -554,6 +558,38 @@ def run_ramp(task):
         out.append(dict(T0=T0, T1=T1, seconds=sec, spikes=s.spikes, sw_up=s.sw_up, finite=s.finite))
         y = s.final
     return dict(key=key, legs=out)
+
+
+def slow_wave_bursts(V, spikes, dt, gap=BURST_GAP, level=SLOW_WAVE):
+    """Bursts bounded by the slow wave: for each burst of `spikes` (s, grouped with the 200 ms
+    threshold), the sample indices of the last upward crossing of `level` before its first spike and
+    of the first downward crossing after its last spike, in the trace V sampled every dt s (the
+    Methods' -50 mV slow-wave threshold, Classification scheme). Bursts whose crossings fall outside
+    the trace are dropped."""
+    up = np.where((V[:-1] < level) & (V[1:] >= level))[0] + 1
+    down = np.where((V[:-1] >= level) & (V[1:] < level))[0] + 1
+    out = []
+    for s, e, k in zip(*bursts(spikes, gap)):
+        i, j = int(s / dt), int(e / dt)
+        u = up[up <= i]
+        d = down[down > j]
+        if len(u) and len(d):
+            out.append((int(u[-1]), int(d[0]), int(k)))
+    return out
+
+
+def spike_region_start(hist, edges, frac, smooth=10, below=SPIKE_THRESHOLD):
+    """fig2-lp-spike-amplitude-threshold, threshold reading (b): the voltage at which the
+    distribution's spike region begins, read as the upper edge of the densely occupied part of the
+    distribution: the highest voltage below `below` whose occupancy (smoothed over `smooth` bins of
+    0.1 mV) is at least `frac` of the largest occupancy. Above it the cell passes only during spikes.
+    The search stops at the spike detection level, which every spike crosses, so that the dwell
+    near the spike peaks is not taken for the slow wave. An assumption: neither the paper nor the
+    claims file says how the point is located; the notebook gives three values of `frac`."""
+    h = np.convolve(hist, np.ones(smooth) / smooth, mode="same")
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    k = np.where((h >= frac * h.max()) & (centres < below))[0]
+    return float(centres[k[-1]]) if len(k) else np.nan
 
 
 def peaks_after(V, idx, n):

@@ -16,7 +16,7 @@ Java to 3e-9 mV.
 | 2 in 40 solutions failed between control temperatures | Blocked: data missing |
 | Figure 1, supplement 2: largest ISI falls along a ramp | Reproduced |
 | Figure 1, supplement 3: LP duty-cycle distributions differ across models | Reproduced |
-| Figure 2: LP spike amplitude falls and threshold depolarizes | Partially reproduced |
+| Figure 2: LP spike amplitude falls and threshold depolarizes | Reproduced |
 | Figure 2, supplement 1: peak voltage falls, rises or stays | Reproduced |
 | Figure 3: current amplitudes at two temperatures | Partially reproduced |
 | Figure 4: currentscapes reorganize | Not reproduced |
