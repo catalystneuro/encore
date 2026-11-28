@@ -9,6 +9,8 @@ entries/ and transcripts/, and writes:
     index.html                    the home page: what Encore does and for whom
     registry/index.html           overview of the registry: numbers, breakdowns, latest attempts
     journals/index.html           what Encore offers a journal
+    institutions/index.html       what Encore offers a university or a research institute
+    institutions/details/         the same in technical detail, for research computing and IT
     check/index.html              how to run the check on your own data
     datasets/index.html           every target, filterable and paginated
     datasets/<archive>/<id>/      one static page per attempted dataset, and one per earlier attempt
@@ -2160,7 +2162,8 @@ def footer(data: dict, root: str) -> str:
         + column("Method", [("Steps of a check", f"{root}method/"), ("Protocol", PROTOCOL_URL),
                             ("Reading an outcome", f"{root}registry/#caution"),
                             ("Badges", f"{REPO_URL}/blob/main/docs/badges.md"), ("Agent runs", f"{REPO_URL}/actions")])
-        + column("Use Encore", [("For journals", f"{root}journals/"), ("Check your own data", f"{root}check/"),
+        + column("Use Encore", [("For journals", f"{root}journals/"), ("For institutions", f"{root}institutions/"),
+                                ("Check your own data", f"{root}check/"),
                                 ("For authors", f"{root}method/#authors"), ("Contact", CONTACT_URL),
                                 ("Repository", REPO_URL)]))
     return f'''<footer><div class="wrap">
@@ -2182,7 +2185,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
           description: str = SITE_DESCRIPTION, structured: dict | None = None, bleed: bool = False) -> str:
     """One page: the bar, the registry's own bar on the registry's pages, the body and the foot.
 
-    The bar is the site's: the registry, how it works, and what it offers a journal. The pages of the registry
+    The bar is the site's: the registry, how it works, and what it offers a journal and an institution. The pages of the registry
     (REGISTRY_PAGES) carry a second bar with its lists. With `bleed`, the body lays out its own full-width bands
     (the home page); otherwise it sits in the page's column."""
     r = rows_cache(data)
@@ -2191,10 +2194,12 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     in_registry = active in REGISTRY_PAGES
     nav = ""
     for key, label, href in [("registry", "Registry", f"{root}registry/"), ("method", "Method", f"{root}method/"),
-                             ("journals", "For journals", f"{root}journals/")]:
+                             ("journals", "For journals", f"{root}journals/"),
+                             ("institutions", "For institutions", f"{root}institutions/")]:
         # The registry's tab is lit on every page of the registry; only its overview is the tab's own page.
         current = (' aria-current="page"' if key == active or (key == "registry" and active == "overview")
-                   else ' aria-current="true"' if key == "registry" and in_registry else "")
+                   else ' aria-current="true"' if (key == "registry" and in_registry)
+                   or (key == "institutions" and active == "institutions-details") else "")
         nav += f'<a class="tab" href="{href}"{current}>{label}</a>'
     subnav = ""
     if in_registry:
@@ -2761,12 +2766,16 @@ def page_home(data: dict) -> str:
   </div>
 </div></section>
 <section class="band" id="for"><div class="wrap">
-  <h2>For journals, authors and archives</h2>
+  <h2>For journals, institutions, authors and archives</h2>
   <div class="audiences">
     <div class="audience"><h3>Journals</h3>
       <p>See whether the data deposited with a manuscript support its findings, before or after publication. The
       report lists each claim with its outcome and each problem found in the dataset.</p>
       <p><a href="journals/">Encore for journals</a></p></div>
+    <div class="audience"><h3>Institutions</h3>
+      <p>Your researchers are required to share the data and code behind their papers. Encore checks that
+      what they share supports what they published, before the paper goes out.</p>
+      <p><a href="institutions/">Encore for institutions</a></p></div>
     <div class="audience"><h3>Authors and labs</h3>
       <p>Run the same check on your own dataset before you deposit it. The <code>encore</code> command runs on your
       machine, and the result stays there.</p>
@@ -2917,6 +2926,252 @@ def page_journals(data: dict) -> str:
     return shell(data, f"Encore for journals · {SITE_NAME}", root, "journals", body, path="journals/",
                  description="Encore checks the data deposited with a paper against the paper's findings: an outcome "
                              "for every claim, and every problem found in the dataset, for journals and their editors.")
+
+
+# What separate runs of one paper agree on: the replicates of four papers, each run three to five times in all
+# (asari-2009, chandravadia-2020, martinez-conde-2019 and sohn-2019), as `python tools/replicates.py --all --json` gave
+# them on 2026-11-28. The replicates live on their own branches, which a build of the site does not read, so the
+# numbers are written here: run the command again before changing them.
+REPLICATES = {"papers": "four", "runs": "three to five", "claims": 87, "unanimous": 68, "reproduced_and_not": 6}
+RECORD_SCHEMA_URL = f"{PROTOCOL_REPO_URL}/blob/main/schemas/record.schema.json"
+
+
+def blocked_reasons(attempts: list[dict]) -> dict:
+    """Why the blocked claims that rest on the dataset alone could not be tested, with the number of each reason,
+    the most common first: the claims outcome_counts counts as blocked for the group "dataset"."""
+    reasons: dict = {}
+    for a in attempts:
+        for o in [] if a.get("deprecated") else a["outcomes"]:
+            if o["outcome"] == "blocked" and o.get("kind") != "link" and o.get("data") in (None, "dataset", "with_labels"):
+                reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
+    return dict(sorted(reasons.items(), key=lambda kv: (-kv[1], str(kv[0]))))
+
+
+def code_mismatch_papers(data: dict) -> int:
+    """The papers attempted for which a current attempt found that the published code disagrees with the paper."""
+    return sum(1 for q in papers_of(data) if q["attempts"]
+               and any(f["kind"] == "code_mismatch" for a in q["live"] for f in a.get("paper_notes") or []))
+
+
+def institutions_evidence(data: dict) -> tuple[str, tuple[dict, dict] | None]:
+    """The two numbers the page for institutions opens with, as a sentence read from the registry (empty when the
+    registry has no blocked claim yet), and the example the site shows (home_example)."""
+    papers = {q["doi"]: q for q in papers_of(data) if q["attempts"]}
+    attempts = [a for atts in current_attempts(data).values() for a in atts]
+    counts = outcome_counts(attempts)
+    n_papers, n_code = len(papers), code_mismatch_papers(data)
+    evidence = ""
+    if counts["blocked"]:
+        why = (", most often because data were missing"
+               if next(iter(blocked_reasons(attempts)), None) == "data_missing" else "")
+        code = (f" In {round(100 * n_code / n_papers)}% of the papers, the published code disagreed with the paper."
+                if n_code else "")
+        evidence = (f'In our public registry of {n_papers:,} papers, {shares(counts)["blocked"]}% of the papers&#x27; '
+                    f'claims could not be tested on the shared data{why}.{code}')
+    return evidence, home_example(data, attempts, papers)
+
+
+def page_institutions(data: dict) -> str:
+    """What Encore offers a university or a research institute, for the people who decide: the gap it fills, the
+    check in three steps, what an institution gains, and what a pilot is. It is short and has no technical detail,
+    which is on the page under it (page_institutions_details). It says what is built and gives no prices."""
+    root = "../"
+    evidence, shown = institutions_evidence(data)
+    evidence = f'<p class="lede">{evidence}</p>' if evidence else ""
+    example = f'{root}papers/{shown[1]["key"]}/' if shown else f"{root}registry/"
+    steps = [
+        "A lab runs Encore on its paper and its data before it submits.",
+        "Encore tests each claim of the paper on the data and lists every problem: data that are missing, labels "
+        "that are wrong, code that disagrees with the paper.",
+        "The lab fixes each problem or answers it. Your institution gets a record that the check was made and what "
+        "the lab did.",
+    ]
+    benefits = [
+        ("Compliance you can show", "For every paper, a record that its shared data were checked against the paper."),
+        ("Problems found early", "The lab hears about a gap from its own check, not from a reviewer or a reader."),
+        ("A standard for policy", "One rule for papers and theses: run the check and respond to every finding."),
+        ("Better shared data", "Each check leaves the lab with a list of problems to fix and the notebooks that "
+                               "tested its claims."),
+    ]
+    steps_html = "".join(f'<li class="panel"><span class="offer-n">{n}</span><p>{e(text)}</p></li>'
+                         for n, text in enumerate(steps, 1))
+    benefits_html = "".join(f'<div class="benefit"><h3>{e(head)}</h3><p>{e(text)}</p></div>' for head, text in benefits)
+    body = f"""<header class="page">
+  <h1>Encore for institutions</h1>
+  <p class="lede">Your researchers are required to share the data and code behind their papers. Encore checks that
+  what they share supports what they published, before the paper goes out.</p>
+  {evidence}
+  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
+  <a class="button secondary" href="{example}">See an example record</a></p>
+</header>
+<main class="journals institutions">
+  <div class="panel" id="gap"><h2>The gap</h2>
+    <div class="gap">
+      <div><p>Universities check manuscripts for plagiarism and figures for manipulation. Nobody checks the data.</p>
+        <p>Funders and journals now require data and code to be shared, and the institution answers for compliance.
+        A deposit that is incomplete or mislabelled is found later, by a reviewer, a reader or a funder.</p></div>
+      <table class="checks"><caption>Checks before submission</caption>
+        <tbody>
+          <tr><th scope="row">Text</th><td>Plagiarism checkers</td></tr>
+          <tr><th scope="row">Images</th><td>Image-integrity checkers</td></tr>
+          <tr class="ours"><th scope="row">Data and code</th><td>Encore</td></tr>
+        </tbody></table>
+    </div></div>
+  <h2 class="section-head" id="check">The check</h2>
+  <ol class="steps">{steps_html}</ol>
+  <h2 class="section-head" id="benefits">Benefits</h2>
+  <div class="benefits">{benefits_html}</div>
+  <div class="panel" id="policy"><h2>Policy</h2>
+    <p>The policy we suggest is &ldquo;run the check and respond to every finding&rdquo;. A lab responds by fixing
+    the data, by correcting the paper, or by explaining why the finding is wrong.</p></div>
+  <div class="grid2">
+    <div class="panel" id="privacy"><h2>Privacy</h2>
+      <p>A lab's results are private. They are seen by the lab and, under your policy, by your institution. The
+      public registry on this site covers published papers only, and no agreement with an institution changes a
+      public record.</p>
+      <p>The checks are made by an AI model, and an institution with an enterprise licence can run them under its
+      own agreement with the provider.</p></div>
+    <div class="panel" id="limits"><h2>Limits</h2>
+      <p>The checks are made by AI agents, and agents make mistakes. A finding is a question for the lab to answer,
+      not a verdict on the paper.</p></div>
+  </div>
+  <div class="panel contact-panel" id="contact"><h2>Pilot</h2>
+    <p>The checking tool and the public registry are available today. The institutional record and its private
+    portal are being built with our first pilot institutions. A pilot starts with a few labs and the free tool.</p>
+    <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a></p></div>
+  <p class="more-detail">For research computing and IT: <a href="details/">technical details</a>.</p>
+</main>"""
+    return shell(data, f"Encore for institutions · {SITE_NAME}", root, "institutions", body, path="institutions/",
+                 description="Your researchers are required to share the data and code behind their papers. Encore "
+                             "checks that what they share supports what they published, before the paper goes out.")
+
+
+def page_institutions_details(data: dict) -> str:
+    """The technical page under the page for institutions, for research computing and IT: how a check runs and what
+    the model's provider receives, the record each check writes, the three kinds of run, what the ledger and the
+    portal will hold, the limits, and which of these exist today. It is linked from that page and is not in the bar."""
+    root = "../../"
+    names = [ARCHIVES.get(k, {}).get("name", k) for k in attempted_archives(data)]
+    archives = (", ".join(names[:-1]) + " and " + names[-1]) if len(names) > 1 else (names[0] if names else "public archives")
+    rep = REPLICATES
+    today, pilot = '<span class="tag">Available today</span>', '<span class="tag open">Being built with pilot institutions</span>'
+    body = f"""<header class="page">
+  <p class="crumbs"><a href="../">Encore for institutions</a> / Technical details</p>
+  <h1>Technical details for institutions</h1>
+  <p class="lede">This page is for research computing and IT. It describes how a check runs, what the check
+  records, where the paper and the data go, and which parts exist today.</p>
+</header>
+<main class="journals institutions">
+  <div class="grid2">
+    <div class="panel" id="tool"><h2>The tool</h2>
+      <p>The <a href="{root}check/"><code>encore</code> command</a> is free and open source. A lab runs
+      <code>encore check</code> on its own machine, as often as it likes. The run is registered nowhere. The report
+      and the record are written to the lab's machine and stay there.</p>
+      <p>The check is made by an AI model, so the model's provider receives what the agents read of the paper and
+      the data. The command runs the agents with Claude Code, signed in to a Claude account or with an API key. A
+      lab can use its own account. An institution with an enterprise licence can supply its own API key, and the
+      check then runs under the institution's own agreement with the provider
+      (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>).</p>
+      <p>The agents' commands run in a sandbox that can write only inside the run's directory and can reach only
+      the archives, Python's package index, GitHub and doi.org. A local dataset is read in place and never
+      changed. Every command and option is in the <a href="{ENCORE_DOCS}">documentation of the command</a>.</p></div>
+    <div class="panel" id="record"><h2>The record</h2>
+      <p>Every check writes a file, <code>record.json</code>, beside its report
+      (<a href="{RECORD_SCHEMA_URL}">its schema</a>). The record names:</p>
+      <ul class="receives">
+        <li>The paper file, by its SHA-256 hash.</li>
+        <li>The dataset, by its version in the archive. Files that are not in an archive are named by a hash.</li>
+        <li>The protocol, the model and the version of Encore.</li>
+        <li>The outcome of every claim: reproduced, partially reproduced, not reproduced, or blocked.</li>
+        <li>Every finding about the data, the paper and its code.</li>
+      </ul>
+      <p>The record is tied to that one version of the paper and of the data, so it shows exactly what was
+      checked.</p></div>
+  </div>
+  <h2 class="section-head" id="runs">Three kinds of run</h2>
+  <div class="panel runs-panel">
+    <p class="sub">All three follow the same <a href="{PROTOCOL_URL}">protocol</a>. They differ in when the lab runs
+    them and where they are registered.</p>
+    <table class="runs">
+      <thead><tr><th scope="col">Run</th><th scope="col">When</th><th scope="col">Registration</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Personal</th>
+          <td data-label="When">While the lab prepares the data and the paper, as many times as it likes.</td>
+          <td data-label="Registration">Nowhere.</td>
+          <td data-label="Status">{today}</td></tr>
+        <tr><th scope="row">Registered</th>
+          <td data-label="When">When the lab is satisfied, before it submits.</td>
+          <td data-label="Registration">With the institution's private ledger, when the run starts.</td>
+          <td data-label="Status">{pilot}</td></tr>
+        <tr><th scope="row">Public registry</th>
+          <td data-label="When">After publication.</td>
+          <td data-label="Registration">On encorescience.org, in the <a href="{root}registry/">public registry</a>.</td>
+          <td data-label="Status">{today}</td></tr>
+      </tbody>
+    </table></div>
+  <div class="grid2">
+    <div class="panel" id="registration"><h2>Registration</h2>
+      <p>A registered run is registered when it starts. A finished personal run cannot be registered afterwards. So
+      the registered result is never one picked from several.</p>
+      <p>A personal run's record is the lab's own file, and no ledger holds a copy. A registered run's record will
+      also be in the institution's ledger, for the institution to audit.</p></div>
+    <div class="panel" id="public-record"><h2>Public record</h2>
+      <p>A registered run will be able to become the paper's public record when all four of these are true:</p>
+      <ul class="receives">
+        <li>The lab committed to a public record before the run started.</li>
+        <li>The run was a full check, on machines the lab does not control.</li>
+        <li>The published dataset is the version the run checked.</li>
+        <li>The published paper still matches the claims the run tested.</li>
+      </ul></div>
+  </div>
+  <h2 class="section-head" id="terms">Privacy, separation and limits</h2>
+  <div class="grid2">
+    <div class="stack">
+      <div class="panel" id="privacy"><h2>Privacy and data handling</h2>
+        <p>In a personal run, the model's provider receives what the agents read of the paper and the data, under
+        the account or the API key the check runs with. The report and the record are sent nowhere.</p>
+        <p>The ledger and the portal are being built with pilot institutions. This is their design:</p>
+        <ul class="receives">
+          <li>The manuscript and the data stay with the lab. The ledger does not hold them.</li>
+          <li>The institution's ledger will hold the outcome counts, the findings and the lab's responses.</li>
+          <li>Each institution will have its own private portal, on its own address, behind sign-in.</li>
+          <li>encorescience.org shows only the public registry. It will never show an institution's records.</li>
+        </ul></div>
+      <div class="panel" id="separation"><h2>Separation</h2>
+        <p>The public registry is separate from any agreement with an institution. No payment changes, delays or
+        removes a public record.</p></div>
+    </div>
+    <div class="panel" id="limits"><h2>Limits</h2>
+      <p>{CAUTION} The agents make mistakes, and a failure to reproduce may be the agent's.</p>
+      <p>Separate runs do not always agree. In replicate runs on {rep["papers"]} papers, each run {rep["runs"]} times,
+      {rep["unanimous"]} of {rep["claims"]} claims had the same outcome in every run, and {rep["reproduced_and_not"]}
+      were reproduced in one run and not reproduced in another.</p>
+      <p>A record shows that a check was run and that its findings were answered. It does not show that nothing is
+      left to find. <a href="{root}registry/#caution">More on reading outcomes</a></p>
+      <p>Most checks so far are of neuroscience papers, on data in {e(archives)}.</p></div>
+  </div>
+  <div class="panel" id="status"><h2>Status</h2>
+    <div class="status">
+      <div><h3>Available today</h3>
+        <ul class="receives">
+          <li>The <a href="{root}check/"><code>encore</code> command</a>, free and open source.</li>
+          <li>The record file, <code>record.json</code>.</li>
+          <li>The <a href="{root}registry/">public registry</a> of checks on published papers.</li>
+        </ul></div>
+      <div><h3>Being built with pilot institutions</h3>
+        <ul class="receives">
+          <li>Registered runs.</li>
+          <li>The institution's private ledger.</li>
+          <li>The institution's private portal.</li>
+        </ul></div>
+    </div></div>
+  <p class="more-detail"><a href="../">Encore for institutions</a>, the page for decision makers, has the request for
+  a pilot.</p>
+</main>"""
+    return shell(data, f"Technical details for institutions · {SITE_NAME}", root, "institutions-details", body,
+                 path="institutions/details/",
+                 description="For research computing and IT at an institution: how an Encore check runs, what the "
+                             "model's provider receives, the record each check writes, and what exists today.")
 
 
 def page_check(data: dict) -> str:
@@ -4710,9 +4965,12 @@ def build(data: dict, output: Path) -> None:
     for sub in ("papers", "datasets", "dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_home(data))
-    for sub, page in (("registry", page_overview), ("journals", page_journals), ("check", page_check)):
+    for sub, page in (("registry", page_overview), ("journals", page_journals),
+                      ("institutions", page_institutions), ("check", page_check)):
         (output / sub).mkdir(exist_ok=True)
         (output / sub / "index.html").write_text(page(data))
+    (output / "institutions" / "details").mkdir(exist_ok=True)
+    (output / "institutions" / "details" / "index.html").write_text(page_institutions_details(data))
     (output / "method").mkdir(exist_ok=True)
     (output / "method" / "index.html").write_text(page_about(data))
     # The page was at about/ until it was named for what it holds; links to it there are kept working.
@@ -4914,7 +5172,9 @@ def page_not_found(data: dict) -> str:
 
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
-    pages = [(p, data["generated"][:10]) for p in ("", "registry/", "journals/", "check/", "method/", "pipeline/")]
+    pages = [(p, data["generated"][:10])
+             for p in ("", "registry/", "journals/", "institutions/", "institutions/details/", "check/", "method/",
+                       "pipeline/")]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
