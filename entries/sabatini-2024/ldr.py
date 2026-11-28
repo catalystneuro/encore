@@ -88,19 +88,21 @@ def select_trials(d, reading="all"):
     return m.values
 
 
-def load_session(monkey, reading="all"):
+def load_session(monkey, reading="all", onset="move_begins_time"):
     """Spike counts at 1 ms and hand position for the selected trials.
 
     Alignment on move_begins_time, the file's "movement onset time"
-    (assumption: the paper says only "aligned to movement onset"; the offline
-    onset is shown in the data check). Counts cover -355 to +855 ms so that both
+    (assumption: the paper says only "aligned to movement onset"); onset=
+    "offline_move_onset_time" aligns on the file's offline estimate instead (the
+    variant notebook 1 runs on a subset of the claims). Counts cover -355 to +855 ms so that both
     the smoothed grid (-350..850) and 10 ms count bins centred on it can be formed.
     Trials whose window runs past the end of the trial (spikes are stored within
     trials only) are dropped and counted."""
     h = open_nwb(SESSIONS[monkey])
     d = trial_table(h)
     sel = select_trials(d, reading).copy()
-    on = d.move_begins_time.values
+    on = d[onset].values
+    sel &= np.isfinite(on)
     t0 = on - (PRE_MS + 5) / 1000
     t1 = on + (POST_MS + 5) / 1000
     covered = (t0 >= d.start_time.values) & (t1 <= d.stop_time.values)
@@ -502,13 +504,13 @@ def folds_over(n, k, g):
 
 
 # ------------------------------------------------------------- datasets
-def build(reading="all", monkeys=("J", "N")):
+def build(reading="all", monkeys=("J", "N"), onset="move_begins_time"):
     """Load both sessions and form the four datasets: smoothed single trials
     (trials x units x 121), condition averages (72 x units x 121), 1 ms counts,
     hand position (start-subtracted, mm) and condition means of the hand."""
     out = {}
     for m in monkeys:
-        S = load_session(m, reading)
+        S = load_session(m, reading, onset)
         sm = smooth_trials(S["counts"])
         hand = S["hand"] - S["hand"][:, :1, :]   # assumption: position relative to the start
         hand10 = hand[:, ::10]
