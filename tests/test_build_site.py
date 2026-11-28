@@ -883,7 +883,8 @@ def test_the_institutions_page_gives_the_registrys_numbers_and_says_what_is_not_
     # What is not built is said to be so: in the status panel, and wherever the ledger and the portal are described.
     status = main[main.index('id="status"'):main.index('id="contact"')]
     available, building = status.split("<h3>Being built with pilot institutions</h3>")
-    assert "<h3>Available today</h3>" in available and "record.json" in available and "ledger" not in available
+    assert "<h3>Available today</h3>" in available and "record.json" in available
+    assert "ledger" not in available and "portal" not in available
     assert "Registered runs" in building and "ledger" in building and "portal" in building
     privacy = main[main.index('id="privacy"'):main.index('id="separation"')]
     assert "are being built with pilot institutions" in privacy and "will hold" in privacy and "will have" in privacy
