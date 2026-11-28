@@ -836,6 +836,45 @@ findings:
     version), the velocity-to-position step of the decoders (postHoc.m) and the 250 ms post-reach warp is not in the repository,
     and the preprocessed .mat files it loads are available only on request, so the order and selection of the 72 conditions
     and the units cannot be checked against the code.
+- kind: metadata_error
+  about: data
+  severity: minor
+  notebook: earlier_findings.ipynb
+  output: finding-position-units
+  found: on_prompt
+  statement: Eye positions are labelled meters with a conversion of NaN in both files the paper names, so they cannot be
+    converted to meters from the metadata; their stored values run from -331.2 to 369.4 (J) and -297.8 to 411.3 (N) over
+    the first 100,000 samples. Hand and cursor positions carry a conversion of 0.001.
+- kind: data_missing
+  about: data
+  severity: minor
+  notebook: earlier_findings.ipynb
+  output: finding-no-emg
+  found: on_prompt
+  statement: The dataset holds no EMG, which the paper's Supplementary Figure 8 removes along with the kinematic dimensions.
+    Neither file has an acquisition series, the processing modules hold only positions and filtered ephys, and no object is
+    named for EMG or muscle.
+- kind: other
+  about: data
+  severity: major
+  notebook: earlier_findings.ipynb
+  output: finding-nitschke-unit-170
+  found: on_prompt
+  statement: In the Nitschke file (sub-Nitschke_ses-20100923), M1 unit 170 fires above 100 spikes/s on 229 of the 2121
+    successful trials of the 72 conditions (-350 to +850 ms around move_begins_time), all starting between 18902 and 22462
+    s, at a mean of 365.6 spikes/s on those trials against 31.9 spikes/s on the others. Its largest mean rate over blocks of
+    50 trials is 13.7 times its median block mean, against at most 2.5 for the other units of the file. Nothing in the file
+    marks it, and the analyses that keep it take this run of trials as the unit's activity.
+- kind: methods_unavailable
+  about: paper
+  found: on_prompt
+  statement: Questions for the paper's authors. (1) Which trials were analysed? All successful trials give 1595 (J) and 2121
+    (N), and successful trials with a delay above 400 ms 1381 and 1884, against 1469 and 2014 in the Figure 7 legend. (2)
+    What penalty was used for the OU kernel encoding models with length scales 1e11 and 1e12? (3) How were the noise
+    excursion angles of Figure 4c computed? (4) Were the jPCA and single-condition LDS values of Supplementary Figure 3
+    cross-validated, and how? (5) Did the trial matrices shuffled in the control for data smoothing span the analysis window,
+    as preprocessTrials.m implies? (6) What scale do the kinematic basis functions (kinFuncEval) have, and in what units are
+    rates given to the OU kernel decoders with length scale 100?
 verifications:
 - date: '2026-11-28'
   kind: agent
@@ -1386,3 +1425,161 @@ verifications:
         so the mean is over the four variables of each sample, as the main reading does; the neural data there are units
         x samples, centred over samples, which is why the two differ. The notebook and the notes now cite the allocation.
         No change of outcome.'
+reconciliation:
+  earlier: sabatini-2024-01
+  date: '2026-11-28'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: On 0.261122.2046 the Nitschke file has one clock, with no trial start, hand timestamp or spike time going backwards
+      (hand timestamps 5.4 to 26578.1 s) and the spike times of all 192 units sorted (earlier_findings.ipynb, cell
+      finding-one-clock). The trial-aligned spike counts are the same as those the earlier attempt rebuilt segment by segment.
+  - finding: 2
+    status: partly_fixed
+    now: 1
+    note: The units table now describes its units as threshold crossings on each electrode, not sorted (Blackrock unit code
+      0), one per electrode, so what the 96 units per array are is stated. The sorted single and multi-units the paper used
+      are still not in the files, as the blind attempt's finding 1 reports.
+  - finding: 3
+    status: fixed
+    note: Jenkins unit 0 now holds 257638 spikes from 4.9 to 15707.2 s, the earlier 61030 plus the 196608 of unit 1's first
+      run, and unit 1 holds 264946 sorted spikes, as many as its earlier second run (cell finding-jenkins-units-0-1).
+  - finding: 4
+    status: partly_fixed
+    now: 7
+    note: Hand and cursor positions now carry a conversion of 0.001 (the blind attempt's data check, its finding 3, shows the
+      hand). Eye position still has the unit meters with a conversion of NaN and stored values of -331.2 to 369.4 (J) and
+      -297.8 to 411.3 (N) (cell finding-position-units), added as finding 7.
+  - finding: 5
+    status: still_present
+    now: 8
+    note: Neither file has an acquisition series or any object named for EMG or muscle; the processing modules hold positions
+      and filtered ephys (cell finding-no-emg). The blind attempt noted the missing EMG only in a deviation of
+      suppfig8-no-output-potent-dependence, so it is added as finding 8.
+  - finding: 6
+    status: still_present
+    now: 9
+    note: Unit 170 is above 100 spikes/s on 229 of 2121 trials, now starting 18902 to 22462 s on the file's single clock, with
+      a block ratio of 13.7 against at most 2.5 for the other units, the same numbers as on 0.260528.0919 (cell
+      finding-nitschke-unit-170). Added as finding 9.
+  - finding: 7
+    status: still_present
+    now: 10
+    note: These questions are about the paper, which has not changed. The blind attempt asks how large the kernel decoders'
+      training sets were (its finding 5) and the files now say which units they hold (its finding 1); the questions on the
+      trials, the OU penalty, the noise excursion angles, Supplementary Figure 3, the shuffle span and the scale of the
+      kinematic basis stay open and are added as finding 10.
+  - finding: 8
+    status: still_present
+    now: 6
+    note: The blind attempt's finding 6 reports the same problem, that the code loads preprocessed .mat files available only
+      on request, so the selection of conditions and units cannot be checked against it.
+  outcomes:
+  - claim: data-composition
+    earlier: reproduced
+    cause: label
+    note: The numbers are the same in both records (72 conditions, 1595 and 2121 trials, 96 units per array). The earlier
+      attempt counted all 96 per-electrode units against 71 to 130; the blind attempt, reading the new units description
+      (unsorted threshold crossings), held that the criterion's count of single and multi-units the dataset marks as such
+      cannot be taken, since none are marked in either version.
+    supports: partially_reproduced
+    confidence: medium
+  - claim: jpca-variance-explained
+    earlier: partially_reproduced
+    cause: reading
+    note: The deciding value is PMd-N, 5.4% earlier against 6.8% now, with the lower bound at 6.3% (the others 8.8, 10.9 and
+      11.6% against 9.1, 10.6 and 10.8%). The earlier attempt ran jPCA on activity rebuilt from the raw SVD basis, soft
+      normalised once (range + 5, earlier-entry/ldr.py soft_norm and jpca); the blind one rebuilt it from the de-mixed basis
+      and kept the codepack's default soft normalisation on top, as getRotations.m calls jPCA with defaults (ldr.py,
+      soften=10). Which of these moves PMd-N across 6.3% was not isolated, and the different number of factors k (below)
+      also changes the N basis.
+    choice: Is jPCA run on activity rebuilt from the raw or the de-mixed temporal basis, and with or without jPCA's own
+      default soft normalisation after the range + 5 step? The earlier attempt chose the raw basis and one normalisation, the
+      blind one the de-mixed basis and both.
+    confidence: low
+  - claim: fig3g-basis-frequencies
+    earlier: not_reproduced
+    cause: reading
+    note: The earlier attempt ran the factorization and the cross-validation of k on -150 to +850 ms (earlier notebook, cell
+      building Xw from ldr.FIT0) and got k = 7, 5, 7, 7, so PMd-J has 2 rotation pairs where the criterion asks for 3 or 4,
+      and 3 of 11 frequencies within 10%. The blind attempt ran them on the whole -350 to +850 ms window, as eigTransform.m
+      does, and got k = 7, 7, 9, 9 with 3 or 4 pairs everywhere and 6 of 14 frequencies within 10%; the frequency test fails
+      in both.
+    choice: Are the SVD of the temporal basis factorization and its cross-validation of k run on -150 to +850 ms (earlier)
+      or on the whole -350 to +850 ms window with only the de-mixing fitted from -150 ms (blind attempt, as the code does)?
+    confidence: medium
+  - claim: tbf-shuffle-control
+    earlier: partially_reproduced
+    cause: reading
+    note: Shuffled variance explained is 42.2, 28.7, 41.9 and 42.1% earlier against 35.1, 35.4, 45.6 and 45.5% now, and PMd-J
+      moves from below the 31.5% bound to inside it. It follows the window of the factorization (above), which gave PMd-J k
+      = 5 earlier and 7 now; the shuffle span is not the cause, as the earlier run over the code's span still gave PMd-J
+      29.4%.
+    choice: Is the factorization, and so its k, fitted on -150 to +850 ms (earlier) or on the whole -350 to +850 ms window as
+      quantifyTBFStats.m does (blind attempt)?
+    confidence: medium
+  - claim: fig3h-recoverability
+    earlier: partially_reproduced
+    cause: reading
+    note: Real recoverability is in range in both (97.4 to 98.7% earlier, 95.1% to 96.6% now). The chance level differs, 89.5,
+      86.5, 89.1 and 89.6% earlier, only PMd-J at or below 88%, against 84.8% to 87.8% now, all just inside; the blind
+      attempt used the raw SVD basis on the whole window with its k, the earlier one the de-mixed basis on -150 to +850 ms.
+    choice: Is recoverability computed on the de-mixed basis over -150 to +850 ms (earlier) or on the raw SVD basis over the
+      whole -350 to +850 ms window, as quantifyTBFStats.m does (blind attempt)?
+    confidence: medium
+  - claim: fig4b-plane-alignment
+    earlier: reproduced
+    cause: reading
+    note: The earlier attempt tested 11 rotations, all passing with AUC 0.876 to 0.961. The blind attempt, with k = 9 for the N
+      arrays from the whole-window factorization, tested 14, and the extra fourth rotation of PMd-N at 3.65 Hz gives AUC 0.545,
+      so 13 of 14 pass.
+    choice: Is the factorization, and so the set of rotations tested, fitted on -150 to +850 ms (earlier) or on the whole -350
+      to +850 ms window (blind attempt)?
+    confidence: medium
+  - claim: fig5a-frequencies-segregated
+    earlier: reproduced
+    cause: reading
+    note: The earlier attempt made 20 comparisons, all passing; the blind attempt made 36, with 35 passing. The one that fails,
+      PMd-J 2.64 against 1.64 Hz (0.202 against 0.202), involves a third PMd-J rotation that exists only with k = 7 from the
+      whole-window factorization; the earlier one-sided test against the blind attempt's two-sided one does not decide it.
+    choice: Is the factorization, and so the set of rotations compared, fitted on -150 to +850 ms (earlier) or on the whole
+      -350 to +850 ms window (blind attempt)?
+    confidence: medium
+  - claim: fig6c-location-tracks-direction
+    earlier: partially_reproduced
+    cause: reading
+    note: The deciding value is PMd-N, circular correlation 0.065 (p = 0.55) earlier against 0.357 (p < 0.001) now; the others
+      are 0.696, 0.709 and 0.245 against 0.657, 0.719 and 0.630. The location comes from different factorizations (-150 to
+      +850 ms, k = 7 and eigenvector de-mixing earlier; the whole window, k = 9 and eigTransform's correction now), and the
+      target angle from the target position earlier and from the hand endpoint now, as splitTrialsAngles.m does; which of
+      these moves PMd-N was not isolated.
+    choice: Is the target angle the angle of the target's position (earlier) or of the hand's endpoint (blind attempt, as the
+      code does), and from which factorization is the location taken?
+    confidence: low
+  - claim: suppfig7a-not-memorization
+    earlier: partially_reproduced
+    cause: reading
+    note: Earlier, PMd-J gave kernel 68.8 against nearest neighbour 60.2% with p = 0.024 (0.50 under the skew-normal basis),
+      missing p < 0.01; now every dataset gives p from 3.4e-12 to 1.5e-4. The earlier attempt cut sextants as fixed 60 degree
+      arcs of target angle, which can hold unequal numbers of conditions (earlier notebook, sext = np.floor(...)), the blind
+      one as six blocks of 12 conditions sorted by endpoint angle, as splitTrialsAngles.m does; the PMd-J basis also differs
+      (k = 5 against 7).
+    choice: Is a held-out sextant a fixed 60 degree arc of target angle (earlier) or one sixth of the conditions sorted by
+      angle (blind attempt, as the code does)?
+    confidence: low
+  - claim: fig7f-ldr-decoding
+    earlier: partially_reproduced
+    cause: error
+    error_in: earlier
+    note: The criterion cites getVarExplainedKinematics.m, which divides the variance of the residual by the variance of the
+      position; the earlier helper's kin_ve (earlier-entry/ldr.py, lines 703 to 708) divides the raw sum of squared residuals,
+      so a constant offset of the decoded path counts against it. The blind attempt uses the variance of the residual
+      (kinematics notebook, var(1, ddof=1) in the claim's decoding cell) and gets 88.9, 88.9, 93.3 and 89.6% against 77.0,
+      74.4, 86.6 and 73.0% earlier, with the bound at 75.6%; the size of the formula's effect was inferred, not rerun.
+    supports: reproduced
+    confidence: medium
+  protocol: docs/pilot-notes.md has no section for pilot-19 (its last heading is pilot-14), so the change was read from
+    docs/protocol.md, which says that attempts before pilot-19 were not asked for a finding's code or versions. The blind
+    attempt accordingly gives each finding about the data a notebook and an output cell and the earlier one none; the rules
+    for outcomes and the claims file are the same for both, and no outcome difference here comes from the protocol.
