@@ -10,6 +10,7 @@ entries/ and transcripts/, and writes:
     registry/index.html           overview of the registry: numbers, breakdowns, latest attempts
     journals/index.html           what Encore offers a journal
     institutions/index.html       what Encore offers a university or a research institute
+    funders/index.html            what Encore offers a funder of research
     institutions/details/         the same in technical detail, for research computing and IT
     check/index.html              how to run the check on your own data
     datasets/index.html           every target, filterable and paginated
@@ -2163,7 +2164,7 @@ def footer(data: dict, root: str) -> str:
                             ("Reading an outcome", f"{root}registry/#caution"),
                             ("Badges", f"{REPO_URL}/blob/main/docs/badges.md"), ("Agent runs", f"{REPO_URL}/actions")])
         + column("Use Encore", [("For journals", f"{root}journals/"), ("For institutions", f"{root}institutions/"),
-                                ("Check your own data", f"{root}check/"),
+                                ("For funders", f"{root}funders/"), ("Check your own data", f"{root}check/"),
                                 ("For authors", f"{root}method/#authors"), ("Contact", CONTACT_URL),
                                 ("Repository", REPO_URL)]))
     return f'''<footer><div class="wrap">
@@ -2181,11 +2182,35 @@ available. A failure to reproduce may be a failure of the agent, and is not a ju
 </div></footer>'''
 
 
+# Who Encore is for, as the bar's menu "Encore for" lists them and in the order of the home page: the name of the
+# page to shell (`active`), the label and the address. Archives have a section of the method's page, not a page.
+AUDIENCES = [("journals", "Journals", "journals/"), ("institutions", "Institutions", "institutions/"),
+             ("funders", "Funders", "funders/"), ("check", "Authors and labs", "check/"),
+             ("archives", "Archives", "method/#archives")]
+
+
+def audience_menu(root: str, active: str) -> str:
+    """The bar's menu "Encore for", with a page for each audience. It is a details element, so it opens with a
+    click, a tap or the keyboard and needs no script; THEME_JS only closes it on Escape and on a click outside.
+    The item of the page being read is marked as the current page, and the menu's name is lit with it. The
+    technical details for institutions are under the page for institutions, so that item is lit and is not marked
+    as the page. On the page for authors and labs the bar's own link, "Check your data", is the one lit."""
+    under = {"institutions-details": "institutions"}.get(active)
+    items = ""
+    for key, label, path in AUDIENCES:
+        current = ' aria-current="page"' if key == active else ' aria-current="true"' if key == under else ""
+        items += f'<li><a href="{root}{path}"{current}>{label}</a></li>'
+    lit = ' aria-current="true"' if under or active in ("journals", "institutions", "funders") else ""
+    return (f'<details class="for-menu" id="audiences"><summary{lit}>Encore for</summary>'
+            f'<ul class="menu-items">{items}</ul></details>')
+
+
 def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "", path: str = "",
           description: str = SITE_DESCRIPTION, structured: dict | None = None, bleed: bool = False) -> str:
     """One page: the bar, the registry's own bar on the registry's pages, the body and the foot.
 
-    The bar is the site's: the registry, how it works, and what it offers a journal and an institution. The pages of the registry
+    The bar is the site's: the registry, how it works, and a menu of what it offers each audience (audience_menu).
+    The pages of the registry
     (REGISTRY_PAGES) carry a second bar with its lists. With `bleed`, the body lays out its own full-width bands
     (the home page); otherwise it sits in the page's column."""
     r = rows_cache(data)
@@ -2193,14 +2218,12 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
     in_registry = active in REGISTRY_PAGES
     nav = ""
-    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("method", "Method", f"{root}method/"),
-                             ("journals", "For journals", f"{root}journals/"),
-                             ("institutions", "For institutions", f"{root}institutions/")]:
+    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("method", "Method", f"{root}method/")]:
         # The registry's tab is lit on every page of the registry; only its overview is the tab's own page.
         current = (' aria-current="page"' if key == active or (key == "registry" and active == "overview")
-                   else ' aria-current="true"' if (key == "registry" and in_registry)
-                   or (key == "institutions" and active == "institutions-details") else "")
+                   else ' aria-current="true"' if (key == "registry" and in_registry) else "")
         nav += f'<a class="tab" href="{href}"{current}>{label}</a>'
+    nav += audience_menu(root, active)
     subnav = ""
     if in_registry:
         for key, label, href, n in [("overview", "Overview", f"{root}registry/", None),
@@ -2220,7 +2243,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title>
 {head_tags(data, title, path, description, structured)}
-<script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
+<script>document.documentElement.classList.add("js");try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
 <link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="{root}assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
@@ -2253,9 +2276,14 @@ try{t==='auto'?localStorage.removeItem('theme'):localStorage.setItem('theme',t);
 if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;show(t);});
 show(get());})();
 (function(){var n=document.getElementById('navtoggle'),bar=n&&n.closest('nav.top');if(!n)return;
-function set(o){bar.classList.toggle('open',o);n.setAttribute('aria-expanded',String(o));}
+var m=document.getElementById('audiences');
+function set(o){bar.classList.toggle('open',o);n.setAttribute('aria-expanded',String(o));if(m)m.open=o;}
 n.addEventListener('click',function(){set(!bar.classList.contains('open'));});
-document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false);});})();</script>"""
+document.addEventListener('keydown',function(ev){if(ev.key!=='Escape')return;
+if(m&&m.open&&!bar.classList.contains('open')){m.open=false;if(m.contains(document.activeElement))m.firstElementChild.focus();}
+else set(false);});
+if(m)document.addEventListener('click',function(ev){if(m.open&&!bar.classList.contains('open')&&!m.contains(ev.target))m.open=false;});
+if(m)m.addEventListener('focusout',function(ev){if(!bar.classList.contains('open')&&ev.relatedTarget&&!m.contains(ev.relatedTarget))m.open=false;});})();</script>"""
 
 
 def caution_block() -> str:
@@ -2766,7 +2794,7 @@ def page_home(data: dict) -> str:
   </div>
 </div></section>
 <section class="band" id="for"><div class="wrap">
-  <h2>For journals, institutions, authors and archives</h2>
+  <h2>For journals, institutions, funders, authors and archives</h2>
   <div class="audiences">
     <div class="audience"><h3>Journals</h3>
       <p>See whether the data deposited with a manuscript support its findings, before or after publication. The
@@ -2776,6 +2804,10 @@ def page_home(data: dict) -> str:
       <p>Your researchers are required to share the data and code behind their papers. Encore checks that
       what they share supports what they published, before the paper goes out.</p>
       <p><a href="institutions/">Encore for institutions</a></p></div>
+    <div class="audience"><h3>Funders</h3>
+      <p>You fund research on the condition that its data are shared. Encore checks that the shared data support
+      the published findings, across every lab you fund.</p>
+      <p><a href="funders/">Encore for funders</a></p></div>
     <div class="audience"><h3>Authors and labs</h3>
       <p>Run the same check on your own dataset before you deposit it. The <code>encore</code> command runs on your
       machine, and the result stays there.</p>
@@ -2971,10 +3003,81 @@ def institutions_evidence(data: dict) -> tuple[str, tuple[dict, dict] | None]:
     return evidence, home_example(data, attempts, papers)
 
 
+# The table "Institutions in the registry" on the page for institutions. It shows the institutions with at least as
+# many papers as the INSTITUTIONS_SHOWN-th, so that it does not end inside a tie.
+INSTITUTIONS_SHOWN = 20
+OPENALEX_URL = "https://openalex.org"
+# Names that authors list as an affiliation and that are not a place of research: Aligning Science Across
+# Parkinson's, a funding initiative whose grantees name it on their papers.
+NOT_INSTITUTIONS = {"https://ror.org/03zj4c476"}
+
+
+def institutions_known() -> dict:
+    """papers/institutions.yaml: the institutions the authors of each paper list, as tools/institutions.py wrote
+    them from OpenAlex. The site only reads the file."""
+    path = ROOT / "papers" / "institutions.yaml"
+    return (load_yaml(path) or {}) if path.is_file() else {}
+
+
+def counted_as(ror: str, institutions: dict) -> str:
+    """The institution a paper is counted for when its authors list this one. A university is itself. A hospital, an
+    institute or any other institution that OpenAlex places under one university is counted as that university:
+    Stanford Medicine as Stanford University, the McGovern Institute as MIT. The nearest university is the one
+    (an institute of University College London is not counted as the University of London, which UCL is under).
+    An institution under no university, or one that several universities share, is itself."""
+    inst = institutions.get(ror) or {}
+    if inst.get("type") == "education":
+        return ror
+    above = [p for p in inst.get("parents") or [] if (institutions.get(p) or {}).get("type") == "education"]
+    nearest = [p for p in above if not any(p in (institutions[q].get("parents") or []) for q in above if q != p)]
+    return nearest[0] if len(nearest) == 1 else ror
+
+
+def institution_counts(data: dict) -> list[tuple[str, int]]:
+    """The institutions of the papers attempted, each with its number of papers, the most first and then by name.
+    A paper counts once for each institution any of its authors lists (counted_as), however many of its authors
+    list it. A paper whose affiliations OpenAlex does not have counts for none."""
+    known = institutions_known()
+    institutions, papers = known.get("institutions") or {}, known.get("papers") or {}
+    norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
+    counts: dict = {}
+    for q in papers_of(data):
+        if q["attempts"]:
+            for ror in {counted_as(r, institutions) for r in papers.get(norm(q["doi"])) or [] if r in institutions}:
+                if ror not in NOT_INSTITUTIONS:
+                    counts[ror] = counts.get(ror, 0) + 1
+    return sorted(((institutions[r]["name"], n) for r, n in counts.items()), key=lambda kv: (-kv[1], kv[0]))
+
+
+def institutions_table(data: dict) -> str:
+    """The panel "Institutions in the registry": the institutions with the most papers attempted and the number of
+    papers of each, and nothing about what the checks found. Empty when the registry has no affiliations."""
+    counts = institution_counts(data)
+    if len(counts) > INSTITUTIONS_SHOWN:
+        least = counts[INSTITUTIONS_SHOWN - 1][1]
+        shown = [c for c in counts if c[1] >= least]
+        # A long tie at the end (many institutions with one paper each) is left out whole.
+        counts = shown if len(shown) <= 1.5 * INSTITUTIONS_SHOWN else [c for c in counts if c[1] > least] or shown
+    if not counts:
+        return ""
+    # The roles keep the table a table for a screen reader where the stylesheet lays its rows out in two columns.
+    rows_ = "".join(f'<tr role="row"><th scope="row" role="rowheader">{e(name)}</th><td role="cell">{n:,}</td></tr>'
+                    for name, n in counts)
+    return f"""<div class="panel" id="registry"><h2>Institutions in the registry</h2>
+    <p>The public registry tests published papers whatever their institution. These institutions have the most
+    papers in it today.</p>
+    <table class="inst-counts" role="table">
+      <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Institution</th><th scope="col" role="columnheader">Papers</th></tr></thead>
+      <tbody role="rowgroup">{rows_}</tbody></table>
+    <p class="small counting">A paper is counted once for each institution its authors list, and a hospital or
+    institute is counted under its university. Affiliations are from <a href="{OPENALEX_URL}">OpenAlex</a>.</p></div>"""
+
+
 def page_institutions(data: dict) -> str:
     """What Encore offers a university or a research institute, for the people who decide: the gap it fills, the
     check in three steps, what an institution gains, and what a pilot is. It is short and has no technical detail,
-    which is on the page under it (page_institutions_details). It says what is built and gives no prices."""
+    which is on the page under it (page_institutions_details). It says what is built and gives no prices. Low on
+    the page, a table names the institutions with the most papers in the public registry (institutions_table)."""
     root = "../"
     evidence, shown = institutions_evidence(data)
     evidence = f'<p class="lede">{evidence}</p>' if evidence else ""
@@ -3035,6 +3138,7 @@ def page_institutions(data: dict) -> str:
       <p>The checks are made by AI agents, and agents make mistakes. A finding is a question for the lab to answer,
       not a verdict on the paper.</p></div>
   </div>
+  {institutions_table(data)}
   <div class="panel contact-panel" id="contact"><h2>Pilot</h2>
     <p>The checking tool and the public registry are available today. The institutional record and its private
     portal are being built with our first pilot institutions. A pilot starts with a few labs and the free tool.</p>
@@ -3044,6 +3148,84 @@ def page_institutions(data: dict) -> str:
     return shell(data, f"Encore for institutions · {SITE_NAME}", root, "institutions", body, path="institutions/",
                  description="Your researchers are required to share the data and code behind their papers. Encore "
                              "checks that what they share supports what they published, before the paper goes out.")
+
+
+def page_funders(data: dict) -> str:
+    """What Encore offers a funder of research, for the people who decide, in the shape of the page for institutions:
+    the gap a data-sharing policy leaves, the check in three steps, what a funder gains, the policy, the report on
+    papers already published, privacy, limits and what a pilot is. It names no funder, says what is built and gives
+    no prices. Its numbers are those of the page for institutions (institutions_evidence)."""
+    root = "../"
+    evidence, shown = institutions_evidence(data)
+    evidence = f'<p class="lede">{evidence}</p>' if evidence else ""
+    example = f'{root}papers/{shown[1]["key"]}/' if shown else f"{root}registry/"
+    steps = [
+        "A funded lab runs Encore on its paper and its data before it submits.",
+        "Encore tests each claim of the paper on the data and lists every problem: data that are missing, labels "
+        "that are wrong, code that disagrees with the paper.",
+        "The lab fixes each problem or answers it. You get a record for each paper, and a view across your portfolio.",
+    ]
+    benefits = [
+        ("Proof of open data", "For each funded paper, a record that its shared data were checked against its "
+                               "findings."),
+        ("A view of the portfolio", "Which programs share data others can use, and where the gaps are."),
+        ("Help for grantees", "Each lab gets a list of fixes before reviewers and readers find the gaps."),
+        # As the page for institutions says it: the notebooks tested the claims, whatever the outcome of each.
+        ("Data ready for reuse", "Each check leaves the notebooks that tested the paper's claims, a starting point "
+                                 "for the next lab."),
+    ]
+    steps_html = "".join(f'<li class="panel"><span class="offer-n">{n}</span><p>{e(text)}</p></li>'
+                         for n, text in enumerate(steps, 1))
+    benefits_html = "".join(f'<div class="benefit"><h3>{e(head)}</h3><p>{e(text)}</p></div>' for head, text in benefits)
+    body = f"""<header class="page">
+  <h1>Encore for funders</h1>
+  <p class="lede">You fund research on the condition that its data are shared. Encore checks that the shared data
+  support the published findings, across every lab you fund.</p>
+  {evidence}
+  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
+  <a class="button secondary" href="{example}">See an example record</a></p>
+</header>
+<main class="journals institutions funders">
+  <div class="panel" id="gap"><h2>The gap</h2>
+    <p>A data-sharing policy is met today by a link to a repository. A link does not show that the data are
+    complete, labelled, or enough to reproduce the paper.</p>
+    <p>Gaps are found later, when another lab tries to reuse the data, and by then the grant has often ended.</p></div>
+  <h2 class="section-head" id="check">The check</h2>
+  <ol class="steps">{steps_html}</ol>
+  <h2 class="section-head" id="benefits">Benefits</h2>
+  <div class="benefits">{benefits_html}</div>
+  <div class="grid2">
+    <div class="panel" id="policy"><h2>Policy</h2>
+      <p>The policy we suggest is &ldquo;before submitting a manuscript to a journal, run the check and respond to
+      every finding&rdquo;. A lab responds by fixing the data, by correcting the paper, or by explaining why the
+      finding is wrong.</p></div>
+    <div class="panel" id="published"><h2>Published papers</h2>
+      <p>The public registry already tests published papers with deposited data, whoever funded them. A pilot can
+      start with a report on the papers your grantees have already published.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="panel" id="privacy"><h2>Privacy</h2>
+      <p>A lab's results before publication are private. They are seen by the lab and, under your policy, by you.
+      The public registry on this site covers published papers only, and no agreement with a funder changes a
+      public record.</p>
+      <p>The checks are made by an AI model, and a funder or institution with an enterprise licence can run them
+      under its own agreement with the provider.</p></div>
+    <div class="panel" id="limits"><h2>Limits</h2>
+      <p>The checks are made by AI agents, and agents make mistakes. A finding is a question for the lab to answer,
+      not a verdict on the paper.</p>
+      <p>Authors can respond to an attempt, to clarify a point or to correct the agent where it made a mistake.
+      The next attempt takes their response into account.</p></div>
+  </div>
+  <div class="panel contact-panel" id="contact"><h2>Pilot</h2>
+    <p>The checking tool and the public registry are available today. Records for funders and the portfolio view
+    are being built with our first pilot partners. A pilot covers one program: a report on its published papers,
+    then the check for new papers before submission.</p>
+    <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a></p></div>
+  <p class="more-detail">For technical staff: <a href="{root}institutions/details/">technical details</a>.</p>
+</main>"""
+    return shell(data, f"Encore for funders · {SITE_NAME}", root, "funders", body, path="funders/",
+                 description="You fund research on the condition that its data are shared. Encore checks that the "
+                             "shared data support the published findings, across every lab you fund.")
 
 
 def page_institutions_details(data: dict) -> str:
@@ -4966,7 +5148,7 @@ def build(data: dict, output: Path) -> None:
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_home(data))
     for sub, page in (("registry", page_overview), ("journals", page_journals),
-                      ("institutions", page_institutions), ("check", page_check)):
+                      ("institutions", page_institutions), ("funders", page_funders), ("check", page_check)):
         (output / sub).mkdir(exist_ok=True)
         (output / sub / "index.html").write_text(page(data))
     (output / "institutions" / "details").mkdir(exist_ok=True)
@@ -5173,7 +5355,7 @@ def page_not_found(data: dict) -> str:
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
     pages = [(p, data["generated"][:10])
-             for p in ("", "registry/", "journals/", "institutions/", "institutions/details/", "check/", "method/",
+             for p in ("", "registry/", "journals/", "institutions/", "institutions/details/", "funders/", "check/", "method/",
                        "pipeline/")]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
