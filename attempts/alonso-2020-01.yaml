@@ -1,0 +1,860 @@
+schema_version: 3
+id: alonso-2020-01
+datasets:
+- archive: dryad
+  id: m31b1h7
+  version: '94811'
+  doi: 10.5061/dryad.m31b1h7
+  relation: primary
+paper: doi:10.7554/elife.55470
+date: 2026-11-27
+entry: alonso-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/46075031684
+outcomes:
+- claim: deposit-models
+  outcome: not_reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:deposit-models
+  measured:
+  - 1.246
+  - 0.193
+  - 0.234
+  notes: The deposit holds the Java model, the Python scripts, one initial-condition file and 38 parameter sets
+    (the paper and the Dryad description say 36). Of the 21 model names in the Methods, 13 are found as printed,
+    2 with the letter O read as the digit 0 (OSHNMD is 0SHNMD, B7SDOL is B7SD0L), 1 at the character the text cannot
+    render (4X6W66), 1 with two characters swapped (KNMLBC is KMNLBC), and 4 are absent (Q8FBN1, G81PUL, G7EOZ8,
+    SAXT8Y). Every Q10 is within [1, 2] for conductances (largest 1.4985 intrinsic, 1.499 synaptic) and [1, 4] for
+    time scales (largest 3.973 and 3.997). At 10 C (20 s, first 10 s dropped) all 38 networks are triphasic, but
+    only 3 of 38 models have every value within tolerance; 10 of 38 are within 1 +- 0.1 Hz in every cell, 17 within
+    0.2 +- 0.02 for PD duty cycle, 14 within 0.25 +- 0.025 for LP and PY. The measured values are the means over
+    models and cells of burst frequency (1.246 Hz, range 0.987 to 1.627), PD duty cycle and LP and PY duty cycle.
+    With the 0.20 LP and PY target of the variant, 0 of 38. 3 is below the criterion's 18.
+  deviations:
+  - The 38 deposited models are used; the files do not say which 36 the paper means.
+  - The model is simulated with a numba port of the deposited Java, which matches the Java's voltages to 3e-9 mV
+    over 3 s (4X6W66 at 18 C), to 0.06 mV over 3 s (J9U8SQ at 25 C), and gives NaN at the same step as the Java
+    where the integration diverges (G7P2WE at 35 C, step 2041; J9U8SQ at 34 C, step 8273); the notebook compiles
+    and runs the Java when a compiler is present.
+  - Burst frequency and duty cycle are per-cycle means, with spikes as upward crossings of -20 mV and bursts formed
+    with the Methods' 200 ms threshold; the paper gives no spike threshold.
+- claim: fig1c-frequency-q10-phase-constant
+  outcome: partially_reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig1c-frequency-q10-phase-constant
+  measured:
+  - 1.927
+  notes: Model 4X6W66, 16 temperatures, 40 s each with the first 10 s dropped and 30 s averaged. Frequency Q10 is
+    1.927 (fit), 1.982 (end points) and 1.937 (f20 over f10), within 2 +- 0.2 under every reading; the three cells'
+    frequencies differ by at most 0.8% at any temperature. Constancy fails under both readings because of the LP
+    duty cycle, which spans 0.11 of a cycle (bound 0.1) and changes by up to 34% from its 10 C value (bound 20%);
+    PY duty cycle changes by up to 21%. All other duty cycles and phases stay within 0.1 of a cycle (PD offset range
+    0.05, LP onset 0.038, LP offset 0.08, PY onset 0.023, PY offset 0.047). The network is triphasic at all 16 temperatures.
+  deviations:
+  - Simulations of 40 s with the first 10 s dropped (the Methods drop 10 s when scoring and the Figure 1 legend
+    averages over 30 s; the length of the run is not stated).
+- claim: fig1s1-three-models
+  outcome: not_reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig1s1-three-models
+  notes: In WWZ3CN, FGFKQS and 71G6LA the frequency rises from 10 to 25 C in every cell (Q10 by the fit 2.05, 1.99,
+    1.71) and the network is triphasic at all 16 temperatures, but none meets either reading of constancy. Largest
+    ranges over temperature 0.171 (WWZ3CN, LP offset), 0.121 (FGFKQS, LP duty cycle), 0.102 (71G6LA, PY offset)
+    of a cycle; largest changes from 10 C 34%, 43% and 24%. 71G6LA misses reading (i) by 0.002. FGFKQS has the same
+    maximal conductances as 4X6W66, with different Q10 values, so the statement's "different maximal conductances"
+    holds for two of the three.
+  deviations:
+  - The same 40 s simulations as fig1c-frequency-q10-phase-constant, at its 16 temperatures (the supplement's legend
+    was not read).
+- claim: all-models-compensated
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:all-models-compensated
+  measured: 36
+  notes: 36 of the 38 deposited models are triphasic at all 16 temperatures. ED50XO fails at 19 and 21 C (all cells
+    irregular bursting) and MAXTTP at 10 and 14 C (LP irregular bursting). With the order required in every cycle
+    (variant), 35 of 38. The deposit holds more than one Q10 set for 9 of its 27 distinct sets of maximal conductances
+    (20 models), and all 20 are compensated; the other 18 sets have one Q10 set each, so "multiple sets for every
+    G" can be shown only for those 9. The count 36 of 38 meets the partial bound of 34; whether the paper's 36 are
+    these 36 cannot be told from the files. The question of how the firing order is tested is for the paper's authors
+    (finding 6). MAXTTP, one of the two that fail, is a model the paper shows (Figure 2, figure supplement 1), so
+    not every model the paper uses passes.
+  deviations:
+  - Triphasic is read as the three cells' mean burst frequencies within 5% and the median LP burst onset phase before
+    the median PY onset phase, both within the PD cycle; the Methods say "fired in the right order" without saying
+    how it is tested. Assumed as the plainest reading; the every-cycle variant gives 35 in place of 36.
+- claim: intermediate-temperature-failures
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The deposit holds 38 parameter sets with nothing that marks which solutions were screened or discarded,
+    and not the 40 solutions screened. Of the 38 deposited, 2 are not triphasic at some temperature between 10 and
+    25 C (all-models-compensated). The README describes how to compile and run the code and says nothing about which
+    solutions were kept or discarded. The score in each file name runs from 7.8 to 160.8 (median 18.5); the two
+    models that fail between 10 and 25 C score 28.0 (ED50XO) and 160.8 (MAXTTP, the largest), and the next largest
+    are R00977 (107.0) and J9U8SQ (91.9), which do not fail. That 2 of 38 fail is close to the paper's 2 in 40,
+    but nothing in the files says that the 38 hold the paper's 2 failures, and MAXTTP is shown in Figure 2, figure
+    supplement 1.
+- claim: figs2-ramp-largest-isi
+  outcome: reproduced
+  notebook: ramps.ipynb
+  output: claim:figs2-ramp-largest-isi
+  notes: PLKTEM, 10 to 25 C over 60 min. The median per-cycle largest ISI falls in every 4 min (1 degree) window
+    with no increase in all three cells (PD 0.604 to 0.299 s, LP 0.613 to 0.301 s, PY 0.522 to 0.251 s; Spearman
+    -1.000 each). In 1 min windows the Spearman correlations are -0.998, -0.998 and -0.994, with 7, 9 and 22 increases
+    between successive windows.
+  deviations:
+  - The deposit has no ramp code; the temperature is changed linearly and the temperature factors updated every
+    1 ms, from the deposited initial conditions at 10 C.
+- claim: figs3-duty-cycle-variable-across-models
+  outcome: reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:figs3-duty-cycle-variable-across-models
+  measured: 1.0
+  notes: On the criterion's variant (per-burst LP duty cycles from the 16 fixed temperatures, 30 s each), all 703
+    pairs of the 38 models differ at p < 0.05 (two-sample Kolmogorov-Smirnov), including every pair that shares
+    its maximal conductances (largest p 0.025, EF84RN against FGFKQS). The mean LP duty cycle falls with temperature
+    in 23 models (Spearman below -0.5), rises in 3 and neither in 12. The main reading, the 60 min ramp of every
+    model, was not run. The test pools autocorrelated per-burst values across temperatures, so it detects small
+    differences; the outcome says that the distributions are not identical, little more.
+  deviations:
+  - 'The ramp reading (38 models, 3600 s each) was not run: timed on a subset in ramps.ipynb at 39 simulated seconds
+    per second on 4 processes, it would take 59 min, which fits neither beside that notebook (58 min run so far
+    when timed) nor, with loading and analysis, safely in a notebook of its own under the 60 min limit. The outcome
+    rests on the variant reading the criterion names.'
+  - 703 pairs of 38 models, where the criterion counts 630 pairs of 36.
+- claim: fig2-lp-spike-amplitude-threshold
+  outcome: reproduced
+  notebook: voltage_distributions.ipynb
+  output: claim:fig2-lp-spike-amplitude-threshold
+  notes: G7P2WE, LP, 26 temperatures from 10 to 25 C, 30 s at dt = 0.001 ms with the last 10 s kept (5 x 10^5 samples,
+    as the Methods say). The amplitude falls under both readings (peak minus trough 56.9 to 26.2 mV; upper envelope
+    16.7 to -1.8 mV; Spearman -1.000 each). The threshold under reading (a) stays near -28 mV (-27.8 to -27.5 mV,
+    with a dip to -28.6 mV between; Spearman -0.197). Under reading (b), located as the upper edge of the densely
+    occupied part of the distribution below -20 mV, the threshold rises from -36.1 to -26.5 mV at 5% of the largest
+    occupancy (Spearman 0.997), from -38.2 to -29.1 mV at 10% (0.996) and from -33.0 to -20.0 mV at 2% (0.996, at
+    the search limit at 2 of 26 temperatures). Amplitude (a) and threshold (b) meet the criterion. Where the spike
+    region begins is assumed; the question is for the paper's authors (finding 6). The outcome rests on this rule.
+    LP fires 114 spikes in the analysed 10 s at 10 C and 433 at 25 C; more spikes put more occupancy just above
+    the densely occupied part, which could raise the edge with no change in the per-spike threshold, which reading
+    (a) finds flat; at 10 C reading (b) lies 8.4 mV below reading (a), at 25 C 1.0 mV above it.
+  deviations:
+  - 26 of the Methods' 101 temperatures (steps of 0.6 C), as 101 at dt = 0.001 ms would take about 40 min.
+  - 'Threshold reading (b) is located by an assumed rule (pyloric.spike_region_start): the highest voltage below
+    the -20 mV spike detection level whose occupancy, smoothed over 1 mV, is at least 5% of the largest occupancy;
+    above it the cell passes only during spikes. Neither the paper nor the claims file says how the point is found.
+    The fractions 2% and 10% give the same outcome.'
+  assumed: true
+- claim: fig2s1-peak-voltage-diverse
+  outcome: reproduced
+  notebook: voltage_distributions.ipynb
+  output: claim:fig2s1-peak-voltage-diverse
+  notes: Upper envelope from 10 to 25 C, per cell. G7P2WE falls in every cell (-19.1, -18.5, -13.8 mV); 4X6W66 rises
+    in every cell (3.9, 7.3, 6.3 mV, more than 5 mV in LP and PY); MAXTTP stays within 5 mV in every cell (-1.5,
+    -2.5, 1.0 mV). The 2 mV variant loses MAXTTP and the 10 mV variant loses 4X6W66. The mean V rises in 8 of the
+    9 cells and falls in one (4X6W66 LP, -0.26 mV).
+  deviations:
+  - Six temperatures (10, 13, 16, 19, 22, 25 C) in place of 101; the criterion uses the 10 and 25 C values.
+- claim: fig3-current-amplitudes
+  outcome: partially_reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig3-current-amplitudes
+  measured:
+  - 0.486
+  - 8.945
+  notes: PD cell, 13 s with the last 3 s analysed, as the deposit's currentscape script does. In 4X6W66 the Na peak
+    grows 2.42-fold, the CaT peak falls to 0.486 (0.5 +- 0.05) and the KCa peak grows 8.95-fold (reading a) or 9.10-fold
+    (reading b), outside 6 +- 0.6. In SJR46Y the Na peak falls to 0.81 and the KCa peak to 0.80. Four of the five
+    parts hold under both readings, the criterion's partial case; with the panels swapped, none does.
+  deviations:
+  - The 13 s simulation with a 10 s transient and 3 s analysed is the deposit's script integratePyloricSQ10s_currentscapes_RK4_mp.py
+    (transient = 10, nsecs = 3); the paper does not give it.
+- claim: fig4-currentscapes-reorganize
+  outcome: not_reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig4-currentscapes-reorganize
+  notes: 'WWZ3CN, 3 s at 10 and 25 C (3 and 9 bursts per cell). Two burst bounds were run, from the first to the
+    last spike and between the -50 mV slow-wave crossings, each with thirds and 20%. The PD leak current has no
+    inward share inside the bursts under any of the four (0.0000 at start and end): all leak reversal potentials
+    are -50 mV, and V stays above -50 mV within either bound, so the leak part cannot hold under any burst bound
+    that keeps V above -50 mV. The PD A share at the start over the end of the burst is 1.278 at 10 C with spike
+    bounds and 1.364 or 1.370 with slow-wave bounds, outside 0.8 to 1.25. With spike bounds the KCa share at the
+    end of the burst rises in LP (+0.29, +0.34) and PY (+0.22, +0.25) but falls in PD (-0.21, -0.20); with slow-wave
+    bounds it rises in all three but least in LP (+0.03 against PD +0.34 and +0.62). No part of the criterion holds
+    under any reading.'
+  deviations:
+  - Where a burst starts and ends is open; the bursts are bounded by their first and last spike and, as a second
+    reading, by the last upward and the first downward crossing of the Methods' -50 mV slow-wave threshold around
+    them. Both give the same outcome.
+- claim: currentscapes-dominant-currents
+  outcome: reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:currentscapes-dominant-currents
+  measured: 0.993
+  notes: 38 models, 3 cells, 10, 15, 20 and 25 C, 26,868 spikes. Na has the largest inward share in the 1 ms before
+    every spike peak (1.000) and Kd the largest outward share in the 1 ms after it (1.000). At the 5% of time with
+    the lowest voltage, H holds the largest inward share in all 456 cases and the synaptic current the largest outward
+    share in 453 (KCa in 3), so both hold in 0.993 of cases (PD 0.98, LP and PY 1.0). The variant gives the same
+    0.993.
+  deviations:
+  - The 38 deposited models.
+- claim: fig5-a-to-kca-tradeoff
+  outcome: reproduced
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig5-a-to-kca-tradeoff
+  notes: FGFKQS (the Methods' model), the 20 ms after the last spike of each PD burst, 16 temperatures. The A share
+    falls from 0.312 to 0.082 and the KCa share rises from 0.077 to 0.577 (Spearman -1.000 and 1.000); A exceeds
+    KCa at 10 C and KCa exceeds A at 25 C. In J9U8SQ (the legend's reading) the trends hold (-0.997 and 0.953) but
+    KCa already exceeds A at 10 C (0.304 against 0.197). The statement's part on the repolarization of the last
+    spike is not tested separately.
+  deviations:
+  - The window starts at the -20 mV crossing of the last spike of the burst (the claims file says burst termination,
+    last spike of the burst).
+- claim: fig6-crash-different-mechanisms
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig6-crash-different-mechanisms
+  notes: FGFKQS and 71G6LA are triphasic at 10 and 25 C. At 30 C (40 s, last 30 s), 71G6LA's PD is quiescent (no
+    spike), but FGFKQS's PD fires 1005 spikes (class other; V from -59.7 to 14.8 mV), so complete loss of PD activity
+    holds in one of the two models, and the criterion requires both. The dominant PD currents at 30 C, over the
+    last 3 s of the same 40 s runs, differ between the models (H and KCa in FGFKQS, H and Syn in 71G6LA), as they
+    do over the last 3 s of 13 s runs. With a 0 mV spike threshold FGFKQS's PD fires 336 spikes in the 30 s and
+    the network is triphasic.
+  deviations:
+  - Each temperature is simulated from the deposited initial conditions, as the deposit's scripts do; how the paper
+    reached 30 C (a ramp or a fresh start) is not stated, and the classes rest on the -20 mV spike threshold (assumed).
+  - The dominant currents are taken over the last 3 s of the 40 s run that is classified.
+- claim: fig6s1-crash-mechanisms
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig6s1-crash-mechanisms
+  notes: Seven of the eight models are in the deposit; Q8FBN1 is not. All seven stop being triphasic below 35 C
+    (B7SD0L 32, J9U8SQ 29, 4R2719 32, R3VIEW 30, RMZ8KZ 29, EF84RN 30, SJR46Y 26 C, skipping runs that diverged),
+    but the dominant (inward, outward) current pairs per cell, over the last 3 s of the same 40 s runs, form 5 distinct
+    patterns; B7SD0L, J9U8SQ and SJR46Y share H and Syn in all three cells. Over the last 3 s of 13 s runs there
+    are also 5, with EF84RN in place of SJR46Y. Reproduction needs every pattern distinct, and the partial case
+    at least six distinct among eight with every model crashing; with the missing model at most six could be, and
+    Q8FBN1 cannot be shown to crash. Reproduced is ruled out; partially reproduced is not, as it would need Q8FBN1
+    to crash with a sixth pattern. Whether the outcome is not reproduced or partially reproduced therefore depends
+    on the missing model, so the claim is blocked (data_missing), as fig7-high-temperature-slow-timescales is; it
+    can be at best partially reproduced. The round-3 verifier agreed with this change.
+  deviations:
+  - Seven of the eight models; Q8FBN1 is not in the deposit.
+  - Crash temperatures come from simulations from the initial conditions at each temperature (40 s, last 30 s);
+    runs whose integration diverged are skipped. The dominant currents are taken over the last 3 s of the same 40
+    s run; window-averaged shares are dominated by the currents of the hyperpolarized phases, which makes shared
+    patterns likely.
+- claim: fig7-high-temperature-slow-timescales
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Three of the five models (G81PUL, G7EOZ8, SAXT8Y) are not in the deposit. Of the two that are, J9U8SQ at
+    34 C diverges numerically (NaN) from the initial conditions, at the same step in the deposited Java as in the
+    port (step 8273, 0.41 s), and KMNLBC (KNMLBC of the Methods) at 30 C is triphasic in the last 30 s of a 40 s
+    run, with no gap between spikes longer than 0.68 s (reading a) and a dominant period of the slow voltage of
+    0.35, 0.35 and 0.29 s (reading b). So neither model present shows a time scale above 2 s, and the claim would
+    not be reproduced even with the three missing models; partially reproduced (three or four of five) would need
+    all three missing models to show it, so the outcome can be at best partially reproduced. FGFKQS at 34 C (the panel A variant) is quiescent. Over
+    all 38 models at 26 to 35 C, 81 of the non-triphasic runs have all cells quiescent, 29 diverged, and the rest
+    mix regular, irregular and other classes. That J9U8SQ, which Figure 7A shows active at 34 C, diverges in the
+    deposited code suggests the paper's high-temperature runs used other settings.
+- claim: fig8a-hysteresis-quiescence
+  outcome: reproduced
+  notebook: ramps.ipynb
+  output: claim:fig8a-hysteresis-quiescence
+  measured: 1.94
+  notes: 0SHNMD (OSHNMD of the Methods), 10 to 35 C in 30 min and back. PD fires its last spike on the up ramp at
+    34.16 C (1739.7 s), stays quiescent for 260 s across the top, and resumes at 32.22 C on the down ramp, 1.94
+    C lower (2 +- 0.2). The legend's "before 600 s" is not met (the last spike is at 1740 s), not judged. The variant
+    H5AIZR differs by 0.05 C.
+  deviations:
+  - The ramp is implemented here (linear, factors updated every 1 ms), from the deposited initial conditions at
+    10 C.
+- claim: fig8-up-down-ramps
+  outcome: blocked
+  blocked_by: too_large
+  notebook: ramps.ipynb
+  output: claim:fig8-up-down-ramps
+  notes: 'The criterion is met when either ramp reading gives a count within 34 +- 3. The first reading (10 to 35
+    C and back over 60 min) was run, and 22 of 38 models are similar on the two legs over 10 to 25 C (9 at a 5%
+    bound, 28 at 20%), so that reading does not meet it. Six models diverge numerically on this ramp (G7P2WE, INPO74,
+    J9U8SQ, NJP4RT, R00977, SJR46Y), MAXTTP fires no spike on the down leg below 25 C, and 9 others exceed 10% or
+    lose triphasic order in some window. No model has the same spike count on both legs. The second reading (10
+    to 25 C over 60 min and back, 7200 s per model), which is the ramp of Figure 1, figure supplement 2 that the
+    paper cites for this sentence, was timed in the notebook on a subset at 39 simulated seconds per second on
+    4 processes: 117 min for 38 models, over the 60 min a notebook may take. It was not run, so the outcome cannot
+    be decided; the second reading, split over two notebooks that pass the states at 25 C from one to the other,
+    would settle it.'
+- claim: fig8b-pathological-attractor
+  outcome: not_reproduced
+  assumed: true
+  notebook: ramps.ipynb
+  output: claim:fig8b-pathological-attractor
+  measured:
+  - 17.08
+  - 11.32
+  notes: H5AIZR on the updown ramp, PD classified per minute. PD spikes in every window (at least 10 spikes), bursts
+    regularly early on and leaves regular bursting at 28.8 C on the up ramp, so the hysteresis part holds in that
+    sense, but it is regular again from 32 to 35 C. On the way down it returns to regular bursting for good at 17.08
+    C (20 +- 2), after isolated irregular windows at 27.1, 22.1 and 17.9 C, and its longest PD ISI between 25 and
+    35 min is 11.32 s (1 +- 0.1). Both numbers are out of tolerance. The variant 0SHNMD has PD windows with no spike.
+  deviations:
+  - The return temperature is read as the start of the last run of regular bursting windows on the down ramp; the
+    classification rests on the -20 mV spike threshold (assumed).
+- claim: fig9a-remove-a-current
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig9a-remove-a-current
+  notes: WWZ3CN. At 10 C the network is not triphasic after IA is removed, with irregular bursting cells, under
+    all three timings. At 25 C no timing leaves PD and LP regular with only PY irregular. Under the Results' timing
+    (20 s control, 20 s without IA) all three cells burst irregularly and the network is not triphasic at 25 C,
+    the criterion's partial case (PY irregular, another cell not regular). The code's timing gives PD regular, LP
+    and PY other; the legend's gives PD and LP irregular, PY other.
+  deviations:
+  - Classes taken after removal with its first 2 s dropped (criterion), and resting on the -20 mV spike threshold
+    and the order test (assumed).
+- claim: fig9b-remove-kca-current
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig9b-remove-kca-current
+  notes: FGFKQS (the Methods' model, and the model of the deposit's KCa removal script). At 10 C the network is
+    triphasic before and after removal and slows (PD 1.061 to 0.904 Hz with the code's timing, 1.067 to 0.918 Hz
+    with the Results' timing); at 25 C all three cells are quiescent after removal. The legend's timing (removal
+    at 4 s from the initial conditions) does not show it, nor does J9U8SQ under any timing (at 10 C it becomes not
+    triphasic).
+  deviations:
+  - The classes rest on the -20 mV spike threshold and the order test (assumed).
+- claim: fig10a-graded-removal
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig10a-graded-removal
+  measured: 4
+  notes: '4X6W66, each perturbed run 20 s with the first 10 s dropped, under two protocols. With 20 s of control
+    first and the conductance changed from its final state (main protocol), four of the five stated grid cells match:
+    Na at 75% makes LP burst irregularly with the network not triphasic at 10 C and leaves it triphasic at 25 C;
+    KCa removal keeps the network triphasic at every step at 10 C; KCa at 0% at 25 C makes every cell quiescent.
+    The CaT and CaS part fails: the network is not triphasic at either temperature for both, but with CaS at 0%
+    the cell classes are the same at 10 and 25 C (PD quiescent, LP and PY regular bursting). With the conductance
+    changed from t = 0 (variant), three of five match: at 10 C, KCa at 25% and 0% gives PD and PY quiescent and
+    LP tonic spiking, and at 25 C, KCa at 0% leaves LP tonic spiking, while the CaT and CaS part holds. Both protocols
+    give partially reproduced. With a 0 mV spike threshold 2 (control first) and 1 (from t = 0) of five match, as
+    LP''s spikes peak below 0 mV at 10 C.'
+  deviations:
+  - The conductance is changed after 20 s of control from the deposited initial conditions (assumed). The paper
+    does not say when for Figure 10; the Results give this protocol for the removals of Figure 9, in the same section
+    ("the models were simulated for 20 s in control conditions and then IA was completely removed for the next 20
+    s"), and the deposit's integratePyloricSQ10s_remove_gA_onesteps_twotemps_RK4.py also runs a control period and
+    continues from its final state. The change from t = 0 is shown as a variant.
+  - The classes rest on the -20 mV spike threshold and the order test (assumed); a 0 mV threshold is shown as a
+    variant.
+- claim: fig10b-complete-removal-differs
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_alonso_2020.ipynb
+  output: claim:fig10b-complete-removal-differs
+  notes: 38 models, each current at 0% at 10 and 25 C, under both protocols of fig10a-graded-removal. With the control
+    period first (main), CaT has the largest fraction responding differently under both readings (0.895 all classes,
+    0.605 network class), and 5 of the 6 other currents (8 currents; 4 of 5 without leak) fall within 0.3 to 0.7
+    under the four-class reading, but complete removal of H gives the same, quiescent, state at both temperatures
+    in 30 of 38 models (the criterion asks at least 33). Fractions responding differently (four classes) Na 0.263,
+    CaS 0.579, A 0.500, KCa 0.658, Kd 0.474, H 0.184, leak 0.658. With removal from t = 0 (variant), H gives 31,
+    CaT is the largest only under the four-class reading (0.974; network class 0.474 against A 0.579), and 2 of
+    6 other currents fall within 0.3 to 0.7. The H part fails under every reading and protocol, and with 36 models
+    in place of 38 a count of 30 or 31 cannot reach 33.
+  deviations:
+  - The 38 deposited models; the bound of 33 was set for 36.
+  - The conductance is removed after 20 s of control, as in fig10a-graded-removal (assumed); removal from t = 0
+    is shown.
+  - The classes rest on the -20 mV spike threshold and the order test (assumed).
+findings:
+- kind: data_missing
+  severity: major
+  notebook: reproduce_alonso_2020.ipynb
+  output: finding-model-names
+  statement: Four models the Methods name are not in the deposit, Q8FBN1 (Figure 6, figure supplement 1) and G81PUL,
+    G7EOZ8 and SAXT8Y (Figure 7). Three of the five models of Figure 7 and one of the eight of its supplement cannot
+    be simulated.
+- kind: metadata_error
+  severity: minor
+  notebook: reproduce_alonso_2020.ipynb
+  output: finding-model-names
+  statement: Three models are filed under names that differ from the Methods. OSHNMD and B7SDOL are 0SHNMD and B7SD0L
+    (digit 0 for the letter O) and KNMLBC is KMNLBC (two letters swapped). The Figure 1 model, printed with a symbol
+    in its second place, is 4X6W66, the one file that matches at the other five characters. Each is the only close
+    match among the 38 files.
+- kind: other
+  about: data
+  severity: minor
+  notebook: reproduce_alonso_2020.ipynb
+  output: finding-shared-conductances
+  statement: The deposit holds 38 parameter sets, where the paper and the Dryad description say 36, and nothing
+    in the files marks which 36 the paper studied. The 38 share 27 distinct sets of maximal conductances; 9 of them
+    carry two or three Q10 sets.
+- kind: other
+  about: data
+  severity: minor
+  notebook: reproduce_alonso_2020.ipynb
+  output: finding-frequency-at-10C
+  statement: At 10 C the deposited models burst at 1.25 Hz on average (0.99 to 1.63 Hz), and 10 of 38 are within
+    10% of the 1 Hz target the Methods give for the control rhythm; all 38 are triphasic.
+- kind: other
+  about: data
+  severity: minor
+  notebook: reproduce_alonso_2020.ipynb
+  output: finding-diverges-at-high-temperature
+  statement: The deposited integrator (RK4, dt = 0.05 ms, the deposited initial conditions) returns NaN for 6 of
+    the 38 models at some temperatures from 26 to 35 C (29 of 380 runs), and for the same 6 on the 10 to 35 C ramp.
+    The deposited Java gives NaN at the same step as the port (G7P2WE at 35 C at step 2041, J9U8SQ at 34 C at step
+    8273). Results at those temperatures cannot be computed with the deposited code at the paper's time step, though
+    Figure 7A shows J9U8SQ active at 34 C.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) What voltage threshold detects a spike? This attempt uses upward
+    crossings of -20 mV; at 0 mV the spikes of some cells are missed and 17 of 38 models stay triphasic at 10 and
+    25 C, against 38. (2) How is "fired in the right order" tested for the triphasic class? This attempt compares
+    the median LP and PY burst onset phases within the PD cycle; requiring the order in every cycle changes the
+    compensated count from 36 to 35 of 38. (3) How is the lag d between spike onset and the -50 mV crossing formed?
+    This attempt takes the median over spikes of the time from the last upward crossing. (4) How were the temperature
+    ramps run, and were high-temperature states (Figures 6 and 7) reached from a ramp or from the initial conditions?
+    (5) Which 36 of the 38 deposited models are the paper's? (6) For Figure 10, was the conductance changed after
+    a control period, as for Figure 9, or from the start? This attempt uses a 20 s control period. (7) How is the
+    spike threshold read from the voltage distribution in Figure 2? This attempt takes the upper edge of the densely
+    occupied part of the distribution. These choices enter every outcome marked as assumed.
+- kind: other
+  about: data
+  severity: minor
+  notebook: reproduce_alonso_2020.ipynb
+  output: finding-parameters-outside-search-space
+  statement: The deposited parameters fall outside the search space the Methods give (Finding parameters). gNa reaches
+    1992 uS against a bound of 1000 (37 of 38 models above it), gA 198.6 and gKd 198.8 against 100 (38 and 36 models),
+    and the synaptic conductances 0.993 uS against 0.05 (all 38). tau_Ca is within its 2000 ms bound as stored (33
+    to 1898) but not as the deposited Java uses it, times 10 (330 to 18,981 ms). The files may follow another convention
+    or code version than the Methods describe; the deposited Java runs them as they are.
+verifications:
+- date: '2026-11-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the three executed notebooks with the conclusion cells and the summaries removed, the helper
+    module and the claims file, with the paper''s full text under paper/. The verifier checked the archive through
+    Dryad''s API (version 94811 is the only version; one zip of 99,026 bytes whose MD5 matches the one the notebook
+    checks) and ran bursts, burst_stats, classify_cell, triphasic, cycle_largest_isi, shares and spike_shapes on
+    synthetic spike trains and voltage traces. It found no place where the claims file misreads the paper. Its other
+    points, answered in the responses or here: continuous irregular spiking with no gap over 200 ms is labelled
+    other (kept; it does not decide an outcome, as every claim that meets it needs another class); the 0 mV threshold
+    promised in the helper''s docstring is now computed (spike-threshold-variant cell: 22 of 76 runs change class,
+    as some cells peak below 0 mV); the ramp update is described the same way in the helper and the ramps notebook
+    (every 20 steps); KNMLBC read as KMNLBC stays a stated assumption; which 36 of the 38 models the paper used
+    cannot be told from the files (finding 3).'
+  results:
+  - claim: deposit-models
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 12: 3 of 38 models are within tolerance, against the 30 needed. The 0.20 variant gives 0 of 38,
+      and mean frequency is 1.25 Hz. Cells 7, 8 and 10: 4 of the 21 named models are absent, the deposit holds 38
+      models (not 36), and those 38 contain only 27 distinct conductance sets.'
+    response: 'No change of outcome. Problem 6: a new cell, finding-parameters-outside-search-space, compares the
+      deposited parameters with the Methods'' search space and a new finding (7) records that gNa, gA, gKd, the
+      synaptic conductances and tau_Ca as the Java uses it fall outside it. Problem 5: the Java is now compared
+      with the port at 25, 34 and 35 C (deviation updated).'
+  - claim: fig1c-frequency-q10-phase-constant
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 17: the frequency Q10 of 4X6W66 is 1.93, 1.98 or 1.94 under readings a, b and c, all within 2+-0.2.
+      Constancy fails under both readings: the LP duty-cycle range is 0.11 (above 0.1) and its change from 10 C
+      is 34% (above 20%).'
+    response: No change.
+  - claim: fig1s1-three-models
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 19: frequency rises in all three models, but none is constant under either reading. 71G6LA misses
+      reading (i) only on PY offset (range 0.102).'
+    response: No change.
+  - claim: all-models-compensated
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 21: 36 of 38 models are triphasic at all 16 temperatures (35 with the strict order variant). ED50XO
+      fails at 19 and 21 C; MAXTTP fails at 10 and 14 C, and MAXTTP is a paper model (Fig. 2-S1), so not every paper
+      model passes. "Multiple Q10 sets for every conductance set" is unsupported: only 9 of the 27 conductance sets
+      carry more than one Q10 set.'
+    response: No change of outcome. The notes now say that MAXTTP is a model the paper shows, so not every model
+      the paper uses passes.
+  - claim: intermediate-temperature-failures
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the archive is one zip with 38 parameter files and nothing marks which were screened or
+      discarded. 38 files is 36 plus 2, and exactly two models (ED50XO and MAXTTP) fail between temperatures; printing
+      the README and the file-name scores against the 36 would show whether part of this claim is testable. MAXTTP
+      appears in Fig. 2-S1, which argues against it being a discarded solution.'
+    response: 'No change of outcome. A new cell prints the README''s lines on models (it says nothing about kept
+      or discarded solutions) and every file-name score: ED50XO scores 28.0 and MAXTTP 160.8, the largest, while
+      R00977 (107.0) and J9U8SQ (91.9), the next largest, do not fail. Nothing ties the 38 to the 40 screened, so
+      the claim stays blocked; the notes give these numbers.'
+  - claim: figs2-ramp-largest-isi
+    agrees: true
+    outcome: reproduced
+    reason: 'Ramps cell 5: under reading (a), Spearman is -1.0 in all three cells with 0 increases. Under reading
+      (b) it is between -0.994 and -0.998.'
+    response: No change.
+  - claim: figs3-duty-cycle-variable-across-models
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced on the variant reading only. Cell 23: all 703 of 703 pairs differ at p < 0.05. The main
+      ramp reading was not run. The KS test pools about 900 autocorrelated per-burst values across temperatures,
+      so almost any difference is significant; even FGFKQS against EF84RN gives p = 0.025. The test follows the
+      criterion, but it carries little information.'
+    response: No change of outcome. The ramp reading is now timed in the ramps notebook (51 min for 38 models at
+      45 simulated seconds per second, as printed; corrected in round 2 from figures of an earlier run), which does
+      not fit beside that notebook's 52 min, so it stays not run. The
+      notes and the conclusion now say that the test detects small differences and shows little more than that the
+      distributions are not identical.
+  - claim: fig2-lp-spike-amplitude-threshold
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Voltage cell 5: amplitude falls under both readings (rho = -1.0, from 56.9 to 26.2 mV). Threshold reading
+      (a) gives rho = -0.197, flat at about -28 mV. Threshold reading (b) was not computed, so the claim might be
+      fully reproduced under it.'
+    response: 'Outcome changed to reproduced, marked assumed. Threshold reading (b) is now computed (pyloric.spike_region_start),
+      as the upper edge of the densely occupied part of the distribution below -20 mV: it rises from -36.1 to -26.5
+      mV at 5% of the largest occupancy (Spearman 0.997), and at 2% and 10% too (0.996 each). The rule for locating
+      the point is an assumption, recorded as a deviation and asked of the authors (finding 6).'
+  - claim: fig2s1-peak-voltage-diverse
+    agrees: true
+    outcome: reproduced
+    reason: 'Voltage cell 7: at the 5 mV bound, G7P2WE falls 14-19 mV, 4X6W66 rises 6-7 mV in LP and PY, and MAXTTP
+      changes by no more than 2.5 mV. Mean V rises in 8 cells and falls in 1. This is fragile: the only fall is
+      0.26 mV, and each of the 2 and 10 mV variants fails one part.'
+    response: No change; the notes already give the 2 and 10 mV variants and the 0.26 mV fall.
+  - claim: fig3-current-amplitudes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 27: 4 of 5 checks hold under both peak readings. The KCa ratio in 4X6W66 is 8.9-9.1, against 6+-0.6.
+      The swapped panel assignment gives 0 of 5.'
+    response: No change.
+  - claim: fig4-currentscapes-reorganize
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 29: the KCa share at burst end falls in PD (0.62 to 0.41), so the KCa part fails under both readings.
+      The A ratio at 10 C is 1.278, just outside 0.8-1.25. The leak part could not hold by construction (problem
+      4): bursts run from the first to the last spike crossing, V stays above EL = -50 mV there, so the leak''s
+      inward share is 0 at start and end; a burst bounded by the -50 mV slow-wave crossings is the reading under
+      which the leak statement can be tested. The KCa part fails anyway, so the outcome probably stands.'
+    response: No change of outcome. Slow-wave bounds (last upward and first downward -50 mV crossing around each
+      burst) are now run beside the spike bounds. The leak's inward share is still 0 at start and end, as V is above
+      -50 mV between those crossings too, so no bound that keeps V above -50 mV can test it. With slow-wave bounds
+      the A ratio at 10 C is 1.364 or 1.370 and the KCa increase is smallest in LP (+0.03), so no part holds under
+      any of the four readings.
+  - claim: currentscapes-dominant-currents
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 31: Na leads in 1.000 of 26,868 spikes and Kd in 1.000. H inward and synaptic outward hold the
+      largest shares in 0.993 of 456 cases.'
+    response: No change.
+  - claim: fig5-a-to-kca-tradeoff
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 33, FGFKQS: Spearman is -1.000 for A and +1.000 for KCa. A exceeds KCa at 10 C (0.31 vs 0.08)
+      and KCa exceeds A at 25 C (0.58 vs 0.08). J9U8SQ has no crossover.'
+    response: No change.
+  - claim: fig6-crash-different-mechanisms
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 38: at 30 C the PD cell of FGFKQS is not quiescent. It fires 1005 spikes in 30 s, class "other",
+      with V from -59.7 to 14.9 mV. Both the reproduced and the partial criteria need PD quiescent in both models.'
+    response: No change of outcome. The dominant currents are now taken from the last 3 s of the same 40 s run that
+      is classified (problem 10); they are unchanged (H and KCa in FGFKQS, H and Syn in 71G6LA). With a 0 mV threshold
+      FGFKQS's PD is not quiescent either (336 spikes).
+  - claim: fig6s1-crash-mechanisms
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 40: 7 of 8 models are present and all 7 crash, but there are only 5 distinct patterns, and B7SD0L,
+      J9U8SQ and EF84RN share (H, Syn) in all three cells. Reproduced is ruled out. Partial would need the missing
+      Q8FBN1 to supply a sixth pattern. The crash temperature is taken from the 40 s runs, but the dominant currents
+      from separate 13 s runs (problem 10).'
+    response: No change of outcome. The dominant currents now come from the last 3 s of the same 40 s runs; there
+      are still 5 distinct patterns, with SJR46Y in place of EF84RN among the models that share H and Syn in all
+      cells. The 13 s runs are kept as a variant.
+  - claim: fig7-high-temperature-slow-timescales
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: G81PUL, G7EOZ8 and SAXT8Y are not in the deposit under any near spelling. Of the two present,
+      KMNLBC at 30 C is triphasic with a longest gap of 0.68 s, and J9U8SQ at 34 C diverges to NaN (cell 42). Reproduced
+      is therefore already ruled out.'
+    response: No change of outcome. Reading (b) is now computed for KMNLBC (dominant period of the slow voltage
+      0.35, 0.35 and 0.29 s), and the Java is shown to give NaN for J9U8SQ at 34 C at the same step as the port.
+      The notes say that reproduced is ruled out even with the missing models.
+  - claim: fig8a-hysteresis-quiescence
+    agrees: true
+    outcome: reproduced
+    reason: 'Ramps cell 7, 0SHNMD: the last PD spike on the way up is at 34.16 C and the first on the way down at
+      32.22 C, a difference of 1.94 C (within 2+-0.2), with PD quiescent across the top.'
+    response: No change.
+  - claim: fig8-up-down-ramps
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Not reproduced (provisional). Ramps cell 9: on the reading that was run, 22 of 38 models are similar,
+      against 34+-3; it is 28 even at a 20% bound. The notebook calls this blocked (too_large), but the reason is
+      compute time, not data size, and "too_large" is not a valid blocked reason for a run of about one hour. The
+      alternative 60-minute 10-25 C ramp was not run, and that is the ramp the paper cites for this sentence (Fig.
+      1-S2E), so the reading left out may be the one the paper used.'
+    response: 'Kept blocked (too_large); the disagreement is recorded. The criterion is met when either reading
+      is within tolerance, so the first reading''s 22 cannot decide the outcome while the second is untested. The
+      second reading is now timed in the notebook on a subset: 102 min for 38 models at 45 simulated seconds per
+      second, as printed (corrected in round 2 from figures of an earlier run), over the 60 min a notebook may take. The protocol (Author, Develop on a subset)
+      names too_large for a computation estimated over the notebook limit or the time left. The notes say that the
+      second reading is the ramp the paper cites, and that a run of it split over two notebooks would settle the
+      claim.'
+  - claim: fig8b-pathological-attractor
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Ramps cell 11, H5AIZR: PD returns to regular bursting at 17.08 C (target 20+-2) and the longest ISI
+      between 25 and 35 min is 11.3 s (target 1+-0.1). Both numbers are out of tolerance, and partial allows only
+      one. PD is already regular again from 32 C on the up ramp.'
+    response: No change.
+  - claim: fig9a-remove-a-current
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 45, "Results" timing: at 10 C the network is not triphasic and the cells are irregular. At 25
+      C PY bursts irregularly but PD and LP are also irregular, which is the partial clause. No timing gives PD
+      and LP regular.'
+    response: No change.
+  - claim: fig9b-remove-kca-current
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 47, FGFKQS, under both the "code" and "Results" timings: at 10 C the network stays triphasic and
+      frequency drops from about 1.06 to about 0.91 Hz; at 25 C all three cells are quiescent.'
+    response: No change.
+  - claim: fig10a-graded-removal
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 49: 3 of 5 checks hold. Both KCa checks fail: at 10 C, KCa 25% and 0% give LP tonic spiking; at
+      25 C, KCa 0% leaves LP tonic. This depends on the removal protocol (problem 1): the conductance is removed
+      from t = 0, while Fig. 9 removes it after a control period, as the deposit''s removal script does, and the
+      notebook''s own outputs show the choice changes the result; both protocols should have been run, and the count
+      could rise to 4 or 5.'
+    response: 'No change of outcome. Both protocols are now run. With 20 s of control first (the Results'' protocol
+      for Figure 9 and the deposit''s script; adopted as the main one and marked assumed), 4 of 5 checks hold: both
+      KCa checks now pass and the CaT and CaS check fails, as CaS at 0% gives the same cell classes at 10 and 25
+      C. From t = 0, 3 of 5. Both are partial. Measured changed from 3 to 4.'
+  - claim: fig10b-complete-removal-differs
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 51: the H part fails under every reading, with 31 models the same and quiescent against the 33
+      needed. Restricting to 36 models cannot raise that count. The CaT part fails under reading (b) (0.474). Problem
+      1 applies here too.'
+    response: No change of outcome. Both protocols are now run. With the control period first, H gives 30 same and
+      quiescent, CaT is the largest under both readings (0.895, 0.605), and 5 of 6 other currents fall within 0.3
+      to 0.7 under the four-class reading; the H part still fails under every reading and protocol.
+- date: '2026-11-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the three executed notebooks in full, with the conclusions and summaries, the helper module,
+    the claims file and this record, with the paper''s full text under paper/. The verifier agreed with 21 outcomes,
+    accepted fig8-up-down-ramps with a caveat and questioned fig6s1-crash-mechanisms. It found no misreading of the
+    paper in the claims file. No finding is rated critical; it found that the ratings given match what the outputs
+    show (finding 1 major, cells 7 and 8; findings 2, 3, 4, 5 and 7 minor; finding 6 has no rating). Its section
+    2 quoted sentences the printed outputs do not support, answered here: the stale timings in ramps cell 13, ramps
+    cell 17, main cell 28 and this record (ramps cell 12 printed 45 simulated seconds per second, 102 min, 52 min
+    so far and 51 min for the up legs) are removed from the notebooks, whose conclusions now refer to the estimate
+    printed in ramps cell 12, and the record quotes the numbers of the new run; deposit-models measured now takes
+    the printed means; the README now gives the agreement with the Java at 18 and 25 C, the run times of the previous
+    run (about 30, 50 and 20 min; this run printed 32.5, 57.9 and 23.5 min), three models under other spellings and one matched at an unreadable character, and fig2 as resting on
+    an assumed rule; main cell 6 now says 21 models. Remaining points it listed: the figs3 main reading and the
+    fig8 second reading are still not run (59 and 117 min by this run''s timing); which 36 of the 38 models the
+    paper used still cannot be told from the files (finding 3).'
+  results:
+  - claim: deposit-models
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 14: 3 of 38. The measured 0.192 and 0.239 ("means over models and cells") are not printed; the
+      cell 14 table averages to 0.193 for PD duty cycle and 0.234 for LP and PY. This does not change the outcome.'
+    response: Cell 14 now prints the two means, and measured takes them (0.193 and 0.234).
+  - claim: fig1c-frequency-q10-phase-constant
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 20.
+    response: No change.
+  - claim: fig1s1-three-models
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 23.
+    response: No change.
+  - claim: all-models-compensated
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 26: 36 of 38, 35 with the strict order test. The order test is stated, and the variant also gives
+      a partial outcome. Which 36 of the 38 models the paper used still cannot be told from the files.'
+    response: No change.
+  - claim: intermediate-temperature-failures
+    agrees: true
+    outcome: blocked
+    reason: Cell 32.
+    response: No change.
+  - claim: figs2-ramp-largest-isi
+    agrees: true
+    outcome: reproduced
+    reason: Ramps cell 5.
+    response: No change.
+  - claim: figs3-duty-cycle-variable-across-models
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced (variant reading): agreed on the variant the criterion names. The main ramp reading has
+      not been run; a notebook of its own could run it (51 min printed). The 57 min estimate for the up legs and
+      "that notebook already takes 58 min" are not printed: ramps cell 12 prints 51 min and the ramps notebook ran
+      51.7 min, so "does not fit" holds only for running it beside the existing ramps.'
+    response: 'No change of outcome. The stale timings are removed from the notebooks, and the deviation now quotes
+      this run''s printed estimate (59 min at 39 simulated seconds per second, ramps cell 12). The main reading is
+      still not run. A notebook of its own for the first 28 models in file order was written and run once while
+      preparing this revision, but the entry run that included it would not have finished in the time left, so
+      it was removed and its result is not used; at 59 min for all 38, a notebook of its own would sit at the 60
+      min limit.'
+  - claim: fig2-lp-spike-amplitude-threshold
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes as the criterion is written (voltage cell 5). The assumption is stated, but weakly supported. The
+      direct per-spike threshold (reading a) does not move (-27.8 to -27.5 mV, rho = -0.197); reading (b) sits 8
+      to 10 mV below it; LP fires 114 spikes at 10 C and 433 at 25 C, and more spikes put more occupancy just above
+      the dense region, which would push this edge upward even if the threshold did not change. At 2% the rule reaches
+      the -20 mV search limit at 24.4 and 25 C. The outcome should be read as resting on this rule.'
+    response: 'Outcome kept, marked assumed. The rule is the only reading of "where the spike region begins" this
+      attempt found to locate a point on the distribution, and the paper gives no other; the concern is recorded
+      in the notes and in voltage cell 6, which now say that the outcome rests on the rule and why it may track spike
+      count, and the README now marks the outcome as resting on it. The question stays with the paper''s authors
+      (finding 6).'
+  - claim: fig2s1-peak-voltage-diverse
+    agrees: true
+    outcome: reproduced
+    reason: Voltage cell 8.
+    response: No change.
+  - claim: fig3-current-amplitudes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 35.
+    response: No change.
+  - claim: fig4-currentscapes-reorganize
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 38: no part holds under any of the 4 readings.'
+    response: No change.
+  - claim: currentscapes-dominant-currents
+    agrees: true
+    outcome: reproduced
+    reason: Cell 41.
+    response: No change.
+  - claim: fig5-a-to-kca-tradeoff
+    agrees: true
+    outcome: reproduced
+    reason: Cell 44.
+    response: No change.
+  - claim: fig6-crash-different-mechanisms
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 50: FGFKQS PD fires 1005 spikes; still 336 at 0 mV, cell 71. The assumption is stated and reasonable.'
+    response: No change.
+  - claim: fig6s1-crash-mechanisms
+    agrees: false
+    outcome: blocked
+    reason: 'Reproduced is ruled out, because B7SD0L, J9U8SQ and SJR46Y share a pattern (cell 53). Partial is not
+      ruled out: it needs six distinct patterns among eight and every model crashing. The 7 models present give
+      5 patterns, so the missing Q8FBN1 could supply the sixth, and the notes themselves say "at most six could
+      be". fig7 is in the same position (partial possible only through the missing models) and is marked blocked.
+      For consistency fig6s1 should be blocked (data_missing), or both records should say that the outcome can be
+      at best partial.'
+    response: 'The verified outcome, not reproduced, is kept, as round 2 may not change an outcome, and blocked (data_missing)
+      is proposed on it for round 3: the claim cannot be decided between not reproduced and partially reproduced
+      without Q8FBN1. Cell 53 now prints what the missing model could change (at most 6 distinct among 8, so partial
+      possible and reproduced not), and the notes of both fig6s1-crash-mechanisms and fig7-high-temperature-slow-timescales
+      now say that the outcome can be at best partially reproduced.'
+  - claim: fig7-high-temperature-slow-timescales
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 56. Partial is possible only through the missing models.'
+    response: No change of outcome; the notes now say that partially reproduced would need all three missing models,
+      so the outcome can be at best partially reproduced.
+  - claim: fig8a-hysteresis-quiescence
+    agrees: true
+    outcome: reproduced
+    reason: 'Ramps cell 8: 1.94 C.'
+    response: No change.
+  - claim: fig8-up-down-ramps
+    agrees: true
+    outcome: blocked
+    reason: 'Accepted with a caveat. On the printed estimate (102 min, ramps cell 12), the second reading exceeds
+      the 60 min notebook limit. That meets the too_large definition the author quotes from the protocol, so the
+      verifier withdraws its provisional not_reproduced. The first reading gives 22 of 38 (ramps cell 11), so the
+      claim cannot pass on that reading. The second reading has not been run, so the claim is undecided. Ramps cell
+      13 ("timed on a subset at 40 simulated seconds per second, it would take 113 min, and this notebook had already
+      run for 58 of its 60 min") is not supported: ramps cell 12 prints 45 simulated seconds per second, 102 min
+      and 52 min so far, and the same stale figures appear in the record''s notes and verification response.'
+    response: 'No change of outcome. Ramps cell 13 and the summary no longer quote timings; they refer to the estimate
+      printed in ramps cell 12, which in this run is 117 min for the second reading at 39 simulated seconds
+      per second, and the notes quote these numbers. The second reading is not run: at about 117 min it would need
+      two notebooks passing the states at 25 C from one to the other, more than this revision''s time allowed after
+      a full run of the entry.'
+  - claim: fig8b-pathological-attractor
+    agrees: true
+    outcome: not_reproduced
+    reason: Ramps cell 15. The assumption is stated and reasonable.
+    response: No change.
+  - claim: fig9a-remove-a-current
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 59. The assumption is stated and reasonable.
+    response: No change.
+  - claim: fig9b-remove-kca-current
+    agrees: true
+    outcome: reproduced
+    reason: Cell 62. The assumption is stated and reasonable.
+    response: No change.
+  - claim: fig10a-graded-removal
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 65: 4 of 5 with control first, 3 of 5 from t = 0. Control first is the Results'' Figure 9 protocol
+      and the deposit''s removal script.'
+    response: No change.
+  - claim: fig10b-complete-removal-differs
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 68: H gives 30 or 31, against 33. The assumption is stated and reasonable.'
+    response: No change.
+- date: '2026-11-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3: the one proposed change of outcome, on fig6s1-crash-mechanisms, with the analysis behind it in
+    cells 52 to 54 of the main notebook, the claims file and this record. Nothing else was reviewed. The verifier found
+    nothing new in the claims file that misreads the paper for this claim, and noted that the criterion spells the model
+    B7SDOL where the deposit has B7SD0L, which cell 52 handles.'
+  results:
+  - claim: fig6s1-crash-mechanisms
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 53. The numbers come from simulations of the 7 deposited models; Q8FBN1 is absent. All 7 stop being
+      triphasic below 35 C, at 26 to 32 C. They form 5 distinct (inward, outward) patterns, because B7SD0L, J9U8SQ and
+      SJR46Y each have H and Syn in all three cells. The 13 s variant also gives 5 distinct patterns, with EF84RN in
+      place of SJR46Y, so the count does not depend on the window. The criterion is applied as written. Reproduced needs
+      no two models to share a pattern, which is already false. Partially reproduced needs every model to crash and at
+      least 6 distinct patterns among the 8, which the 7 present models cannot reach alone. Q8FBN1 could add at most
+      one pattern, so partially reproduced holds only if Q8FBN1 crashes below 35 C with a sixth pattern. The deposit
+      cannot show either of those, and cell 53 prints this ("at most 6 distinct patterns among 8 … partially reproduced
+      … possible: True"). Not reproduced and partially reproduced therefore depend on the missing model. That is a data_missing
+      block, and it is consistent with fig7-high-temperature-slow-timescales, which is blocked because partially reproduced
+      is possible only through missing models. Choices checked: the crash temperatures follow the claims file''s rule
+      (the lowest temperature above 25 C, in 1 C steps up to 35 C, at which the network is not triphasic). The dominant-current
+      window (the last 3 s of the same 40 s run) was set before the result, and the 13 s variant gives the same count,
+      so the window was not chosen to reach it. Cell 54 and the record''s notes say the outcome can be at best partially
+      reproduced, which is correct.'
+    response: The outcome is changed from not reproduced to blocked (data_missing) and the proposal removed. The notes,
+      the conclusion of cell 54, the summary of the main notebook and the README now give the blocked outcome. The
+      assumed flag is dropped, as the schema does not allow it on a blocked outcome; the deviations still state the
+      assumption.
