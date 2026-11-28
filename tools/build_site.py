@@ -3033,7 +3033,9 @@ def page_institutions(data: dict) -> str:
       own agreement with the provider.</p></div>
     <div class="panel" id="limits"><h2>Limits</h2>
       <p>The checks are made by AI agents, and agents make mistakes. A finding is a question for the lab to answer,
-      not a verdict on the paper.</p></div>
+      not a verdict on the paper.</p>
+      <p>Authors can respond to an attempt, to clarify a point or to correct the agent where it made a mistake.
+      The next attempt takes their response into account.</p></div>
   </div>
   <div class="panel contact-panel" id="contact"><h2>Pilot</h2>
     <p>The checking tool and the public registry are available today. The institutional record and its private
