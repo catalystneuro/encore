@@ -892,7 +892,8 @@ def test_the_institutions_page_is_for_decision_makers_and_gives_the_registrys_nu
     benefits = main[main.index('<div class="benefits">'):main.index('id="policy"')]
     assert re.findall(r"<h3>([^<]+)</h3>", benefits) == [
         "Compliance you can show", "Problems found early", "A standard for policy", "Better shared data"]
-    assert "run the check and respond to every finding" in main[main.index('id="policy"'):main.index('id="privacy"')]
+    policy = " ".join(main[main.index('id="policy"'):main.index('id="privacy"')].split())
+    assert "before submitting a manuscript to a journal, run the check and respond to every finding" in policy
 
     # It is honest about what is built, asks for a pilot twice, shows the example the journals page shows, and
     # gives no prices.
