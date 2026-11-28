@@ -3023,7 +3023,7 @@ def page_institutions(data: dict) -> str:
   <div class="benefits">{benefits_html}</div>
   <div class="panel" id="policy"><h2>Policy</h2>
     <p>The policy we suggest is &ldquo;before submitting a manuscript to a journal, run the check and respond to
-    every finding&rdquo;. A lab responds by fixing the data, by correcting the paper, or by explaining why the
+    every finding.&rdquo; A lab responds by fixing the data, by correcting the paper, or by explaining why the
     finding is wrong.</p></div>
   <div class="grid2">
     <div class="panel" id="privacy"><h2>Privacy</h2>
